@@ -1,0 +1,24 @@
+#!/bin/bash
+set -euo pipefail
+# Context7 Tracker - Logs library documentation lookups
+# Hook: PostToolUse (mcp__context7__*)
+
+source "$(dirname "$0")/../../_lib/common.sh"
+
+TOOL_NAME=$(get_tool_name)
+
+# Track library documentation lookups
+if [[ "$TOOL_NAME" == "mcp__context7__resolve-library-id" ]]; then
+  LIBRARY=$(get_field '.tool_input.libraryName')
+  log_hook "Context7 resolve: $LIBRARY"
+  echo "$(date -Iseconds) | resolve | $LIBRARY" >> "/tmp/claude-context7-usage.log"
+fi
+
+if [[ "$TOOL_NAME" == "mcp__context7__get-library-docs" ]]; then
+  LIBRARY_ID=$(get_field '.tool_input.context7CompatibleLibraryID')
+  TOPIC=$(get_field '.tool_input.topic')
+  log_hook "Context7 docs: $LIBRARY_ID (topic: $TOPIC)"
+  echo "$(date -Iseconds) | docs | $LIBRARY_ID | $TOPIC" >> "/tmp/claude-context7-usage.log"
+fi
+
+exit 0

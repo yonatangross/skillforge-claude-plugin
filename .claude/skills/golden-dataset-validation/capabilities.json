@@ -1,0 +1,56 @@
+{
+  "name": "golden-dataset-validation",
+  "version": "1.0.0",
+  "description": "Validation rules, schema checks, duplicate detection, and coverage analysis for golden dataset integrity",
+  "category": "data-quality",
+  "tier": 2,
+  "triggers": {
+    "keywords": [
+      "validate",
+      "validation",
+      "duplicate detection",
+      "schema check",
+      "coverage analysis",
+      "integrity check"
+    ],
+    "file_patterns": [
+      "documents_expanded.json",
+      "queries.json",
+      "golden_dataset_backup.json"
+    ],
+    "task_types": [
+      "validation",
+      "pre-commit-check"
+    ]
+  },
+  "dependencies": [
+    "golden-dataset-management",
+    "pgvector-search"
+  ],
+  "provides": {
+    "concepts": [
+      "schema-validation",
+      "duplicate-detection",
+      "referential-integrity",
+      "coverage-analysis"
+    ],
+    "patterns": [
+      "pre-addition-validation",
+      "full-dataset-validation",
+      "semantic-similarity-check"
+    ],
+    "references": [
+      "document-schema-v2",
+      "query-schema",
+      "validation-rules"
+    ]
+  },
+  "hooks": {
+    "pre-commit": "validate-golden-dataset.sh"
+  },
+  "metadata": {
+    "author": "SkillForge AI Agent Hub",
+    "created": "2025-12-28",
+    "issue": "#599"
+  }
+}

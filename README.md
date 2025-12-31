@@ -1,0 +1,353 @@
+<p align="center">
+  <img src="https://skillforge.dev/logo.svg" alt="SkillForge Logo" width="120" />
+</p>
+
+<h1 align="center">@skillforge/complete</h1>
+
+<p align="center">
+  <strong>The Complete AI Development Toolkit for Claude Code</strong>
+</p>
+
+<p align="center">
+  <a href="https://claude-plugins.dev/skillforge/complete"><img src="https://img.shields.io/badge/installs-2.3k+-blue?style=flat-square" alt="Installs"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-1.0.0-green?style=flat-square" alt="Version"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/actions"><img src="https://img.shields.io/badge/hooks-audited-brightgreen?style=flat-square" alt="Hooks Audited"></a>
+</p>
+
+<p align="center">
+  33 skills | 10 commands | 14 agents | 27 hooks
+</p>
+
+---
+
+> **Transform Claude Code into a full-stack AI development powerhouse.** From RAG pipelines to React 19 patterns, from database schemas to security audits - everything you need to build production-grade applications with AI assistance.
+
+## Quick Start
+
+```bash
+# Install from Claude Plugin Registry
+claude plugin install @skillforge/complete
+
+# Or clone from GitHub
+git clone https://github.com/yonatangross/skillforge-claude-plugin ~/.claude/plugins/skillforge-claude-plugin
+```
+
+After installation, skills are automatically available when Claude Code detects relevant tasks.
+
+---
+
+## Features Overview
+
+### AI & LLM Development
+
+| Skill | Description |
+|-------|-------------|
+| `ai-native-development` | RAG pipelines, embeddings, vector databases, agentic workflows, Ollama local inference |
+| `langgraph-workflows` | Multi-agent workflows with LangGraph 1.0 - state management, supervisor-worker patterns, checkpointing |
+| `llm-caching-patterns` | Multi-level caching (semantic + prompt) for 70-95% cost reduction |
+| `llm-safety-patterns` | Prevent hallucination, injection, and data leakage through proper validation |
+| `langfuse-observability` | LLM tracing, evaluation, prompt management, and cost tracking |
+| `pgvector-search` | Hybrid search with PGVector + BM25 using Reciprocal Rank Fusion |
+
+### Backend Development
+
+| Skill | Description |
+|-------|-------------|
+| `api-design-framework` | REST patterns, versioning, error handling, OpenAPI templates |
+| `database-schema-designer` | Normalization, indexing strategies, migration patterns |
+| `streaming-api-patterns` | SSE, WebSockets, ReadableStream APIs, backpressure handling |
+| `type-safety-validation` | Zod + tRPC + Prisma for end-to-end type safety |
+| `resilience-patterns` | Circuit breakers, bulkheads, retry logic, fault tolerance |
+
+### Frontend Development
+
+| Skill | Description |
+|-------|-------------|
+| `react-server-components-framework` | Next.js 15 App Router, RSC patterns, Server Actions, React 19 |
+| `design-system-starter` | Design tokens, component architecture, accessibility guidelines |
+| `performance-optimization` | React 19 concurrent features, bundle analysis, Core Web Vitals |
+| `edge-computing-patterns` | Cloudflare Workers, Vercel Edge, Deno Deploy patterns |
+
+### Quality & Testing
+
+| Skill | Description |
+|-------|-------------|
+| `testing-strategy-builder` | Test planning, MSW mocking, VCR.py recording, coverage targets |
+| `webapp-testing` | Playwright testing with autonomous test agents |
+| `code-review-playbook` | Structured review processes, conventional comments |
+| `quality-gates` | Automated quality enforcement, CI integration |
+| `golden-dataset-*` | Curation, validation, and management for AI/ML testing |
+
+### DevOps & Security
+
+| Skill | Description |
+|-------|-------------|
+| `devops-deployment` | CI/CD pipelines, Docker, Kubernetes, Terraform patterns |
+| `observability-monitoring` | Structured logging, metrics, distributed tracing, alerting |
+| `security-checklist` | OWASP Top 10 mitigations, auth patterns, compliance |
+| `defense-in-depth` | 8-layer security architecture for AI systems |
+
+### Process & Planning
+
+| Skill | Description |
+|-------|-------------|
+| `brainstorming` | Socratic questioning, alternative exploration, MVP scoping |
+| `architecture-decision-record` | ADR templates, decision documentation |
+| `ascii-visualizer` | Beautiful ASCII art for architectures and workflows |
+| `system-design-interrogation` | Systematic questioning for design completeness |
+
+---
+
+## Commands Reference
+
+Slash commands for common workflows:
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/commit` | Smart commit with validation and auto-generated message | `/commit` |
+| `/explore` | Deep codebase exploration with parallel agents | `/explore auth system` |
+| `/implement` | Full-power feature implementation with 17 parallel subagents | `/implement user dashboard` |
+| `/verify` | Comprehensive feature verification with quality gates | `/verify login flow` |
+| `/review-pr` | PR review with parallel code quality agents | `/review-pr 123` |
+| `/create-pr` | Create PR with validation and auto-generated description | `/create-pr` |
+| `/run-tests` | Comprehensive test execution with parallel analysis | `/run-tests backend` |
+| `/fix-issue` | Fix GitHub issue with parallel analysis | `/fix-issue 456` |
+| `/add-golden` | Curate and add documents to golden dataset | `/add-golden doc.md` |
+| `/brainstorm` | Multi-perspective idea exploration | `/brainstorm caching strategy` |
+
+---
+
+## Agents Reference
+
+Specialized agents for domain-specific tasks:
+
+| Agent | Model | Specialization |
+|-------|-------|----------------|
+| `backend-system-architect` | Sonnet | FastAPI, SQLAlchemy, async patterns, service design |
+| `frontend-ui-developer` | Sonnet | React 19, TypeScript strict, TanStack Query, Zod |
+| `llm-integrator` | Sonnet | OpenAI/Anthropic/Ollama APIs, streaming, function calling |
+| `workflow-architect` | Sonnet | LangGraph workflows, multi-agent coordination |
+| `database-engineer` | Sonnet | Schema design, migrations, query optimization |
+| `security-auditor` | Haiku | OWASP scanning, dependency audit, secrets detection |
+| `code-quality-reviewer` | Sonnet | Code review, test coverage, quality gates |
+| `test-generator` | Sonnet | Unit/integration/E2E test creation |
+| `debug-investigator` | Sonnet | Root cause analysis, stack trace interpretation |
+| `rapid-ui-designer` | Haiku | TailwindCSS, responsive design, accessibility |
+| `ux-researcher` | Haiku | User journey mapping, accessibility, mobile UX |
+| `data-pipeline-engineer` | Sonnet | Embeddings, ETL, vector databases |
+| `system-design-reviewer` | Sonnet | Architecture validation, scalability review |
+| `security-layer-auditor` | Haiku | Defense-in-depth validation |
+
+---
+
+## Progressive Loading
+
+SkillForge uses a **token-efficient progressive loading** system via `capabilities.json` files:
+
+```
++----------------------+     +-------------------+     +------------------+
+| Tier 1: Discovery    | --> | Tier 2: Overview  | --> | Tier 3: Specific |
+| (~100 tokens)        |     | (~500 tokens)     |     | (~200 tokens)    |
+| capabilities.json    |     | SKILL.md          |     | references/*.md  |
++----------------------+     +-------------------+     +------------------+
+                                                                |
+                                                                v
+                                                       +------------------+
+                                                       | Tier 4: Generate |
+                                                       | (~300 tokens)    |
+                                                       | templates/*      |
+                                                       +------------------+
+```
+
+### How It Works
+
+1. **Tier 1 - Discovery** (~100 tokens): Claude reads `capabilities.json` to determine skill relevance via keywords and triggers
+2. **Tier 2 - Overview** (~500 tokens): If relevant, loads `SKILL.md` for patterns and best practices
+3. **Tier 3 - Specific** (~200 tokens): Loads only the specific reference sections needed
+4. **Tier 4 - Generate** (~300 tokens): Loads templates when ready to generate code
+
+**Result:** Instead of loading 5000+ tokens upfront, Claude loads only what's needed - typically 300-800 tokens per task.
+
+### Example: capabilities.json
+
+```json
+{
+  "name": "llm-caching-patterns",
+  "version": "1.3.0",
+  "description": "Multi-level caching for 70-95% cost reduction",
+
+  "capabilities": {
+    "semantic-cache": {
+      "keywords": ["semantic cache", "redis", "vector similarity"],
+      "solves": ["How do I implement semantic caching?"],
+      "reference_file": "SKILL.md#redis-semantic-cache",
+      "token_cost": 200
+    }
+  },
+
+  "triggers": {
+    "high_confidence": ["llm.*caching", "semantic.*cache"],
+    "medium_confidence": ["reduce.*cost", "cache.*llm"]
+  },
+
+  "progressive_loading": {
+    "tier_1_discovery": { "file": "capabilities.json", "tokens": 110 },
+    "tier_2_overview": { "file": "SKILL.md", "tokens": 537 }
+  }
+}
+```
+
+---
+
+## MCP Integrations
+
+SkillForge skills integrate with these MCP servers:
+
+| MCP Server | Used By | Purpose |
+|------------|---------|---------|
+| `context7` | All skills | Up-to-date library documentation lookup |
+| `langfuse` | AI skills | Prompt management, tracing, cost tracking |
+| `playwright` | Testing skills | Browser automation, E2E testing |
+| `memory` | All commands | Cross-session decision persistence |
+| `sequential-thinking` | Planning | Multi-step reasoning for complex problems |
+| `pg-aiguide` | Database skills | PostgreSQL and TimescaleDB guidance |
+
+### Example: Using Context7 for Current Docs
+
+```python
+# Skills automatically query Context7 for latest patterns
+mcp__context7__query-docs(
+  libraryId="/langchain-ai/langgraph",
+  query="How to implement supervisor-worker pattern"
+)
+```
+
+---
+
+## Security
+
+### Hook Auditing
+
+All 27 hooks have been security-audited and follow these standards:
+
+- **Strict mode enabled**: `set -euo pipefail` in all bash hooks
+- **Input validation**: All hook inputs are validated via JSON schema
+- **No arbitrary execution**: Hooks never execute user-provided code
+- **Read-only by default**: Most hooks are observational, not mutational
+
+### Protected Hooks
+
+| Hook | Purpose | Security Level |
+|------|---------|----------------|
+| `git-branch-protection.sh` | Blocks commits to dev/main | **Critical** |
+| `file-guard.sh` | Prevents writes to protected paths | **Critical** |
+| `auto-approve-safe-bash.sh` | Whitelists known-safe commands | Medium |
+| `memory-validator.sh` | Validates MCP memory operations | Medium |
+| `audit-logger.sh` | Records all tool invocations | Low |
+
+### Example: git-branch-protection.sh
+
+```bash
+#!/bin/bash
+set -euo pipefail
+
+# Blocks: git commit, git push on dev/main/master
+if [[ "$CURRENT_BRANCH" == "dev" || "$CURRENT_BRANCH" == "main" ]]; then
+  if [[ "$COMMAND" =~ git\ commit || "$COMMAND" =~ git\ push ]]; then
+    echo "BLOCKED: Cannot commit directly to '$CURRENT_BRANCH'" >&2
+    exit 2  # Exit code 2 blocks the command
+  fi
+fi
+```
+
+---
+
+## Project Structure
+
+```
+.claude/
++-- skills/                    # 33 domain-specific skills
+|   +-- ai-native-development/
+|   |   +-- capabilities.json  # Discovery metadata
+|   |   +-- SKILL.md          # Core patterns
+|   |   +-- references/       # Detailed docs
+|   |   +-- templates/        # Code templates
+|   +-- langgraph-workflows/
+|   +-- ...
++-- commands/                  # 10 slash commands
+|   +-- commit.md
+|   +-- implement.md
+|   +-- ...
++-- agents/                    # 14 specialized agents
+|   +-- llm-integrator.md
+|   +-- security-auditor.md
+|   +-- ...
++-- hooks/                     # 27 lifecycle hooks
+|   +-- pretool/
+|   +-- posttool/
+|   +-- lifecycle/
+|   +-- ...
++-- schemas/                   # JSON schemas
+    +-- skill-capabilities.schema.json
+```
+
+---
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/new-skill`
+3. Add your skill with `capabilities.json` for progressive loading
+4. Write tests for any code templates
+5. Submit a PR with description of the skill's purpose
+
+### Skill Development
+
+```bash
+# Create a new skill
+mkdir .claude/skills/my-skill
+touch .claude/skills/my-skill/{capabilities.json,SKILL.md}
+
+# Validate capabilities.json schema
+npx ajv validate -s .claude/schemas/skill-capabilities.schema.json \
+                 -d .claude/skills/my-skill/capabilities.json
+```
+
+---
+
+## License
+
+MIT License - see [LICENSE](./LICENSE) for details.
+
+---
+
+## Credits
+
+**Created by:** [SkillForge Team](https://github.com/skillforge)
+
+**Inspired by:**
+- The Claude Code community
+- LangChain and LangGraph projects
+- React and Next.js ecosystems
+
+**Special Thanks:**
+- Anthropic for Claude and Claude Code
+- All contributors and early adopters
+
+---
+
+<p align="center">
+  <sub>Built with love for the Claude Code community</sub>
+</p>
+
+<p align="center">
+  <a href="https://skillforge.dev">Website</a> |
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin">GitHub</a> |
+  <a href="https://discord.gg/skillforge">Discord</a> |
+  <a href="https://twitter.com/skillforgedev">Twitter</a>
+</p>

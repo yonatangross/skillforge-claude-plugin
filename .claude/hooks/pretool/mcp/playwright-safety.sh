@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euo pipefail
+# Playwright Safety - Validates browser automation operations
+# Hook: PreToolUse (mcp__playwright__*)
+
+source "$(dirname "$0")/../../_lib/common.sh"
+
+TOOL_NAME=$(get_tool_name)
+
+log_hook "Playwright tool: $TOOL_NAME"
+
+# Log navigation for security awareness
+if [[ "$TOOL_NAME" == "mcp__playwright__browser_navigate" ]]; then
+  URL=$(get_field '.tool_input.url')
+  log_hook "Browser navigating to: $URL"
+  info "Browser navigating to: $URL"
+fi
+
+# Warn on file upload
+if [[ "$TOOL_NAME" == "mcp__playwright__browser_file_upload" ]]; then
+  PATHS=$(get_field '.tool_input.paths')
+  warn "Playwright file upload: $PATHS"
+  log_hook "File upload: $PATHS"
+fi
+
+exit 0

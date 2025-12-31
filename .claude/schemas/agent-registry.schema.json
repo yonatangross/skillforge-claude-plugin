@@ -1,0 +1,243 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "agent-registry.schema.json",
+  "title": "Agent Registry",
+  "description": "Schema for the dynamic agent and skill registry enabling semantic discovery",
+  "type": "object",
+  "required": ["version", "agents", "skills"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the registry format"
+    },
+    "description": {
+      "type": "string"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "type": "string",
+          "enum": ["semantic", "keyword"],
+          "description": "Primary discovery method"
+        },
+        "fallback": {
+          "type": "string",
+          "enum": ["semantic", "keyword"]
+        },
+        "confidence_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum confidence score to select an agent"
+        },
+        "max_agents_per_task": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "agents": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/agent"
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/skill"
+      }
+    },
+    "workflows": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/workflow"
+      }
+    },
+    "mcp_integration": {
+      "type": "object",
+      "properties": {
+        "always_available": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "on_demand": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "discovery_tool": {
+          "type": "string"
+        },
+        "add_tool": {
+          "type": "string"
+        },
+        "compose_tool": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "agent": {
+      "type": "object",
+      "required": ["display_name", "capabilities", "can_solve_examples", "tools"],
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "model_preference": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["opus", "sonnet", "haiku"]
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "List of capabilities this agent provides"
+        },
+        "can_solve_examples": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Example problems this agent can solve (for semantic matching)"
+        },
+        "skills_used": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skill names this agent typically uses"
+        },
+        "tools": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "boundaries": {
+          "type": "object",
+          "properties": {
+            "allowed": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "forbidden": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "forbidden_actions": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "handoff_to": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "is_orchestrator": {
+          "type": "boolean"
+        },
+        "can_invoke_agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "mcp_tools": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "array", "items": { "type": "string" } },
+              { "type": "string" }
+            ]
+          }
+        }
+      }
+    },
+    "skill": {
+      "type": "object",
+      "required": ["display_name", "path", "provides"],
+      "properties": {
+        "display_name": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string",
+          "description": "Relative path to the skill directory"
+        },
+        "provides": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Capabilities this skill provides"
+        },
+        "used_by_agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "progressive_load": {
+          "type": "object",
+          "properties": {
+            "discovery": { "type": "string" },
+            "overview": { "type": "string" },
+            "references": { "type": "string" },
+            "templates": { "type": "string" },
+            "examples": { "type": "string" },
+            "checklists": { "type": "string" }
+          }
+        },
+        "token_budget": {
+          "type": "object",
+          "properties": {
+            "discovery": { "type": "integer" },
+            "overview": { "type": "integer" },
+            "full": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "required": ["description", "composes_skills"],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "composes_skills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skill file paths to compose"
+        },
+        "primary_agent": {
+          "type": "string"
+        },
+        "validation_agent": {
+          "type": "string"
+        },
+        "orchestrator": {
+          "type": "string"
+        },
+        "agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "estimated_tokens": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

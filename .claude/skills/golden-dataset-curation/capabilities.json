@@ -1,0 +1,65 @@
+{
+  "name": "golden-dataset-curation",
+  "version": "1.0.0",
+  "description": "Quality criteria, workflows, and multi-agent analysis patterns for curating high-quality golden dataset entries",
+  "category": "data-quality",
+  "tier": 2,
+  "triggers": {
+    "keywords": [
+      "golden dataset",
+      "add document",
+      "curate",
+      "curation",
+      "quality evaluation",
+      "content classification",
+      "difficulty classification"
+    ],
+    "file_patterns": [
+      "documents_expanded.json",
+      "queries.json",
+      "source_url_map.json"
+    ],
+    "task_types": [
+      "data-curation",
+      "quality-analysis"
+    ]
+  },
+  "dependencies": [
+    "golden-dataset-management",
+    "langfuse-observability",
+    "pgvector-search"
+  ],
+  "provides": {
+    "concepts": [
+      "content-type-classification",
+      "difficulty-stratification",
+      "quality-dimensions",
+      "multi-agent-analysis",
+      "consensus-aggregation"
+    ],
+    "patterns": [
+      "parallel-agent-evaluation",
+      "langfuse-traced-curation",
+      "user-approval-gates"
+    ],
+    "references": [
+      "quality-thresholds",
+      "difficulty-levels",
+      "domain-tags"
+    ]
+  },
+  "langfuse_prompts": [
+    "golden-content-classifier",
+    "golden-difficulty-classifier",
+    "golden-domain-tagger",
+    "golden-query-generator"
+  ],
+  "related_commands": [
+    "add-golden"
+  ],
+  "metadata": {
+    "author": "SkillForge AI Agent Hub",
+    "created": "2025-12-28",
+    "issue": "#599"
+  }
+}
