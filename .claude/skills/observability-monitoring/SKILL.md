@@ -180,14 +180,14 @@ tracer.startActiveSpan('processOrder', async (span) => {
 **Trace requests across services:**
 ```python
 import structlog
-from uuid import uuid4
+import uuid_utils  # pip install uuid-utils (UUID v7 support for Python < 3.14)
 
 logger = structlog.get_logger()
 
 @app.middleware("http")
 async def correlation_middleware(request: Request, call_next):
-    # Get or generate correlation ID
-    correlation_id = request.headers.get("X-Correlation-ID") or str(uuid4())
+    # Get or generate correlation ID (UUID v7 for time-ordering in distributed traces)
+    correlation_id = request.headers.get("X-Correlation-ID") or str(uuid_utils.uuid7())
 
     # Bind to logger context (all logs in this request will include it)
     structlog.contextvars.bind_contextvars(
