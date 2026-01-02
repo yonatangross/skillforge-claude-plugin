@@ -1327,7 +1327,7 @@
       "framework": "FastAPI",
       "language": "Python 3.11+",
       "orm": "SQLAlchemy 2.0",
-      "database": "PostgreSQL 15+ with pgvector",
+      "database": "PostgreSQL 18+ with pgvector",
       "workflows": "LangGraph 1.0",
       "validation": "Pydantic v2"
     },
