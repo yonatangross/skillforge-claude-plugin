@@ -294,12 +294,13 @@ async def faceted_search(
 ```python
 # backend/tests/unit/services/search/test_boosting.py
 import pytest
+import uuid_utils  # pip install uuid-utils (UUID v7 for Python < 3.14)
 
 def test_section_title_boost():
     """Test section title boosting."""
 
     chunk = Chunk(
-        id=uuid4(),
+        id=uuid_utils.uuid7(),
         content="...",
         section_title="Database Indexing Strategies"
     )
@@ -316,7 +317,7 @@ def test_no_boost_for_non_matching_title():
     """Test no boost when title doesn't match."""
 
     chunk = Chunk(
-        id=uuid4(),
+        id=uuid_utils.uuid7(),
         content="...",
         section_title="API Authentication"
     )
@@ -333,7 +334,7 @@ async def test_combined_boosting():
     """Test that boosts are multiplicative."""
 
     chunk = Chunk(
-        id=uuid4(),
+        id=uuid_utils.uuid7(),
         content="...",
         section_title="API Implementation",  # Matches "API"
         section_path="docs/backend/api/routes.md",  # Matches "API"

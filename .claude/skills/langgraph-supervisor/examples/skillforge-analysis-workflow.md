@@ -445,10 +445,14 @@ import uuid
 router = APIRouter(prefix="/api/v1/analysis")
 
 @router.post("/analyze")
-async def analyze_content(url: str, content: str):
+async def analyze_content(url: str, content: str, db: AsyncSession = Depends(get_db)):
     """Start content analysis workflow."""
 
-    analysis_id = str(uuid.uuid4())
+    # Create analysis record - PostgreSQL 18 generates UUID v7 via server_default
+    analysis = Analysis(url=url, content_type="article", status="pending")
+    db.add(analysis)
+    await db.flush()  # Get DB-generated UUID v7
+    analysis_id = str(analysis.id)
 
     app = create_analysis_workflow()
 

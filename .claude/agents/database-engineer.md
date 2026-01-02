@@ -25,7 +25,7 @@ Activates for: schema, migration, database, postgres, pgvector, index, constrain
 3. Optimize slow queries using EXPLAIN ANALYZE
 4. Configure pgvector indexes (HNSW vs IVFFlat selection)
 5. Set up full-text search with tsvector and GIN indexes
-6. Ensure PostgreSQL 17 modern features are used
+6. Ensure PostgreSQL 18 modern features are used
 
 ## Output Format
 Return structured findings:

@@ -72,9 +72,11 @@ app = workflow.compile(interrupt_before=["approval_gate"])
 ## Feedback Loop Pattern
 
 ```python
+import uuid_utils  # pip install uuid-utils (UUID v7 for Python < 3.14)
+
 async def run_with_feedback(initial_state: dict):
     """Run until human approves."""
-    config = {"configurable": {"thread_id": str(uuid4())}}
+    config = {"configurable": {"thread_id": str(uuid_utils.uuid7())}}
 
     while True:
         # Run until interrupt

@@ -102,20 +102,22 @@ async def create_analysis(
     # 1. Detect content type
     content_type = detect_content_type(str(request.url))
 
-    # 2. Generate or normalize analysis_id
+    # 2. Normalize custom analysis_id if provided (optional)
     analysis_uuid = (
         normalize_analysis_id_to_uuid(request.analysis_id)
         if request.analysis_id
-        else uuid.uuid4()
+        else None  # Let DB generate UUID v7 via server_default
     )
 
     # 3. Create Analysis record (status: pending)
-    await analysis_repo.create_analysis(
-        analysis_id=analysis_uuid,
+    # PostgreSQL 18 generates UUID v7 via server_default=text("uuidv7()")
+    created_analysis = await analysis_repo.create_analysis(
+        analysis_id=analysis_uuid,  # None → DB generates UUID v7
         url=url_str,
         content_type=content_type,
         status="pending"
     )
+    analysis_uuid = cast("AnalysisID", created_analysis.id)
 
     # 4. Start workflow asynchronously (fire-and-forget)
     task = asyncio.create_task(
