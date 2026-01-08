@@ -49,5 +49,5 @@ main() {
 }
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Heartbeat sent"}'
+echo '{"systemMessage":"Heartbeat sent","continue":true}'
 main

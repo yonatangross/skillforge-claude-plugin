@@ -91,5 +91,5 @@ fi
 
 # Always allow the commit (this is just a warning)
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Conflicts predicted"}'
+echo '{"systemMessage":"Conflicts predicted","continue":true}'
 exit 0

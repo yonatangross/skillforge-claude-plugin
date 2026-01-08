@@ -54,7 +54,7 @@ fi
 # Only log if there was an error
 if [[ "$IS_ERROR" == "true" ]]; then
   # Get tool input for context
-  TOOL_INPUT=$(get_field '.tool_input' | jq -c '.' 2>/dev/null || echo '{}')
+  TOOL_INPUT=$(get_field '.tool_input' | jq -c '.' 2>/dev/null || echo '{"continue":true}')
 
   # Create hash of input for deduplication
   INPUT_HASH=$(echo "$TOOL_INPUT" | md5sum | cut -d' ' -f1)
@@ -109,5 +109,5 @@ if [[ "$IS_ERROR" == "true" ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Errors collected"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

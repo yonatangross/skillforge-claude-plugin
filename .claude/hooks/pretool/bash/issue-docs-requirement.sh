@@ -60,5 +60,5 @@ EOF
 
 # Allow branch creation - docs can be created after
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Docs requirement checked"}'
+echo '{"systemMessage":"Docs requirement checked","continue":true}'
 exit 0

@@ -2,9 +2,9 @@
 name: workflow-architect
 color: blue
 description: Multi-agent workflow specialist who designs LangGraph pipelines, implements supervisor-worker patterns, manages state and checkpointing, and orchestrates RAG retrieval flows for complex AI systems
-model: opus
 max_tokens: 32000
 tools: Bash, Read, Write, Edit, Grep, Glob
+skills: langgraph-supervisor, langgraph-routing, langgraph-parallel, langgraph-state, langgraph-checkpoints, langgraph-human-in-loop, multi-agent-orchestration, langfuse-observability, observability-monitoring
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
@@ -231,7 +231,7 @@ Task: "Design a multi-agent analysis pipeline for URL content"
 ```
 
 ## Context Protocol
-- Before: Read `.claude/context/shared-context.json`
+- Before: Read `.claude/context/session/state.json and .claude/context/knowledge/decisions/active.json`
 - During: Update `agent_decisions.workflow-architect` with design decisions
 - After: Add to `tasks_completed`, save context
 - On error: Add to `tasks_pending` with blockers

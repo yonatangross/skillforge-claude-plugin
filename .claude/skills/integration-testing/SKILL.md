@@ -3,7 +3,6 @@ name: integration-testing
 description: Integration testing patterns for APIs and components. Use when testing component interactions, API endpoints with test databases, or service layer integration.
 context: fork
 agent: test-generator
-model: sonnet
 hooks:
   PostToolUse:
     - matcher: "Write|Edit"

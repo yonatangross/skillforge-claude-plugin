@@ -2,6 +2,7 @@
 set -euo pipefail
 # Auto-Approve Readonly - Automatically approves read-only operations
 # Hook: PermissionRequest (Read|Glob|Grep)
+# CC 2.1.1 Compliant: silent on success
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
 _HOOK_INPUT=$(cat)
@@ -13,7 +14,7 @@ TOOL_NAME=$(get_tool_name)
 
 log_hook "Auto-approving readonly: $TOOL_NAME"
 
-# Use decision.message for user-visible status
-echo '{"decision":{"behavior":"allow","message":"Readonly auto-approved"}}'
+# Silent approval - no message
+echo '{"decision":{"behavior":"allow"}}'
 
 exit 0

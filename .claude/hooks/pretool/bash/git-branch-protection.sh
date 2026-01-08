@@ -51,5 +51,5 @@ fi
 
 # Allow other git operations (fetch, pull, status, etc.)
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Branch protection checked"}'
+echo '{"systemMessage":"Branch protection checked","continue":true}'
 exit 0

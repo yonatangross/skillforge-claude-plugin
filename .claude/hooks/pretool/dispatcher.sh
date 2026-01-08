@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreToolUse Dispatcher - Runs all pre-tool checks and outputs combined status
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.1 Compliant: silent on success, visible on failure/warning
 # Consolidates multiple hooks into single message
 set -euo pipefail
 
@@ -12,13 +12,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../_lib/common.sh"
 
 # ANSI colors
-GREEN=$'\033[32m'
 RED=$'\033[31m'
-CYAN=$'\033[36m'
+YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
 TOOL_NAME=$(get_tool_name)
-RESULTS=()
+WARNINGS=()
 BLOCKED=""
 UPDATED_INPUT=""
 
@@ -44,15 +43,17 @@ run_check() {
       return 1
     fi
 
+    # Check for warnings
+    local msg=$(echo "$output" | jq -r '.systemMessage // ""' 2>/dev/null)
+    if [[ "$msg" == *"warning"* ]] || [[ "$msg" == *"Warning"* ]] || [[ "$msg" == *"⚠"* ]]; then
+      WARNINGS+=("$name")
+    fi
+
     # Check for updated input
     local updated=$(echo "$output" | jq -r '.hookSpecificOutput.updatedInput // .updatedInput // ""' 2>/dev/null)
     if [[ -n "$updated" && "$updated" != "null" ]]; then
       UPDATED_INPUT="$output"
     fi
-
-    RESULTS+=("$name")
-  elif [[ $exit_code -eq 0 ]]; then
-    RESULTS+=("$name")
   fi
 
   return 0
@@ -77,23 +78,20 @@ case "$TOOL_NAME" in
     ;;
 esac
 
-# Build output
-if [[ ${#RESULTS[@]} -gt 0 ]]; then
-  # Format: ToolName: ✓ Check1 | ✓ Check2 | ✓ Check3
-  MSG=""
-  for i in "${!RESULTS[@]}"; do
-    if [[ $i -gt 0 ]]; then
-      MSG="$MSG | "
-    fi
-    MSG="$MSG${GREEN}✓${RESET} ${RESULTS[$i]}"
-  done
-
+# Output: show warnings if any, otherwise silent (but include updated input if present)
+if [[ ${#WARNINGS[@]} -gt 0 ]]; then
+  WARN_MSG=$(IFS="; "; echo "${WARNINGS[*]}")
   if [[ -n "$UPDATED_INPUT" ]]; then
-    # Return the updated input with combined message
-    echo "$UPDATED_INPUT" | jq --arg msg "$MSG" '.systemMessage = $msg | .continue = true'
+    echo "$UPDATED_INPUT" | jq --arg msg "${YELLOW}⚠ ${WARN_MSG}${RESET}" '.systemMessage = $msg | .continue = true'
   else
-    echo "{\"systemMessage\": \"$MSG\", \"continue\": true}"
+    echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true}"
   fi
+elif [[ -n "$UPDATED_INPUT" ]]; then
+  # Silent success with updated input - remove systemMessage
+  echo "$UPDATED_INPUT" | jq 'del(.systemMessage) | .continue = true'
+else
+  # Silent success - no systemMessage
+  echo "{\"continue\": true}"
 fi
 
 exit 0

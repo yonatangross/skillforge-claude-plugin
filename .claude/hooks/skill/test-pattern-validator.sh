@@ -187,5 +187,6 @@ if [[ ${#ERRORS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Test patterns validated"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Test patterns validated","continue":true}'
 exit 0

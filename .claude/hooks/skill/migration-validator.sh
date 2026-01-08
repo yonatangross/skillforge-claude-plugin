@@ -43,5 +43,6 @@ echo "Migration file is valid"
 echo "::endgroup::"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Migration validated"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Migration validated","continue":true}'
 exit 0

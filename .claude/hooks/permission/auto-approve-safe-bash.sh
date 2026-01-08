@@ -2,6 +2,7 @@
 set -euo pipefail
 # Auto-Approve Safe Bash - Automatically approves safe bash commands
 # Hook: PermissionRequest (Bash)
+# CC 2.1.1 Compliant: silent on success
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
 _HOOK_INPUT=$(cat)
@@ -49,8 +50,8 @@ SAFE_PATTERNS=(
 for pattern in "${SAFE_PATTERNS[@]}"; do
   if [[ "$COMMAND" =~ $pattern ]]; then
     log_hook "Auto-approved: matches safe pattern '$pattern'"
-    # Use decision.message for user-visible status
-    echo '{"decision":{"behavior":"allow","message":"Safe command auto-approved"}}'
+    # Silent approval - no message
+    echo '{"decision":{"behavior":"allow"}}'
     exit 0
   fi
 done

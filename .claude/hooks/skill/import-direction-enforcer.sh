@@ -204,5 +204,6 @@ if [[ ${#ERRORS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Import direction enforced"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Import direction enforced","continue":true}'
 exit 0

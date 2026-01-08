@@ -197,7 +197,7 @@ I recommend [Agent] who can [capability]."
 ### 🆕 MCP-Aware Handoff
 ```
 "I've completed [work]. Before handoff to [Agent]:
-1. Recorded decision in shared-context.json
+1. Recorded decision in session/state.json (Context Protocol 2.0)
 2. Used MCP tools: [context7 for FastAPI docs]
 3. Composed workflow saved to: .claude/workflows/[name].md
 
@@ -212,7 +212,7 @@ They should use: [specific MCP tools available]"
 - Only share relevant context between agents
 - Avoid duplicate work by checking context first
 - Use parallel execution where possible
-- Keep shared-context.json under 50KB
+- Keep session/state.json (Context Protocol 2.0) under 50KB
 - **🆕 Use progressive skill loading (capabilities.json first)**
 - **🆕 Check workflows/ before composing ad-hoc**
 - **🆕 Use context7 instead of embedding static docs**
@@ -225,7 +225,7 @@ They should use: [specific MCP tools available]"
 After completing tasks, record which MCP tools were useful:
 
 ```javascript
-// In shared-context.json
+// In session/state.json (Context Protocol 2.0)
 {
   "mcp_usage": {
     "task": "Create paginated search endpoint",

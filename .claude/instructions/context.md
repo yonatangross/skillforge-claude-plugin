@@ -13,7 +13,7 @@
 
 ```
 .claude/context/
-├── shared-context.json  # All agent decisions
+├── session/state.json (Context Protocol 2.0)  # All agent decisions
 ├── session.json         # Session continuity
 └── vocabulary.json      # Project terminology
 ```
@@ -21,7 +21,7 @@
 ## Context Protocol
 
 ### Before Starting Work
-1. ALWAYS read `.claude/context/shared-context.json`
+1. ALWAYS read `.claude/context/session/state.json (Context Protocol 2.0)`
 2. Check what has been done already
 3. Identify dependencies and related work
 4. Avoid duplicating existing solutions
@@ -33,7 +33,7 @@
 4. Keep updates concise and actionable
 
 ### After Completing Work
-1. Update shared-context.json with results
+1. Update session/state.json (Context Protocol 2.0) with results
 2. Mark tasks as completed
 3. Add new pending tasks if discovered
 4. Suggest next agent if handoff needed

@@ -6,9 +6,6 @@ author: AI Agent Hub
 tags: [database, schema-design, sql, nosql, performance, migrations]
 context: fork
 agent: database-engineer
-model: sonnet
-model-alternatives:
-  - haiku
 hooks:
   PostToolUse:
     - matcher: Write

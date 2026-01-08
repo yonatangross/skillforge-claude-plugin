@@ -2,9 +2,6 @@
 name: streaming-api-patterns
 description: Use when building real-time features with SSE, WebSockets, or streaming APIs. Covers backpressure handling, reconnection strategies, and LLM token streaming patterns.
 agent: frontend-ui-developer
-model: sonnet
-model-alternatives:
-  - haiku
 version: 1.0.0
 author: AI Agent Hub
 tags: [streaming, sse, websocket, real-time, api, 2025]

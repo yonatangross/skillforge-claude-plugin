@@ -403,9 +403,9 @@ Potential improvements for future versions:
 
 ## Related Documentation
 
-- **Hooks:** `.claude/hooks/_orchestration/ARCHITECTURE.md`
+- **Hooks:** `.claude/hooks/ (see dispatcher files)`
 - **Context System:** `.claude/context/knowledge/index.json`
-- **Agent Roles:** `.claude/context/agents/*.json`
+- **Agent Roles:** `plugin.json agents section`
 
 ## License
 

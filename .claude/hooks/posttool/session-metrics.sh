@@ -40,5 +40,5 @@ fi
 ) 200>"$LOCKFILE" 2>/dev/null || true
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Metrics updated"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

@@ -3,7 +3,6 @@ name: test-data-management
 description: Test data management with fixtures and factories. Use when creating test data strategies, implementing data factories, managing fixtures, or seeding test databases.
 context: fork
 agent: test-generator
-model: haiku
 hooks:
   PostToolUse:
     - matcher: "Write|Edit"

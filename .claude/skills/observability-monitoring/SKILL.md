@@ -3,7 +3,6 @@ name: Observability & Monitoring
 description: Use when adding logging, metrics, tracing, or alerting to applications. Covers structured logging, Prometheus metrics, OpenTelemetry tracing, and alerting strategies.
 context: fork
 agent: metrics-architect
-model: sonnet
 version: 1.0.0
 category: Operations & Reliability
 agents: [backend-system-architect, code-quality-reviewer, ai-ml-engineer]

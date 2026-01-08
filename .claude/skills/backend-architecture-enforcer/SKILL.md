@@ -3,7 +3,6 @@ name: backend-architecture-enforcer
 description: Enforce FastAPI Clean Architecture - layer separation, dependency injection, async patterns, no business logic in routers. Blocks violations. Use when building or reviewing backend code.
 context: fork
 agent: backend-system-architect
-model: sonnet
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [backend, fastapi, architecture, enforcement, blocking, clean-architecture, di]

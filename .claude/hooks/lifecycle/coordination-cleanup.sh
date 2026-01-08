@@ -30,5 +30,5 @@ rm -f "${CLAUDE_PROJECT_DIR}/.claude/.instance_env"
 echo "Coordination cleanup complete" >&2
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Coordination cleaned up"}'
+echo '{"systemMessage":"Coordination cleaned up","continue":true}'
 exit 0

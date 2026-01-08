@@ -3,7 +3,6 @@ name: unit-testing
 description: Unit testing patterns and best practices. Use when writing isolated unit tests, implementing AAA pattern, designing test isolation, or setting coverage targets for business logic.
 context: fork
 agent: test-generator
-model: sonnet
 hooks:
   PostToolUse:
     - matcher: Write

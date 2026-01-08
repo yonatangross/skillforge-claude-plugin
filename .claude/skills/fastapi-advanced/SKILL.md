@@ -3,9 +3,6 @@ name: fastapi-advanced
 description: FastAPI 2026 advanced patterns including lifespan, dependencies, middleware, settings, and async best practices. Use when building production FastAPI applications.
 context: fork
 agent: backend-system-architect
-model: sonnet
-model-alternatives:
-  - haiku
 version: 1.0.0
 tags: [fastapi, python, async, middleware, dependencies, 2026]
 hooks:

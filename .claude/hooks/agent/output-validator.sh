@@ -92,5 +92,5 @@ if [ "$VALIDATION_STATUS" = "failed" ]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Output validated"}'
+echo '{"systemMessage":"Output validated","continue":true}'
 exit 0

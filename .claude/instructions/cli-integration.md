@@ -10,7 +10,7 @@ When a user interacts with Claude Code CLI, automatically:
    - Look for `.claude/agents/` directory
    - Verify `.claude/instructions/` exists
    - Check for `CLAUDE.md` presence
-   - Detect `.claude/context/shared-context.json`
+   - Detect `.claude/context/session/state.json (Context Protocol 2.0)`
 
 2. **Activate Orchestration**
    - If AI Agent Hub detected → Use intelligent routing
@@ -106,7 +106,7 @@ $ claude-code "Fix the authentication bug"
 ### Example 2: Session Resume
 ```
 $ claude-code "Continue where we left off"
-# System checks: shared-context.json
+# System checks: session/state.json (Context Protocol 2.0)
 # Resumes: feature_implementation workflow
 # Activates: last active agents with context
 ```

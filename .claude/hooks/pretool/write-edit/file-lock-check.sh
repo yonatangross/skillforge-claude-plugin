@@ -64,5 +64,5 @@ if ! coord_detect_conflict "${FILE_PATH}"; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"File lock checked"}'
+echo '{"systemMessage":"File lock checked","continue":true}'
 exit 0

@@ -441,7 +441,7 @@ I need comprehensive guidance on evidence collection. Loading evidence-verificat
 - `code-review-playbook` - Code review standards and checklists
 
 **Related Files:**
-- `.claude/context/shared-context.json` - Active context storage
+- `.claude/context/session/state.json (Context Protocol 2.0)` - Active context storage
 - `.squad/sessions/role-comm-*.md` - Squad communication files
 - `.claude/quality-gates/evidence/` - Evidence log storage
 

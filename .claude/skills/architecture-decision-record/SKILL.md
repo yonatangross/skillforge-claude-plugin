@@ -6,10 +6,6 @@ author: AI Agent Hub
 tags: [architecture, documentation, decision-making, backend]
 context: fork
 agent: backend-system-architect
-model: opus
-model-alternatives:
-  - sonnet
-  - haiku
 hooks:
   PostToolUse:
     - matcher: "Write|Edit"

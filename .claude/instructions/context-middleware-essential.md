@@ -11,7 +11,7 @@ The context system ensures session persistence, cross-agent knowledge sharing, a
 ```javascript
 // Load existing context
 const fs = require('fs');
-const contextPath = '.claude/context/shared-context.json';
+const contextPath = '.claude/context/session/state.json (Context Protocol 2.0)';
 const context = JSON.parse(fs.readFileSync(contextPath, 'utf8'));
 
 // Extract relevant information

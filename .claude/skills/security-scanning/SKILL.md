@@ -3,7 +3,6 @@ name: security-scanning
 description: Automated security scanning for dependencies and code. Use when running npm audit, pip-audit, Semgrep, secret detection, or integrating security checks into CI/CD.
 context: fork
 agent: security-auditor
-model: haiku
 allowed-tools:
   - Read
   - Grep

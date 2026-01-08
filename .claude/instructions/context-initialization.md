@@ -159,7 +159,7 @@ When encountering a **blocking issue**:
 
 ## Migration from Old System
 
-The old `shared-context.json` (1,070 lines) has been archived to:
+The old `session/state.json (Context Protocol 2.0)` (1,070 lines) has been archived to:
 ```
 archive/sessions/shared-context-pre-refactor.json
 ```

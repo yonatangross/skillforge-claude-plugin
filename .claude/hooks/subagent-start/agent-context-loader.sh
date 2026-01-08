@@ -1,47 +1,39 @@
 #!/bin/bash
 # Agent Context Loader - Before Subagent Hook
 # Loads agent-specific context when spawning a subagent
+# CC 2.1.1 Compliant: includes continue field in all outputs
 #
 # Receives agent_id from hook input and loads corresponding context file
-# Position: MIDDLE (lower attention, background knowledge)
-#
-# Version: 2.0.0
 # Part of Context Engineering 2.0
 
 set -euo pipefail
 
+# Read stdin immediately
+_HOOK_INPUT=$(cat)
+export _HOOK_INPUT
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-CONTEXT_DIR="$PROJECT_ROOT/context"
-LOG_FILE="$PROJECT_ROOT/logs/agent-context.log"
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+CONTEXT_DIR="$PROJECT_ROOT/.claude/context"
+LOG_FILE="$PROJECT_ROOT/.claude/logs/agent-context.log"
 
 # Ensure log directory exists
-mkdir -p "$(dirname "$LOG_FILE")"
+mkdir -p "$(dirname "$LOG_FILE")" 2>/dev/null || true
 
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> "$LOG_FILE" 2>/dev/null || true
 }
 
-# Parse input (expects JSON with agent_id)
-parse_input() {
-    local input="${1:-}"
-
-    if [ -z "$input" ]; then
-        # Try reading from stdin
-        input=$(cat 2>/dev/null || echo '{}')
-    fi
-
-    # Extract agent_id from various possible formats
+# Parse input to get agent_id
+get_agent_id() {
     local agent_id=""
 
-    # Try JSON format: {"agent_id": "xxx"} or {"subagent_type": "xxx"}
-    if echo "$input" | jq -e '.agent_id' > /dev/null 2>&1; then
-        agent_id=$(echo "$input" | jq -r '.agent_id')
-    elif echo "$input" | jq -e '.subagent_type' > /dev/null 2>&1; then
-        agent_id=$(echo "$input" | jq -r '.subagent_type')
-    else
-        # Assume plain text agent ID
-        agent_id="$input"
+    # Try subagent_type first (standard hook field)
+    agent_id=$(echo "$_HOOK_INPUT" | jq -r '.subagent_type // empty' 2>/dev/null || echo "")
+
+    # Fallback to agent_id
+    if [ -z "$agent_id" ]; then
+        agent_id=$(echo "$_HOOK_INPUT" | jq -r '.agent_id // empty' 2>/dev/null || echo "")
     fi
 
     echo "$agent_id"
@@ -50,112 +42,90 @@ parse_input() {
 # Load agent-specific context
 load_agent_context() {
     local agent_id=$1
+    local context=""
 
     if [ -z "$agent_id" ] || [ "$agent_id" == "null" ]; then
-        log "No agent_id provided, skipping agent context load"
-        echo "{}"
         return
     fi
 
-    local context_file="$CONTEXT_DIR/agents/${agent_id}.json"
-
-    if [ ! -f "$context_file" ]; then
-        log "No context file for agent: $agent_id"
-        echo "{}"
-        return
+    # Try loading from plugin.json agents array
+    local plugin_file="$PROJECT_ROOT/plugin.json"
+    if [ -f "$plugin_file" ]; then
+        local agent_info=$(jq -r ".agents[] | select(.id==\"$agent_id\") | {capabilities, skills_used, boundaries}" "$plugin_file" 2>/dev/null || echo "{}")
+        if [ "$agent_info" != "{}" ] && [ -n "$agent_info" ]; then
+            context="Agent: $agent_id\nCapabilities: $(echo "$agent_info" | jq -c '.capabilities // []')\nSkills: $(echo "$agent_info" | jq -c '.skills_used // []')"
+            log "Loaded context for agent: $agent_id from plugin.json"
+        fi
     fi
 
-    log "Loading context for agent: $agent_id"
-
-    # Load and compress context for injection
-    local context=$(jq -c '{
-        role: .role_summary,
-        patterns: .relevant_patterns,
-        recent_work: [.recent_work[]? | {task: .task, status: .status}],
-        concerns: .active_concerns,
-        skills: .preferred_skills
-    }' "$context_file" 2>/dev/null || echo '{}')
-
-    if [ "$context" != "{}" ]; then
-        local tokens=$(wc -c <<< "$context" | awk '{print int($1/4)}')
-        log "Loaded agent context (~$tokens tokens)"
-
-        # Output formatted for injection
-        echo "[AGENT_CONTEXT: $agent_id]"
-        echo "$context"
-    else
-        log "Failed to parse agent context for: $agent_id"
-        echo "{}"
-    fi
+    echo "$context"
 }
 
-# Also load relevant knowledge based on agent type
+# Load relevant knowledge based on agent type
 load_relevant_knowledge() {
     local agent_id=$1
-    local output=""
+    local knowledge=""
 
-    # Map agent types to relevant knowledge triggers
+    local patterns_file="$CONTEXT_DIR/knowledge/patterns/established.json"
+    local decisions_file="$CONTEXT_DIR/knowledge/decisions/active.json"
+
     case "$agent_id" in
         backend-system-architect|database-engineer)
-            # Load patterns for backend agents
-            if [ -f "$CONTEXT_DIR/knowledge/patterns/established.json" ]; then
-                local backend_patterns=$(jq -c '.patterns.backend' "$CONTEXT_DIR/knowledge/patterns/established.json" 2>/dev/null || echo '[]')
-                if [ "$backend_patterns" != "[]" ]; then
-                    output="[BACKEND_PATTERNS]\n$backend_patterns\n"
+            if [ -f "$patterns_file" ]; then
+                local count=$(jq -r '.patterns.backend // [] | length' "$patterns_file" 2>/dev/null || echo "0")
+                if [ "$count" -gt 0 ]; then
+                    knowledge="Backend patterns available: $count"
                 fi
             fi
             ;;
         frontend-ui-developer|rapid-ui-designer)
-            # Load patterns for frontend agents
-            if [ -f "$CONTEXT_DIR/knowledge/patterns/established.json" ]; then
-                local frontend_patterns=$(jq -c '.patterns.frontend' "$CONTEXT_DIR/knowledge/patterns/established.json" 2>/dev/null || echo '[]')
-                if [ "$frontend_patterns" != "[]" ]; then
-                    output="[FRONTEND_PATTERNS]\n$frontend_patterns\n"
+            if [ -f "$patterns_file" ]; then
+                local count=$(jq -r '.patterns.frontend // [] | length' "$patterns_file" 2>/dev/null || echo "0")
+                if [ "$count" -gt 0 ]; then
+                    knowledge="Frontend patterns available: $count"
                 fi
             fi
             ;;
         security-auditor|security-layer-auditor)
-            # Load security-related decisions
-            if [ -f "$CONTEXT_DIR/knowledge/decisions/active.json" ]; then
-                local security_decisions=$(jq -c '[.decisions[] | select(.id | contains("security") or contains("auth"))]' "$CONTEXT_DIR/knowledge/decisions/active.json" 2>/dev/null || echo '[]')
-                if [ "$security_decisions" != "[]" ]; then
-                    output="[SECURITY_DECISIONS]\n$security_decisions\n"
-                fi
-            fi
-            ;;
-        test-generator|code-quality-reviewer)
-            # Load testing patterns
-            if [ -f "$CONTEXT_DIR/knowledge/patterns/established.json" ]; then
-                local testing_patterns=$(jq -c '.patterns.testing' "$CONTEXT_DIR/knowledge/patterns/established.json" 2>/dev/null || echo '[]')
-                if [ "$testing_patterns" != "[]" ]; then
-                    output="[TESTING_PATTERNS]\n$testing_patterns\n"
+            if [ -f "$decisions_file" ]; then
+                local count=$(jq -r '[.decisions[]? | select(.category == "security")] | length' "$decisions_file" 2>/dev/null || echo "0")
+                if [ "$count" -gt 0 ]; then
+                    knowledge="Security decisions to review: $count"
                 fi
             fi
             ;;
     esac
 
-    if [ -n "$output" ]; then
-        echo -e "$output"
+    echo "$knowledge"
+}
+
+# Main
+agent_id=$(get_agent_id)
+log "Agent context loader triggered for: $agent_id"
+
+context=$(load_agent_context "$agent_id")
+knowledge=$(load_relevant_knowledge "$agent_id")
+
+# Build system message
+system_message=""
+if [ -n "$context" ]; then
+    system_message="$context"
+fi
+if [ -n "$knowledge" ]; then
+    if [ -n "$system_message" ]; then
+        system_message="$system_message\n$knowledge"
+    else
+        system_message="$knowledge"
     fi
-}
+fi
 
-# Main function
-main() {
-    local input="${1:-$(cat 2>/dev/null || echo '')}"
-    local agent_id=$(parse_input "$input")
+# Output CC 2.1.1 compliant JSON
+if [ -n "$system_message" ]; then
+    jq -n --arg msg "$system_message" '{systemMessage: $msg, continue: true}' 2>/dev/null || \
+        echo '{"systemMessage":"Agent context loaded","continue":true}'
+else
+    echo '{"continue":true}'
+fi
 
-    log "Agent context loader triggered for: $agent_id"
-
-    # Load agent-specific context
-    load_agent_context "$agent_id"
-
-    # Load relevant knowledge
-    load_relevant_knowledge "$agent_id"
-
-    log "Agent context load complete"
-}
-
-# Execute
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Agent context loaded"}'
-main "$@"
+log "Agent context load complete"
+exit 0

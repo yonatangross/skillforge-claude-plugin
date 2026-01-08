@@ -20,5 +20,6 @@ fi
 
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Secrets checked"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Secrets checked","continue":true}'
 exit 0  # Don't block, just warn

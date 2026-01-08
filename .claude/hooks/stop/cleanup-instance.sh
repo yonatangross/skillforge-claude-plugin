@@ -40,5 +40,5 @@ main() {
 }
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Instance cleaned up"}'
+echo '{"systemMessage":"Instance cleaned up","continue":true}'
 main

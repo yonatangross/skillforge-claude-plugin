@@ -277,5 +277,5 @@ echo "✅ Multi-instance quality gates passed" >&2
 echo "" >&2
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Quality gate passed"}'
+echo '{"systemMessage":"Quality gate passed","continue":true}'
 exit 0

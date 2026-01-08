@@ -190,5 +190,5 @@ if [[ ${#ERRORS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Structure validated"}'
+echo '{"systemMessage":"Structure validated","continue":true}'
 exit 0

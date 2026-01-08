@@ -3,7 +3,6 @@ name: test-standards-enforcer
 description: Enforce testing best practices - AAA pattern, naming conventions, isolation, coverage thresholds. Blocks non-compliant tests. Use when writing or reviewing tests.
 context: fork
 agent: test-generator
-model: sonnet
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [testing, quality, enforcement, blocking, aaa-pattern, coverage]

@@ -2,6 +2,7 @@
 set -euo pipefail
 # Auto-Approve Project Writes - Auto-approves writes within project directory
 # Hook: PermissionRequest (Write|Edit)
+# CC 2.1.1 Compliant: silent on success
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
 _HOOK_INPUT=$(cat)
@@ -39,8 +40,8 @@ if [[ "$FILE_PATH" == "$CLAUDE_PROJECT_DIR"* ]]; then
   done
 
   log_hook "Auto-approved: within project directory"
-  # Use decision.message for user-visible status
-  echo '{"decision":{"behavior":"allow","message":"Project write auto-approved"}}'
+  # Silent approval - no message
+  echo '{"decision":{"behavior":"allow"}}'
   exit 0
 fi
 

@@ -182,5 +182,6 @@ if [[ ${#ERRORS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"DI patterns enforced"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"DI patterns enforced","continue":true}'
 exit 0

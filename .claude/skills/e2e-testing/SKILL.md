@@ -5,7 +5,6 @@ version: 2.0.0
 tags: [playwright, e2e, testing, ai-agents, 2026]
 context: fork
 agent: test-generator
-model: sonnet
 hooks:
   PostToolUse:
     - matcher: Write

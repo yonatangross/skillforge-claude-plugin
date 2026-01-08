@@ -3,9 +3,6 @@ name: api-versioning
 description: API versioning strategies including URL path, header, and content negotiation. Use when designing version evolution, deprecation policies, or multi-version support.
 context: fork
 agent: backend-system-architect
-model: sonnet
-model-alternatives:
-  - haiku
 version: 1.0.0
 tags: [api, versioning, rest, fastapi, backward-compatibility, 2026]
 ---

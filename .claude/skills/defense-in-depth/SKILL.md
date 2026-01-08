@@ -3,7 +3,6 @@ name: defense-in-depth
 description: Use when building secure AI pipelines or hardening LLM integrations. Implements 8 validation layers from edge to storage with no single point of failure.
 context: fork
 agent: security-layer-auditor
-model: sonnet
 version: 1.0.0
 allowed-tools:
   - Read

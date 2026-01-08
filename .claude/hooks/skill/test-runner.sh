@@ -42,5 +42,5 @@ if [[ "$FILE" == *test*.ts ]] || [[ "$FILE" == *spec*.ts ]] || \
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Tests run"}'
+echo '{"systemMessage":"Tests run","continue":true}'
 exit 0

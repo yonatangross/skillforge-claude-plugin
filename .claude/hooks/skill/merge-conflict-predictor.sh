@@ -300,5 +300,6 @@ fi
 
 # Don't block, just warn
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Merge conflicts predicted"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Merge conflicts predicted","continue":true}'
 exit 0

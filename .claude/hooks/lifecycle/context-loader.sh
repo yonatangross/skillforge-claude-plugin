@@ -127,5 +127,5 @@ load_context() {
 
 # Execute
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Context loaded"}'
+echo '{"systemMessage":"Context loaded","continue":true}'
 load_context

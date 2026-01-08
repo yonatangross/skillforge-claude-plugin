@@ -2,7 +2,6 @@
 name: worktree-coordination
 description: Manage multiple Claude Code instances across git worktrees. Check status, claim/release file locks, sync decisions, and prevent conflicts.
 context: none
-model: haiku
 version: 1.0.0
 author: SkillForge
 tags: [coordination, worktree, multi-instance, locking, parallel-development, 2026]

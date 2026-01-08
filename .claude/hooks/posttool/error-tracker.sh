@@ -32,5 +32,5 @@ if [[ -n "$TOOL_ERROR" ]] || [[ "$EXIT_CODE" != "0" && "$EXIT_CODE" != "" && "$E
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Errors tracked"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

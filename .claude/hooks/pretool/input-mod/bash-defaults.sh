@@ -48,7 +48,7 @@ if check_dangerous "$COMMAND"; then
       permissionDecision: "deny",
       permissionDecisionReason: ("Dangerous command blocked: " + $cmd)
     }
-  }'
+  ,"continue":true}'
   exit 0
 fi
 
@@ -79,4 +79,4 @@ jq -n \
       permissionDecision: "allow",
       updatedInput: $params
     }
-  }'
+  ,"continue":true}'

@@ -38,5 +38,5 @@ if [[ -n "$BRANCH" ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Session env setup"}'
+echo '{"systemMessage":"Session env setup","continue":true}'
 exit 0

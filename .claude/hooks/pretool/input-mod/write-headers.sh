@@ -23,7 +23,7 @@ if [[ "$TOOL_NAME" != "Write" ]]; then
         permissionDecision: "allow",
         updatedInput: $params
       }
-    }'
+    ,"continue":true}'
   exit 0
 fi
 
@@ -37,7 +37,7 @@ if [[ -f "$FILE_PATH" ]]; then
         permissionDecision: "allow",
         updatedInput: $params
       }
-    }'
+    ,"continue":true}'
   exit 0
 fi
 
@@ -151,4 +151,4 @@ jq -n \
         content: $content
       }
     }
-  }'
+  ,"continue":true}'

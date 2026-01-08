@@ -251,5 +251,6 @@ if [[ ${#WARNINGS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Duplicates checked"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Duplicates checked","continue":true}'
 exit 0

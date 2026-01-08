@@ -147,7 +147,7 @@ monitor_budget() {
     fi
 
     # Output status with systemMessage for user visibility
-    echo "{\"systemMessage\": \"Context budget: ${usage_percent}%\", \"tokens\": $current_tokens, \"budget\": $BUDGET_TOTAL, \"usage\": $usage_ratio}"
+    # No output - dispatcher handles all JSON output for posttool hooks
 }
 
 # Execute

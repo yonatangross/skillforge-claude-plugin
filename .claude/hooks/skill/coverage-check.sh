@@ -35,5 +35,5 @@ fi
 echo "::endgroup::"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Coverage checked"}'
+echo '{"systemMessage":"Coverage checked","continue":true}'
 exit 0

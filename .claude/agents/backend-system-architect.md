@@ -2,9 +2,9 @@
 name: backend-system-architect
 color: yellow
 description: Backend architect who designs REST/GraphQL APIs, database schemas, microservice boundaries, and distributed systems. Focuses on scalability, security, performance optimization, and clean architecture patterns
-model: sonnet
 max_tokens: 16000
 tools: Read, Edit, MultiEdit, Write, Bash, Grep, Glob
+skills: api-design-framework, database-schema-designer, owasp-top-10, streaming-api-patterns, observability-monitoring, performance-optimization, devops-deployment, golden-dataset-management, edge-computing-patterns, github-cli, resilience-patterns, langgraph-supervisor
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
@@ -210,7 +210,7 @@ curl -X POST http://localhost:8500/api/v1/auth/register \
 ```
 
 ## Context Protocol
-- Before: Read `.claude/context/shared-context.json`
+- Before: Read `.claude/context/session/state.json and .claude/context/knowledge/decisions/active.json`
 - During: Update `agent_decisions.backend-system-architect` with API decisions
 - After: Add to `tasks_completed`, save context
 - On error: Add to `tasks_pending` with blockers

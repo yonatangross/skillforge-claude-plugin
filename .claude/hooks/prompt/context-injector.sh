@@ -43,5 +43,5 @@ if [[ -n "$CONTEXT_HINTS" ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Context injected"}'
+echo '{"systemMessage":"Context injected","continue":true}'
 exit 0

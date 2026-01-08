@@ -4,7 +4,6 @@ description: Use when conversation context is too long, hitting token limits, or
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [context, compression, summarization, memory, optimization, 2026]
-model: sonnet
 ---
 
 # Context Compression
@@ -349,7 +348,7 @@ class CompressionProbes:
 
 ## Integration with SkillForge
 
-### In shared-context.json
+### In session/state.json (Context Protocol 2.0)
 
 ```json
 {

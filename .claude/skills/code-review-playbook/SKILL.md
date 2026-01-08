@@ -6,9 +6,6 @@ author: AI Agent Hub
 tags: [code-review, quality, collaboration, best-practices]
 context: fork
 agent: code-quality-reviewer
-model: sonnet
-model-alternatives:
-  - haiku
 hooks:
   PreToolUse:
     - matcher: Edit

@@ -3,10 +3,6 @@ name: multi-agent-orchestration
 description: Multi-agent coordination and synthesis patterns. Use when orchestrating multiple specialized agents, implementing fan-out/fan-in workflows, or synthesizing outputs from parallel agents.
 context: fork
 agent: workflow-architect
-model: opus
-model-alternatives:
-  - sonnet
-  - haiku
 ---
 
 # Multi-Agent Orchestration

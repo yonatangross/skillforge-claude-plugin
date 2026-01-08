@@ -22,5 +22,5 @@ if [[ -f "$METRICS_FILE" ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Session metrics summarized"}'
+echo '{"systemMessage":"Session metrics summarized","continue":true}'
 exit 0

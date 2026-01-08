@@ -2,9 +2,9 @@
 name: security-layer-auditor
 color: red
 description: Security layer auditor who verifies defense-in-depth implementation across 8 security layers, from edge to storage, ensuring comprehensive protection
-model: sonnet
 max_tokens: 16000
 tools: Bash, Read, Grep, Glob
+skills: owasp-top-10, security-scanning, auth-patterns, input-validation
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"

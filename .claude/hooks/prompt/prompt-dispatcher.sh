@@ -1,6 +1,6 @@
 #!/bin/bash
 # UserPromptSubmit Dispatcher - Runs all prompt hooks and outputs combined status
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.1 Compliant: silent on success, visible on failure
 # Consolidates: context-injector, todo-enforcer
 set -euo pipefail
 
@@ -9,11 +9,10 @@ _HOOK_INPUT=$(cat)
 export _HOOK_INPUT
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RESULTS=()
+WARNINGS=()
 
 # ANSI colors
-GREEN=$'\033[32m'
-CYAN=$'\033[36m'
+YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
 # Helper to run a hook
@@ -25,9 +24,15 @@ run_hook() {
     return 0
   fi
 
-  # Run hook with stdin, capture stderr for logs, ignore stdout systemMessage
-  if echo "$_HOOK_INPUT" | bash "$script" >/dev/null 2>&1; then
-    RESULTS+=("$name")
+  local output
+  local exit_code
+  output=$(echo "$_HOOK_INPUT" | bash "$script" 2>&1) && exit_code=0 || exit_code=$?
+
+  if [[ $exit_code -ne 0 ]]; then
+    WARNINGS+=("$name: failed")
+  elif [[ "$output" == *"warning"* ]] || [[ "$output" == *"Warning"* ]]; then
+    local warn_msg=$(echo "$output" | grep -i "warning" | head -1 | sed 's/.*warning[: ]*//')
+    [[ -n "$warn_msg" ]] && WARNINGS+=("$name: $warn_msg")
   fi
 
   return 0
@@ -37,17 +42,13 @@ run_hook() {
 run_hook "Context" "$SCRIPT_DIR/context-injector.sh"
 run_hook "Todo" "$SCRIPT_DIR/todo-enforcer.sh"
 
-# Build combined output
-if [[ ${#RESULTS[@]} -gt 0 ]]; then
-  # Format: Prompt: ✓ Check1 | ✓ Check2
-  MSG=""
-  for i in "${!RESULTS[@]}"; do
-    if [[ $i -gt 0 ]]; then
-      MSG="$MSG | "
-    fi
-    MSG="$MSG${GREEN}✓${RESET} ${RESULTS[$i]}"
-  done
-  echo "{\"systemMessage\": \"$MSG\", \"continue\": true}"
+# Output: silent on success, show warnings if any
+if [[ ${#WARNINGS[@]} -gt 0 ]]; then
+  WARN_MSG=$(IFS="; "; echo "${WARNINGS[*]}")
+  echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true}"
+else
+  # Silent success - no systemMessage
+  echo "{\"continue\": true}"
 fi
 
 exit 0

@@ -23,5 +23,5 @@ fi
 # Locks are released on session end or explicit release
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Commit lock released"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

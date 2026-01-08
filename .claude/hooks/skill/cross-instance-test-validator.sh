@@ -298,5 +298,6 @@ if [[ ${#WARNINGS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Cross-instance tests validated"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Cross-instance tests validated","continue":true}'
 exit 0

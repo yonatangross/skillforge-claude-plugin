@@ -35,13 +35,13 @@ jq -n \
   echo "{\"timestamp\":\"$(date -Iseconds)\",\"subagent_type\":\"$SUBAGENT_TYPE\",\"description\":\"$DESCRIPTION\"}" >> "$TRACKING_LOG"
 }
 
-# === VALIDATION: Load valid types from agent-registry.json ===
-REGISTRY="${CLAUDE_PROJECT_DIR:-.}/.claude/agent-registry.json"
-BUILTIN_TYPES="general-purpose|Explore|Plan|claude-code-guide|statusline-setup"
+# === VALIDATION: Load valid types from plugin.json (single source of truth) ===
+REGISTRY="${CLAUDE_PROJECT_DIR:-.}/plugin.json"
+BUILTIN_TYPES="general-purpose|Explore|Plan|claude-code-guide|statusline-setup|Bash"
 
 if [[ -f "$REGISTRY" ]]; then
-  # Extract agent keys from registry
-  REGISTRY_TYPES=$(jq -r '.agents | keys | join("|")' "$REGISTRY" 2>/dev/null || echo "")
+  # Extract agent IDs from plugin.json agents array
+  REGISTRY_TYPES=$(jq -r '[.agents[].id] | join("|")' "$REGISTRY" 2>/dev/null || echo "")
   if [[ -n "$REGISTRY_TYPES" ]]; then
     VALID_TYPES="$BUILTIN_TYPES|$REGISTRY_TYPES"
   else
@@ -52,7 +52,7 @@ else
 fi
 
 if [[ ! "$SUBAGENT_TYPE" =~ ^($VALID_TYPES)$ ]]; then
-  warn "Unknown subagent type: $SUBAGENT_TYPE (not in agent-registry.json)"
+  warn "Unknown subagent type: $SUBAGENT_TYPE (not in plugin.json)"
   log_hook "WARNING: Unknown subagent type: $SUBAGENT_TYPE"
 fi
 
@@ -60,7 +60,6 @@ info "Spawning $SUBAGENT_TYPE agent: $DESCRIPTION"
 
 # ANSI colors for consolidated output
 GREEN=$'\033[32m'
-CYAN=$'\033[36m'
 RESET=$'\033[0m'
 
 # Format: Task: ✓ Subagent

@@ -46,5 +46,5 @@ fi
 coord_release_lock "${FILE_PATH}"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Lock released"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

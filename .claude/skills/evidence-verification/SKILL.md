@@ -6,7 +6,6 @@ author: SkillForge AI Agent Hub
 tags: [quality, verification, testing, evidence, completion]
 context: fork
 agent: code-quality-reviewer
-model: haiku
 allowed-tools:
   - Read
   - Grep

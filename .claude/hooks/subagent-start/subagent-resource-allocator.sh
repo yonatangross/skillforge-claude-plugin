@@ -2,6 +2,7 @@
 set -euo pipefail
 # Subagent Resource Allocator - Pre-allocates context for subagent launch
 # Hook: SubagentStart
+# CC 2.1.1 Compliant: includes continue field in all outputs
 #
 # This hook:
 # 1. Logs the subagent type being launched
@@ -23,13 +24,13 @@ log_hook "SubagentStart: $SUBAGENT_TYPE (session: $SESSION_ID)"
 
 # === PRE-ALLOCATE CONTEXT BASED ON SUBAGENT TYPE ===
 
-# Agent registry mapping
-REGISTRY="${CLAUDE_PROJECT_DIR:-.}/.claude/agent-registry.json"
+# Use plugin.json as single source of truth (agent-registry.json removed)
+REGISTRY="${CLAUDE_PROJECT_DIR:-.}/plugin.json"
 SYSTEM_MESSAGE=""
 
 if [[ -f "$REGISTRY" ]]; then
-  # Extract skill references for this subagent type
-  SKILL_REFS=$(jq -r ".agents.\"$SUBAGENT_TYPE\".\"skill-references\" // [] | join(\",\")" "$REGISTRY" 2>/dev/null || echo "")
+  # Extract skills_used for this subagent type from plugin.json agents array
+  SKILL_REFS=$(jq -r ".agents[] | select(.id==\"$SUBAGENT_TYPE\") | .skills_used // [] | join(\",\")" "$REGISTRY" 2>/dev/null || echo "")
 
   if [[ -n "$SKILL_REFS" && "$SKILL_REFS" != "null" ]]; then
     # Pre-load skill files into context message
@@ -51,10 +52,10 @@ if [[ -f "$REGISTRY" ]]; then
 
     SYSTEM_MESSAGE="$CONTEXT_SUMMARY\nTask: $TASK_DESCRIPTION"
   else
-    log_hook "No skill references found for $SUBAGENT_TYPE"
+    log_hook "No skills_used found for $SUBAGENT_TYPE"
   fi
 else
-  log_hook "Agent registry not found at $REGISTRY"
+  log_hook "plugin.json not found at $REGISTRY"
 fi
 
 # === SET UP ENVIRONMENT VARIABLES FOR SUBAGENT ===
@@ -66,19 +67,19 @@ export SUBAGENT_PARENT_PROJECT="$CLAUDE_PROJECT_DIR"
 
 log_hook "Environment variables set: SUBAGENT_TYPE=$SUBAGENT_TYPE, SESSION_ID=$SESSION_ID"
 
-# === RETURN JSON WITH SYSTEM MESSAGE ===
+# === RETURN JSON WITH SYSTEM MESSAGE (CC 2.1.1 Compliant) ===
 
-# Return JSON response with optional systemMessage for context injection
+# Return JSON response with systemMessage and continue field
 if [[ -n "$SYSTEM_MESSAGE" ]]; then
   jq -n \
     --arg msg "$SYSTEM_MESSAGE" \
-    '{systemMessage: $msg}' 2>/dev/null || {
+    '{systemMessage: $msg, continue: true}' 2>/dev/null || {
     # Fallback if jq fails
-    echo "{\"systemMessage\":\"$SYSTEM_MESSAGE\"}"
+    echo "{\"systemMessage\":\"Skills loaded\",\"continue\":true}"
   }
 else
-  # Return empty JSON if no system message
-  echo "{}"
+  # Return minimal JSON with continue field
+  echo '{"continue":true}'
 fi
 
 exit 0

@@ -119,5 +119,5 @@ LOG_FILE="$LOG_DIR/${AGENT_NAME}_$(date +%Y%m%d_%H%M%S).log"
 echo "$SYSTEM_MESSAGE"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Handoff prepared"}'
+echo '{"systemMessage":"Handoff prepared","continue":true}'
 exit 0

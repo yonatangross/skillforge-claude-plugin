@@ -19,5 +19,5 @@ echo "  3. Update dependencies with CVEs"
 echo "========================================"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Security summary generated"}'
+echo '{"systemMessage":"Security summary generated","continue":true}'
 exit 0

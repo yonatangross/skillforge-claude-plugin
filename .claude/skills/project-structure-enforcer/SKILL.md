@@ -3,7 +3,6 @@ name: project-structure-enforcer
 description: Enforce 2026 folder structure standards - feature-based organization, max nesting depth, unidirectional imports. Blocks structural violations. Use when creating files or reviewing project architecture.
 context: fork
 agent: code-quality-reviewer
-model: sonnet
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [structure, architecture, enforcement, blocking, imports, organization]

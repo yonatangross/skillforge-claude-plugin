@@ -1,6 +1,7 @@
 #!/bin/bash
 # Runs on Stop for evidence-verification skill
 # Collects verification evidence
+# CC 2.1.1 Compliant - Context Protocol 2.0
 
 echo "::group::Evidence Collection Summary"
 echo ""
@@ -37,10 +38,10 @@ fi
 
 echo ""
 echo "Evidence verification complete."
-echo "Update shared-context.json with quality_evidence."
+echo "Update session/state.json with quality_evidence."
 echo "========================================"
 echo "::endgroup::"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Evidence collected"}'
+echo '{"systemMessage":"Evidence collected","continue":true}'
 exit 0

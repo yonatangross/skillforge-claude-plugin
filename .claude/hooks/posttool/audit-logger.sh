@@ -50,5 +50,5 @@ esac
 echo "[$TIMESTAMP] $TOOL_NAME ${DETAILS:+| $DETAILS}" >> "$AUDIT_LOG"
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Audit logged"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0

@@ -288,5 +288,6 @@ if [[ ${#WARNINGS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Patterns enforced"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Patterns enforced","continue":true}'
 exit 0

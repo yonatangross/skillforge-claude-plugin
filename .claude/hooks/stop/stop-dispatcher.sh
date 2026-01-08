@@ -1,15 +1,14 @@
 #!/bin/bash
 # Stop Dispatcher - Runs all stop hooks and outputs combined status
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.1 Compliant: silent on success, visible on failure
 # Consolidates: task-completion-check, auto-save-context
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-RESULTS=()
+WARNINGS=()
 
 # ANSI colors
-GREEN=$'\033[32m'
-CYAN=$'\033[36m'
+YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
 # Helper to run a hook
@@ -21,29 +20,31 @@ run_hook() {
     return 0
   fi
 
-  # Run hook, capture stderr for logs, ignore stdout systemMessage
-  if bash "$script" >/dev/null 2>&1; then
-    RESULTS+=("$name")
+  local output
+  local exit_code
+  output=$(bash "$script" 2>&1) && exit_code=0 || exit_code=$?
+
+  if [[ $exit_code -ne 0 ]]; then
+    WARNINGS+=("$name: failed")
+  elif [[ "$output" == *"warning"* ]] || [[ "$output" == *"Warning"* ]]; then
+    local warn_msg=$(echo "$output" | grep -i "warning" | head -1 | sed 's/.*warning[: ]*//')
+    [[ -n "$warn_msg" ]] && WARNINGS+=("$name: $warn_msg")
   fi
 
   return 0
 }
 
 # Run stop hooks in order
-run_hook "Tasks checked" "$SCRIPT_DIR/task-completion-check.sh"
-run_hook "Context saved" "$SCRIPT_DIR/auto-save-context.sh"
+run_hook "Tasks" "$SCRIPT_DIR/task-completion-check.sh"
+run_hook "Context" "$SCRIPT_DIR/auto-save-context.sh"
 
-# Build combined output
-if [[ ${#RESULTS[@]} -gt 0 ]]; then
-  # Format: Stop: ✓ Check1 | ✓ Check2
-  MSG=""
-  for i in "${!RESULTS[@]}"; do
-    if [[ $i -gt 0 ]]; then
-      MSG="$MSG | "
-    fi
-    MSG="$MSG${GREEN}✓${RESET} ${RESULTS[$i]}"
-  done
-  echo "{\"systemMessage\": \"$MSG\", \"continue\": true}"
+# Output: silent on success, show warnings if any
+if [[ ${#WARNINGS[@]} -gt 0 ]]; then
+  WARN_MSG=$(IFS="; "; echo "${WARNINGS[*]}")
+  echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true}"
+else
+  # Silent success - no systemMessage
+  echo "{\"continue\": true}"
 fi
 
 exit 0

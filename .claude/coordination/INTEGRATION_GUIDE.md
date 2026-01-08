@@ -466,5 +466,5 @@ For issues or questions:
 ## Related Documentation
 
 - **Main README:** `.claude/coordination/README.md`
-- **Hook Architecture:** `.claude/hooks/_orchestration/ARCHITECTURE.md`
+- **Hook Architecture:** `.claude/hooks/ (see dispatcher files)`
 - **Context System:** `.claude/context/knowledge/index.json`

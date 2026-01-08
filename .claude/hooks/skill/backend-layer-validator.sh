@@ -211,5 +211,6 @@ if [[ ${#ERRORS[@]} -gt 0 ]]; then
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Backend layers validated"}'
+# No output - dispatcher handles all JSON output for posttool hooks
+# echo '{"systemMessage":"Backend layers validated","continue":true}'
 exit 0

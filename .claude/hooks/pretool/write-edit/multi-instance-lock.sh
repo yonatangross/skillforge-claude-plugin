@@ -114,7 +114,7 @@ VALUES (
     'lock_acquire',
     'file',
     '$file_path',
-    '{"lock_id": "$LOCK_ID", "expires_at": "$EXPIRES_AT"}'
+    '{"lock_id": "$LOCK_ID", "expires_at": "$EXPIRES_AT","continue":true}'
 );
 EOF
 }
@@ -236,7 +236,7 @@ EOF
 
     # Add lock info and systemMessage to the output
     echo "$INPUT" | jq --arg lock_id "$LOCK_ID" --arg expires "$EXPIRES_AT" \
-        '. + {"systemMessage": "Lock acquired", "_coordination": {"lock_id": $lock_id, "expires_at": $expires}}'
+        '. + {"systemMessage": "Lock acquired", "_coordination": {"lock_id": $lock_id, "expires_at": $expires},"continue":true}'
 }
 
 main

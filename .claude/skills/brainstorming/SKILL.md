@@ -3,10 +3,6 @@ name: brainstorming
 description: Use when creating or developing anything, before writing code or implementation plans - refines rough ideas into fully-formed designs through structured Socratic questioning, alternative exploration, and incremental validation
 context: fork
 agent: product-strategist
-model: opus
-model-alternatives:
-  - sonnet
-  - haiku
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"

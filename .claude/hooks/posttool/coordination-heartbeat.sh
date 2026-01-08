@@ -16,5 +16,5 @@ fi
 coord_heartbeat 2>/dev/null || true
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Heartbeat sent"}'
+# No output - dispatcher handles all JSON output for posttool hooks
 exit 0
