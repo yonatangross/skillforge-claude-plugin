@@ -2,28 +2,51 @@
   "name": "multi-agent-orchestration",
   "version": "1.0.0",
   "description": "Patterns for orchestrating multiple AI agents",
-  "capabilities": [
-    "agent-communication",
-    "task-delegation",
-    "result-aggregation",
-    "error-coordination",
-    "agent-lifecycle"
-  ],
-  "triggers": [
-    "multi-agent",
-    "agent orchestration",
-    "multiple agents",
-    "agent coordination",
-    "agent system"
-  ],
-  "antiPatterns": [
-    "tight coupling between agents",
-    "no central coordination",
-    "unbounded agent loops"
-  ],
-  "dependencies": [
-    "langgraph-supervisor",
-    "agent-loops"
-  ],
-  "tags": ["agents", "orchestration", "multi-agent", "2026"]
+  "capabilities": {
+    "agent-communication": {
+      "keywords": ["agent communication", "message passing", "agent protocol", "inter-agent"],
+      "solves": [
+        "Establish communication between agents",
+        "Implement message passing patterns",
+        "Handle async agent communication"
+      ]
+    },
+    "task-delegation": {
+      "keywords": ["delegate", "task routing", "work distribution", "agent dispatch"],
+      "solves": [
+        "Route tasks to specialized agents",
+        "Implement work distribution strategies",
+        "Handle agent capability matching"
+      ]
+    },
+    "result-aggregation": {
+      "keywords": ["aggregate", "combine results", "merge outputs", "synthesis"],
+      "solves": [
+        "Combine outputs from multiple agents",
+        "Implement result synthesis patterns",
+        "Handle conflicting agent outputs"
+      ]
+    },
+    "error-coordination": {
+      "keywords": ["error handling", "retry", "fallback agent", "failure recovery"],
+      "solves": [
+        "Handle agent failures gracefully",
+        "Implement retry and fallback patterns",
+        "Coordinate error recovery"
+      ]
+    },
+    "agent-lifecycle": {
+      "keywords": ["lifecycle", "spawn agent", "terminate", "agent pool"],
+      "solves": [
+        "Manage agent creation and termination",
+        "Implement agent pooling",
+        "Handle agent health checks"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["multi.*agent", "agent.*orchestration", "multiple.*agents"],
+    "medium_confidence": ["agent coordination", "agent system", "task delegation"]
+  },
+  "integrates_with": ["langgraph-supervisor", "agent-loops"]
 }

@@ -2,7 +2,7 @@
 set -euo pipefail
 # Auto-Approve Project Writes - Auto-approves writes within project directory
 # Hook: PermissionRequest (Write|Edit)
-# CC 2.1.1 Compliant: silent on success
+# CC 2.1.1 Compliant: includes continue field in all outputs
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
 _HOOK_INPUT=$(cat)
@@ -35,16 +35,18 @@ if [[ "$FILE_PATH" == "$CLAUDE_PROJECT_DIR"* ]]; then
   for dir in "${EXCLUDED_DIRS[@]}"; do
     if [[ "$FILE_PATH" == *"/$dir/"* ]]; then
       log_hook "Write to excluded directory: $dir"
+      echo '{"continue": true}'
       exit 0  # Let user decide
     fi
   done
 
   log_hook "Auto-approved: within project directory"
-  # Silent approval - no message
-  echo '{"decision":{"behavior":"allow"}}'
+  # Silent approval with CC 2.1.1 compliant output
+  echo '{"decision":{"behavior":"allow"}, "continue": true}'
   exit 0
 fi
 
 # Outside project directory - let user decide
 log_hook "Write outside project directory - manual approval required"
+echo '{"continue": true}'
 exit 0

@@ -2,40 +2,59 @@
   "name": "llm-evaluation",
   "version": "2.0.0",
   "description": "LLM output evaluation and quality assessment with RAGAS metrics and LLM-as-judge patterns",
-  "capabilities": [
-    "llm-as-judge",
-    "multi-dimension-evaluation",
-    "quality-gates",
-    "hallucination-detection",
-    "pairwise-comparison",
-    "batch-evaluation",
-    "langfuse-integration",
-    "langsmith-datasets",
-    "confidence-intervals"
-  ],
-  "triggers": [
-    "evaluate LLM",
-    "quality gate",
-    "hallucination",
-    "LLM judge",
-    "RAGAS",
-    "faithfulness",
-    "answer relevancy",
-    "context precision",
-    "pairwise comparison",
-    "batch evaluation"
-  ],
-  "antiPatterns": [
-    "using same model to judge its own output",
-    "single dimension evaluation",
-    "no baseline comparison",
-    "threshold too high (>0.9)",
-    "small sample size (<50)"
-  ],
-  "dependencies": [
-    "quality-gates",
-    "langfuse-observability",
-    "agent-loops"
-  ],
-  "tags": ["evaluation", "llm", "quality", "ragas", "langfuse", "2026"]
+  "capabilities": {
+    "llm-as-judge": {
+      "keywords": ["LLM judge", "judge model", "evaluation model", "grader LLM"],
+      "solves": [
+        "Use LLM to evaluate other LLM outputs",
+        "Implement judge prompts for quality",
+        "Configure evaluation criteria"
+      ]
+    },
+    "ragas-metrics": {
+      "keywords": ["RAGAS", "faithfulness", "answer relevancy", "context precision"],
+      "solves": [
+        "Evaluate RAG with RAGAS metrics",
+        "Measure faithfulness and relevancy",
+        "Assess context precision and recall"
+      ]
+    },
+    "hallucination-detection": {
+      "keywords": ["hallucination", "factuality", "grounded", "verify facts"],
+      "solves": [
+        "Detect hallucinations in LLM output",
+        "Verify factual accuracy",
+        "Implement grounding checks"
+      ]
+    },
+    "quality-gates": {
+      "keywords": ["quality gate", "threshold", "pass/fail", "evaluation gate"],
+      "solves": [
+        "Implement quality thresholds",
+        "Block low-quality outputs",
+        "Configure multi-metric gates"
+      ]
+    },
+    "batch-evaluation": {
+      "keywords": ["batch eval", "dataset evaluation", "bulk scoring", "eval suite"],
+      "solves": [
+        "Evaluate over golden datasets",
+        "Run batch evaluation pipelines",
+        "Generate evaluation reports"
+      ]
+    },
+    "pairwise-comparison": {
+      "keywords": ["pairwise", "A/B comparison", "side-by-side", "preference"],
+      "solves": [
+        "Compare two model outputs",
+        "Implement preference ranking",
+        "Run A/B evaluations"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["LLM.*eval", "RAGAS", "faithfulness", "hallucination"],
+    "medium_confidence": ["evaluate LLM", "quality gate", "LLM judge", "answer relevancy"]
+  },
+  "integrates_with": ["quality-gates", "langfuse-observability", "agent-loops"]
 }

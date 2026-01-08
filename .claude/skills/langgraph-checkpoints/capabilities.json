@@ -2,27 +2,51 @@
   "name": "langgraph-checkpoints",
   "version": "1.0.0",
   "description": "LangGraph checkpointing and persistence patterns",
-  "capabilities": [
-    "checkpoint-saving",
-    "checkpoint-loading",
-    "memory-backends",
-    "async-checkpoints",
-    "conversation-history"
-  ],
-  "triggers": [
-    "checkpoint",
-    "persistence",
-    "memory",
-    "conversation history",
-    "state recovery"
-  ],
-  "antiPatterns": [
-    "no checkpoint cleanup",
-    "synchronous checkpoints for large state",
-    "missing error handling"
-  ],
-  "dependencies": [
-    "langgraph-state"
-  ],
-  "tags": ["langgraph", "checkpoints", "persistence", "2026"]
+  "capabilities": {
+    "checkpoint-saving": {
+      "keywords": ["save checkpoint", "checkpoint", "persist state", "save state"],
+      "solves": [
+        "Save workflow state at key points",
+        "Implement checkpoint strategies",
+        "Handle checkpoint serialization"
+      ]
+    },
+    "checkpoint-loading": {
+      "keywords": ["load checkpoint", "restore", "resume", "recovery"],
+      "solves": [
+        "Resume workflows from checkpoints",
+        "Implement state recovery",
+        "Handle checkpoint versioning"
+      ]
+    },
+    "memory-backends": {
+      "keywords": ["memory backend", "MemorySaver", "SqliteSaver", "PostgresSaver"],
+      "solves": [
+        "Configure checkpoint storage backends",
+        "Choose between memory/SQLite/Postgres",
+        "Implement custom checkpoint storage"
+      ]
+    },
+    "async-checkpoints": {
+      "keywords": ["async checkpoint", "AsyncSqliteSaver", "async persistence"],
+      "solves": [
+        "Implement async checkpoint operations",
+        "Handle concurrent checkpoint access",
+        "Optimize checkpoint performance"
+      ]
+    },
+    "conversation-history": {
+      "keywords": ["conversation", "history", "message history", "thread"],
+      "solves": [
+        "Persist conversation history",
+        "Implement thread-based checkpoints",
+        "Manage conversation state"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["LangGraph.*checkpoint", "checkpoint.*persist", "MemorySaver"],
+    "medium_confidence": ["checkpoint", "persistence", "state recovery", "conversation history"]
+  },
+  "integrates_with": ["langgraph-state", "langgraph-human-in-loop"]
 }

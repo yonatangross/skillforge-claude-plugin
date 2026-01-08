@@ -2,32 +2,51 @@
   "name": "function-calling",
   "version": "2.0.0",
   "description": "LLM function calling and tool use patterns with strict mode schemas",
-  "capabilities": [
-    "tool-definition",
-    "tool-execution-loop",
-    "structured-output",
-    "parallel-tool-calls",
-    "strict-mode-schemas",
-    "langchain-tools"
-  ],
-  "triggers": [
-    "function calling",
-    "tool use",
-    "tool call",
-    "structured output",
-    "JSON schema",
-    "LLM tools",
-    "agent tools"
-  ],
-  "antiPatterns": [
-    "vague tool descriptions",
-    "no input validation",
-    "missing error handling",
-    "too many tools (>15)"
-  ],
-  "dependencies": [
-    "agent-loops",
-    "llm-streaming"
-  ],
-  "tags": ["llm", "tools", "function-calling", "2026"]
+  "capabilities": {
+    "tool-definition": {
+      "keywords": ["tool", "function", "define tool", "tool schema", "function schema"],
+      "solves": [
+        "Define tools with clear descriptions",
+        "Create JSON schemas for tool parameters",
+        "Document tool behavior for LLM"
+      ]
+    },
+    "tool-execution-loop": {
+      "keywords": ["execution loop", "tool call", "agent loop", "run tool"],
+      "solves": [
+        "Implement tool execution loops",
+        "Handle multiple tool calls",
+        "Process tool results"
+      ]
+    },
+    "structured-output": {
+      "keywords": ["structured output", "JSON output", "typed response", "response schema"],
+      "solves": [
+        "Get structured JSON from LLM",
+        "Enforce output schemas",
+        "Parse and validate responses"
+      ]
+    },
+    "parallel-tool-calls": {
+      "keywords": ["parallel", "concurrent", "multiple tools", "batch tools"],
+      "solves": [
+        "Execute multiple tools in parallel",
+        "Handle concurrent tool results",
+        "Optimize tool call latency"
+      ]
+    },
+    "strict-mode-schemas": {
+      "keywords": ["strict mode", "strict schema", "additionalProperties", "required fields"],
+      "solves": [
+        "Enforce strict JSON schemas",
+        "Prevent extra fields in output",
+        "Ensure schema compliance"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["function.*calling", "tool.*use", "LLM.*tool"],
+    "medium_confidence": ["structured.*output", "JSON.*schema", "agent.*tool"]
+  },
+  "integrates_with": ["agent-loops", "llm-streaming"]
 }

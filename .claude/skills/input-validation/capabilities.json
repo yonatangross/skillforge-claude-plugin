@@ -2,41 +2,59 @@
   "name": "input-validation",
   "version": "2.0.0",
   "description": "Input validation and sanitization patterns with Zod v4 and Pydantic",
-  "capabilities": [
-    "schema-validation",
-    "type-coercion",
-    "discriminated-unions",
-    "transforms",
-    "async-refinements",
-    "error-formatting",
-    "allowlist-validation",
-    "html-sanitization",
-    "file-validation",
-    "url-validation"
-  ],
-  "triggers": [
-    "input validation",
-    "Zod",
-    "Pydantic",
-    "schema",
-    "validate",
-    "sanitize",
-    "allowlist",
-    "coerce",
-    "transform",
-    "refine"
-  ],
-  "antiPatterns": [
-    "client-side only validation",
-    "blocklist instead of allowlist",
-    "trusting Content-Type header",
-    "not validating file content",
-    "revealing validation details in error messages"
-  ],
-  "dependencies": [
-    "owasp-top-10",
-    "auth-patterns",
-    "type-safety-validation"
-  ],
-  "tags": ["security", "validation", "zod", "pydantic", "2026"]
+  "capabilities": {
+    "schema-validation": {
+      "keywords": ["schema", "validate", "Zod", "Pydantic", "validation"],
+      "solves": [
+        "Validate input against schemas",
+        "Define validation rules declaratively",
+        "Handle validation errors gracefully"
+      ]
+    },
+    "type-coercion": {
+      "keywords": ["coerce", "coercion", "type conversion", "parse"],
+      "solves": [
+        "Automatically convert input types",
+        "Parse strings to numbers/dates",
+        "Handle type mismatches"
+      ]
+    },
+    "allowlist-validation": {
+      "keywords": ["allowlist", "whitelist", "enum", "literal", "allowed values"],
+      "solves": [
+        "Validate against allowed values",
+        "Prevent injection attacks",
+        "Restrict input to safe options"
+      ]
+    },
+    "html-sanitization": {
+      "keywords": ["sanitize", "HTML", "XSS", "escape", "DOMPurify"],
+      "solves": [
+        "Sanitize HTML input safely",
+        "Prevent XSS attacks",
+        "Allow safe HTML subset"
+      ]
+    },
+    "file-validation": {
+      "keywords": ["file", "upload", "MIME type", "file size", "file type"],
+      "solves": [
+        "Validate file uploads securely",
+        "Check file content not just extension",
+        "Enforce size limits"
+      ]
+    },
+    "error-formatting": {
+      "keywords": ["error", "error message", "validation error", "user-friendly"],
+      "solves": [
+        "Format validation errors for users",
+        "Avoid exposing internal details",
+        "Provide actionable error messages"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["input.*validation", "Zod", "Pydantic", "sanitize"],
+    "medium_confidence": ["validate", "allowlist", "coerce", "schema"]
+  },
+  "integrates_with": ["owasp-top-10", "auth-patterns", "type-safety-validation"]
 }

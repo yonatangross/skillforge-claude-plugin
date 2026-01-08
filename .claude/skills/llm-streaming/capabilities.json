@@ -2,27 +2,51 @@
   "name": "llm-streaming",
   "version": "1.0.0",
   "description": "LLM streaming response patterns for real-time output",
-  "capabilities": [
-    "token-streaming",
-    "sse-responses",
-    "streaming-with-tools",
-    "partial-json-parsing",
-    "cancellation"
-  ],
-  "triggers": [
-    "streaming",
-    "stream response",
-    "SSE",
-    "real-time",
-    "token by token"
-  ],
-  "antiPatterns": [
-    "buffering entire response",
-    "no timeout on streams",
-    "ignoring stream errors"
-  ],
-  "dependencies": [
-    "function-calling"
-  ],
-  "tags": ["streaming", "llm", "real-time", "2026"]
+  "capabilities": {
+    "token-streaming": {
+      "keywords": ["streaming", "token", "stream response", "real-time", "incremental"],
+      "solves": [
+        "Stream tokens as they're generated",
+        "Display real-time LLM output",
+        "Reduce time to first byte"
+      ]
+    },
+    "sse-responses": {
+      "keywords": ["SSE", "Server-Sent Events", "event stream", "text/event-stream"],
+      "solves": [
+        "Implement SSE for streaming",
+        "Handle SSE reconnection",
+        "Parse SSE event data"
+      ]
+    },
+    "streaming-with-tools": {
+      "keywords": ["stream tools", "tool streaming", "function call stream"],
+      "solves": [
+        "Stream responses with tool calls",
+        "Handle partial tool call data",
+        "Coordinate streaming and tool execution"
+      ]
+    },
+    "partial-json-parsing": {
+      "keywords": ["partial JSON", "incremental parse", "streaming JSON"],
+      "solves": [
+        "Parse JSON as it streams",
+        "Handle incomplete JSON safely",
+        "Display partial structured data"
+      ]
+    },
+    "stream-cancellation": {
+      "keywords": ["cancel", "abort", "stop stream", "AbortController"],
+      "solves": [
+        "Cancel ongoing streams",
+        "Handle user interrupts",
+        "Clean up stream resources"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["LLM.*streaming", "stream.*response", "SSE"],
+    "medium_confidence": ["real-time", "token.*stream", "incremental"]
+  },
+  "integrates_with": ["function-calling", "streaming-api-patterns"]
 }

@@ -2,33 +2,59 @@
   "name": "vcr-http-recording",
   "version": "1.0.0",
   "description": "VCR.py HTTP recording for deterministic Python tests",
-  "capabilities": [
-    "http-recording",
-    "cassette-replay",
-    "async-support",
-    "sensitive-data-filtering",
-    "custom-matchers",
-    "llm-api-testing"
-  ],
-  "triggers": [
-    "VCR",
-    "cassette",
-    "HTTP recording",
-    "pytest.mark.vcr",
-    "record HTTP",
-    "replay HTTP",
-    "mock external API"
-  ],
-  "antiPatterns": [
-    "committing API keys in cassettes",
-    "using 'all' mode in CI",
-    "not filtering sensitive data",
-    "missing cassettes in git"
-  ],
-  "dependencies": [
-    "msw-mocking",
-    "integration-testing",
-    "llm-testing"
-  ],
-  "tags": ["testing", "vcr", "http", "python", "2026"]
+  "capabilities": {
+    "http-recording": {
+      "keywords": ["record HTTP", "vcr.use_cassette", "record mode", "capture HTTP"],
+      "solves": [
+        "Record HTTP interactions for replay",
+        "Capture real API responses",
+        "Create deterministic test fixtures"
+      ]
+    },
+    "cassette-replay": {
+      "keywords": ["replay", "cassette", "playback", "mock replay"],
+      "solves": [
+        "Replay recorded HTTP interactions",
+        "Run tests without network access",
+        "Ensure consistent test results"
+      ]
+    },
+    "async-support": {
+      "keywords": ["async", "aiohttp", "httpx async", "async cassette"],
+      "solves": [
+        "Record async HTTP clients",
+        "Handle aiohttp and httpx async",
+        "Test async API integrations"
+      ]
+    },
+    "sensitive-data-filtering": {
+      "keywords": ["filter", "scrub", "redact", "sensitive data", "before_record"],
+      "solves": [
+        "Scrub API keys from cassettes",
+        "Redact sensitive data",
+        "Implement before_record hooks"
+      ]
+    },
+    "custom-matchers": {
+      "keywords": ["matcher", "match on", "request matching", "custom match"],
+      "solves": [
+        "Configure request matching rules",
+        "Ignore dynamic request parts",
+        "Match by method/host/path"
+      ]
+    },
+    "llm-api-testing": {
+      "keywords": ["LLM cassette", "OpenAI recording", "Anthropic recording"],
+      "solves": [
+        "Record LLM API responses",
+        "Test AI integrations deterministically",
+        "Avoid costly API calls in tests"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["VCR", "cassette", "vcr\\.use_cassette", "HTTP.*recording"],
+    "medium_confidence": ["record HTTP", "replay HTTP", "pytest.mark.vcr"]
+  },
+  "integrates_with": ["msw-mocking", "integration-testing", "llm-testing"]
 }

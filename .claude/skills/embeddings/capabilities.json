@@ -2,35 +2,51 @@
   "name": "embeddings",
   "version": "2.0.0",
   "description": "Text embeddings for semantic search and similarity with modern embedding models",
-  "capabilities": [
-    "text-to-vector",
-    "semantic-search",
-    "document-similarity",
-    "chunking-strategies",
-    "batch-embedding",
-    "dimension-reduction",
-    "local-embeddings"
-  ],
-  "triggers": [
-    "embedding",
-    "vector",
-    "semantic search",
-    "similarity",
-    "chunk",
-    "RAG",
-    "text-embedding",
-    "cosine similarity"
-  ],
-  "antiPatterns": [
-    "embedding queries differently than documents",
-    "not chunking long documents",
-    "wrong similarity metric",
-    "re-embedding unchanged content"
-  ],
-  "dependencies": [
-    "rag-retrieval",
-    "pgvector-search",
-    "ollama-local"
-  ],
-  "tags": ["embeddings", "vectors", "semantic-search", "2026"]
+  "capabilities": {
+    "text-to-vector": {
+      "keywords": ["embedding", "text to vector", "vectorize", "embed text"],
+      "solves": [
+        "Convert text to vector embeddings",
+        "Choose appropriate embedding models",
+        "Handle embedding API integration"
+      ]
+    },
+    "semantic-search": {
+      "keywords": ["semantic search", "vector search", "similarity search", "find similar"],
+      "solves": [
+        "Implement semantic search over documents",
+        "Configure similarity thresholds",
+        "Rank results by relevance"
+      ]
+    },
+    "chunking-strategies": {
+      "keywords": ["chunk", "chunking", "split", "text splitting", "overlap"],
+      "solves": [
+        "Split documents into optimal chunks",
+        "Configure chunk size and overlap",
+        "Preserve semantic boundaries"
+      ]
+    },
+    "batch-embedding": {
+      "keywords": ["batch", "bulk embed", "parallel embedding", "batch processing"],
+      "solves": [
+        "Embed large document collections efficiently",
+        "Handle rate limits and retries",
+        "Optimize embedding costs"
+      ]
+    },
+    "local-embeddings": {
+      "keywords": ["local", "ollama", "self-hosted", "on-premise", "offline"],
+      "solves": [
+        "Run embeddings locally with Ollama",
+        "Deploy self-hosted embedding models",
+        "Reduce API costs with local models"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["embedding", "semantic.*search", "text.*vector"],
+    "medium_confidence": ["vector", "similarity", "chunk", "RAG"]
+  },
+  "integrates_with": ["rag-retrieval", "pgvector-search", "ollama-local"]
 }

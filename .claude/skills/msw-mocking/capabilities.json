@@ -2,37 +2,59 @@
   "name": "msw-mocking",
   "version": "2.0.0",
   "description": "Mock Service Worker (MSW) 2.x for network-level API mocking in frontend tests",
-  "capabilities": [
-    "http-request-mocking",
-    "graphql-mocking",
-    "websocket-mocking",
-    "error-simulation",
-    "network-delay-simulation",
-    "passthrough-handlers",
-    "runtime-handler-override"
-  ],
-  "triggers": [
-    "mock API",
-    "frontend testing",
-    "MSW",
-    "network mocking",
-    "simulate error",
-    "API test",
-    "http handler",
-    "graphql handler",
-    "websocket mock"
-  ],
-  "antiPatterns": [
-    "jest.spyOn(global, 'fetch')",
-    "jest.mock('axios')",
-    "direct fetch mocking",
-    "testing implementation details",
-    "expect(fetch).toHaveBeenCalledWith"
-  ],
-  "dependencies": [
-    "unit-testing",
-    "integration-testing",
-    "vcr-http-recording"
-  ],
-  "tags": ["testing", "mocking", "frontend", "msw", "2026"]
+  "capabilities": {
+    "http-request-mocking": {
+      "keywords": ["http.get", "http.post", "http handler", "REST mock"],
+      "solves": [
+        "Mock REST API endpoints",
+        "Intercept HTTP requests at network level",
+        "Create request handlers for testing"
+      ]
+    },
+    "graphql-mocking": {
+      "keywords": ["graphql.query", "graphql.mutation", "GraphQL handler", "mock GraphQL"],
+      "solves": [
+        "Mock GraphQL queries and mutations",
+        "Handle GraphQL variables in mocks",
+        "Test GraphQL error scenarios"
+      ]
+    },
+    "websocket-mocking": {
+      "keywords": ["WebSocket", "ws mock", "real-time mock", "socket mock"],
+      "solves": [
+        "Mock WebSocket connections",
+        "Simulate real-time events",
+        "Test WebSocket message handling"
+      ]
+    },
+    "error-simulation": {
+      "keywords": ["error simulation", "network error", "500 error", "mock error"],
+      "solves": [
+        "Simulate API errors in tests",
+        "Test error handling UI",
+        "Mock network failures"
+      ]
+    },
+    "network-delay-simulation": {
+      "keywords": ["delay", "latency", "slow response", "loading state"],
+      "solves": [
+        "Simulate slow network responses",
+        "Test loading state UI",
+        "Verify timeout handling"
+      ]
+    },
+    "runtime-handler-override": {
+      "keywords": ["runtime override", "use.once", "test-specific handler", "override"],
+      "solves": [
+        "Override handlers for specific tests",
+        "Create one-time response handlers",
+        "Customize responses per test"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["MSW", "Mock Service Worker", "http\\.get", "http\\.post"],
+    "medium_confidence": ["mock API", "frontend testing", "network mocking", "API test"]
+  },
+  "integrates_with": ["unit-testing", "integration-testing", "vcr-http-recording"]
 }

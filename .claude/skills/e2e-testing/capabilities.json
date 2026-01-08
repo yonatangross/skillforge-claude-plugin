@@ -2,39 +2,59 @@
   "name": "e2e-testing",
   "version": "1.2.0",
   "description": "End-to-end testing with Playwright 1.57+ including AI agents for test generation and healing",
-  "capabilities": [
-    "semantic-locators",
-    "visual-regression",
-    "authentication-state",
-    "cross-browser-testing",
-    "ai-test-generation",
-    "ai-test-healing",
-    "flaky-test-detection",
-    "indexeddb-state"
-  ],
-  "triggers": [
-    "e2e test",
-    "playwright",
-    "end-to-end",
-    "browser test",
-    "visual regression",
-    "getByRole",
-    "getByLabel",
-    "page object",
-    "cross-browser",
-    "AI agent"
-  ],
-  "antiPatterns": [
-    "CSS selectors for user interactions",
-    "XPath locators",
-    "hardcoded waits (sleep)",
-    "testing non-critical paths",
-    "page.click('[data-testid]')"
-  ],
-  "dependencies": [
-    "integration-testing",
-    "webapp-testing",
-    "performance-testing"
-  ],
-  "tags": ["testing", "playwright", "e2e", "browser", "ai-agents", "2026"]
+  "capabilities": {
+    "semantic-locators": {
+      "keywords": ["getByRole", "getByLabel", "getByText", "semantic", "locator"],
+      "solves": [
+        "Use accessibility-based locators",
+        "Avoid brittle CSS/XPath selectors",
+        "Write resilient element queries"
+      ]
+    },
+    "visual-regression": {
+      "keywords": ["visual regression", "screenshot", "snapshot", "visual diff"],
+      "solves": [
+        "Capture and compare visual snapshots",
+        "Detect unintended UI changes",
+        "Configure threshold tolerances"
+      ]
+    },
+    "cross-browser-testing": {
+      "keywords": ["cross browser", "chromium", "firefox", "webkit", "browser matrix"],
+      "solves": [
+        "Run tests across multiple browsers",
+        "Configure browser-specific settings",
+        "Handle browser differences"
+      ]
+    },
+    "ai-test-generation": {
+      "keywords": ["AI test", "generate test", "autonomous", "test agent", "planner"],
+      "solves": [
+        "Generate tests from user journeys",
+        "Use AI agents for test planning",
+        "Create comprehensive test coverage"
+      ]
+    },
+    "ai-test-healing": {
+      "keywords": ["test healing", "self-heal", "auto-fix", "resilient test"],
+      "solves": [
+        "Automatically fix broken selectors",
+        "Adapt tests to UI changes",
+        "Reduce test maintenance"
+      ]
+    },
+    "authentication-state": {
+      "keywords": ["auth state", "storage state", "login once", "reuse session"],
+      "solves": [
+        "Persist authentication across tests",
+        "Avoid repeated login flows",
+        "Share auth state between tests"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["e2e.*test", "playwright", "end.to.end"],
+    "medium_confidence": ["browser.*test", "visual.*regression", "getByRole"]
+  },
+  "integrates_with": ["integration-testing", "webapp-testing", "performance-testing"]
 }

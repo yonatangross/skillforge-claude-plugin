@@ -2,28 +2,51 @@
   "name": "cache-cost-tracking",
   "version": "1.0.0",
   "description": "LLM caching strategies and cost tracking patterns",
-  "capabilities": [
-    "prompt-caching",
-    "response-caching",
-    "cost-calculation",
-    "usage-tracking",
-    "cache-invalidation"
-  ],
-  "triggers": [
-    "cache",
-    "cost tracking",
-    "token usage",
-    "LLM cost",
-    "cache hit"
-  ],
-  "antiPatterns": [
-    "no cache invalidation",
-    "caching dynamic content",
-    "ignoring costs"
-  ],
-  "dependencies": [
-    "semantic-caching",
-    "langfuse-observability"
-  ],
-  "tags": ["caching", "cost", "optimization", "2026"]
+  "capabilities": {
+    "prompt-caching": {
+      "keywords": ["prompt cache", "cache prompt", "prefix caching", "cache breakpoints"],
+      "solves": [
+        "Reduce token costs with cached prompts",
+        "Configure cache breakpoints",
+        "Implement provider-native caching"
+      ]
+    },
+    "response-caching": {
+      "keywords": ["response cache", "semantic cache", "cache response", "LLM cache"],
+      "solves": [
+        "Cache LLM responses for repeated queries",
+        "Implement semantic similarity caching",
+        "Reduce API calls with cached responses"
+      ]
+    },
+    "cost-calculation": {
+      "keywords": ["cost", "token cost", "calculate cost", "pricing", "usage cost"],
+      "solves": [
+        "Calculate token costs by model",
+        "Track input/output token pricing",
+        "Estimate cost before execution"
+      ]
+    },
+    "usage-tracking": {
+      "keywords": ["usage", "track usage", "token usage", "API usage", "metrics"],
+      "solves": [
+        "Track LLM API usage over time",
+        "Monitor token consumption",
+        "Generate usage reports"
+      ]
+    },
+    "cache-invalidation": {
+      "keywords": ["invalidate", "cache invalidation", "TTL", "expire", "refresh"],
+      "solves": [
+        "Implement cache invalidation strategies",
+        "Configure TTL for cached responses",
+        "Handle stale cache entries"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["cache.*cost", "cost.*tracking", "token.*usage"],
+    "medium_confidence": ["cache", "cost tracking", "LLM cost", "cache hit"]
+  },
+  "integrates_with": ["semantic-caching", "langfuse-observability"]
 }

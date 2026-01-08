@@ -1,29 +1,52 @@
 {
   "name": "performance-testing",
   "version": "1.0.0",
-  "description": "Performance and load testing patterns",
-  "capabilities": [
-    "load-testing",
-    "stress-testing",
-    "latency-measurement",
-    "throughput-testing",
-    "bottleneck-identification"
-  ],
-  "triggers": [
-    "performance test",
-    "load test",
-    "stress test",
-    "latency",
-    "throughput",
-    "benchmark"
-  ],
-  "antiPatterns": [
-    "testing in production",
-    "unrealistic test data",
-    "ignoring warm-up"
-  ],
-  "dependencies": [
-    "observability-monitoring"
-  ],
-  "tags": ["performance", "testing", "load", "2026"]
+  "description": "Performance and load testing patterns with k6 and Locust",
+  "capabilities": {
+    "load-testing": {
+      "keywords": ["load test", "concurrent users", "k6", "Locust", "ramp up"],
+      "solves": [
+        "Simulate concurrent user load",
+        "Configure ramp-up patterns",
+        "Test system under expected load"
+      ]
+    },
+    "stress-testing": {
+      "keywords": ["stress test", "breaking point", "peak load", "overload"],
+      "solves": [
+        "Find system breaking points",
+        "Test beyond expected capacity",
+        "Identify failure modes under stress"
+      ]
+    },
+    "latency-measurement": {
+      "keywords": ["latency", "response time", "p95", "p99", "percentile"],
+      "solves": [
+        "Measure response time percentiles",
+        "Track latency distribution",
+        "Set latency SLO thresholds"
+      ]
+    },
+    "throughput-testing": {
+      "keywords": ["throughput", "requests per second", "RPS", "TPS"],
+      "solves": [
+        "Measure maximum throughput",
+        "Test transactions per second",
+        "Verify capacity requirements"
+      ]
+    },
+    "bottleneck-identification": {
+      "keywords": ["bottleneck", "profiling", "hot path", "performance issue"],
+      "solves": [
+        "Identify performance bottlenecks",
+        "Profile critical code paths",
+        "Diagnose slow operations"
+      ]
+    }
+  },
+  "triggers": {
+    "high_confidence": ["performance.*test", "load.*test", "k6", "Locust"],
+    "medium_confidence": ["stress test", "latency", "throughput", "benchmark"]
+  },
+  "integrates_with": ["observability-monitoring"]
 }
