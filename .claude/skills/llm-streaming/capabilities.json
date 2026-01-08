@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "llm-streaming",
   "version": "1.0.0",
   "description": "LLM streaming response patterns for real-time output",
   "capabilities": {
     "token-streaming": {
-      "keywords": ["streaming", "token", "stream response", "real-time", "incremental"],
+      "keywords": [
+        "streaming",
+        "token",
+        "stream response",
+        "real-time",
+        "incremental"
+      ],
       "solves": [
         "Stream tokens as they're generated",
         "Display real-time LLM output",
@@ -12,7 +19,12 @@
       ]
     },
     "sse-responses": {
-      "keywords": ["SSE", "Server-Sent Events", "event stream", "text/event-stream"],
+      "keywords": [
+        "SSE",
+        "Server-Sent Events",
+        "event stream",
+        "text/event-stream"
+      ],
       "solves": [
         "Implement SSE for streaming",
         "Handle SSE reconnection",
@@ -20,7 +32,11 @@
       ]
     },
     "streaming-with-tools": {
-      "keywords": ["stream tools", "tool streaming", "function call stream"],
+      "keywords": [
+        "stream tools",
+        "tool streaming",
+        "function call stream"
+      ],
       "solves": [
         "Stream responses with tool calls",
         "Handle partial tool call data",
@@ -28,7 +44,11 @@
       ]
     },
     "partial-json-parsing": {
-      "keywords": ["partial JSON", "incremental parse", "streaming JSON"],
+      "keywords": [
+        "partial JSON",
+        "incremental parse",
+        "streaming JSON"
+      ],
       "solves": [
         "Parse JSON as it streams",
         "Handle incomplete JSON safely",
@@ -36,7 +56,12 @@
       ]
     },
     "stream-cancellation": {
-      "keywords": ["cancel", "abort", "stop stream", "AbortController"],
+      "keywords": [
+        "cancel",
+        "abort",
+        "stop stream",
+        "AbortController"
+      ],
       "solves": [
         "Cancel ongoing streams",
         "Handle user interrupts",
@@ -45,8 +70,19 @@
     }
   },
   "triggers": {
-    "high_confidence": ["LLM.*streaming", "stream.*response", "SSE"],
-    "medium_confidence": ["real-time", "token.*stream", "incremental"]
+    "high_confidence": [
+      "LLM.*streaming",
+      "stream.*response",
+      "SSE"
+    ],
+    "medium_confidence": [
+      "real-time",
+      "token.*stream",
+      "incremental"
+    ]
   },
-  "integrates_with": ["function-calling", "streaming-api-patterns"]
+  "integrates_with": [
+    "function-calling",
+    "streaming-api-patterns"
+  ]
 }

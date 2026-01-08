@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "langgraph-state",
   "version": "1.0.0",
   "description": "LangGraph state management patterns for agent workflows",
   "capabilities": {
     "state-definition": {
-      "keywords": ["StateGraph", "TypedDict", "state schema", "define state"],
+      "keywords": [
+        "StateGraph",
+        "TypedDict",
+        "state schema",
+        "define state"
+      ],
       "solves": [
         "Define workflow state with TypedDict",
         "Create Pydantic state models",
@@ -12,7 +18,12 @@
       ]
     },
     "state-channels": {
-      "keywords": ["channel", "Annotated", "state channel", "MessageChannel"],
+      "keywords": [
+        "channel",
+        "Annotated",
+        "state channel",
+        "MessageChannel"
+      ],
       "solves": [
         "Configure state channels for data flow",
         "Implement message accumulation",
@@ -20,7 +31,12 @@
       ]
     },
     "state-reducers": {
-      "keywords": ["reducer", "add_messages", "operator.add", "accumulate"],
+      "keywords": [
+        "reducer",
+        "add_messages",
+        "operator.add",
+        "accumulate"
+      ],
       "solves": [
         "Implement state reducers with Annotated",
         "Accumulate messages across nodes",
@@ -28,7 +44,12 @@
       ]
     },
     "subgraphs": {
-      "keywords": ["subgraph", "nested graph", "parent state", "child graph"],
+      "keywords": [
+        "subgraph",
+        "nested graph",
+        "parent state",
+        "child graph"
+      ],
       "solves": [
         "Compose graphs with subgraphs",
         "Pass state between parent and child",
@@ -36,7 +57,12 @@
       ]
     },
     "state-persistence": {
-      "keywords": ["persist", "state persistence", "durable state", "save state"],
+      "keywords": [
+        "persist",
+        "state persistence",
+        "durable state",
+        "save state"
+      ],
       "solves": [
         "Persist state across executions",
         "Implement durable workflows",
@@ -45,8 +71,20 @@
     }
   },
   "triggers": {
-    "high_confidence": ["LangGraph.*state", "StateGraph", "TypedDict.*state"],
-    "medium_confidence": ["state channel", "reducer", "workflow state", "Annotated"]
+    "high_confidence": [
+      "LangGraph.*state",
+      "StateGraph",
+      "TypedDict.*state"
+    ],
+    "medium_confidence": [
+      "state channel",
+      "reducer",
+      "workflow state",
+      "Annotated"
+    ]
   },
-  "integrates_with": ["langgraph-checkpoints", "langgraph-routing"]
+  "integrates_with": [
+    "langgraph-checkpoints",
+    "langgraph-routing"
+  ]
 }

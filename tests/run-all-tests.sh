@@ -10,13 +10,15 @@
 #   --unit          Run only unit tests
 #   --security      Run only security tests
 #   --integration   Run only integration tests
+#   --e2e           Run only E2E tests
 #   --performance   Run only performance tests
+#   --lint          Run only lint/static analysis
 #   --all           Run all tests (default)
 #   --coverage      Generate coverage report
 #
 # Exit codes: 0 = all pass, 1 = failures found
 #
-# Version: 2.0.0 - Comprehensive Test Suite
+# Version: 3.0.0 - Comprehensive Test Suite with CI Integration
 
 set -uo pipefail
 
@@ -26,9 +28,11 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # Parse arguments
 VERBOSE=""
 QUICK=""
+RUN_LINT="true"
 RUN_UNIT="true"
 RUN_SECURITY="true"
 RUN_INTEGRATION="true"
+RUN_E2E="true"
 RUN_PERFORMANCE="true"
 COVERAGE=""
 SPECIFIC_CATEGORY=""
@@ -36,22 +40,26 @@ SPECIFIC_CATEGORY=""
 for arg in "$@"; do
     case $arg in
         --verbose) VERBOSE="--verbose" ;;
-        --quick) QUICK="true"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
-        --unit) SPECIFIC_CATEGORY="unit"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
-        --security) SPECIFIC_CATEGORY="security"; RUN_UNIT="false"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
-        --integration) SPECIFIC_CATEGORY="integration"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_PERFORMANCE="false" ;;
-        --performance) SPECIFIC_CATEGORY="performance"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false" ;;
-        --all) RUN_UNIT="true"; RUN_SECURITY="true"; RUN_INTEGRATION="true"; RUN_PERFORMANCE="true" ;;
+        --quick) QUICK="true"; RUN_INTEGRATION="false"; RUN_E2E="false"; RUN_PERFORMANCE="false" ;;
+        --lint) SPECIFIC_CATEGORY="lint"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_E2E="false"; RUN_PERFORMANCE="false" ;;
+        --unit) SPECIFIC_CATEGORY="unit"; RUN_LINT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_E2E="false"; RUN_PERFORMANCE="false" ;;
+        --security) SPECIFIC_CATEGORY="security"; RUN_LINT="false"; RUN_UNIT="false"; RUN_INTEGRATION="false"; RUN_E2E="false"; RUN_PERFORMANCE="false" ;;
+        --integration) SPECIFIC_CATEGORY="integration"; RUN_LINT="false"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_E2E="false"; RUN_PERFORMANCE="false" ;;
+        --e2e) SPECIFIC_CATEGORY="e2e"; RUN_LINT="false"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
+        --performance) SPECIFIC_CATEGORY="performance"; RUN_LINT="false"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_E2E="false" ;;
+        --all) RUN_LINT="true"; RUN_UNIT="true"; RUN_SECURITY="true"; RUN_INTEGRATION="true"; RUN_E2E="true"; RUN_PERFORMANCE="true" ;;
         --coverage) COVERAGE="true" ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS]"
             echo ""
             echo "Options:"
             echo "  --verbose       Show detailed output"
-            echo "  --quick         Skip integration and performance tests"
+            echo "  --quick         Skip integration, E2E, and performance tests"
+            echo "  --lint          Run only lint/static analysis"
             echo "  --unit          Run only unit tests"
             echo "  --security      Run only security tests (CRITICAL)"
             echo "  --integration   Run only integration tests"
+            echo "  --e2e           Run only E2E tests"
             echo "  --performance   Run only performance tests"
             echo "  --all           Run all tests (default)"
             echo "  --coverage      Generate coverage report"
@@ -85,7 +93,7 @@ export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║        SkillForge Claude Plugin - Test Suite                     ║${NC}"
+echo -e "${BOLD}║        SkillForge Claude Plugin - Test Suite v3.0                ║${NC}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -132,13 +140,25 @@ run_test() {
 }
 
 # ============================================================
+# LINT / STATIC ANALYSIS
+# ============================================================
+
+if [[ "$RUN_LINT" == "true" ]]; then
+    echo -e "${BOLD}${CYAN}LINT / STATIC ANALYSIS${NC}"
+    echo ""
+
+    run_test "Static Analysis Suite" "$SCRIPT_DIR/ci/lint.sh" || true
+fi
+
+# ============================================================
 # UNIT TESTS
 # ============================================================
 
-echo -e "${BOLD}${CYAN}UNIT TESTS${NC}"
-echo ""
-
 if [[ "$RUN_UNIT" == "true" ]]; then
+    echo ""
+    echo -e "${BOLD}${CYAN}UNIT TESTS${NC}"
+    echo ""
+
     run_test "Shell Syntax Validation" "$SCRIPT_DIR/unit/test-shell-syntax.sh" || true
     run_test "JSON Validity Check" "$SCRIPT_DIR/unit/test-json-validity.sh" || true
     run_test "Hook Executability" "$SCRIPT_DIR/unit/test-hook-executability.sh" || true
@@ -147,17 +167,20 @@ if [[ "$RUN_UNIT" == "true" ]]; then
 fi
 
 # ============================================================
-# SECURITY TESTS (CRITICAL)
+# SECURITY TESTS (CRITICAL - ZERO TOLERANCE)
 # ============================================================
 
 if [[ "$RUN_SECURITY" == "true" ]]; then
     echo ""
-    echo -e "${BOLD}${RED}SECURITY TESTS (CRITICAL)${NC}"
+    echo -e "${BOLD}${RED}SECURITY TESTS (CRITICAL - ZERO TOLERANCE)${NC}"
     echo ""
 
-    run_test "JQ Injection Tests" "$SCRIPT_DIR/security/test-jq-injection.sh" || true
-    run_test "Path Traversal Tests" "$SCRIPT_DIR/security/test-path-traversal.sh" || true
     run_test "Command Injection Tests" "$SCRIPT_DIR/security/test-command-injection.sh" || true
+    run_test "JQ Injection Tests" "$SCRIPT_DIR/security/test-jq-injection.sh" || true
+    run_test "JQ Filter Injection Tests" "$SCRIPT_DIR/security/test-jq-filter-injection.sh" || true
+    run_test "Path Traversal Tests" "$SCRIPT_DIR/security/test-path-traversal.sh" || true
+    run_test "Unicode Attack Tests" "$SCRIPT_DIR/security/test-unicode-attacks.sh" || true
+    run_test "Symlink Attack Tests" "$SCRIPT_DIR/security/test-symlink-attacks.sh" || true
     run_test "Input Validation Tests" "$SCRIPT_DIR/security/test-input-validation.sh" || true
     run_test "Additional Security Tests" "$SCRIPT_DIR/security/test-additional-security.sh" || true
 fi
@@ -176,6 +199,20 @@ if [[ "$RUN_INTEGRATION" == "true" ]]; then
 fi
 
 # ============================================================
+# E2E TESTS
+# ============================================================
+
+if [[ "$RUN_E2E" == "true" ]]; then
+    echo ""
+    echo -e "${BOLD}${CYAN}E2E TESTS${NC}"
+    echo ""
+
+    run_test "Progressive Loading E2E" "$SCRIPT_DIR/e2e/test-progressive-loading.sh" || true
+    run_test "Agent Lifecycle E2E" "$SCRIPT_DIR/e2e/test-agent-lifecycle.sh" || true
+    run_test "Coordination System E2E" "$SCRIPT_DIR/e2e/test-coordination-e2e.sh" || true
+fi
+
+# ============================================================
 # PERFORMANCE TESTS
 # ============================================================
 
@@ -184,11 +221,8 @@ if [[ "$RUN_PERFORMANCE" == "true" ]]; then
     echo -e "${BOLD}${CYAN}PERFORMANCE TESTS${NC}"
     echo ""
 
-    if [[ -f "$SCRIPT_DIR/performance/test-hook-timing.sh" ]]; then
-        run_test "Hook Timing Tests" "$SCRIPT_DIR/performance/test-hook-timing.sh" "true" || true
-    else
-        echo -e "${YELLOW}Performance tests not yet implemented${NC}"
-    fi
+    run_test "Token Budget Validation" "$SCRIPT_DIR/performance/test-token-budget.sh" || true
+    run_test "Hook Timing Tests" "$SCRIPT_DIR/performance/test-hook-timing.sh" "true" || true
 fi
 
 # ============================================================
@@ -201,8 +235,8 @@ echo -e "${BOLD}║                        TEST SUMMARY                         
 echo -e "${BOLD}╚══════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
-printf "%-35s %s\n" "Test" "Result"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+printf "%-40s %s\n" "Test" "Result"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 while IFS=: read -r test_name result; do
     case $result in
@@ -212,11 +246,11 @@ while IFS=: read -r test_name result; do
         SKIP) color="${YELLOW}" ;;
         *) color="${NC}" ;;
     esac
-    printf "%-35s ${color}%s${NC}\n" "$test_name" "$result"
+    printf "%-40s ${color}%s${NC}\n" "$test_name" "$result"
 done < "$RESULTS_FILE"
 
 echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "Total: ${GREEN}$TOTAL_PASSED passed${NC}, ${RED}$TOTAL_FAILED failed${NC}"
 echo ""
 

@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "i18n-date-patterns",
   "version": "1.2.0",
   "description": "Comprehensive internationalization patterns for React applications",
   "capabilities": {
     "translation-hooks": {
-      "keywords": ["useTranslation", "t()", "i18n hook", "translation hook"],
+      "keywords": [
+        "useTranslation",
+        "t()",
+        "i18n hook",
+        "translation hook"
+      ],
       "solves": [
         "Translate UI strings with useTranslation",
         "Implement namespaced translations",
@@ -12,7 +18,12 @@
       ]
     },
     "formatting-hooks": {
-      "keywords": ["useFormatting", "formatCurrency", "formatList", "formatOrdinal"],
+      "keywords": [
+        "useFormatting",
+        "formatCurrency",
+        "formatList",
+        "formatOrdinal"
+      ],
       "solves": [
         "Format currency values with locale",
         "Format lists with proper separators",
@@ -20,7 +31,13 @@
       ]
     },
     "icu-messageformat": {
-      "keywords": ["ICU", "MessageFormat", "plural", "select", "pluralization"],
+      "keywords": [
+        "ICU",
+        "MessageFormat",
+        "plural",
+        "select",
+        "pluralization"
+      ],
       "solves": [
         "Implement pluralization rules",
         "Handle gender-specific translations",
@@ -28,7 +45,13 @@
       ]
     },
     "date-time-formatting": {
-      "keywords": ["date format", "time format", "dayjs", "locale date", "calendar"],
+      "keywords": [
+        "date format",
+        "time format",
+        "dayjs",
+        "locale date",
+        "calendar"
+      ],
       "solves": [
         "Format dates with dayjs and locale",
         "Handle timezone-aware formatting",
@@ -36,7 +59,13 @@
       ]
     },
     "rtl-support": {
-      "keywords": ["RTL", "right-to-left", "hebrew", "arabic", "direction"],
+      "keywords": [
+        "RTL",
+        "right-to-left",
+        "hebrew",
+        "arabic",
+        "direction"
+      ],
       "solves": [
         "Support RTL languages like Hebrew",
         "Handle bidirectional text",
@@ -44,7 +73,12 @@
       ]
     },
     "trans-component": {
-      "keywords": ["Trans", "rich text", "embedded JSX", "interpolation"],
+      "keywords": [
+        "Trans",
+        "rich text",
+        "embedded JSX",
+        "interpolation"
+      ],
       "solves": [
         "Embed React components in translations",
         "Handle rich text formatting",
@@ -53,8 +87,22 @@
     }
   },
   "triggers": {
-    "high_confidence": ["i18n", "internationalization", "useTranslation", "useFormatting"],
-    "medium_confidence": ["translation", "locale", "rtl", "date formatting", "dayjs"]
+    "high_confidence": [
+      "i18n",
+      "internationalization",
+      "useTranslation",
+      "useFormatting"
+    ],
+    "medium_confidence": [
+      "translation",
+      "locale",
+      "rtl",
+      "date formatting",
+      "dayjs"
+    ]
   },
-  "integrates_with": ["react-server-components-framework", "frontend-ui-developer"]
+  "integrates_with": [
+    "react-server-components-framework",
+    "frontend-ui-developer"
+  ]
 }

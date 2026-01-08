@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "e2e-testing",
   "version": "1.2.0",
   "description": "End-to-end testing with Playwright 1.57+ including AI agents for test generation and healing",
   "capabilities": {
     "semantic-locators": {
-      "keywords": ["getByRole", "getByLabel", "getByText", "semantic", "locator"],
+      "keywords": [
+        "getByRole",
+        "getByLabel",
+        "getByText",
+        "semantic",
+        "locator"
+      ],
       "solves": [
         "Use accessibility-based locators",
         "Avoid brittle CSS/XPath selectors",
@@ -12,7 +19,12 @@
       ]
     },
     "visual-regression": {
-      "keywords": ["visual regression", "screenshot", "snapshot", "visual diff"],
+      "keywords": [
+        "visual regression",
+        "screenshot",
+        "snapshot",
+        "visual diff"
+      ],
       "solves": [
         "Capture and compare visual snapshots",
         "Detect unintended UI changes",
@@ -20,7 +32,13 @@
       ]
     },
     "cross-browser-testing": {
-      "keywords": ["cross browser", "chromium", "firefox", "webkit", "browser matrix"],
+      "keywords": [
+        "cross browser",
+        "chromium",
+        "firefox",
+        "webkit",
+        "browser matrix"
+      ],
       "solves": [
         "Run tests across multiple browsers",
         "Configure browser-specific settings",
@@ -28,7 +46,13 @@
       ]
     },
     "ai-test-generation": {
-      "keywords": ["AI test", "generate test", "autonomous", "test agent", "planner"],
+      "keywords": [
+        "AI test",
+        "generate test",
+        "autonomous",
+        "test agent",
+        "planner"
+      ],
       "solves": [
         "Generate tests from user journeys",
         "Use AI agents for test planning",
@@ -36,7 +60,12 @@
       ]
     },
     "ai-test-healing": {
-      "keywords": ["test healing", "self-heal", "auto-fix", "resilient test"],
+      "keywords": [
+        "test healing",
+        "self-heal",
+        "auto-fix",
+        "resilient test"
+      ],
       "solves": [
         "Automatically fix broken selectors",
         "Adapt tests to UI changes",
@@ -44,7 +73,12 @@
       ]
     },
     "authentication-state": {
-      "keywords": ["auth state", "storage state", "login once", "reuse session"],
+      "keywords": [
+        "auth state",
+        "storage state",
+        "login once",
+        "reuse session"
+      ],
       "solves": [
         "Persist authentication across tests",
         "Avoid repeated login flows",
@@ -53,8 +87,20 @@
     }
   },
   "triggers": {
-    "high_confidence": ["e2e.*test", "playwright", "end.to.end"],
-    "medium_confidence": ["browser.*test", "visual.*regression", "getByRole"]
+    "high_confidence": [
+      "e2e.*test",
+      "playwright",
+      "end.to.end"
+    ],
+    "medium_confidence": [
+      "browser.*test",
+      "visual.*regression",
+      "getByRole"
+    ]
   },
-  "integrates_with": ["integration-testing", "webapp-testing", "performance-testing"]
+  "integrates_with": [
+    "integration-testing",
+    "webapp-testing",
+    "performance-testing"
+  ]
 }

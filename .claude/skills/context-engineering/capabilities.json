@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "context-engineering",
   "version": "1.0.0",
   "description": "Master context window optimization through attention mechanics, strategic positioning, and degradation awareness",
   "capabilities": {
     "attention-mechanics": {
-      "keywords": ["context window", "attention", "lost in the middle", "token budget"],
+      "keywords": [
+        "context window",
+        "attention",
+        "lost in the middle",
+        "token budget"
+      ],
       "solves": [
         "Understand lost-in-the-middle effect (high attention at START/END)",
         "Position critical info strategically",
@@ -13,7 +19,11 @@
       "reference_file": "references/attention-mechanics.md"
     },
     "context-layers": {
-      "keywords": ["context anatomy", "context structure", "five layers"],
+      "keywords": [
+        "context anatomy",
+        "context structure",
+        "five layers"
+      ],
       "solves": [
         "Understand 5 context layers (system, tools, docs, history, outputs)",
         "Implement just-in-time document loading",
@@ -22,7 +32,11 @@
       "reference_file": "references/context-layers.md"
     },
     "budget-allocation": {
-      "keywords": ["token budget", "context budget", "allocation"],
+      "keywords": [
+        "token budget",
+        "context budget",
+        "allocation"
+      ],
       "solves": [
         "Allocate tokens across context layers",
         "Implement compression triggers at 70% utilization",

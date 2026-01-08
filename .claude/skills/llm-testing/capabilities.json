@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "llm-testing",
   "version": "2.0.0",
   "description": "Testing patterns for LLM-based applications with DeepEval and RAGAS metrics",
   "capabilities": {
     "llm-response-mocking": {
-      "keywords": ["mock LLM", "fake response", "stub LLM", "mock AI"],
+      "keywords": [
+        "mock LLM",
+        "fake response",
+        "stub LLM",
+        "mock AI"
+      ],
       "solves": [
         "Mock LLM responses in tests",
         "Create deterministic AI test fixtures",
@@ -12,7 +18,12 @@
       ]
     },
     "async-timeout-testing": {
-      "keywords": ["timeout", "async test", "wait for", "polling"],
+      "keywords": [
+        "timeout",
+        "async test",
+        "wait for",
+        "polling"
+      ],
       "solves": [
         "Test async LLM operations",
         "Handle timeout scenarios",
@@ -20,7 +31,12 @@
       ]
     },
     "structured-output-validation": {
-      "keywords": ["structured output", "JSON validation", "schema validation", "output format"],
+      "keywords": [
+        "structured output",
+        "JSON validation",
+        "schema validation",
+        "output format"
+      ],
       "solves": [
         "Validate structured LLM output",
         "Test JSON schema compliance",
@@ -28,7 +44,12 @@
       ]
     },
     "deepeval-assertions": {
-      "keywords": ["DeepEval", "assert_test", "LLMTestCase", "metric assertion"],
+      "keywords": [
+        "DeepEval",
+        "assert_test",
+        "LLMTestCase",
+        "metric assertion"
+      ],
       "solves": [
         "Use DeepEval for LLM assertions",
         "Implement metric-based tests",
@@ -36,7 +57,12 @@
       ]
     },
     "golden-dataset-testing": {
-      "keywords": ["golden dataset", "golden test", "reference output", "expected output"],
+      "keywords": [
+        "golden dataset",
+        "golden test",
+        "reference output",
+        "expected output"
+      ],
       "solves": [
         "Test against golden datasets",
         "Compare with reference outputs",
@@ -44,7 +70,13 @@
       ]
     },
     "vcr-recording": {
-      "keywords": ["VCR", "cassette", "record", "replay", "HTTP recording"],
+      "keywords": [
+        "VCR",
+        "cassette",
+        "record",
+        "replay",
+        "HTTP recording"
+      ],
       "solves": [
         "Record LLM API responses",
         "Replay recordings in tests",
@@ -53,8 +85,22 @@
     }
   },
   "triggers": {
-    "high_confidence": ["LLM.*test", "test.*AI", "DeepEval", "mock.*LLM"],
-    "medium_confidence": ["AI test", "mock LLM", "structured output", "quality gate"]
+    "high_confidence": [
+      "LLM.*test",
+      "test.*AI",
+      "DeepEval",
+      "mock.*LLM"
+    ],
+    "medium_confidence": [
+      "AI test",
+      "mock LLM",
+      "structured output",
+      "quality gate"
+    ]
   },
-  "integrates_with": ["vcr-http-recording", "llm-evaluation", "unit-testing"]
+  "integrates_with": [
+    "vcr-http-recording",
+    "llm-evaluation",
+    "unit-testing"
+  ]
 }

@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "project-structure-enforcer",
   "version": "1.0.0",
   "description": "Enforce 2026 folder structure standards with blocking validation for nesting depth and import direction",
   "capabilities": {
     "folder-structure": {
-      "keywords": ["folder structure", "directory structure", "project layout", "organization"],
+      "keywords": [
+        "folder structure",
+        "directory structure",
+        "project layout",
+        "organization"
+      ],
       "solves": [
         "Enforce feature-based organization",
         "Validate proper file placement",
@@ -13,7 +19,13 @@
       "reference_file": "SKILL.md#expected-folder-structures"
     },
     "nesting-depth": {
-      "keywords": ["nesting", "depth", "levels", "max depth", "deep nesting"],
+      "keywords": [
+        "nesting",
+        "depth",
+        "levels",
+        "max depth",
+        "deep nesting"
+      ],
       "solves": [
         "Limit directory nesting to 4 levels",
         "Prevent overly complex structures",
@@ -22,7 +34,12 @@
       "reference_file": "SKILL.md#nesting-depth-rules"
     },
     "import-direction": {
-      "keywords": ["import", "unidirectional", "circular", "dependency direction"],
+      "keywords": [
+        "import",
+        "unidirectional",
+        "circular",
+        "dependency direction"
+      ],
       "solves": [
         "Enforce unidirectional imports",
         "Prevent circular dependencies",
@@ -31,7 +48,11 @@
       "reference_file": "SKILL.md#import-direction"
     },
     "component-location": {
-      "keywords": ["component location", "file placement", "where to put"],
+      "keywords": [
+        "component location",
+        "file placement",
+        "where to put"
+      ],
       "solves": [
         "Validate React component placement",
         "Enforce hook location rules",

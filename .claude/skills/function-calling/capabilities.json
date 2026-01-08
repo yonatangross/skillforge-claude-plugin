@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "function-calling",
   "version": "2.0.0",
   "description": "LLM function calling and tool use patterns with strict mode schemas",
   "capabilities": {
     "tool-definition": {
-      "keywords": ["tool", "function", "define tool", "tool schema", "function schema"],
+      "keywords": [
+        "tool",
+        "function",
+        "define tool",
+        "tool schema",
+        "function schema"
+      ],
       "solves": [
         "Define tools with clear descriptions",
         "Create JSON schemas for tool parameters",
@@ -12,7 +19,12 @@
       ]
     },
     "tool-execution-loop": {
-      "keywords": ["execution loop", "tool call", "agent loop", "run tool"],
+      "keywords": [
+        "execution loop",
+        "tool call",
+        "agent loop",
+        "run tool"
+      ],
       "solves": [
         "Implement tool execution loops",
         "Handle multiple tool calls",
@@ -20,7 +32,12 @@
       ]
     },
     "structured-output": {
-      "keywords": ["structured output", "JSON output", "typed response", "response schema"],
+      "keywords": [
+        "structured output",
+        "JSON output",
+        "typed response",
+        "response schema"
+      ],
       "solves": [
         "Get structured JSON from LLM",
         "Enforce output schemas",
@@ -28,7 +45,12 @@
       ]
     },
     "parallel-tool-calls": {
-      "keywords": ["parallel", "concurrent", "multiple tools", "batch tools"],
+      "keywords": [
+        "parallel",
+        "concurrent",
+        "multiple tools",
+        "batch tools"
+      ],
       "solves": [
         "Execute multiple tools in parallel",
         "Handle concurrent tool results",
@@ -36,7 +58,12 @@
       ]
     },
     "strict-mode-schemas": {
-      "keywords": ["strict mode", "strict schema", "additionalProperties", "required fields"],
+      "keywords": [
+        "strict mode",
+        "strict schema",
+        "additionalProperties",
+        "required fields"
+      ],
       "solves": [
         "Enforce strict JSON schemas",
         "Prevent extra fields in output",
@@ -45,8 +72,19 @@
     }
   },
   "triggers": {
-    "high_confidence": ["function.*calling", "tool.*use", "LLM.*tool"],
-    "medium_confidence": ["structured.*output", "JSON.*schema", "agent.*tool"]
+    "high_confidence": [
+      "function.*calling",
+      "tool.*use",
+      "LLM.*tool"
+    ],
+    "medium_confidence": [
+      "structured.*output",
+      "JSON.*schema",
+      "agent.*tool"
+    ]
   },
-  "integrates_with": ["agent-loops", "llm-streaming"]
+  "integrates_with": [
+    "agent-loops",
+    "llm-streaming"
+  ]
 }

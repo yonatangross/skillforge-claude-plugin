@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "cache-cost-tracking",
   "version": "1.0.0",
   "description": "LLM caching strategies and cost tracking patterns",
   "capabilities": {
     "prompt-caching": {
-      "keywords": ["prompt cache", "cache prompt", "prefix caching", "cache breakpoints"],
+      "keywords": [
+        "prompt cache",
+        "cache prompt",
+        "prefix caching",
+        "cache breakpoints"
+      ],
       "solves": [
         "Reduce token costs with cached prompts",
         "Configure cache breakpoints",
@@ -12,7 +18,12 @@
       ]
     },
     "response-caching": {
-      "keywords": ["response cache", "semantic cache", "cache response", "LLM cache"],
+      "keywords": [
+        "response cache",
+        "semantic cache",
+        "cache response",
+        "LLM cache"
+      ],
       "solves": [
         "Cache LLM responses for repeated queries",
         "Implement semantic similarity caching",
@@ -20,7 +31,13 @@
       ]
     },
     "cost-calculation": {
-      "keywords": ["cost", "token cost", "calculate cost", "pricing", "usage cost"],
+      "keywords": [
+        "cost",
+        "token cost",
+        "calculate cost",
+        "pricing",
+        "usage cost"
+      ],
       "solves": [
         "Calculate token costs by model",
         "Track input/output token pricing",
@@ -28,7 +45,13 @@
       ]
     },
     "usage-tracking": {
-      "keywords": ["usage", "track usage", "token usage", "API usage", "metrics"],
+      "keywords": [
+        "usage",
+        "track usage",
+        "token usage",
+        "API usage",
+        "metrics"
+      ],
       "solves": [
         "Track LLM API usage over time",
         "Monitor token consumption",
@@ -36,7 +59,13 @@
       ]
     },
     "cache-invalidation": {
-      "keywords": ["invalidate", "cache invalidation", "TTL", "expire", "refresh"],
+      "keywords": [
+        "invalidate",
+        "cache invalidation",
+        "TTL",
+        "expire",
+        "refresh"
+      ],
       "solves": [
         "Implement cache invalidation strategies",
         "Configure TTL for cached responses",
@@ -45,8 +74,20 @@
     }
   },
   "triggers": {
-    "high_confidence": ["cache.*cost", "cost.*tracking", "token.*usage"],
-    "medium_confidence": ["cache", "cost tracking", "LLM cost", "cache hit"]
+    "high_confidence": [
+      "cache.*cost",
+      "cost.*tracking",
+      "token.*usage"
+    ],
+    "medium_confidence": [
+      "cache",
+      "cost tracking",
+      "LLM cost",
+      "cache hit"
+    ]
   },
-  "integrates_with": ["semantic-caching", "langfuse-observability"]
+  "integrates_with": [
+    "semantic-caching",
+    "langfuse-observability"
+  ]
 }

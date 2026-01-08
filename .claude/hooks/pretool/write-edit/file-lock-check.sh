@@ -15,6 +15,7 @@ fi
 # Parse tool input
 TOOL_INPUT="${TOOL_INPUT:-}"
 if [[ -z "${TOOL_INPUT}" ]]; then
+  echo '{"systemMessage":"No tool input","continue":true}'
   exit 0
 fi
 
@@ -27,20 +28,22 @@ elif [[ "${TOOL_NAME}" == "Edit" ]]; then
 fi
 
 if [[ -z "${FILE_PATH}" ]]; then
+  echo '{"systemMessage":"No file path found","continue":true}'
   exit 0
 fi
 
 # Skip if file is in coordination directory (avoid recursion)
 if [[ "${FILE_PATH}" =~ /.claude/coordination/ ]]; then
+  echo '{"systemMessage":"Skipping coordination files","continue":true}'
   exit 0
 fi
 
 # Check if file is locked by another instance
 if ! coord_check_lock "${FILE_PATH}"; then
   HOLDER=$(coord_check_lock "${FILE_PATH}" 2>&1 | grep "Locked by:" | cut -d: -f2 | xargs || echo "unknown")
-  echo "WARNING: File ${FILE_PATH} is locked by instance ${HOLDER}" >&2
-  echo "You may want to wait or check the work registry: .claude/coordination/work-registry.json" >&2
-  exit 1
+  MSG="File ${FILE_PATH} is locked by instance ${HOLDER}. You may want to wait or check the work registry: .claude/coordination/work-registry.json"
+  jq -n --arg msg "$MSG" '{systemMessage: $msg, continue: false, hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "File locked by another instance"}}'
+  exit 0
 fi
 
 # Try to acquire lock (or renew if we hold it)
@@ -49,8 +52,9 @@ if ! coord_acquire_lock "${FILE_PATH}" "${INTENT}"; then
   EXIT_CODE=$?
 
   if [[ ${EXIT_CODE} -eq 10 ]]; then
-    echo "ERROR: Cannot acquire lock on ${FILE_PATH}" >&2
-    exit 1
+    MSG="Cannot acquire lock on ${FILE_PATH}"
+    jq -n --arg msg "$MSG" '{systemMessage: $msg, continue: false, hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "Lock acquisition failed"}}'
+    exit 0
   elif [[ ${EXIT_CODE} -eq 11 ]]; then
     # Expired lock was cleaned, retry
     coord_acquire_lock "${FILE_PATH}" "${INTENT}"
@@ -58,11 +62,11 @@ if ! coord_acquire_lock "${FILE_PATH}" "${INTENT}"; then
 fi
 
 # Check for conflicts (file modified since lock acquired)
+CONFLICT_MSG=""
 if ! coord_detect_conflict "${FILE_PATH}"; then
-  echo "WARNING: File ${FILE_PATH} has been modified since lock was acquired" >&2
-  echo "This may indicate concurrent edits. Consider reviewing changes." >&2
+  CONFLICT_MSG=" (Warning: file has been modified since lock was acquired - consider reviewing changes)"
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"File lock checked","continue":true}'
+jq -n --arg msg "File lock checked${CONFLICT_MSG}" '{systemMessage: $msg, continue: true}'
 exit 0

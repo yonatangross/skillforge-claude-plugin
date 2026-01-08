@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "vcr-http-recording",
   "version": "1.0.0",
   "description": "VCR.py HTTP recording for deterministic Python tests",
   "capabilities": {
     "http-recording": {
-      "keywords": ["record HTTP", "vcr.use_cassette", "record mode", "capture HTTP"],
+      "keywords": [
+        "record HTTP",
+        "vcr.use_cassette",
+        "record mode",
+        "capture HTTP"
+      ],
       "solves": [
         "Record HTTP interactions for replay",
         "Capture real API responses",
@@ -12,7 +18,12 @@
       ]
     },
     "cassette-replay": {
-      "keywords": ["replay", "cassette", "playback", "mock replay"],
+      "keywords": [
+        "replay",
+        "cassette",
+        "playback",
+        "mock replay"
+      ],
       "solves": [
         "Replay recorded HTTP interactions",
         "Run tests without network access",
@@ -20,7 +31,12 @@
       ]
     },
     "async-support": {
-      "keywords": ["async", "aiohttp", "httpx async", "async cassette"],
+      "keywords": [
+        "async",
+        "aiohttp",
+        "httpx async",
+        "async cassette"
+      ],
       "solves": [
         "Record async HTTP clients",
         "Handle aiohttp and httpx async",
@@ -28,7 +44,13 @@
       ]
     },
     "sensitive-data-filtering": {
-      "keywords": ["filter", "scrub", "redact", "sensitive data", "before_record"],
+      "keywords": [
+        "filter",
+        "scrub",
+        "redact",
+        "sensitive data",
+        "before_record"
+      ],
       "solves": [
         "Scrub API keys from cassettes",
         "Redact sensitive data",
@@ -36,7 +58,12 @@
       ]
     },
     "custom-matchers": {
-      "keywords": ["matcher", "match on", "request matching", "custom match"],
+      "keywords": [
+        "matcher",
+        "match on",
+        "request matching",
+        "custom match"
+      ],
       "solves": [
         "Configure request matching rules",
         "Ignore dynamic request parts",
@@ -44,7 +71,11 @@
       ]
     },
     "llm-api-testing": {
-      "keywords": ["LLM cassette", "OpenAI recording", "Anthropic recording"],
+      "keywords": [
+        "LLM cassette",
+        "OpenAI recording",
+        "Anthropic recording"
+      ],
       "solves": [
         "Record LLM API responses",
         "Test AI integrations deterministically",
@@ -53,8 +84,21 @@
     }
   },
   "triggers": {
-    "high_confidence": ["VCR", "cassette", "vcr\\.use_cassette", "HTTP.*recording"],
-    "medium_confidence": ["record HTTP", "replay HTTP", "pytest.mark.vcr"]
+    "high_confidence": [
+      "VCR",
+      "cassette",
+      "vcr\\.use_cassette",
+      "HTTP.*recording"
+    ],
+    "medium_confidence": [
+      "record HTTP",
+      "replay HTTP",
+      "pytest.mark.vcr"
+    ]
   },
-  "integrates_with": ["msw-mocking", "integration-testing", "llm-testing"]
+  "integrates_with": [
+    "msw-mocking",
+    "integration-testing",
+    "llm-testing"
+  ]
 }

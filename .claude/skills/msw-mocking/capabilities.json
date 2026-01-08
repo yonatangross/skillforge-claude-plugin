@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "msw-mocking",
   "version": "2.0.0",
   "description": "Mock Service Worker (MSW) 2.x for network-level API mocking in frontend tests",
   "capabilities": {
     "http-request-mocking": {
-      "keywords": ["http.get", "http.post", "http handler", "REST mock"],
+      "keywords": [
+        "http.get",
+        "http.post",
+        "http handler",
+        "REST mock"
+      ],
       "solves": [
         "Mock REST API endpoints",
         "Intercept HTTP requests at network level",
@@ -12,7 +18,12 @@
       ]
     },
     "graphql-mocking": {
-      "keywords": ["graphql.query", "graphql.mutation", "GraphQL handler", "mock GraphQL"],
+      "keywords": [
+        "graphql.query",
+        "graphql.mutation",
+        "GraphQL handler",
+        "mock GraphQL"
+      ],
       "solves": [
         "Mock GraphQL queries and mutations",
         "Handle GraphQL variables in mocks",
@@ -20,7 +31,12 @@
       ]
     },
     "websocket-mocking": {
-      "keywords": ["WebSocket", "ws mock", "real-time mock", "socket mock"],
+      "keywords": [
+        "WebSocket",
+        "ws mock",
+        "real-time mock",
+        "socket mock"
+      ],
       "solves": [
         "Mock WebSocket connections",
         "Simulate real-time events",
@@ -28,7 +44,12 @@
       ]
     },
     "error-simulation": {
-      "keywords": ["error simulation", "network error", "500 error", "mock error"],
+      "keywords": [
+        "error simulation",
+        "network error",
+        "500 error",
+        "mock error"
+      ],
       "solves": [
         "Simulate API errors in tests",
         "Test error handling UI",
@@ -36,7 +57,12 @@
       ]
     },
     "network-delay-simulation": {
-      "keywords": ["delay", "latency", "slow response", "loading state"],
+      "keywords": [
+        "delay",
+        "latency",
+        "slow response",
+        "loading state"
+      ],
       "solves": [
         "Simulate slow network responses",
         "Test loading state UI",
@@ -44,7 +70,12 @@
       ]
     },
     "runtime-handler-override": {
-      "keywords": ["runtime override", "use.once", "test-specific handler", "override"],
+      "keywords": [
+        "runtime override",
+        "use.once",
+        "test-specific handler",
+        "override"
+      ],
       "solves": [
         "Override handlers for specific tests",
         "Create one-time response handlers",
@@ -53,8 +84,22 @@
     }
   },
   "triggers": {
-    "high_confidence": ["MSW", "Mock Service Worker", "http\\.get", "http\\.post"],
-    "medium_confidence": ["mock API", "frontend testing", "network mocking", "API test"]
+    "high_confidence": [
+      "MSW",
+      "Mock Service Worker",
+      "http\\.get",
+      "http\\.post"
+    ],
+    "medium_confidence": [
+      "mock API",
+      "frontend testing",
+      "network mocking",
+      "API test"
+    ]
   },
-  "integrates_with": ["unit-testing", "integration-testing", "vcr-http-recording"]
+  "integrates_with": [
+    "unit-testing",
+    "integration-testing",
+    "vcr-http-recording"
+  ]
 }

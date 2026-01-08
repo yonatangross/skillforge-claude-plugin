@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "auth-patterns",
   "version": "2.0.0",
   "description": "Authentication and authorization patterns with OAuth 2.1, Passkeys/WebAuthn, and modern security standards",
   "capabilities": {
     "password-hashing": {
-      "keywords": ["password", "hashing", "bcrypt", "argon2", "hash"],
+      "keywords": [
+        "password",
+        "hashing",
+        "bcrypt",
+        "argon2",
+        "hash"
+      ],
       "solves": [
         "Securely hash passwords with modern algorithms",
         "Configure appropriate cost factors",
@@ -12,7 +19,13 @@
       ]
     },
     "jwt-tokens": {
-      "keywords": ["JWT", "token", "access token", "claims", "jsonwebtoken"],
+      "keywords": [
+        "JWT",
+        "token",
+        "access token",
+        "claims",
+        "jsonwebtoken"
+      ],
       "solves": [
         "Generate and validate JWT access tokens",
         "Implement proper token expiration",
@@ -20,7 +33,13 @@
       ]
     },
     "oauth2-pkce": {
-      "keywords": ["OAuth", "PKCE", "OAuth 2.1", "authorization code", "code verifier"],
+      "keywords": [
+        "OAuth",
+        "PKCE",
+        "OAuth 2.1",
+        "authorization code",
+        "code verifier"
+      ],
       "solves": [
         "Implement OAuth 2.1 with PKCE flow",
         "Secure authorization for SPAs and mobile apps",
@@ -28,7 +47,13 @@
       ]
     },
     "passkeys-webauthn": {
-      "keywords": ["passkey", "WebAuthn", "FIDO2", "passwordless", "biometric"],
+      "keywords": [
+        "passkey",
+        "WebAuthn",
+        "FIDO2",
+        "passwordless",
+        "biometric"
+      ],
       "solves": [
         "Implement passwordless authentication",
         "Configure WebAuthn registration and login",
@@ -36,7 +61,13 @@
       ]
     },
     "session-management": {
-      "keywords": ["session", "cookie", "session storage", "logout", "invalidate"],
+      "keywords": [
+        "session",
+        "cookie",
+        "session storage",
+        "logout",
+        "invalidate"
+      ],
       "solves": [
         "Manage user sessions securely",
         "Implement session invalidation on logout",
@@ -44,7 +75,13 @@
       ]
     },
     "role-based-access": {
-      "keywords": ["RBAC", "role", "permission", "authorization", "access control"],
+      "keywords": [
+        "RBAC",
+        "role",
+        "permission",
+        "authorization",
+        "access control"
+      ],
       "solves": [
         "Implement role-based access control",
         "Define permission hierarchies",
@@ -53,8 +90,23 @@
     }
   },
   "triggers": {
-    "high_confidence": ["authentication", "OAuth.*PKCE", "passkey", "WebAuthn"],
-    "medium_confidence": ["login", "JWT", "token", "session", "password"]
+    "high_confidence": [
+      "authentication",
+      "OAuth.*PKCE",
+      "passkey",
+      "WebAuthn"
+    ],
+    "medium_confidence": [
+      "login",
+      "JWT",
+      "token",
+      "session",
+      "password"
+    ]
   },
-  "integrates_with": ["owasp-top-10", "input-validation", "api-design-framework"]
+  "integrates_with": [
+    "owasp-top-10",
+    "input-validation",
+    "api-design-framework"
+  ]
 }

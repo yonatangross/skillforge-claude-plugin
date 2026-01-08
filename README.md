@@ -10,14 +10,15 @@
 
 <p align="center">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin"><img src="https://img.shields.io/github/stars/yonatangross/skillforge-claude-plugin?style=flat-square" alt="GitHub Stars"></a>
-  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-1.0.0-green?style=flat-square" alt="Version"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.6.1-green?style=flat-square" alt="Version"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml"><img src="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
   <a href="https://github.com/anthropics/claude-plugins-official/pull/86"><img src="https://img.shields.io/badge/anthropic--official-pending-yellow?style=flat-square" alt="Anthropic Official"></a>
   <a href="https://github.com/ananddtyagi/cc-marketplace/pull/24"><img src="https://img.shields.io/badge/cc--marketplace-pending-yellow?style=flat-square" alt="CC Marketplace"></a>
 </p>
 
 <p align="center">
-  68 skills | 11 commands | 20 agents | 29 hooks | 7 plugin bundles
+  72 skills | 11 commands | 20 agents | 89 hooks | 7 plugin bundles
 </p>
 
 ---
@@ -33,7 +34,7 @@
 /plugin marketplace add yonatangross/skillforge-claude-plugin
 
 # Step 2: Install full toolkit or specific bundles
-/plugin install skillforge-complete@complete         # Everything (61 skills)
+/plugin install skillforge-complete@complete         # Everything (72 skills)
 
 # Or install specific categories:
 /plugin install skillforge-complete@ai-development   # AI/LLM skills (23 skills)
@@ -306,7 +307,7 @@ mcp__context7__query-docs(
 
 ### Hook Auditing
 
-All 29 hooks have been security-audited and follow these standards:
+All 89 hooks have been security-audited and follow these standards:
 
 - **Strict mode enabled**: `set -euo pipefail` in all bash hooks
 - **Input validation**: All hook inputs are validated via JSON schema
@@ -344,7 +345,7 @@ fi
 
 ```
 .claude/
-+-- skills/                    # 61 domain-specific skills
++-- skills/                    # 72 domain-specific skills
 |   +-- agent-loops/
 |   |   +-- capabilities.json  # Discovery metadata
 |   |   +-- SKILL.md          # Core patterns
@@ -363,7 +364,7 @@ fi
 |   +-- product-strategist.md
 |   +-- llm-integrator.md
 |   +-- ...
-+-- hooks/                     # 29 lifecycle hooks
++-- hooks/                     # 89 lifecycle hooks
 |   +-- pretool/
 |   +-- posttool/
 |   +-- lifecycle/

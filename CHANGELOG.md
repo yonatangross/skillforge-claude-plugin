@@ -5,6 +5,45 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.1] - 2026-01-08
+
+### Added
+
+**Comprehensive CI/CD Pipeline**
+- GitHub Actions workflow with 5-stage pipeline (lint → unit → security → integration → performance)
+- Matrix testing on Ubuntu and macOS
+- Zero tolerance policy for security test failures
+
+**New Test Suites**
+- `tests/ci/lint.sh` - Static analysis: JSON validity, shellcheck, schema validation
+- `tests/e2e/test-progressive-loading.sh` - Skill discovery and loading validation
+- `tests/e2e/test-agent-lifecycle.sh` - Agent spawning and handoff testing
+- `tests/e2e/test-coordination-e2e.sh` - Multi-worktree coordination system tests
+- `tests/performance/test-token-budget.sh` - Token budget analysis and recommendations
+- `tests/security/test-unicode-attacks.sh` - Unicode/homoglyph/BIDI attack prevention
+- `tests/security/test-symlink-attacks.sh` - Symlink and TOCTOU attack prevention
+
+**Test Runner v3.0**
+- `tests/run-all-tests.sh` updated with all new test categories
+- 19 test suites, organized by layer (lint, unit, security, integration, e2e, performance)
+
+### Changed
+
+- Skills count increased from 68 to 72
+- Portable shell scripts (macOS + Linux compatibility)
+
+### Removed
+
+**Cleanup of AI Slop Documentation**
+- Removed `.claude/archive/` - deprecated systems and docs
+- Removed `.claude/docs/` - AI-generated design documents
+- Removed `.claude/context/patterns/` - redundant with skills
+- Removed `.claude/workflows/` - orphaned markdown files
+- Removed 16 redundant instruction files (kept only `context-initialization.md`)
+- Removed root slop files: `SECURITY_TEST_INDEX.md`, `HOOK_SECURITY_AUDIT.md`, `SKILL.md`
+- Removed `tests/COMPREHENSIVE-TEST-STRATEGY.md` - replaced by actual tests
+
+
 ## [4.5.0] - 2026-01-08
 
 ### Added

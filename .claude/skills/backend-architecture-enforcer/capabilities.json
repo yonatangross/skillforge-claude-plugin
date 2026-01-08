@@ -1,10 +1,18 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "backend-architecture-enforcer",
   "version": "1.0.0",
   "description": "Enforce FastAPI Clean Architecture with blocking validation for layer separation and DI patterns",
   "capabilities": {
     "layer-separation": {
-      "keywords": ["router", "service", "repository", "layer", "clean architecture", "separation"],
+      "keywords": [
+        "router",
+        "service",
+        "repository",
+        "layer",
+        "clean architecture",
+        "separation"
+      ],
       "solves": [
         "Prevent database operations in routers",
         "Block business logic in route handlers",
@@ -13,7 +21,13 @@
       "reference_file": "SKILL.md#validation-rules"
     },
     "dependency-injection": {
-      "keywords": ["depends", "dependency injection", "DI", "fastapi depends", "inject"],
+      "keywords": [
+        "depends",
+        "dependency injection",
+        "DI",
+        "fastapi depends",
+        "inject"
+      ],
       "solves": [
         "Enforce use of FastAPI Depends() pattern",
         "Block direct instantiation in routers",
@@ -22,7 +36,13 @@
       "reference_file": "SKILL.md#dependency-injection"
     },
     "file-naming": {
-      "keywords": ["naming convention", "file name", "router_", "_service", "_repository"],
+      "keywords": [
+        "naming convention",
+        "file name",
+        "router_",
+        "_service",
+        "_repository"
+      ],
       "solves": [
         "Enforce consistent file naming patterns",
         "Validate router/service/repository naming",
@@ -31,7 +51,13 @@
       "reference_file": "SKILL.md#file-naming-conventions"
     },
     "async-patterns": {
-      "keywords": ["async", "await", "sync", "blocking call", "asyncio"],
+      "keywords": [
+        "async",
+        "await",
+        "sync",
+        "blocking call",
+        "asyncio"
+      ],
       "solves": [
         "Detect sync calls in async functions",
         "Prevent blocking operations in async code",

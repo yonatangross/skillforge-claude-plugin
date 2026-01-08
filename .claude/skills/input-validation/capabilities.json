@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "input-validation",
   "version": "2.0.0",
   "description": "Input validation and sanitization patterns with Zod v4 and Pydantic",
   "capabilities": {
     "schema-validation": {
-      "keywords": ["schema", "validate", "Zod", "Pydantic", "validation"],
+      "keywords": [
+        "schema",
+        "validate",
+        "Zod",
+        "Pydantic",
+        "validation"
+      ],
       "solves": [
         "Validate input against schemas",
         "Define validation rules declaratively",
@@ -12,7 +19,12 @@
       ]
     },
     "type-coercion": {
-      "keywords": ["coerce", "coercion", "type conversion", "parse"],
+      "keywords": [
+        "coerce",
+        "coercion",
+        "type conversion",
+        "parse"
+      ],
       "solves": [
         "Automatically convert input types",
         "Parse strings to numbers/dates",
@@ -20,7 +32,13 @@
       ]
     },
     "allowlist-validation": {
-      "keywords": ["allowlist", "whitelist", "enum", "literal", "allowed values"],
+      "keywords": [
+        "allowlist",
+        "whitelist",
+        "enum",
+        "literal",
+        "allowed values"
+      ],
       "solves": [
         "Validate against allowed values",
         "Prevent injection attacks",
@@ -28,7 +46,13 @@
       ]
     },
     "html-sanitization": {
-      "keywords": ["sanitize", "HTML", "XSS", "escape", "DOMPurify"],
+      "keywords": [
+        "sanitize",
+        "HTML",
+        "XSS",
+        "escape",
+        "DOMPurify"
+      ],
       "solves": [
         "Sanitize HTML input safely",
         "Prevent XSS attacks",
@@ -36,7 +60,13 @@
       ]
     },
     "file-validation": {
-      "keywords": ["file", "upload", "MIME type", "file size", "file type"],
+      "keywords": [
+        "file",
+        "upload",
+        "MIME type",
+        "file size",
+        "file type"
+      ],
       "solves": [
         "Validate file uploads securely",
         "Check file content not just extension",
@@ -44,7 +74,12 @@
       ]
     },
     "error-formatting": {
-      "keywords": ["error", "error message", "validation error", "user-friendly"],
+      "keywords": [
+        "error",
+        "error message",
+        "validation error",
+        "user-friendly"
+      ],
       "solves": [
         "Format validation errors for users",
         "Avoid exposing internal details",
@@ -53,8 +88,22 @@
     }
   },
   "triggers": {
-    "high_confidence": ["input.*validation", "Zod", "Pydantic", "sanitize"],
-    "medium_confidence": ["validate", "allowlist", "coerce", "schema"]
+    "high_confidence": [
+      "input.*validation",
+      "Zod",
+      "Pydantic",
+      "sanitize"
+    ],
+    "medium_confidence": [
+      "validate",
+      "allowlist",
+      "coerce",
+      "schema"
+    ]
   },
-  "integrates_with": ["owasp-top-10", "auth-patterns", "type-safety-validation"]
+  "integrates_with": [
+    "owasp-top-10",
+    "auth-patterns",
+    "type-safety-validation"
+  ]
 }

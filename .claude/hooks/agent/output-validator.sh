@@ -1,7 +1,7 @@
 #!/bin/bash
 # output-validator.sh - Validates agent output quality and completeness
 
-set -e
+set -euo pipefail
 
 # Get agent name from environment
 AGENT_NAME="${CLAUDE_AGENT_NAME:-unknown}"
@@ -47,26 +47,19 @@ if [ ${#VALIDATION_ERRORS[@]} -gt 0 ]; then
 fi
 
 # Create system message
-SYSTEM_MESSAGE="🔍 Output Validation [$VALIDATION_STATUS]
-Agent: $AGENT_NAME
-Timestamp: $TIMESTAMP
-Output length: $OUTPUT_LENGTH chars"
+SYSTEM_MESSAGE="Output Validation [$VALIDATION_STATUS] - Agent: $AGENT_NAME, Timestamp: $TIMESTAMP, Output length: $OUTPUT_LENGTH chars"
 
 if [ ${#VALIDATION_ERRORS[@]} -gt 0 ]; then
-    SYSTEM_MESSAGE="$SYSTEM_MESSAGE
-❌ Errors:"
+    SYSTEM_MESSAGE="$SYSTEM_MESSAGE | Errors:"
     for error in "${VALIDATION_ERRORS[@]}"; do
-        SYSTEM_MESSAGE="$SYSTEM_MESSAGE
-  - $error"
+        SYSTEM_MESSAGE="$SYSTEM_MESSAGE $error;"
     done
 fi
 
 if [ ${#VALIDATION_WARNINGS[@]} -gt 0 ]; then
-    SYSTEM_MESSAGE="$SYSTEM_MESSAGE
-⚠️  Warnings:"
+    SYSTEM_MESSAGE="$SYSTEM_MESSAGE | Warnings:"
     for warning in "${VALIDATION_WARNINGS[@]}"; do
-        SYSTEM_MESSAGE="$SYSTEM_MESSAGE
-  - $warning"
+        SYSTEM_MESSAGE="$SYSTEM_MESSAGE $warning;"
     done
 fi
 
@@ -83,14 +76,12 @@ LOG_FILE="$LOG_DIR/${AGENT_NAME}_$(date +%Y%m%d_%H%M%S).log"
     echo "$OUTPUT"
 } > "$LOG_FILE"
 
-# Return system message
-echo "$SYSTEM_MESSAGE"
-
-# Exit with appropriate code
+# CC 2.1.1 compliant: Always output JSON with continue field
 if [ "$VALIDATION_STATUS" = "failed" ]; then
-    exit 1
+    jq -n --arg msg "$SYSTEM_MESSAGE" '{systemMessage: $msg, continue: false}'
+    exit 0
 fi
 
 # Output systemMessage for user visibility
-echo '{"systemMessage":"Output validated","continue":true}'
+jq -n --arg msg "$SYSTEM_MESSAGE" '{systemMessage: $msg, continue: true}'
 exit 0

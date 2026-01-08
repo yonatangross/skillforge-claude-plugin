@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "test-standards-enforcer",
   "version": "1.0.0",
   "description": "Enforce testing best practices with blocking validation for AAA pattern, naming, and coverage",
   "capabilities": {
     "aaa-pattern": {
-      "keywords": ["AAA", "arrange act assert", "test structure", "test pattern"],
+      "keywords": [
+        "AAA",
+        "arrange act assert",
+        "test structure",
+        "test pattern"
+      ],
       "solves": [
         "Enforce Arrange-Act-Assert pattern",
         "Ensure clear test structure",
@@ -13,7 +19,12 @@
       "reference_file": "SKILL.md#aaa-pattern-required"
     },
     "test-naming": {
-      "keywords": ["test name", "test naming", "descriptive test", "test description"],
+      "keywords": [
+        "test name",
+        "test naming",
+        "descriptive test",
+        "test description"
+      ],
       "solves": [
         "Enforce descriptive test names",
         "Block generic test names like test1",
@@ -22,7 +33,12 @@
       "reference_file": "SKILL.md#naming-conventions"
     },
     "test-location": {
-      "keywords": ["test location", "test directory", "tests folder", "where tests"],
+      "keywords": [
+        "test location",
+        "test directory",
+        "tests folder",
+        "where tests"
+      ],
       "solves": [
         "Validate test file placement",
         "Block tests mixed with source",
@@ -31,7 +47,13 @@
       "reference_file": "SKILL.md#file-location-rules"
     },
     "coverage-threshold": {
-      "keywords": ["coverage", "test coverage", "code coverage", "80%", "threshold"],
+      "keywords": [
+        "coverage",
+        "test coverage",
+        "code coverage",
+        "80%",
+        "threshold"
+      ],
       "solves": [
         "Enforce minimum 80% coverage",
         "Block merges with low coverage",
@@ -40,7 +62,12 @@
       "reference_file": "SKILL.md#coverage-threshold"
     },
     "test-isolation": {
-      "keywords": ["test isolation", "shared state", "independent tests", "flaky"],
+      "keywords": [
+        "test isolation",
+        "shared state",
+        "independent tests",
+        "flaky"
+      ],
       "solves": [
         "Detect shared mutable state",
         "Ensure test independence",

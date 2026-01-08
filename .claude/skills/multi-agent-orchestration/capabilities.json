@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "multi-agent-orchestration",
   "version": "1.0.0",
   "description": "Patterns for orchestrating multiple AI agents",
   "capabilities": {
     "agent-communication": {
-      "keywords": ["agent communication", "message passing", "agent protocol", "inter-agent"],
+      "keywords": [
+        "agent communication",
+        "message passing",
+        "agent protocol",
+        "inter-agent"
+      ],
       "solves": [
         "Establish communication between agents",
         "Implement message passing patterns",
@@ -12,7 +18,12 @@
       ]
     },
     "task-delegation": {
-      "keywords": ["delegate", "task routing", "work distribution", "agent dispatch"],
+      "keywords": [
+        "delegate",
+        "task routing",
+        "work distribution",
+        "agent dispatch"
+      ],
       "solves": [
         "Route tasks to specialized agents",
         "Implement work distribution strategies",
@@ -20,7 +31,12 @@
       ]
     },
     "result-aggregation": {
-      "keywords": ["aggregate", "combine results", "merge outputs", "synthesis"],
+      "keywords": [
+        "aggregate",
+        "combine results",
+        "merge outputs",
+        "synthesis"
+      ],
       "solves": [
         "Combine outputs from multiple agents",
         "Implement result synthesis patterns",
@@ -28,7 +44,12 @@
       ]
     },
     "error-coordination": {
-      "keywords": ["error handling", "retry", "fallback agent", "failure recovery"],
+      "keywords": [
+        "error handling",
+        "retry",
+        "fallback agent",
+        "failure recovery"
+      ],
       "solves": [
         "Handle agent failures gracefully",
         "Implement retry and fallback patterns",
@@ -36,7 +57,12 @@
       ]
     },
     "agent-lifecycle": {
-      "keywords": ["lifecycle", "spawn agent", "terminate", "agent pool"],
+      "keywords": [
+        "lifecycle",
+        "spawn agent",
+        "terminate",
+        "agent pool"
+      ],
       "solves": [
         "Manage agent creation and termination",
         "Implement agent pooling",
@@ -45,8 +71,19 @@
     }
   },
   "triggers": {
-    "high_confidence": ["multi.*agent", "agent.*orchestration", "multiple.*agents"],
-    "medium_confidence": ["agent coordination", "agent system", "task delegation"]
+    "high_confidence": [
+      "multi.*agent",
+      "agent.*orchestration",
+      "multiple.*agents"
+    ],
+    "medium_confidence": [
+      "agent coordination",
+      "agent system",
+      "task delegation"
+    ]
   },
-  "integrates_with": ["langgraph-supervisor", "agent-loops"]
+  "integrates_with": [
+    "langgraph-supervisor",
+    "agent-loops"
+  ]
 }

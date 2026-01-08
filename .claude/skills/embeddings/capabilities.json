@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "embeddings",
   "version": "2.0.0",
   "description": "Text embeddings for semantic search and similarity with modern embedding models",
   "capabilities": {
     "text-to-vector": {
-      "keywords": ["embedding", "text to vector", "vectorize", "embed text"],
+      "keywords": [
+        "embedding",
+        "text to vector",
+        "vectorize",
+        "embed text"
+      ],
       "solves": [
         "Convert text to vector embeddings",
         "Choose appropriate embedding models",
@@ -12,7 +18,12 @@
       ]
     },
     "semantic-search": {
-      "keywords": ["semantic search", "vector search", "similarity search", "find similar"],
+      "keywords": [
+        "semantic search",
+        "vector search",
+        "similarity search",
+        "find similar"
+      ],
       "solves": [
         "Implement semantic search over documents",
         "Configure similarity thresholds",
@@ -20,7 +31,13 @@
       ]
     },
     "chunking-strategies": {
-      "keywords": ["chunk", "chunking", "split", "text splitting", "overlap"],
+      "keywords": [
+        "chunk",
+        "chunking",
+        "split",
+        "text splitting",
+        "overlap"
+      ],
       "solves": [
         "Split documents into optimal chunks",
         "Configure chunk size and overlap",
@@ -28,7 +45,12 @@
       ]
     },
     "batch-embedding": {
-      "keywords": ["batch", "bulk embed", "parallel embedding", "batch processing"],
+      "keywords": [
+        "batch",
+        "bulk embed",
+        "parallel embedding",
+        "batch processing"
+      ],
       "solves": [
         "Embed large document collections efficiently",
         "Handle rate limits and retries",
@@ -36,7 +58,13 @@
       ]
     },
     "local-embeddings": {
-      "keywords": ["local", "ollama", "self-hosted", "on-premise", "offline"],
+      "keywords": [
+        "local",
+        "ollama",
+        "self-hosted",
+        "on-premise",
+        "offline"
+      ],
       "solves": [
         "Run embeddings locally with Ollama",
         "Deploy self-hosted embedding models",
@@ -45,8 +73,21 @@
     }
   },
   "triggers": {
-    "high_confidence": ["embedding", "semantic.*search", "text.*vector"],
-    "medium_confidence": ["vector", "similarity", "chunk", "RAG"]
+    "high_confidence": [
+      "embedding",
+      "semantic.*search",
+      "text.*vector"
+    ],
+    "medium_confidence": [
+      "vector",
+      "similarity",
+      "chunk",
+      "RAG"
+    ]
   },
-  "integrates_with": ["rag-retrieval", "pgvector-search", "ollama-local"]
+  "integrates_with": [
+    "rag-retrieval",
+    "pgvector-search",
+    "ollama-local"
+  ]
 }

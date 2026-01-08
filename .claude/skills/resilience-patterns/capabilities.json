@@ -1,10 +1,17 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "resilience-patterns",
   "version": "1.0.0",
   "description": "Production-grade resilience patterns for distributed systems and LLM workflows",
   "capabilities": {
     "circuit-breaker": {
-      "keywords": ["circuit breaker", "failure threshold", "cascade failure", "trip", "half-open"],
+      "keywords": [
+        "circuit breaker",
+        "failure threshold",
+        "cascade failure",
+        "trip",
+        "half-open"
+      ],
       "solves": [
         "Prevent cascade failures when external services fail",
         "Automatically recover when services come back online",
@@ -14,7 +21,14 @@
       "template_file": "templates/circuit-breaker.py"
     },
     "bulkhead": {
-      "keywords": ["bulkhead", "isolation", "semaphore", "thread pool", "resource pool", "tier"],
+      "keywords": [
+        "bulkhead",
+        "isolation",
+        "semaphore",
+        "thread pool",
+        "resource pool",
+        "tier"
+      ],
       "solves": [
         "Isolate failures to prevent entire system crashes",
         "Prioritize critical operations over optional ones",
@@ -24,7 +38,13 @@
       "template_file": "templates/bulkhead.py"
     },
     "retry-strategies": {
-      "keywords": ["retry", "backoff", "exponential", "jitter", "thundering herd"],
+      "keywords": [
+        "retry",
+        "backoff",
+        "exponential",
+        "jitter",
+        "thundering herd"
+      ],
       "solves": [
         "Handle transient failures automatically",
         "Avoid overwhelming recovering services",
@@ -34,7 +54,14 @@
       "template_file": "templates/retry-handler.py"
     },
     "llm-resilience": {
-      "keywords": ["LLM", "fallback", "model", "token budget", "rate limit", "context length"],
+      "keywords": [
+        "LLM",
+        "fallback",
+        "model",
+        "token budget",
+        "rate limit",
+        "context length"
+      ],
       "solves": [
         "Handle LLM API rate limits gracefully",
         "Fall back to alternative models when primary fails",
@@ -44,7 +71,13 @@
       "template_file": "templates/llm-fallback-chain.py"
     },
     "error-classification": {
-      "keywords": ["error", "retryable", "transient", "permanent", "classification"],
+      "keywords": [
+        "error",
+        "retryable",
+        "transient",
+        "permanent",
+        "classification"
+      ],
       "solves": [
         "Determine which errors should be retried",
         "Categorize errors by severity and recoverability",

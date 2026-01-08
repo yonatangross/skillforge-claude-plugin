@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "langgraph-checkpoints",
   "version": "1.0.0",
   "description": "LangGraph checkpointing and persistence patterns",
   "capabilities": {
     "checkpoint-saving": {
-      "keywords": ["save checkpoint", "checkpoint", "persist state", "save state"],
+      "keywords": [
+        "save checkpoint",
+        "checkpoint",
+        "persist state",
+        "save state"
+      ],
       "solves": [
         "Save workflow state at key points",
         "Implement checkpoint strategies",
@@ -12,7 +18,12 @@
       ]
     },
     "checkpoint-loading": {
-      "keywords": ["load checkpoint", "restore", "resume", "recovery"],
+      "keywords": [
+        "load checkpoint",
+        "restore",
+        "resume",
+        "recovery"
+      ],
       "solves": [
         "Resume workflows from checkpoints",
         "Implement state recovery",
@@ -20,7 +31,12 @@
       ]
     },
     "memory-backends": {
-      "keywords": ["memory backend", "MemorySaver", "SqliteSaver", "PostgresSaver"],
+      "keywords": [
+        "memory backend",
+        "MemorySaver",
+        "SqliteSaver",
+        "PostgresSaver"
+      ],
       "solves": [
         "Configure checkpoint storage backends",
         "Choose between memory/SQLite/Postgres",
@@ -28,7 +44,11 @@
       ]
     },
     "async-checkpoints": {
-      "keywords": ["async checkpoint", "AsyncSqliteSaver", "async persistence"],
+      "keywords": [
+        "async checkpoint",
+        "AsyncSqliteSaver",
+        "async persistence"
+      ],
       "solves": [
         "Implement async checkpoint operations",
         "Handle concurrent checkpoint access",
@@ -36,7 +56,12 @@
       ]
     },
     "conversation-history": {
-      "keywords": ["conversation", "history", "message history", "thread"],
+      "keywords": [
+        "conversation",
+        "history",
+        "message history",
+        "thread"
+      ],
       "solves": [
         "Persist conversation history",
         "Implement thread-based checkpoints",
@@ -45,8 +70,20 @@
     }
   },
   "triggers": {
-    "high_confidence": ["LangGraph.*checkpoint", "checkpoint.*persist", "MemorySaver"],
-    "medium_confidence": ["checkpoint", "persistence", "state recovery", "conversation history"]
+    "high_confidence": [
+      "LangGraph.*checkpoint",
+      "checkpoint.*persist",
+      "MemorySaver"
+    ],
+    "medium_confidence": [
+      "checkpoint",
+      "persistence",
+      "state recovery",
+      "conversation history"
+    ]
   },
-  "integrates_with": ["langgraph-state", "langgraph-human-in-loop"]
+  "integrates_with": [
+    "langgraph-state",
+    "langgraph-human-in-loop"
+  ]
 }

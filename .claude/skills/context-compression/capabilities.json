@@ -1,10 +1,16 @@
 {
+  "$schema": "../../schemas/skill-capabilities.schema.json",
   "name": "context-compression",
   "version": "1.0.0",
   "description": "Compress conversation history while preserving task-critical information using anchored summarization",
   "capabilities": {
     "anchored-summarization": {
-      "keywords": ["compress", "summarize history", "context too long", "anchored summary"],
+      "keywords": [
+        "compress",
+        "summarize history",
+        "context too long",
+        "anchored summary"
+      ],
       "solves": [
         "Reduce context size while preserving critical information",
         "Implement structured compression with required sections",
@@ -13,7 +19,11 @@
       "reference_file": "references/compression-strategies.md"
     },
     "compression-triggers": {
-      "keywords": ["token limit", "running out of context", "when to compress"],
+      "keywords": [
+        "token limit",
+        "running out of context",
+        "when to compress"
+      ],
       "solves": [
         "Determine when to trigger compression (70% utilization)",
         "Set compression targets (50% utilization)",
@@ -22,7 +32,11 @@
       "reference_file": "SKILL.md#loading_tiers"
     },
     "probe-evaluation": {
-      "keywords": ["evaluate compression", "test compression", "probe"],
+      "keywords": [
+        "evaluate compression",
+        "test compression",
+        "probe"
+      ],
       "solves": [
         "Validate compression quality with functional probes",
         "Test information preservation after compression",

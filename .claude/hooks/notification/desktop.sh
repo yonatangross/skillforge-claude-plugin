@@ -35,4 +35,6 @@ if [[ "$NOTIFICATION_TYPE" == "permission_prompt" ]] || [[ "$NOTIFICATION_TYPE" 
   fi
 fi
 
+# CC 2.1.1 Compliant: output JSON with continue field
+echo '{"continue":true}'
 exit 0
