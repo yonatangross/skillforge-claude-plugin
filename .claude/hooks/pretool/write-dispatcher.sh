@@ -7,6 +7,12 @@ export _HOOK_INPUT
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# ANSI colors
+GREEN='\033[32m'
+RED='\033[31m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 FILE_PATH=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.file_path // ""')
 CONTENT=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.content // ""')
 TOOL_NAME=$(echo "$_HOOK_INPUT" | jq -r '.tool_name // "Write"')
@@ -17,8 +23,9 @@ CHECKS=()
 block() {
   local check="$1"
   local reason="$2"
-  jq -n --arg check "$check" --arg reason "$reason" \
-    '{systemMessage: ("✗ " + $check + ": " + $reason), hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
+  local msg="${RED}${TOOL_NAME}: ✗ ${check}${RESET}: ${reason}"
+  jq -n --arg msg "$msg" --arg reason "$reason" \
+    '{systemMessage: $msg, hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
   exit 0
 }
 
@@ -96,7 +103,15 @@ if [[ "$TOOL_NAME" == "Write" && ! -f "$FILE_PATH" ]]; then
 fi
 
 # Build output
-MSG=$(IFS=", "; echo "${CHECKS[*]}")
+# Format: ToolName: ✓ Check1 | ✓ Check2 | ✓ Check3
+MSG="${CYAN}${TOOL_NAME}:${RESET}"
+for i in "${!CHECKS[@]}"; do
+  if [[ $i -gt 0 ]]; then
+    MSG="$MSG |"
+  fi
+  MSG="$MSG ${GREEN}✓${RESET} ${CHECKS[$i]}"
+done
+
 jq -n \
   --arg msg "$MSG" \
   --arg file_path "$FILE_PATH" \

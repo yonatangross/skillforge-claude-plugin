@@ -71,11 +71,20 @@ case "$TOOL_NAME" in
     ;;
 esac
 
-# Output decision with systemMessage for user visibility
+# ANSI colors
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Output decision with colored systemMessage
+# Format: ToolName: ✓ Path
+MSG="${CYAN}${TOOL_NAME}:${RESET} ${GREEN}✓${RESET} Path"
+
 jq -n \
+  --arg msg "$MSG" \
   --argjson params "$PARAMS" \
   '{
-    systemMessage: "Path normalized",
+    systemMessage: $msg,
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "allow",

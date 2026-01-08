@@ -10,6 +10,11 @@ export _HOOK_INPUT
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RESULTS=()
 
+# ANSI colors
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 # Helper to run a hook
 run_hook() {
   local name="$1"
@@ -28,12 +33,19 @@ run_hook() {
 }
 
 # Run prompt hooks in order
-run_hook "Context injected" "$SCRIPT_DIR/context-injector.sh"
-run_hook "Todo enforced" "$SCRIPT_DIR/todo-enforcer.sh"
+run_hook "Context" "$SCRIPT_DIR/context-injector.sh"
+run_hook "Todo" "$SCRIPT_DIR/todo-enforcer.sh"
 
 # Build combined output
 if [[ ${#RESULTS[@]} -gt 0 ]]; then
-  MSG=$(IFS=", "; echo "${RESULTS[*]}")
+  # Format: Prompt: ✓ Check1 | ✓ Check2
+  MSG="${CYAN}Prompt:${RESET}"
+  for i in "${!RESULTS[@]}"; do
+    if [[ $i -gt 0 ]]; then
+      MSG="$MSG |"
+    fi
+    MSG="$MSG ${GREEN}✓${RESET} ${RESULTS[$i]}"
+  done
   echo "{\"systemMessage\": \"$MSG\"}"
 fi
 

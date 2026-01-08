@@ -21,6 +21,12 @@ echo "$(date -Iseconds) | $SKILL_NAME | ${SKILL_ARGS:-no args}" >> "$USAGE_LOG"
 # Info message
 info "Invoking skill: $SKILL_NAME"
 
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Skill tracked"}'
+# ANSI colors for consolidated output
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Format: Skill: ✓ Tracked
+MSG="${CYAN}Skill:${RESET} ${GREEN}✓${RESET} Tracked"
+echo "{\"systemMessage\":\"$MSG\"}"
 exit 0

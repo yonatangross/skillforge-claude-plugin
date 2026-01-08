@@ -8,6 +8,12 @@ export _HOOK_INPUT
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../_lib/common.sh" 2>/dev/null || true
 
+# ANSI colors
+GREEN='\033[32m'
+YELLOW='\033[33m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 TOOL_NAME=$(echo "$_HOOK_INPUT" | jq -r '.tool_name // "unknown"')
 TOOL_RESULT=$(echo "$_HOOK_INPUT" | jq -r '.tool_result // ""')
 FILE_PATH=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.file_path // ""')
@@ -68,10 +74,16 @@ esac
 if [[ ${#WARNINGS[@]} -gt 0 ]]; then
   # Show warnings prominently
   WARN_MSG=$(IFS="; "; echo "${WARNINGS[*]}")
-  echo "{\"systemMessage\": \"⚠ $WARN_MSG\"}"
-else
-  # Show success summary
-  MSG=$(IFS=", "; echo "${CHECKS[*]}")
+  echo "{\"systemMessage\": \"${YELLOW}⚠ ${TOOL_NAME}: ${WARN_MSG}${RESET}\"}"
+elif [[ ${#CHECKS[@]} -gt 0 ]]; then
+  # Format: ToolName: ✓ Check1 | ✓ Check2 | ✓ Check3
+  MSG="${CYAN}${TOOL_NAME}:${RESET}"
+  for i in "${!CHECKS[@]}"; do
+    if [[ $i -gt 0 ]]; then
+      MSG="$MSG |"
+    fi
+    MSG="$MSG ${GREEN}✓${RESET} ${CHECKS[$i]}"
+  done
   echo "{\"systemMessage\": \"$MSG\"}"
 fi
 

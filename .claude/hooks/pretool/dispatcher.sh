@@ -10,6 +10,12 @@ export _HOOK_INPUT
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../_lib/common.sh"
 
+# ANSI colors
+GREEN='\033[32m'
+RED='\033[31m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 TOOL_NAME=$(get_tool_name)
 RESULTS=()
 BLOCKED=""
@@ -71,13 +77,22 @@ case "$TOOL_NAME" in
 esac
 
 # Build output
-if [[ -n "$UPDATED_INPUT" ]]; then
-  # Return the updated input with combined message
-  MSG=$(IFS=", "; echo "${RESULTS[*]}")
-  echo "$UPDATED_INPUT" | jq --arg msg "$MSG" '.systemMessage = $msg'
-elif [[ ${#RESULTS[@]} -gt 0 ]]; then
-  MSG=$(IFS=", "; echo "${RESULTS[*]}")
-  echo "{\"systemMessage\": \"$MSG\"}"
+if [[ ${#RESULTS[@]} -gt 0 ]]; then
+  # Format: ToolName: ✓ Check1 | ✓ Check2 | ✓ Check3
+  MSG="${CYAN}${TOOL_NAME}:${RESET}"
+  for i in "${!RESULTS[@]}"; do
+    if [[ $i -gt 0 ]]; then
+      MSG="$MSG |"
+    fi
+    MSG="$MSG ${GREEN}✓${RESET} ${RESULTS[$i]}"
+  done
+
+  if [[ -n "$UPDATED_INPUT" ]]; then
+    # Return the updated input with combined message
+    echo "$UPDATED_INPUT" | jq --arg msg "$MSG" '.systemMessage = $msg'
+  else
+    echo "{\"systemMessage\": \"$MSG\"}"
+  fi
 fi
 
 exit 0

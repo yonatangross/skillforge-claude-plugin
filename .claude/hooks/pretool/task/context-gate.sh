@@ -174,8 +174,15 @@ Proceeding with: $subagent_type - $description
 
   # Allow the agent to proceed
   log_hook "Context gate passed: $subagent_type"
-  # Output systemMessage for user visibility
-  echo '{"systemMessage":"Context gate passed"}'
+
+  # ANSI colors for consolidated output
+  GREEN='\033[32m'
+  CYAN='\033[36m'
+  RESET='\033[0m'
+
+  # Format: Task: ✓ Gate
+  MSG="${CYAN}Task:${RESET} ${GREEN}✓${RESET} Gate"
+  echo "{\"systemMessage\":\"$MSG\"}"
   exit 0
 }
 

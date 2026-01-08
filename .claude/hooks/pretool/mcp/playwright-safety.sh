@@ -27,6 +27,12 @@ if [[ "$TOOL_NAME" == "mcp__playwright__browser_file_upload" ]]; then
   log_hook "File upload: $PATHS"
 fi
 
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Playwright safety checked"}'
+# ANSI colors for consolidated output
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Format: Playwright: ✓ Safe
+MSG="${CYAN}Playwright:${RESET} ${GREEN}✓${RESET} Safe"
+echo "{\"systemMessage\":\"$MSG\"}"
 exit 0

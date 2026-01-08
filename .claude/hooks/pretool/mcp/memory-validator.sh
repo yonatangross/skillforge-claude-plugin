@@ -26,6 +26,12 @@ Relations: ${RELATIONS:-N/A}
 This operation cannot be undone."
 fi
 
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Memory validated"}'
+# ANSI colors for consolidated output
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Format: Memory: ✓ Validated
+MSG="${CYAN}Memory:${RESET} ${GREEN}✓${RESET} Validated"
+echo "{\"systemMessage\":\"$MSG\"}"
 exit 0

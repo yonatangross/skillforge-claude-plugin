@@ -7,6 +7,12 @@ export _HOOK_INPUT
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+# ANSI colors
+GREEN='\033[32m'
+RED='\033[31m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 # Extract command for analysis
 COMMAND=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.command // ""')
 TIMEOUT=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.timeout // "null"')
@@ -18,8 +24,9 @@ CHECKS=()
 block() {
   local check="$1"
   local reason="$2"
-  jq -n --arg check "$check" --arg reason "$reason" \
-    '{systemMessage: ("✗ " + $check + ": " + $reason), hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
+  local msg="${RED}Bash: ✗ ${check}${RESET}: ${reason}"
+  jq -n --arg msg "$msg" --arg reason "$reason" \
+    '{systemMessage: $msg, hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
   exit 0
 }
 
@@ -72,7 +79,15 @@ UPDATED_PARAMS=$(jq -n \
   '{command: $command, timeout: $timeout} + (if $description != "" then {description: $description} else {} end)')
 
 # Output combined success message with updated input
-MSG=$(IFS=", "; echo "${CHECKS[*]}")
+# Format: Bash: ✓ Safe | ✓ Git | ✓ Defaults
+MSG="${CYAN}Bash:${RESET}"
+for i in "${!CHECKS[@]}"; do
+  if [[ $i -gt 0 ]]; then
+    MSG="$MSG |"
+  fi
+  MSG="$MSG ${GREEN}✓${RESET} ${CHECKS[$i]}"
+done
+
 jq -n \
   --arg msg "$MSG" \
   --argjson params "$UPDATED_PARAMS" \

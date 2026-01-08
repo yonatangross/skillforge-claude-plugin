@@ -6,6 +6,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RESULTS=()
 
+# ANSI colors
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
 # Helper to run a hook
 run_hook() {
   local name="$1"
@@ -24,13 +29,20 @@ run_hook() {
 }
 
 # Run startup hooks in order
-run_hook "Coordination initialized" "$SCRIPT_DIR/coordination-init.sh"
-run_hook "Session context loaded" "$SCRIPT_DIR/session-context-loader.sh"
-run_hook "Session env setup" "$SCRIPT_DIR/session-env-setup.sh"
+run_hook "Coordination" "$SCRIPT_DIR/coordination-init.sh"
+run_hook "Context" "$SCRIPT_DIR/session-context-loader.sh"
+run_hook "Env" "$SCRIPT_DIR/session-env-setup.sh"
 
 # Build combined output
 if [[ ${#RESULTS[@]} -gt 0 ]]; then
-  MSG=$(IFS=", "; echo "${RESULTS[*]}")
+  # Format: Startup: ✓ Check1 | ✓ Check2 | ✓ Check3
+  MSG="${CYAN}Startup:${RESET}"
+  for i in "${!RESULTS[@]}"; do
+    if [[ $i -gt 0 ]]; then
+      MSG="$MSG |"
+    fi
+    MSG="$MSG ${GREEN}✓${RESET} ${RESULTS[$i]}"
+  done
   echo "{\"systemMessage\": \"$MSG\"}"
 fi
 

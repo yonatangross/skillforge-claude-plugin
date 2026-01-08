@@ -57,6 +57,12 @@ fi
 
 info "Spawning $SUBAGENT_TYPE agent: $DESCRIPTION"
 
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Subagent validated"}'
+# ANSI colors for consolidated output
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Format: Task: ✓ Subagent
+MSG="${CYAN}Task:${RESET} ${GREEN}✓${RESET} Subagent"
+echo "{\"systemMessage\":\"$MSG\"}"
 exit 0

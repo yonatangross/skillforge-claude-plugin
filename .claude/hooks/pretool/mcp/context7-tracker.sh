@@ -25,6 +25,12 @@ if [[ "$TOOL_NAME" == "mcp__context7__get-library-docs" ]]; then
   echo "$(date -Iseconds) | docs | $LIBRARY_ID | $TOPIC" >> "/tmp/claude-context7-usage.log"
 fi
 
-# Output systemMessage for user visibility
-echo '{"systemMessage":"Context7 tracked"}'
+# ANSI colors for consolidated output
+GREEN='\033[32m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Format: Context7: ✓ Tracked
+MSG="${CYAN}Context7:${RESET} ${GREEN}✓${RESET} Tracked"
+echo "{\"systemMessage\":\"$MSG\"}"
 exit 0
