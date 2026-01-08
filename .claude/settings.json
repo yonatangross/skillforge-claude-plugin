@@ -69,6 +69,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/task/context-gate.sh",
+            "statusMessage": "Checking context budget..."
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/task/subagent-validator.sh"
           }
         ]

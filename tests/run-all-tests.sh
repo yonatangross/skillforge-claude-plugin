@@ -1,0 +1,229 @@
+#!/bin/bash
+# Main Test Runner
+# Executes all tests for the SkillForge Claude Plugin
+#
+# Usage: ./run-all-tests.sh [OPTIONS]
+#
+# Options:
+#   --verbose       Show detailed output
+#   --quick         Skip integration tests (faster)
+#   --unit          Run only unit tests
+#   --security      Run only security tests
+#   --integration   Run only integration tests
+#   --performance   Run only performance tests
+#   --all           Run all tests (default)
+#   --coverage      Generate coverage report
+#
+# Exit codes: 0 = all pass, 1 = failures found
+#
+# Version: 2.0.0 - Comprehensive Test Suite
+
+set -uo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Parse arguments
+VERBOSE=""
+QUICK=""
+RUN_UNIT="true"
+RUN_SECURITY="true"
+RUN_INTEGRATION="true"
+RUN_PERFORMANCE="true"
+COVERAGE=""
+SPECIFIC_CATEGORY=""
+
+for arg in "$@"; do
+    case $arg in
+        --verbose) VERBOSE="--verbose" ;;
+        --quick) QUICK="true"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
+        --unit) SPECIFIC_CATEGORY="unit"; RUN_SECURITY="false"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
+        --security) SPECIFIC_CATEGORY="security"; RUN_UNIT="false"; RUN_INTEGRATION="false"; RUN_PERFORMANCE="false" ;;
+        --integration) SPECIFIC_CATEGORY="integration"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_PERFORMANCE="false" ;;
+        --performance) SPECIFIC_CATEGORY="performance"; RUN_UNIT="false"; RUN_SECURITY="false"; RUN_INTEGRATION="false" ;;
+        --all) RUN_UNIT="true"; RUN_SECURITY="true"; RUN_INTEGRATION="true"; RUN_PERFORMANCE="true" ;;
+        --coverage) COVERAGE="true" ;;
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --verbose       Show detailed output"
+            echo "  --quick         Skip integration and performance tests"
+            echo "  --unit          Run only unit tests"
+            echo "  --security      Run only security tests (CRITICAL)"
+            echo "  --integration   Run only integration tests"
+            echo "  --performance   Run only performance tests"
+            echo "  --all           Run all tests (default)"
+            echo "  --coverage      Generate coverage report"
+            echo "  --help          Show this help"
+            exit 0
+            ;;
+    esac
+done
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+# Results tracking (using files for bash 3.x compatibility)
+RESULTS_FILE=$(mktemp)
+TOTAL_PASSED=0
+TOTAL_FAILED=0
+
+trap "rm -f $RESULTS_FILE" EXIT
+
+# Make all test scripts executable
+find "$SCRIPT_DIR" -name "*.sh" -exec chmod +x {} \;
+find "$PROJECT_ROOT/.claude/hooks" -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+
+# Export for hooks
+export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
+
+echo ""
+echo -e "${BOLD}╔══════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BOLD}║        SkillForge Claude Plugin - Test Suite                     ║${NC}"
+echo -e "${BOLD}╚══════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+
+run_test() {
+    local name="$1"
+    local script="$2"
+    local optional="${3:-false}"
+
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BOLD}Running: $name${NC}"
+    echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo ""
+
+    if [[ ! -f "$script" ]]; then
+        echo -e "${YELLOW}SKIP: Test script not found${NC}"
+        echo "$name:SKIP" >> "$RESULTS_FILE"
+        return 0
+    fi
+
+    local exit_code=0
+    if [[ -n "$VERBOSE" ]]; then
+        bash "$script" $VERBOSE || exit_code=$?
+    else
+        bash "$script" 2>&1 || exit_code=$?
+    fi
+
+    echo ""
+
+    if [[ $exit_code -eq 0 ]]; then
+        echo "$name:PASS" >> "$RESULTS_FILE"
+        TOTAL_PASSED=$((TOTAL_PASSED + 1))
+        return 0
+    else
+        if [[ "$optional" == "true" ]]; then
+            echo "$name:WARN" >> "$RESULTS_FILE"
+            echo -e "${YELLOW}Optional test failed (non-blocking)${NC}"
+            return 0
+        else
+            echo "$name:FAIL" >> "$RESULTS_FILE"
+            TOTAL_FAILED=$((TOTAL_FAILED + 1))
+            return 1
+        fi
+    fi
+}
+
+# ============================================================
+# UNIT TESTS
+# ============================================================
+
+echo -e "${BOLD}${CYAN}UNIT TESTS${NC}"
+echo ""
+
+if [[ "$RUN_UNIT" == "true" ]]; then
+    run_test "Shell Syntax Validation" "$SCRIPT_DIR/unit/test-shell-syntax.sh" || true
+    run_test "JSON Validity Check" "$SCRIPT_DIR/unit/test-json-validity.sh" || true
+    run_test "Hook Executability" "$SCRIPT_DIR/unit/test-hook-executability.sh" || true
+    run_test "Context Schema Validation" "$SCRIPT_DIR/unit/test-context-schemas.sh" || true
+    run_test "Hook Unit Tests" "$SCRIPT_DIR/unit/test-hooks-unit.sh" || true
+fi
+
+# ============================================================
+# SECURITY TESTS (CRITICAL)
+# ============================================================
+
+if [[ "$RUN_SECURITY" == "true" ]]; then
+    echo ""
+    echo -e "${BOLD}${RED}SECURITY TESTS (CRITICAL)${NC}"
+    echo ""
+
+    run_test "JQ Injection Tests" "$SCRIPT_DIR/security/test-jq-injection.sh" || true
+    run_test "Path Traversal Tests" "$SCRIPT_DIR/security/test-path-traversal.sh" || true
+    run_test "Command Injection Tests" "$SCRIPT_DIR/security/test-command-injection.sh" || true
+    run_test "Input Validation Tests" "$SCRIPT_DIR/security/test-input-validation.sh" || true
+    run_test "Additional Security Tests" "$SCRIPT_DIR/security/test-additional-security.sh" || true
+fi
+
+# ============================================================
+# INTEGRATION TESTS
+# ============================================================
+
+if [[ "$RUN_INTEGRATION" == "true" ]]; then
+    echo ""
+    echo -e "${BOLD}${CYAN}INTEGRATION TESTS${NC}"
+    echo ""
+
+    run_test "Hook Chain Integration" "$SCRIPT_DIR/integration/test-hook-chains.sh" || true
+    run_test "Context System Integration" "$SCRIPT_DIR/integration/test-context-system.sh" || true
+fi
+
+# ============================================================
+# PERFORMANCE TESTS
+# ============================================================
+
+if [[ "$RUN_PERFORMANCE" == "true" ]]; then
+    echo ""
+    echo -e "${BOLD}${CYAN}PERFORMANCE TESTS${NC}"
+    echo ""
+
+    if [[ -f "$SCRIPT_DIR/performance/test-hook-timing.sh" ]]; then
+        run_test "Hook Timing Tests" "$SCRIPT_DIR/performance/test-hook-timing.sh" "true" || true
+    else
+        echo -e "${YELLOW}Performance tests not yet implemented${NC}"
+    fi
+fi
+
+# ============================================================
+# SUMMARY
+# ============================================================
+
+echo ""
+echo -e "${BOLD}╔══════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${BOLD}║                        TEST SUMMARY                              ║${NC}"
+echo -e "${BOLD}╚══════════════════════════════════════════════════════════════════╝${NC}"
+echo ""
+
+printf "%-35s %s\n" "Test" "Result"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+while IFS=: read -r test_name result; do
+    case $result in
+        PASS) color="${GREEN}" ;;
+        FAIL) color="${RED}" ;;
+        WARN) color="${YELLOW}" ;;
+        SKIP) color="${YELLOW}" ;;
+        *) color="${NC}" ;;
+    esac
+    printf "%-35s ${color}%s${NC}\n" "$test_name" "$result"
+done < "$RESULTS_FILE"
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "Total: ${GREEN}$TOTAL_PASSED passed${NC}, ${RED}$TOTAL_FAILED failed${NC}"
+echo ""
+
+if [[ $TOTAL_FAILED -gt 0 ]]; then
+    echo -e "${RED}${BOLD}TESTS FAILED${NC}"
+    exit 1
+else
+    echo -e "${GREEN}${BOLD}ALL TESTS PASSED${NC}"
+    exit 0
+fi

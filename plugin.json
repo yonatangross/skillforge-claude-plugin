@@ -1537,17 +1537,90 @@
   },
 
   "context_protocol": {
-    "shared_context_file": ".claude/context/shared-context.json",
-    "session_protocol": ".claude/instructions/context-initialization.md",
-    "update_frequency": "on_significant_decision",
-    "fields": [
-      "architectural_decisions",
-      "patterns_established",
-      "agent_decisions",
-      "tasks_completed",
-      "tasks_pending",
-      "blockers"
-    ]
+    "version": "2.0.0",
+    "description": "Context Engineering 2.0 - Tiered, attention-aware context management",
+    "root": ".claude/context",
+
+    "structure": {
+      "identity": {
+        "file": "identity.json",
+        "position": "START",
+        "token_budget": 200,
+        "auto_load": "always",
+        "compress": "never"
+      },
+      "session": {
+        "directory": "session/",
+        "state_file": "session/state.json",
+        "position": "END",
+        "token_budget": 500,
+        "compress_trigger": 0.70,
+        "compress_target": 0.50
+      },
+      "knowledge": {
+        "directory": "knowledge/",
+        "index_file": "knowledge/index.json",
+        "position": "MIDDLE",
+        "subdirectories": ["decisions", "patterns", "blockers"],
+        "auto_load": "on_trigger"
+      },
+      "agents": {
+        "directory": "agents/",
+        "position": "MIDDLE",
+        "token_budget": 300,
+        "auto_load": "on_agent_spawn"
+      },
+      "archive": {
+        "directory": "archive/",
+        "subdirectories": ["sessions", "sprints", "decisions"],
+        "auto_load": "never"
+      }
+    },
+
+    "hooks": {
+      "session_start": {
+        "loader": "hooks/lifecycle/context-loader.sh",
+        "loads": ["identity.json", "session/state.json", "knowledge/index.json"]
+      },
+      "before_subagent": {
+        "loader": "hooks/subagent-start/agent-context-loader.sh",
+        "pattern": "agents/{agent_id}.json"
+      },
+      "after_tool_use": {
+        "monitor": "hooks/posttool/context-budget-monitor.sh",
+        "threshold": 0.70
+      },
+      "session_end": {
+        "compressor": "hooks/stop/context-compressor.sh",
+        "actions": ["archive_session", "compress_decisions", "update_index"]
+      }
+    },
+
+    "budget": {
+      "total": 2200,
+      "allocation": {
+        "identity": 200,
+        "session": 500,
+        "knowledge_index": 150,
+        "decisions": 400,
+        "patterns": 300,
+        "blockers": 150,
+        "agent_context": 500
+      },
+      "compress_trigger": 0.70,
+      "compress_target": 0.50
+    },
+
+    "attention_positioning": {
+      "START": ["identity", "decisions", "knowledge_index"],
+      "MIDDLE": ["patterns", "agent_context"],
+      "END": ["blockers", "session_state"]
+    },
+
+    "legacy": {
+      "deprecated_file": "archive/sessions/shared-context-pre-refactor.json",
+      "migration_date": "2026-01-08"
+    }
   },
 
   "integration_points": {

@@ -1,0 +1,37 @@
+{
+  "$schema": "context://session/v1",
+  "_meta": {
+    "position": "END",
+    "token_budget": 500,
+    "auto_load": "always",
+    "compress_trigger": 0.70,
+    "compress_target": 0.50,
+    "preserve_fields": ["current_task", "next_steps", "blockers"],
+    "description": "Current session state - loaded at END of context for high attention"
+  },
+
+  "session_id": "2026-01-08-context-migration",
+  "started": "2026-01-08T13:00:00+02:00",
+
+  "current_task": {
+    "description": "Migrate to Context Engineering 2.0 architecture",
+    "status": "in_progress",
+    "started": "2026-01-08T13:00:00+02:00"
+  },
+
+  "files_touched": [],
+
+  "decisions_this_session": [],
+
+  "blockers": [],
+
+  "next_steps": [
+    "Complete context migration",
+    "Test new context loading hooks",
+    "Push v4.5.0 to remote"
+  ],
+
+  "scratchpad": {
+    "notes": []
+  }
+}
