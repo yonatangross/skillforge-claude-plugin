@@ -27,7 +27,9 @@
 
 ## Quick Start
 
-### From Marketplace (Recommended)
+### From Marketplace (Pending Approval)
+
+> **Status:** Awaiting approval at [Anthropic Official](https://github.com/anthropics/claude-plugins-official/pull/86) and [CC Marketplace](https://github.com/ananddtyagi/cc-marketplace/pull/24). Once merged, these commands will work:
 
 ```bash
 # Step 1: Add the marketplace
@@ -38,7 +40,7 @@
 
 # Or install specific categories:
 /plugin install skillforge-complete@ai-development   # AI/LLM skills (23 skills)
-/plugin install skillforge-complete@backend          # Backend skills (5 skills)
+/plugin install skillforge-complete@backend          # Backend skills (12 skills)
 /plugin install skillforge-complete@frontend         # Frontend skills (6 skills)
 /plugin install skillforge-complete@quality-testing  # Testing skills (14 skills)
 /plugin install skillforge-complete@devops-security  # DevOps skills (7 skills)
