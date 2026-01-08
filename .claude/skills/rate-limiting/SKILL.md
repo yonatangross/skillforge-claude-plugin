@@ -4,8 +4,16 @@ description: API rate limiting with token bucket, sliding window, and Redis dist
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 tags: [rate-limiting, redis, token-bucket, fastapi, security, 2026]
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 ---
 
 # Rate Limiting Patterns

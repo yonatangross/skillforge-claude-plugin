@@ -4,9 +4,17 @@ description: Use this skill when designing REST, GraphQL, or gRPC APIs. Provides
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 author: AI Agent Hub
 tags: [api, rest, graphql, grpc, backend, documentation]
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
 ---
 
 # API Design Framework

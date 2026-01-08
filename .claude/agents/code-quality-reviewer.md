@@ -5,6 +5,11 @@ description: Quality assurance expert who reviews code for bugs, security vulner
 model: sonnet
 max_tokens: 8000
 tools: Read, Bash, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

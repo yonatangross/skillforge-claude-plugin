@@ -5,6 +5,11 @@ description: PostgreSQL specialist who designs schemas, creates migrations, opti
 model: sonnet
 max_tokens: 16000
 tools: Bash, Read, Write, Edit, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

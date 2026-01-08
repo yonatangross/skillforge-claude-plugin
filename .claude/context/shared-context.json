@@ -1028,5 +1028,43 @@
       }
     }
   },
-  "last_session": "2026-01-08T12:27:12+02:00"
+  "last_session": "2026-01-08T20:45:00+02:00",
+  "infrastructure": {
+    "hook_orchestration": {
+      "version": "1.0.0",
+      "description": "Hook chain orchestration system for executing hooks in sequence with timeout handling, retries, and output passing",
+      "components": {
+        "chain_config": ".claude/hooks/_orchestration/chain-config.json",
+        "chain_executor": ".claude/hooks/_orchestration/chain-executor.sh",
+        "common_functions": ".claude/hooks/_lib/common.sh",
+        "documentation": ".claude/hooks/_orchestration/README.md"
+      },
+      "predefined_chains": {
+        "error_handling": "error-tracker → audit-logger → desktop-notification",
+        "security_validation": "file-guard → redact-secrets → security-summary (blocking)",
+        "test_workflow": "test-runner → coverage-check → evidence-collector",
+        "code_quality": "test-pattern-validator → import-direction-enforcer → backend-layer-validator (blocking)",
+        "git_workflow": "branch-protector → audit-logger → desktop-notification (blocking)"
+      },
+      "features": [
+        "Sequential hook execution with configurable ordering",
+        "Output passing between hooks (JSON-based)",
+        "Timeout handling with configurable retry logic",
+        "Critical hook designation (stops chain on failure)",
+        "Stop-on-failure vs continue-on-error modes",
+        "Comprehensive logging to .claude/logs/chain-execution.log",
+        "Performance tracking (execution time, success/failure counts)",
+        "Chain enable/disable configuration",
+        "Helper functions in common.sh for easy integration"
+      ],
+      "usage_patterns": {
+        "simple_execution": "execute_chain \"chain_name\"",
+        "conditional_execution": "is_chain_enabled \"chain_name\" && execute_chain \"chain_name\"",
+        "custom_input": "execute_chain \"chain_name\" \"$custom_json\"",
+        "status_check": "get_chain_status \"chain_name\"",
+        "config_inspection": "get_chain_config \"chain_name\" \"field\""
+      },
+      "integration_examples": ".claude/hooks/_orchestration/example-integration-hook.sh"
+    }
+  }
 }

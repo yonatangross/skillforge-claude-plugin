@@ -6,6 +6,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/input-mod/bash-defaults.sh",
+            "statusMessage": "Adding bash defaults..."
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/bash/git-branch-protection.sh",
             "statusMessage": "Checking branch protection..."
           },
@@ -20,8 +25,23 @@
         ]
       },
       {
+        "matcher": "Read|Write|Edit|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/input-mod/path-normalizer.sh",
+            "statusMessage": "Normalizing file paths..."
+          }
+        ]
+      },
+      {
         "matcher": "Write|Edit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/input-mod/write-headers.sh",
+            "statusMessage": "Adding file headers..."
+          },
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/write-edit/file-guard.sh",
@@ -216,6 +236,22 @@
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop/auto-save-context.sh"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-start/subagent-resource-allocator.sh",
+            "statusMessage": "Allocating resources for subagent..."
+          },
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/subagent-start/subagent-context-stager.sh",
+            "statusMessage": "Staging context for subagent..."
           }
         ]
       }

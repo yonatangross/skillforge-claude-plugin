@@ -5,6 +5,11 @@ description: Frontend developer who builds React 19/TypeScript components with o
 model: sonnet
 max_tokens: 8000
 tools: Read, Edit, MultiEdit, Write, Bash, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

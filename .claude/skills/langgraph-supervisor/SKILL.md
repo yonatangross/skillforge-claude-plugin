@@ -3,7 +3,10 @@ name: langgraph-supervisor
 description: LangGraph supervisor-worker pattern. Use when building central coordinator agents that route to specialized workers, implementing round-robin or priority-based agent dispatch.
 context: fork
 agent: workflow-architect
-model: sonnet
+model: opus
+model-alternatives:
+  - sonnet
+  - haiku
 ---
 
 # LangGraph Supervisor Pattern

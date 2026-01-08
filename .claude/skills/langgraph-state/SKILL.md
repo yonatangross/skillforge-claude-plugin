@@ -4,6 +4,8 @@ description: LangGraph state management patterns. Use when designing workflow st
 context: fork
 agent: workflow-architect
 model: sonnet
+model-alternatives:
+  - haiku
 ---
 
 # LangGraph State Management

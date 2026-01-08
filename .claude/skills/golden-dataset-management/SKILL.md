@@ -7,6 +7,11 @@ model: sonnet
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [golden-dataset, backup, data-protection, testing, regression, 2025]
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash  # For backup/restore scripts
 ---
 
 # Golden Dataset Management

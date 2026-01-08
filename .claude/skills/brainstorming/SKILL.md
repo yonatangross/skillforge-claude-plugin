@@ -4,6 +4,9 @@ description: Use when creating or developing anything, before writing code or im
 context: fork
 agent: product-strategist
 model: opus
+model-alternatives:
+  - sonnet
+  - haiku
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"

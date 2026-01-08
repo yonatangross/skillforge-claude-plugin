@@ -5,6 +5,10 @@ description: Multi-agent workflow specialist who designs LangGraph pipelines, im
 model: opus
 max_tokens: 32000
 tools: Bash, Read, Write, Edit, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

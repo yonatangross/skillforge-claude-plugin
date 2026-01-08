@@ -5,6 +5,10 @@ description: Metrics specialist who designs OKRs, KPIs, success criteria, and in
 model: sonnet
 max_tokens: 16000
 tools: Read, Write, Grep, Glob, Bash
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

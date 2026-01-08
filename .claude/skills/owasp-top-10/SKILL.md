@@ -3,7 +3,19 @@ name: owasp-top-10
 description: OWASP Top 10 security vulnerabilities and mitigations. Use when conducting security audits, implementing security controls, or reviewing code for common vulnerabilities.
 context: fork
 agent: security-auditor
-model: haiku
+model: sonnet
+model-alternatives:
+  - haiku
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 ---
 
 # OWASP Top 10

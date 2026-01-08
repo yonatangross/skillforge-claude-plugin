@@ -4,9 +4,17 @@ description: Use when implementing vector search with PostgreSQL. Covers PGVecto
 context: fork
 agent: database-engineer
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.2.0
 author: SkillForge AI Agent Hub
 tags: [pgvector-0.8, hybrid-search, bm25, rrf, semantic-search, retrieval, 2026]
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/migration-validator.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/migration-validator.sh"
 ---
 
 # PGVector Hybrid Search

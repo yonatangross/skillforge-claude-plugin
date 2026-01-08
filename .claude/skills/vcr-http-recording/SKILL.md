@@ -4,6 +4,12 @@ description: VCR.py HTTP recording for Python tests. Use when testing Python cod
 context: fork
 agent: test-generator
 model: sonnet
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 ---
 
 # VCR.py HTTP Recording

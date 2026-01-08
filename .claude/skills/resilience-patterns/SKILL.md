@@ -4,6 +4,8 @@ description: Use when building fault-tolerant systems with circuit breakers, bul
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [resilience, circuit-breaker, bulkhead, retry, fault-tolerance]

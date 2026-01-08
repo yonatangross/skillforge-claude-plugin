@@ -5,6 +5,16 @@ context: fork
 agent: security-layer-auditor
 model: sonnet
 version: 1.0.0
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 ---
 
 # Defense in Depth for AI Systems

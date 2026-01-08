@@ -5,6 +5,10 @@ description: LLM integration specialist who connects to OpenAI/Anthropic/Ollama 
 model: sonnet
 max_tokens: 16000
 tools: Bash, Read, Write, Edit, Grep, Glob, WebFetch
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

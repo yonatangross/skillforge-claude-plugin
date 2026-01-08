@@ -4,6 +4,11 @@ description: Automated security scanning for dependencies and code. Use when run
 context: fork
 agent: security-auditor
 model: haiku
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash  # For running security scanners only
 hooks:
   PostToolUse:
     - matcher: Bash

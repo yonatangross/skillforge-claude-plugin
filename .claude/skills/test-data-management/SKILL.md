@@ -4,6 +4,12 @@ description: Test data management with fixtures and factories. Use when creating
 context: fork
 agent: test-generator
 model: haiku
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 ---
 
 # Test Data Management

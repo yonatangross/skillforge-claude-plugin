@@ -7,12 +7,15 @@ tags: [quality, verification, testing, evidence, completion]
 context: fork
 agent: code-quality-reviewer
 model: haiku
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash  # For running tests and capturing evidence
 hooks:
   PostToolUse:
     - matcher: Bash
-      command: |
-        # Capture exit code for evidence
-        echo "::notice::Command exit code: $CC_LAST_EXIT_CODE"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/evidence-collector.sh"
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/evidence-collector.sh"
 ---

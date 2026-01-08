@@ -5,6 +5,11 @@ description: Requirements specialist who transforms ambiguous ideas into clear P
 model: sonnet
 max_tokens: 16000
 tools: Read, Write, Grep, Glob, Bash
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

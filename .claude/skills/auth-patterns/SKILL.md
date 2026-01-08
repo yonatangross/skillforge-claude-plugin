@@ -4,8 +4,23 @@ description: Authentication and authorization patterns. Use when implementing lo
 context: fork
 agent: security-auditor
 model: sonnet
+model-alternatives:
+  - haiku
 version: 2.0.0
 tags: [security, authentication, oauth, passkeys, 2026]
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Write
+  - Edit
+  - Bash
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 ---
 
 # Authentication Patterns

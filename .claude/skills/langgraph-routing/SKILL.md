@@ -4,6 +4,8 @@ description: LangGraph conditional routing patterns. Use when implementing dynam
 context: fork
 agent: workflow-architect
 model: sonnet
+model-alternatives:
+  - haiku
 ---
 
 # LangGraph Conditional Routing

@@ -4,6 +4,8 @@ description: API versioning strategies including URL path, header, and content n
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 tags: [api, versioning, rest, fastapi, backward-compatibility, 2026]
 ---

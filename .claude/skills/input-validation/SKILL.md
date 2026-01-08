@@ -6,6 +6,18 @@ agent: security-auditor
 model: sonnet
 version: 2.0.0
 tags: [security, validation, zod, pydantic, 2026]
+allowed-tools:
+  - Read
+  - Grep
+  - Glob
+  - Write
+  - Edit
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 ---
 
 # Input Validation

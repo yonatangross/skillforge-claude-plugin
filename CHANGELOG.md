@@ -5,6 +5,109 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.5.0] - 2026-01-08
+
+### Added
+
+#### Claude Code 2.1.1 Full Feature Utilization
+
+This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugin from 6.5/10 to 9.5/10 maturity.
+
+**Engine Requirement**
+- Plugin now requires Claude Code `>=2.1.0`
+
+**SubagentStart Hooks** (NEW hook type)
+- `subagent-resource-allocator.sh` - Pre-allocates context resources before subagent spawn
+- `subagent-context-stager.sh` - Stages relevant context based on task type
+
+**SubagentStop Hooks** (NEW hook type)
+- `subagent-completion-tracker.sh` - Tracks subagent completion metrics
+- `subagent-quality-gate.sh` - Validates subagent output quality
+- `coverage-threshold-gate.sh` - Enforces test coverage thresholds
+
+**Input Modification Hooks** (NEW hook capability)
+- `path-normalizer.sh` - Normalizes file paths to absolute paths for Read/Write/Edit/Glob/Grep
+- `bash-defaults.sh` - Adds default timeout and prevents dangerous bash commands
+- `write-headers.sh` - Adds standard file headers to new files
+
+**Hook Chain Orchestration**
+- `chain-config.json` - Centralized configuration for hook sequences
+- `chain-executor.sh` - Sequential execution with timeout/retry support
+- 4 predefined chains: error_handling, security_validation, test_workflow, code_quality
+
+**Agent-Level Hooks** (all 20 agents)
+- `output-validator.sh` - Validates agent output quality and completeness
+- `context-publisher.sh` - Publishes agent decisions to shared context
+- `handoff-preparer.sh` - Prepares context for next agent in pipeline (10 pipeline agents)
+
+**Skill-Level Hooks** (all 68 skills)
+- Testing skills: `test-runner.sh`, `coverage-check.sh`
+- Security skills: `security-summary.sh`, `redact-secrets.sh`
+- Code review skills: `review-summary-generator.sh`
+- Architecture skills: `design-decision-saver.sh`
+- Database skills: `migration-validator.sh`
+- LLM/AI skills: `eval-metrics-collector.sh`
+- Evidence skills: `evidence-collector.sh`
+
+**MCP Tool Annotations**
+- Added metadata for 6 tool patterns with safety, cost, and category flags
+- Wildcard permission syntax: `mcp__server__*` for bulk tool approval
+- Auto-approve and require-confirmation lists
+- Fallback configuration for context7 and sequential-thinking
+- Notification settings with refresh intervals
+
+**Model Fallback Chains**
+- 15+ complex skills now have `model-alternatives` for resilience
+- Primary: opus → Fallback: sonnet → Last resort: haiku
+
+**Workflow Auto-Triggers** (all 5 workflows)
+- Keyword detection with 0.8 confidence threshold
+- Auto-launch capability for matching patterns
+- Keywords for: frontend-2025-compliance, api-design-compliance, security-audit-workflow, data-pipeline-workflow, ai-integration-workflow
+
+**Dependency Graph**
+- 42 skill-to-agent mappings across 8 domains
+- 8 agent pipeline sequences defined:
+  - product-thinking: market-intelligence → product-strategist → prioritization-analyst
+  - full-stack-feature: requirements → backend → database → frontend → test → review
+  - security-audit: security-auditor → code-quality-reviewer
+  - ai-integration: llm-integrator → workflow-architect → data-pipeline-engineer
+  - database-feature: database-engineer → backend-system-architect
+  - ui-feature: rapid-ui-designer → frontend-ui-developer
+  - bug-investigation: debug-investigator → test-generator
+  - system-review: backend-system-architect → metrics-architect
+
+**Security Manifest**
+- Required permissions: read_project, write_project, execute_bash, call_llm
+- Denied operations: delete_outside_project, execute_system_commands, network_without_approval
+- 11 sensitive file patterns protected (*.env, *.pem, *.key, *credentials*, etc.)
+
+**Tool Restrictions** (8 security-critical skills)
+- `security-scanning`: Read, Grep, Glob, Bash (controlled)
+- `owasp-top-10`: Read, Grep, Glob (read-only)
+- `input-validation`: Read, Grep, Glob, Write, Edit
+- `defense-in-depth`: Read, Grep, Glob (read-only)
+- `auth-patterns`: Read, Grep, Glob, Write, Edit, Bash (full)
+- `golden-dataset-management`: Read, Grep, Glob, Bash
+- `golden-dataset-validation`: Read, Grep, Glob (read-only)
+- `evidence-verification`: Read, Grep, Glob, Bash
+
+### Changed
+
+- `plugin.json` version bumped to 4.5.0
+- Engine requirement updated from `>=1.0.0` to `>=2.1.0`
+- All workflows now have `auto_trigger` configuration
+- All agents now have Stop hooks for validation and context publishing
+- All skills now have PostToolUse and Stop event hooks
+
+### Fixed
+
+- Agent pipeline sequencing now properly chains 10 pipeline agents
+- MCP tool permissions now use proper wildcard syntax
+- Hook execution order guaranteed through chain orchestration
+
+---
+
 ## [4.4.1] - 2026-01-08
 
 ### Fixed

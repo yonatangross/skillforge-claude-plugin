@@ -5,6 +5,11 @@ description: Backend architect who designs REST/GraphQL APIs, database schemas, 
 model: sonnet
 max_tokens: 16000
 tools: Read, Edit, MultiEdit, Write, Bash, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

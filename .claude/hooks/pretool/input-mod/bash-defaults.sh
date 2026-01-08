@@ -1,0 +1,83 @@
+#!/bin/bash
+# bash-defaults.sh - Adds defaults and safety checks to Bash commands
+# Part of SkillForge Claude Plugin v4.4.2
+
+set -euo pipefail
+
+# Read input from stdin
+INPUT=$(cat)
+
+# Extract parameters
+COMMAND=$(echo "$INPUT" | jq -r '.params.command // ""')
+TIMEOUT=$(echo "$INPUT" | jq -r '.params.timeout // "null"')
+DESCRIPTION=$(echo "$INPUT" | jq -r '.params.description // ""')
+
+# Dangerous command patterns
+DANGEROUS_PATTERNS=(
+  "rm -rf /"
+  "rm -rf ~"
+  "rm -rf \$HOME"
+  "rm -rf \*"
+  "> /dev/sda"
+  "dd if=/dev/zero of=/dev/sda"
+  "mkfs\."
+  ":(){ :\|:& };:"  # Fork bomb
+  "chmod -R 777 /"
+  "chown -R"
+)
+
+# Function to check for dangerous commands
+check_dangerous() {
+  local cmd="$1"
+
+  for pattern in "${DANGEROUS_PATTERNS[@]}"; do
+    if [[ "$cmd" == *"$pattern"* ]]; then
+      return 0  # Dangerous
+    fi
+  done
+
+  return 1  # Safe
+}
+
+# Check if command is dangerous
+if check_dangerous "$COMMAND"; then
+  echo "[bash-defaults] BLOCKED dangerous command: $COMMAND" >&2
+  jq -n '{
+    decision: "deny",
+    reason: "Dangerous command detected",
+    metadata: {
+      hook: "bash-defaults",
+      blocked_command: $cmd
+    }
+  }' --arg cmd "$COMMAND"
+  exit 0
+fi
+
+# Add default timeout if not specified (120 seconds = 2 minutes)
+if [[ "$TIMEOUT" == "null" ]]; then
+  TIMEOUT=120000
+  echo "[bash-defaults] Added default timeout: 120000ms" >&2
+fi
+
+# Build updated params
+UPDATED_PARAMS=$(jq -n \
+  --arg command "$COMMAND" \
+  --argjson timeout "$TIMEOUT" \
+  --arg description "$DESCRIPTION" \
+  '{
+    command: $command,
+    timeout: $timeout
+  } + (if $description != "" then {description: $description} else {} end)')
+
+# Output decision with updated parameters
+jq -n \
+  --argjson params "$UPDATED_PARAMS" \
+  '{
+    decision: "allow",
+    updatedInput: $params,
+    metadata: {
+      hook: "bash-defaults",
+      version: "1.0.0",
+      timeout_added: true
+    }
+  }'

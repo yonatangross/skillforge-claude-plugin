@@ -5,6 +5,10 @@ description: User research specialist who creates personas, maps user journeys, 
 model: sonnet
 max_tokens: 16000
 tools: Write, Read, WebSearch, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

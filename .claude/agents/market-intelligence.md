@@ -5,6 +5,11 @@ description: Market research specialist who analyzes competitive landscapes, ide
 model: sonnet
 max_tokens: 16000
 tools: Read, Write, WebSearch, WebFetch, Grep, Glob, Bash
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 
 ## Directive

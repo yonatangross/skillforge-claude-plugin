@@ -7,14 +7,15 @@ tags: [architecture, documentation, decision-making, backend]
 context: fork
 agent: backend-system-architect
 model: opus
+model-alternatives:
+  - sonnet
+  - haiku
 hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
   Stop:
-    - command: |
-        echo "::group::ADR Creation Complete"
-        echo "Architecture Decision Record created."
-        echo ""
-        echo "Next steps:"
-        echo "  1. Review with team stakeholders"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
         echo "  2. Update status to 'Accepted' after approval"
         echo "  3. Link ADR in implementation PR"
         echo "  4. Update status to 'Implemented' after deployment"

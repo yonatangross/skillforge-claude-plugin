@@ -5,6 +5,10 @@ description: Data pipeline specialist who generates embeddings, implements chunk
 model: sonnet
 max_tokens: 16000
 tools: Bash, Read, Write, Edit, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

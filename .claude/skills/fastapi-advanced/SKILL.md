@@ -4,8 +4,16 @@ description: FastAPI 2026 advanced patterns including lifespan, dependencies, mi
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 tags: [fastapi, python, async, middleware, dependencies, 2026]
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
 ---
 
 # FastAPI Advanced Patterns (2026)

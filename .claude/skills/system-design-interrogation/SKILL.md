@@ -4,6 +4,9 @@ description: Use when planning system architecture to ensure nothing is missed. 
 context: fork
 agent: system-design-reviewer
 model: opus
+model-alternatives:
+  - sonnet
+  - haiku
 version: 1.0.0
 ---
 

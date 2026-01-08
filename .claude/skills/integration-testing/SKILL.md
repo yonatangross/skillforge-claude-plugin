@@ -4,6 +4,12 @@ description: Integration testing patterns for APIs and components. Use when test
 context: fork
 agent: test-generator
 model: sonnet
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 ---
 
 # Integration Testing

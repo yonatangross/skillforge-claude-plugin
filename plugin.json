@@ -1,7 +1,7 @@
 {
   "$schema": "https://claude-plugins.dev/schemas/plugin.schema.json",
   "name": "@skillforge/complete",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "Comprehensive AI-assisted development toolkit with 54 skills, 11 commands, 20 agents (6 product + 14 technical), 29 hooks, progressive loading, and production-ready patterns for modern full-stack development",
   "displayName": "SkillForge Complete",
   "author": {
@@ -32,7 +32,7 @@
     "agent-framework"
   ],
   "engines": {
-    "claude-code": ">=1.0.0"
+    "claude-code": ">=2.1.0"
   },
   "categories": [
     "backend",
@@ -1368,7 +1368,12 @@
         "orchestrator": "product-strategist"
       },
       "triggers": ["new feature evaluation", "should we build", "product strategy", "feature prioritization"],
-      "estimated_tokens": 3000
+      "estimated_tokens": 3000,
+      "auto_trigger": {
+        "keywords": ["product strategy", "feature evaluation", "should we build", "market analysis"],
+        "confidence_threshold": 0.8,
+        "auto_launch": true
+      }
     },
     {
       "id": "secure-api-endpoint",
@@ -1383,7 +1388,12 @@
         "primary": "backend-system-architect",
         "validation": "code-quality-reviewer"
       },
-      "estimated_tokens": 800
+      "estimated_tokens": 800,
+      "auto_trigger": {
+        "keywords": ["api endpoint", "rest api", "create endpoint", "secure api"],
+        "confidence_threshold": 0.8,
+        "auto_launch": true
+      }
     },
     {
       "id": "full-stack-feature",
@@ -1397,7 +1407,12 @@
       "agents": {
         "sequence": ["backend-system-architect", "frontend-ui-developer"]
       },
-      "estimated_tokens": 1200
+      "estimated_tokens": 1200,
+      "auto_trigger": {
+        "keywords": ["full stack feature", "build feature", "frontend and backend", "end to end"],
+        "confidence_threshold": 0.8,
+        "auto_launch": true
+      }
     },
     {
       "id": "ai-integration",
@@ -1414,7 +1429,12 @@
         "sequence": ["workflow-architect", "llm-integrator", "data-pipeline-engineer"],
         "validation": "code-quality-reviewer"
       },
-      "estimated_tokens": 1000
+      "estimated_tokens": 1000,
+      "auto_trigger": {
+        "keywords": ["ai integration", "llm", "rag", "langgraph", "embeddings"],
+        "confidence_threshold": 0.8,
+        "auto_launch": true
+      }
     },
     {
       "id": "frontend-2025-compliance",
@@ -1433,9 +1453,74 @@
         "primary": "frontend-ui-developer",
         "validation": "code-quality-reviewer"
       },
-      "estimated_tokens": 1500
+      "estimated_tokens": 1500,
+      "auto_trigger": {
+        "keywords": ["frontend compliance", "react 19", "best practices", "type safety", "modern frontend"],
+        "confidence_threshold": 0.8,
+        "auto_launch": true
+      }
     }
   ],
+
+  "dependency_graph": {
+    "skills_to_agents": {
+      "api-design-framework": ["backend-system-architect"],
+      "database-schema-designer": ["backend-system-architect", "database-engineer"],
+      "owasp-top-10": ["security-auditor", "code-quality-reviewer", "security-layer-auditor"],
+      "unit-testing": ["test-generator", "code-quality-reviewer"],
+      "react-server-components-framework": ["frontend-ui-developer"],
+      "langgraph-supervisor": ["workflow-architect"],
+      "code-review-playbook": ["code-quality-reviewer"],
+      "embeddings": ["data-pipeline-engineer"],
+      "rag-retrieval": ["data-pipeline-engineer", "workflow-architect"],
+      "pgvector-search": ["data-pipeline-engineer", "database-engineer"],
+      "function-calling": ["llm-integrator"],
+      "llm-streaming": ["llm-integrator"],
+      "streaming-api-patterns": ["backend-system-architect", "llm-integrator"],
+      "design-system-starter": ["frontend-ui-developer", "rapid-ui-designer", "ux-researcher"],
+      "type-safety-validation": ["frontend-ui-developer", "backend-system-architect"],
+      "e2e-testing": ["test-generator", "frontend-ui-developer"],
+      "integration-testing": ["test-generator", "code-quality-reviewer"],
+      "msw-mocking": ["test-generator", "frontend-ui-developer"],
+      "vcr-http-recording": ["test-generator"],
+      "webapp-testing": ["test-generator", "frontend-ui-developer"],
+      "security-scanning": ["security-auditor", "code-quality-reviewer"],
+      "langfuse-observability": ["workflow-architect", "llm-integrator", "metrics-architect"],
+      "observability-monitoring": ["backend-system-architect", "workflow-architect", "debug-investigator"],
+      "performance-optimization": ["backend-system-architect", "database-engineer", "frontend-ui-developer"],
+      "performance-testing": ["test-generator", "code-quality-reviewer"],
+      "resilience-patterns": ["backend-system-architect", "llm-integrator"],
+      "auth-patterns": ["backend-system-architect", "security-layer-auditor"],
+      "input-validation": ["backend-system-architect", "security-layer-auditor"],
+      "brainstorming": ["product-strategist", "ux-researcher"],
+      "github-cli": ["market-intelligence", "product-strategist", "prioritization-analyst", "requirements-translator", "backend-system-architect"],
+      "golden-dataset-management": ["data-pipeline-engineer", "backend-system-architect"],
+      "golden-dataset-curation": ["data-pipeline-engineer"],
+      "golden-dataset-validation": ["data-pipeline-engineer"],
+      "devops-deployment": ["backend-system-architect"],
+      "edge-computing-patterns": ["backend-system-architect"],
+      "semantic-caching": ["llm-integrator", "backend-system-architect"],
+      "prompt-caching": ["llm-integrator"],
+      "langgraph-routing": ["workflow-architect"],
+      "langgraph-parallel": ["workflow-architect"],
+      "langgraph-state": ["workflow-architect"],
+      "langgraph-checkpoints": ["workflow-architect"],
+      "langgraph-human-in-loop": ["workflow-architect"],
+      "multi-agent-orchestration": ["workflow-architect"],
+      "architecture-decision-record": ["backend-system-architect", "system-design-reviewer"],
+      "evidence-verification": ["code-quality-reviewer", "test-generator"]
+    },
+    "agent_pipelines": {
+      "product-thinking": ["market-intelligence", "product-strategist", "prioritization-analyst", "business-case-builder", "requirements-translator", "metrics-architect"],
+      "full-stack-feature": ["backend-system-architect", "frontend-ui-developer", "test-generator", "code-quality-reviewer"],
+      "security-audit": ["security-auditor", "security-layer-auditor", "code-quality-reviewer"],
+      "ai-integration": ["workflow-architect", "llm-integrator", "data-pipeline-engineer", "code-quality-reviewer"],
+      "database-feature": ["database-engineer", "backend-system-architect", "test-generator"],
+      "ui-feature": ["rapid-ui-designer", "frontend-ui-developer", "ux-researcher", "test-generator"],
+      "bug-investigation": ["debug-investigator", "test-generator", "code-quality-reviewer"],
+      "system-review": ["system-design-reviewer", "security-auditor", "code-quality-reviewer"]
+    }
+  },
 
   "discovery": {
     "semantic_matching": {
@@ -1541,6 +1626,33 @@
       "golden-dataset-management",
       "golden-dataset-curation",
       "golden-dataset-validation"
+    ]
+  },
+
+  "security_manifest": {
+    "required_permissions": [
+      "read_project",
+      "write_project",
+      "execute_bash",
+      "call_llm"
+    ],
+    "denied_operations": [
+      "delete_outside_project",
+      "execute_system_commands",
+      "network_without_approval"
+    ],
+    "sensitive_patterns": [
+      "*.env",
+      "*.pem",
+      "*.key",
+      "*credentials*",
+      "*secret*",
+      "*.p12",
+      "*.pfx",
+      "*password*",
+      "*token*",
+      ".aws/credentials",
+      ".ssh/id_*"
     ]
   }
 }

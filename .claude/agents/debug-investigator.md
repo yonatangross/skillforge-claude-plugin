@@ -5,6 +5,10 @@ description: Debug specialist who performs systematic root cause analysis on bug
 model: sonnet
 max_tokens: 16000
 tools: Bash, Read, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

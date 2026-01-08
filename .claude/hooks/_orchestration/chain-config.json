@@ -1,0 +1,129 @@
+{
+  "version": "1.0.0",
+  "description": "Hook chain orchestration configuration for SkillForge Claude Plugin",
+  "chains": {
+    "error_handling": {
+      "description": "Chain for handling errors with logging and notification",
+      "sequence": ["error-tracker", "audit-logger", "desktop-notification"],
+      "pass_output_to_next": true,
+      "stop_on_failure": false,
+      "enabled": true
+    },
+    "security_validation": {
+      "description": "Chain for security validation before writes",
+      "sequence": ["file-guard", "redact-secrets", "security-summary"],
+      "pass_output_to_next": true,
+      "stop_on_failure": true,
+      "enabled": true
+    },
+    "test_workflow": {
+      "description": "Chain for test execution and coverage",
+      "sequence": ["test-runner", "coverage-check", "evidence-collector"],
+      "pass_output_to_next": true,
+      "stop_on_failure": false,
+      "enabled": true
+    },
+    "code_quality": {
+      "description": "Chain for code quality checks",
+      "sequence": ["test-pattern-validator", "import-direction-enforcer", "backend-layer-validator"],
+      "pass_output_to_next": false,
+      "stop_on_failure": true,
+      "enabled": true
+    },
+    "git_workflow": {
+      "description": "Chain for git operations with validation",
+      "sequence": ["branch-protector", "audit-logger", "desktop-notification"],
+      "pass_output_to_next": true,
+      "stop_on_failure": true,
+      "enabled": true
+    }
+  },
+  "hook_metadata": {
+    "error-tracker": {
+      "timeout_seconds": 5,
+      "retry_count": 0,
+      "critical": false,
+      "description": "Tracks and logs errors for debugging"
+    },
+    "audit-logger": {
+      "timeout_seconds": 3,
+      "retry_count": 1,
+      "critical": false,
+      "description": "Logs operations to audit trail"
+    },
+    "desktop-notification": {
+      "timeout_seconds": 2,
+      "retry_count": 0,
+      "critical": false,
+      "description": "Sends desktop notifications for important events"
+    },
+    "file-guard": {
+      "timeout_seconds": 2,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Prevents modifications to protected files"
+    },
+    "redact-secrets": {
+      "timeout_seconds": 3,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Detects and warns about potential secrets"
+    },
+    "security-summary": {
+      "timeout_seconds": 2,
+      "retry_count": 0,
+      "critical": false,
+      "description": "Generates security summary report"
+    },
+    "test-runner": {
+      "timeout_seconds": 300,
+      "retry_count": 1,
+      "critical": false,
+      "description": "Executes test suite for modified files"
+    },
+    "coverage-check": {
+      "timeout_seconds": 30,
+      "retry_count": 0,
+      "critical": false,
+      "description": "Verifies test coverage meets thresholds"
+    },
+    "evidence-collector": {
+      "timeout_seconds": 10,
+      "retry_count": 0,
+      "critical": false,
+      "description": "Collects evidence of test execution"
+    },
+    "test-pattern-validator": {
+      "timeout_seconds": 5,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Validates test file patterns and naming"
+    },
+    "import-direction-enforcer": {
+      "timeout_seconds": 5,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Enforces clean architecture import rules"
+    },
+    "backend-layer-validator": {
+      "timeout_seconds": 5,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Validates backend layer dependencies"
+    },
+    "branch-protector": {
+      "timeout_seconds": 2,
+      "retry_count": 0,
+      "critical": true,
+      "description": "Protects main/master branches from direct commits"
+    }
+  },
+  "execution_settings": {
+    "max_parallel_chains": 3,
+    "default_timeout_seconds": 30,
+    "default_retry_count": 0,
+    "log_level": "info",
+    "enable_performance_tracking": true,
+    "enable_chain_visualization": false
+  }
+}

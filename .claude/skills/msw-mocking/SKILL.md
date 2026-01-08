@@ -6,6 +6,12 @@ agent: test-generator
 model: sonnet
 version: 2.0.0
 tags: [msw, testing, mocking, frontend, 2026]
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 ---
 
 # MSW (Mock Service Worker) 2.x

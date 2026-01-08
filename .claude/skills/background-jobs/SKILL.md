@@ -4,6 +4,8 @@ description: Async task processing with Celery, ARQ, and Redis for Python backen
 context: fork
 agent: data-pipeline-engineer
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 tags: [background-jobs, celery, arq, redis, async, python, 2026]
 ---

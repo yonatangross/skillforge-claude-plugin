@@ -5,6 +5,10 @@ description: UI/UX designer specializing in rapid prototyping with Tailwind CSS.
 model: sonnet
 max_tokens: 16000
 tools: Write, Read, Grep, Glob
+hooks:
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
 ---
 
 ## Directive

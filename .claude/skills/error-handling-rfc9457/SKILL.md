@@ -4,6 +4,8 @@ description: Structured error responses using RFC 9457 Problem Details for HTTP 
 context: fork
 agent: backend-system-architect
 model: sonnet
+model-alternatives:
+  - haiku
 version: 1.0.0
 tags: [error-handling, rfc9457, problem-details, fastapi, api, 2026]
 ---

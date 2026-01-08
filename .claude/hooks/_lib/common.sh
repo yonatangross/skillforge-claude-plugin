@@ -255,5 +255,109 @@ increment_metric() {
   jq ".tools.\"$tool\" = $((current + 1))" "$METRICS_FILE" > "${METRICS_FILE}.tmp" && mv "${METRICS_FILE}.tmp" "$METRICS_FILE"
 }
 
+# ============================================================================
+# CHAIN ORCHESTRATION FUNCTIONS
+# ============================================================================
+
+# Get chain configuration value
+# Usage: get_chain_config "chain_name" "field"
+# Example: get_chain_config "test_workflow" "description"
+get_chain_config() {
+  local chain_name="$1"
+  local field="$2"
+  local config_file="${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/_orchestration/chain-config.json"
+
+  if [[ ! -f "$config_file" ]]; then
+    echo ""
+    return 1
+  fi
+
+  if ! command -v jq >/dev/null 2>&1; then
+    echo ""
+    return 1
+  fi
+
+  jq -r ".chains.\"$chain_name\".${field} // empty" "$config_file" 2>/dev/null || echo ""
+}
+
+# Check if chain is enabled
+# Usage: is_chain_enabled "chain_name"
+is_chain_enabled() {
+  local chain_name="$1"
+  local enabled=$(get_chain_config "$chain_name" "enabled")
+  [[ "$enabled" == "true" ]]
+}
+
+# Execute a hook chain
+# Usage: execute_chain "chain_name" [input_data]
+# Example: execute_chain "test_workflow" "$(read_hook_input)"
+execute_chain() {
+  local chain_name="$1"
+  local input_data="${2:-$(read_hook_input)}"
+  local executor="${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/_orchestration/chain-executor.sh"
+
+  if [[ ! -f "$executor" ]]; then
+    error "Chain executor not found: $executor"
+    return 1
+  fi
+
+  echo "$input_data" | bash "$executor" execute "$chain_name"
+}
+
+# Pass output to next hook in chain
+# This is a helper function that hooks can use to format their output
+# for the next hook in the chain
+# Usage: pass_output_to_next "field_name" "value"
+pass_output_to_next() {
+  local field="$1"
+  local value="$2"
+
+  # If input is JSON, merge the field
+  local input=$(read_hook_input)
+  if echo "$input" | jq empty 2>/dev/null; then
+    echo "$input" | jq --arg field "$field" --arg value "$value" '. + {($field): $value}'
+  else
+    # Create new JSON object
+    jq -n --arg field "$field" --arg value "$value" '{($field): $value}'
+  fi
+}
+
+# Get chain execution status
+# Usage: get_chain_status "chain_name"
+get_chain_status() {
+  local chain_name="$1"
+  local log_file="${HOOK_LOG_DIR}/chain-execution.log"
+
+  if [[ ! -f "$log_file" ]]; then
+    echo "no_data"
+    return
+  fi
+
+  # Get last execution status from log
+  local last_status=$(grep "Chain.*$chain_name" "$log_file" | tail -1)
+
+  if echo "$last_status" | grep -q "completed"; then
+    echo "success"
+  elif echo "$last_status" | grep -q "failed"; then
+    echo "failed"
+  else
+    echo "unknown"
+  fi
+}
+
+# List available chains
+# Usage: list_chains
+list_chains() {
+  local executor="${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/_orchestration/chain-executor.sh"
+
+  if [[ ! -f "$executor" ]]; then
+    error "Chain executor not found: $executor"
+    return 1
+  fi
+
+  bash "$executor" list
+}
+
 # Export functions for subshells
 export -f read_hook_input get_field get_tool_name get_session_id log_hook rotate_log_file info success warn error
+export -f get_chain_config is_chain_enabled execute_chain pass_output_to_next get_chain_status list_chains

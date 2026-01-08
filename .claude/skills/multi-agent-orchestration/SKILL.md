@@ -4,6 +4,9 @@ description: Multi-agent coordination and synthesis patterns. Use when orchestra
 context: fork
 agent: workflow-architect
 model: opus
+model-alternatives:
+  - sonnet
+  - haiku
 ---
 
 # Multi-Agent Orchestration

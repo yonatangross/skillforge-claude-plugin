@@ -4,6 +4,12 @@ description: Performance and load testing with k6 and Locust. Use when validatin
 context: fork
 agent: metrics-architect
 model: sonnet
+hooks:
+  PostToolUse:
+    - matcher: "Write|Edit"
+      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
+  Stop:
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 ---
 
 # Performance Testing
