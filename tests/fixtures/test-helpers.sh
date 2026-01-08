@@ -568,17 +568,35 @@ uppercase() {
   echo "$1" | tr '[:lower:]' '[:upper:]'
 }
 
-# Estimate tokens in a file (rough approximation)
+# Count tokens in a file using tiktoken (accurate) or fallback to chars/4
 # Usage: estimate_tokens "$filepath"
 estimate_tokens() {
   local filepath="$1"
-
-  if [[ -f "$filepath" ]]; then
-    local chars=$(wc -c < "$filepath" | tr -d ' ')
-    echo $((chars / 4))
-  else
+  if [[ ! -f "$filepath" ]]; then
     echo 0
+    return
   fi
+  # Try tiktoken (Python) - most accurate for Claude
+  if command -v python3 &>/dev/null; then
+    local result
+    result=$(python3 -c "
+import sys
+try:
+    import tiktoken
+    enc = tiktoken.get_encoding('cl100k_base')
+    with open(sys.argv[1], 'r', encoding='utf-8', errors='ignore') as f:
+        print(len(enc.encode(f.read())))
+except:
+    sys.exit(1)
+" "$filepath" 2>/dev/null)
+    if [[ $? -eq 0 && -n "$result" ]]; then
+      echo "$result"
+      return
+    fi
+  fi
+  # Fallback: chars/4 approximation
+  local chars=$(wc -c < "$filepath" | tr -d ' ')
+  echo $((chars / 4))
 }
 
 # Generate random string

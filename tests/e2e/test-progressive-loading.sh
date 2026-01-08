@@ -37,6 +37,25 @@ info() { echo -e "  ${BLUE}ℹ${NC} $1"; }
 count_tokens() {
     local file="$1"
     if [ -f "$file" ]; then
+        # Try tiktoken first (accurate)
+        if command -v python3 &>/dev/null; then
+            local result
+            result=$(python3 -c "
+import sys
+try:
+    import tiktoken
+    enc = tiktoken.get_encoding('cl100k_base')
+    with open(sys.argv[1], 'r', encoding='utf-8', errors='ignore') as f:
+        print(len(enc.encode(f.read())))
+except:
+    sys.exit(1)
+" "$file" 2>/dev/null)
+            if [ $? -eq 0 ] && [ -n "$result" ]; then
+                echo "$result"
+                return
+            fi
+        fi
+        # Fallback: chars/4
         local chars
         chars=$(wc -c < "$file" | tr -d ' ')
         echo $((chars / 4))
@@ -155,9 +174,9 @@ test_semantic_match() {
         pass "Query '$query' matches '$expected_skill'"
         return 0
     else
-        # Not a hard failure - semantic matching is heuristic
-        info "Query '$query' did not directly match '$expected_skill' (acceptable for heuristic matching)"
-        return 0
+        # Strict assertion - fail if expected skill not matched
+        fail "Query '$query' should match '$expected_skill'"
+        return 1
     fi
 }
 

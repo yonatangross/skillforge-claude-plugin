@@ -149,13 +149,61 @@ jobs:
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/performance/test-token-budget.sh
+  # ============================================================================
+  # STAGE 6: Compliance Tests (NEW)
+  # ============================================================================
+  compliance-tests:
+    name: CC 2.1.1 Compliance
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Run CC 2.1.1 compliance tests
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/compliance/test-cc-211-compliance.sh
+
+  # ============================================================================
+  # STAGE 7: Coverage Report (NEW)
+  # ============================================================================
+  coverage-report:
+    name: Hook Coverage
+    needs: [unit-tests, security-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Generate hook coverage report
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          export COVERAGE_THRESHOLD=20
+          bash tests/coverage/hook-coverage-report.sh | tee coverage-report.txt
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hook-coverage-report
+          path: coverage-report.txt
+          retention-days: 30
+
 
   # ============================================================================
   # Final Summary
   # ============================================================================
   summary:
     name: CI Summary
-    needs: [lint, unit-tests, security-tests, integration-tests, performance-tests]
+    needs: [lint, unit-tests, security-tests, integration-tests, performance-tests, compliance-tests, coverage-report]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -167,12 +215,15 @@ jobs:
           echo "Security Tests: ${{ needs.security-tests.result }}"
           echo "Integration Tests: ${{ needs.integration-tests.result }}"
           echo "Performance Tests: ${{ needs.performance-tests.result }}"
+          echo "Compliance Tests: ${{ needs.compliance-tests.result }}"
+          echo "Coverage Report: ${{ needs.coverage-report.result }}"
 
           if [[ "${{ needs.lint.result }}" != "success" ]] || \
              [[ "${{ needs.unit-tests.result }}" != "success" ]] || \
              [[ "${{ needs.security-tests.result }}" != "success" ]] || \
              [[ "${{ needs.integration-tests.result }}" != "success" ]] || \
-             [[ "${{ needs.performance-tests.result }}" != "success" ]]; then
+             [[ "${{ needs.performance-tests.result }}" != "success" ]] || \
+             [[ "${{ needs.compliance-tests.result }}" != "success" ]]; then
             echo "::error::One or more CI stages failed"
             exit 1
           fi
