@@ -1,0 +1,64 @@
+#!/bin/bash
+# File Lock Check - PreToolUse Hook for Write
+# Prevents writing to files locked by other Claude Code instances
+#
+# BLOCKS: When file is locked by another active instance
+# ALLOWS: When file is unlocked or locked by current instance
+#
+# Version: 1.0.0
+# Part of Multi-Worktree Coordination System
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../../_lib/coordination.sh" 2>/dev/null || {
+    # If coordination lib not available, allow operation
+    exit 0
+}
+
+# Parse input from stdin
+INPUT=$(cat)
+
+# Extract file path from tool input
+FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+
+if [[ -z "$FILE_PATH" ]]; then
+    # No file path, can't check lock
+    exit 0
+fi
+
+# Check if file is locked
+LOCK_STATUS=$(is_file_locked "$FILE_PATH")
+
+if [[ "$LOCK_STATUS" == "false" ]]; then
+    # Not locked, acquire lock and proceed
+    acquire_file_lock "$FILE_PATH" "write"
+    exit 0
+fi
+
+# File is locked by another instance
+LOCK_HOLDER=$(echo "$LOCK_STATUS" | cut -d'|' -f2)
+LOCK_INFO=$(get_lock_info "$FILE_PATH")
+HOLDER_INFO=$(get_instance_info "$LOCK_HOLDER")
+
+HOLDER_BRANCH=$(echo "$HOLDER_INFO" | jq -r '.branch // "unknown"')
+HOLDER_TASK=$(echo "$HOLDER_INFO" | jq -r '.task // "unknown task"')
+LOCK_REASON=$(echo "$LOCK_INFO" | jq -r '.reason // "editing"')
+
+# Output block message
+cat << EOF
+{
+  "decision": "block",
+  "reason": "File is locked by another Claude Code instance",
+  "details": {
+    "file": "$FILE_PATH",
+    "locked_by": "$LOCK_HOLDER",
+    "branch": "$HOLDER_BRANCH",
+    "task": "$HOLDER_TASK",
+    "lock_reason": "$LOCK_REASON"
+  },
+  "suggestion": "Wait for the other instance to finish, or use /worktree-release to force release the lock"
+}
+EOF
+
+exit 2

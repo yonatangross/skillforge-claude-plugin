@@ -49,6 +49,11 @@
           },
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pretool/write-edit/file-lock-check.sh",
+            "statusMessage": "Checking file locks..."
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/skill/test-location-validator.sh",
             "statusMessage": "Validating test location..."
           },
@@ -138,6 +143,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/posttool/write-edit/file-lock-release.sh"
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/skill/test-pattern-validator.sh",
             "statusMessage": "Validating test patterns..."
           },
@@ -155,6 +164,15 @@
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/skill/di-pattern-enforcer.sh",
             "statusMessage": "Validating dependency injection..."
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/posttool/coordination-heartbeat.sh"
           }
         ]
       }
@@ -207,6 +225,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lifecycle/coordination-init.sh",
+            "statusMessage": "Initializing coordination..."
+          },
+          {
+            "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lifecycle/session-context-loader.sh",
             "statusMessage": "Loading session context..."
           },
@@ -220,6 +243,10 @@
     "SessionEnd": [
       {
         "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lifecycle/coordination-cleanup.sh"
+          },
           {
             "type": "command",
             "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lifecycle/session-metrics-summary.sh"
