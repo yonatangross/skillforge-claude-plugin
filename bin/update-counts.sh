@@ -2,8 +2,12 @@
 # Update component counts in all relevant files
 # Usage: update-counts.sh [--dry-run]
 #
+# Architecture: Single source of truth = filesystem
+# Updates declared counts in: plugin.json, CLAUDE.md, README.md
+# Does NOT update marketplace.json (external schema, not our format)
+#
 # Updates:
-# - .claude-plugin/marketplace.json (features section, description, plugins[0].description)
+# - plugin.json (description string)
 # - CLAUDE.md (count references)
 # - README.md (count references)
 
@@ -19,46 +23,43 @@ if [[ "${1:-}" == "--dry-run" ]]; then
     echo ""
 fi
 
-# Get counts
+# =============================================================================
+# COUNT ACTUAL COMPONENTS (filesystem = source of truth)
+# =============================================================================
 SKILLS=$(find "$PROJECT_ROOT/.claude/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' ')
 AGENTS=$(find "$PROJECT_ROOT/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 COMMANDS=$(find "$PROJECT_ROOT/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 HOOKS=$(find "$PROJECT_ROOT/.claude/hooks" -name "*.sh" -type f ! -path "*/_lib/*" 2>/dev/null | wc -l | tr -d ' ')
-BUNDLES=$(jq '.plugins | length' "$PROJECT_ROOT/.claude-plugin/marketplace.json" 2>/dev/null || echo "0")
 
-echo "Current counts:"
+echo "Current counts (from filesystem):"
 echo "  Skills:   $SKILLS"
 echo "  Agents:   $AGENTS"
 echo "  Commands: $COMMANDS"
 echo "  Hooks:    $HOOKS"
-echo "  Bundles:  $BUNDLES"
 echo ""
 
-# Update marketplace.json
-MARKETPLACE="$PROJECT_ROOT/.claude-plugin/marketplace.json"
-if [[ -f "$MARKETPLACE" ]]; then
-    echo "Updating $MARKETPLACE..."
+# =============================================================================
+# UPDATE plugin.json (primary source of declared counts)
+# =============================================================================
+PLUGIN_JSON="$PROJECT_ROOT/plugin.json"
+if [[ -f "$PLUGIN_JSON" ]]; then
+    echo "Updating $PLUGIN_JSON..."
 
     if [[ "$DRY_RUN" == "false" ]]; then
-        # Update features section and descriptions
-        jq --argjson skills "$SKILLS" \
-           --argjson agents "$AGENTS" \
-           --argjson commands "$COMMANDS" \
-           --argjson hooks "$HOOKS" \
-           '.features.skills = $skills |
-            .features.agents = $agents |
-            .features.commands = $commands |
-            .features.hooks = $hooks |
-            .description = "The Complete AI Development Toolkit - \($skills) skills, \($agents) agents, \($commands) commands, \($hooks) hooks" |
-            .plugins[0].description = "Full toolkit - all \($skills) skills, \($agents) agents, \($commands) commands, \($hooks) hooks"' \
-           "$MARKETPLACE" > "${MARKETPLACE}.tmp" && mv "${MARKETPLACE}.tmp" "$MARKETPLACE"
-        echo "  ✓ Updated marketplace.json"
+        # Build new description string
+        NEW_DESC="Comprehensive AI-assisted development toolkit with $SKILLS skills, $COMMANDS commands, $AGENTS agents, $HOOKS hooks, progressive loading, and production-ready patterns for modern full-stack development"
+
+        # Update description in plugin.json
+        jq --arg desc "$NEW_DESC" '.description = $desc' "$PLUGIN_JSON" > "${PLUGIN_JSON}.tmp" && mv "${PLUGIN_JSON}.tmp" "$PLUGIN_JSON"
+        echo "  ✓ Updated plugin.json"
     else
-        echo "  Would update: features.skills=$SKILLS, features.agents=$AGENTS, features.commands=$COMMANDS, features.hooks=$HOOKS"
+        echo "  Would update description with: $SKILLS skills, $COMMANDS commands, $AGENTS agents, $HOOKS hooks"
     fi
 fi
 
-# Update CLAUDE.md (replace count patterns)
+# =============================================================================
+# UPDATE CLAUDE.md (documentation)
+# =============================================================================
 CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
 if [[ -f "$CLAUDE_MD" ]]; then
     echo "Updating $CLAUDE_MD..."
@@ -82,7 +83,9 @@ if [[ -f "$CLAUDE_MD" ]]; then
     fi
 fi
 
-# Update README.md if exists
+# =============================================================================
+# UPDATE README.md (documentation)
+# =============================================================================
 README="$PROJECT_ROOT/README.md"
 if [[ -f "$README" ]]; then
     echo "Updating $README..."
@@ -105,5 +108,29 @@ if [[ -f "$README" ]]; then
     fi
 fi
 
+# =============================================================================
+# UPDATE marketplace.json description (but not .features - external schema)
+# =============================================================================
+MARKETPLACE="$PROJECT_ROOT/.claude-plugin/marketplace.json"
+if [[ -f "$MARKETPLACE" ]]; then
+    echo "Updating $MARKETPLACE descriptions..."
+
+    if [[ "$DRY_RUN" == "false" ]]; then
+        # Only update description strings, not schema structure
+        jq --argjson skills "$SKILLS" \
+           --argjson agents "$AGENTS" \
+           --argjson commands "$COMMANDS" \
+           --argjson hooks "$HOOKS" \
+           '.description = "The Complete AI Development Toolkit - \($skills) skills, \($agents) agents, \($commands) commands, \($hooks) hooks for full-stack development" |
+            .plugins[0].description = "Complete AI development toolkit with \($skills) skills covering AI/LLM, backend, frontend, security, and testing patterns. Includes \($agents) specialized agents, \($commands) commands, and \($hooks) lifecycle hooks."' \
+           "$MARKETPLACE" > "${MARKETPLACE}.tmp" && mv "${MARKETPLACE}.tmp" "$MARKETPLACE"
+        echo "  ✓ Updated marketplace.json descriptions"
+    else
+        echo "  Would update description strings with: $SKILLS skills, $AGENTS agents, $COMMANDS commands, $HOOKS hooks"
+    fi
+fi
+
 echo ""
 echo "Done! Component counts updated."
+echo ""
+echo "Verify with: bin/validate-counts.sh"

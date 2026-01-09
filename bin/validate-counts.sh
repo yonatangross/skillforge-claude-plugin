@@ -1,6 +1,10 @@
 #!/bin/bash
-# Validate that hardcoded counts match actual component counts
+# Validate that declared counts match actual component counts
 # Usage: validate-counts.sh
+#
+# Architecture: Single source of truth = filesystem
+# Declared counts come from plugin.json description string
+# Actual counts come from counting actual files
 #
 # Exit codes:
 #   0 - All counts match
@@ -11,28 +15,44 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Get actual counts
+# =============================================================================
+# ACTUAL COUNTS (filesystem = source of truth)
+# =============================================================================
 ACTUAL_SKILLS=$(find "$PROJECT_ROOT/.claude/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' ')
 ACTUAL_AGENTS=$(find "$PROJECT_ROOT/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 ACTUAL_COMMANDS=$(find "$PROJECT_ROOT/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 ACTUAL_HOOKS=$(find "$PROJECT_ROOT/.claude/hooks" -name "*.sh" -type f ! -path "*/_lib/*" 2>/dev/null | wc -l | tr -d ' ')
 
-# Get declared counts from marketplace.json
-MARKETPLACE="$PROJECT_ROOT/.claude-plugin/marketplace.json"
-if [[ ! -f "$MARKETPLACE" ]]; then
-    echo "ERROR: marketplace.json not found at $MARKETPLACE"
+# =============================================================================
+# DECLARED COUNTS (from plugin.json description string)
+# =============================================================================
+PLUGIN_JSON="$PROJECT_ROOT/plugin.json"
+if [[ ! -f "$PLUGIN_JSON" ]]; then
+    echo "ERROR: plugin.json not found at $PLUGIN_JSON"
     exit 1
 fi
 
-DECLARED_SKILLS=$(jq '.features.skills' "$MARKETPLACE")
-DECLARED_AGENTS=$(jq '.features.agents' "$MARKETPLACE")
-DECLARED_COMMANDS=$(jq '.features.commands' "$MARKETPLACE")
-DECLARED_HOOKS=$(jq '.features.hooks' "$MARKETPLACE")
+# Extract description and parse counts from it
+# Format: "... with 78 skills, 12 commands, 20 agents..., 90 hooks..."
+DESCRIPTION=$(jq -r '.description' "$PLUGIN_JSON")
 
-# Validate
+# Parse counts from description using regex
+# Skills: "N skills"
+DECLARED_SKILLS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ skills' | grep -oE '[0-9]+' || echo "0")
+# Agents: "N agents"
+DECLARED_AGENTS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ agents' | grep -oE '[0-9]+' || echo "0")
+# Commands: "N commands"
+DECLARED_COMMANDS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ commands' | grep -oE '[0-9]+' || echo "0")
+# Hooks: "N hooks"
+DECLARED_HOOKS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ hooks' | grep -oE '[0-9]+' || echo "0")
+
+# =============================================================================
+# VALIDATION
+# =============================================================================
 ERRORS=0
 
 echo "Validating component counts..."
+echo "Source: plugin.json description"
 echo ""
 
 if [[ "$ACTUAL_SKILLS" != "$DECLARED_SKILLS" ]]; then
