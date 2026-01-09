@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  78 skills | 11 commands | 20 agents | 89 hooks | 7 plugin bundles
+  78 skills | 12 commands | 20 agents | 90 hooks | 7 plugin bundles
 </p>
 
 ---
@@ -315,7 +315,7 @@ mcp__context7__query-docs(
 
 ### Hook Auditing
 
-All 89 hooks have been security-audited and follow these standards:
+All 90 hooks have been security-audited and follow these standards:
 
 - **Strict mode enabled**: `set -euo pipefail` in all bash hooks
 - **Input validation**: All hook inputs are validated via JSON schema
@@ -372,7 +372,7 @@ fi
 |   +-- product-strategist.md
 |   +-- llm-integrator.md
 |   +-- ...
-+-- hooks/                     # 89 lifecycle hooks
++-- hooks/                     # 90 lifecycle hooks
 |   +-- pretool/
 |   +-- posttool/
 |   +-- lifecycle/
