@@ -510,4 +510,4 @@ tail -f .claude/hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-09 (v4.6.6 - Fix skill template literal bash parsing)
+**Last Updated**: 2026-01-09 (v4.6.7 - MCPs opt-in via configure)
