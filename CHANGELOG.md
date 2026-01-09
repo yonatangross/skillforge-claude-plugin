@@ -5,6 +5,25 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.4] - 2026-01-09
+
+### Fixed
+
+**Marketplace Schema Compatibility**
+- Rewrote `.claude-plugin/marketplace.json` to match official Anthropic schema
+- Changed `owner` from string to object format `{name, email}`
+- Replaced custom `plugins[].skills` array with standard `source` field
+- Removed unrecognized fields: `includes_agents`, `includes_commands`, `includes_hooks`
+- Removed custom `features`, `installation`, `marketplace_status` sections
+- Plugin now validates against `https://anthropic.com/claude-code/marketplace.schema.json`
+
+### Changed
+
+- Simplified marketplace.json to single plugin entry pointing to repo root
+- Bundle/tier concept moved to internal plugin.json (not marketplace registry)
+
+---
+
 ## [4.6.3] - 2026-01-09
 
 ### Added

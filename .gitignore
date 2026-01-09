@@ -23,13 +23,39 @@ logs/
 *.temp
 .cache/
 
-# Hook logs (generated at runtime)
-.claude/hooks/logs/
-
-# Session-specific files (not part of plugin)
-.claude/context/session-*.json
-
-# Environment files (if any)
+# Environment files
 .env
 .env.local
 __pycache__/
+
+# =============================================================================
+# Runtime artifacts (should never be committed)
+# =============================================================================
+
+# Root level temp artifacts
+HOOK_SECURITY_*.json
+HOOK_SECURITY_*.txt
+
+# Instance-specific environment
+.claude/.instance_env
+
+# Session state and runtime data
+.claude/context/session.json
+.claude/context/session/
+.claude/context/handoffs/
+.claude/context/quality_gate_review_evidence.json
+
+# Coordination runtime files
+.claude/coordination/IMPLEMENTATION_REPORT.json
+.claude/coordination/*.lock
+.claude/coordination/heartbeats/
+.claude/coordination/locks/
+
+# Hook logs (generated at runtime)
+.claude/hooks/logs/
+
+# Session logs
+.claude/logs/sessions/
+
+# Local settings (user-specific)
+.claude/settings.local.json

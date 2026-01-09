@@ -470,7 +470,7 @@ ls .claude/agents/
 
 ## Version Information
 
-- **Current Version**: 4.6.0 (as of 2026-01-08)
+- **Current Version**: 4.6.4 (as of 2026-01-08)
 - **Claude Code Requirement**: >= 2.1.2
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Coordination System**: Multi-worktree support added in v4.6.0
@@ -510,4 +510,4 @@ tail -f .claude/hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-08 (v4.6.0 - Multi-worktree coordination)
+**Last Updated**: 2026-01-09 (v4.6.4 - Marketplace schema fix)
