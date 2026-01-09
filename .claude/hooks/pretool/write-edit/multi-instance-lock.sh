@@ -1,5 +1,6 @@
 #!/bin/bash
 # Multi-Instance File Lock Hook
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Acquires file locks before Write/Edit operations to prevent conflicts
 # Version: 1.0.0
 
@@ -21,15 +22,15 @@ log() {
 
 # Check if coordination is enabled
 if [[ ! -f "$DB_PATH" ]]; then
-    # No coordination database, pass through
-    echo "$INPUT"
+    # No coordination database, pass through with continue
+    echo "$INPUT" | jq '. + {"continue": true}'
     exit 0
 fi
 
 # Check if we have instance identity
 if [[ ! -f "$INSTANCE_DIR/id.json" ]]; then
     log "WARNING: No instance identity found, passing through"
-    echo "$INPUT"
+    echo "$INPUT" | jq '. + {"continue": true}'
     exit 0
 fi
 
@@ -39,13 +40,13 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.file_path // .input.file_path // empty')
 
 # Only process Write and Edit tools
 if [[ "$TOOL_NAME" != "Write" && "$TOOL_NAME" != "Edit" ]]; then
-    echo "$INPUT"
+    echo "$INPUT" | jq '. + {"continue": true}'
     exit 0
 fi
 
 # Skip if no file path
 if [[ -z "$FILE_PATH" ]]; then
-    echo "$INPUT"
+    echo "$INPUT" | jq '. + {"continue": true}'
     exit 0
 fi
 
@@ -114,7 +115,7 @@ VALUES (
     'lock_acquire',
     'file',
     '$file_path',
-    '{"lock_id": "$LOCK_ID", "expires_at": "$EXPIRES_AT","continue":true}'
+    '{"lock_id": "$LOCK_ID", "expires_at": "$EXPIRES_AT"}'
 );
 EOF
 }
@@ -182,9 +183,10 @@ main() {
         # Send lock request
         request_lock_release "$locked_dir" "$holder_instance"
 
-        # Output blocking response
+        # Output blocking response with continue: false
         cat << EOF
 {
+  "continue": false,
   "blocked": true,
   "reason": "Directory lock conflict",
   "file": "$FILE_PATH",
@@ -214,9 +216,10 @@ EOF
         # Send lock request
         request_lock_release "$FILE_PATH" "$holder_instance"
 
-        # Output blocking response
+        # Output blocking response with continue: false
         cat << EOF
 {
+  "continue": false,
   "blocked": true,
   "reason": "File lock conflict",
   "file": "$FILE_PATH",
@@ -234,9 +237,9 @@ EOF
     acquire_lock "$FILE_PATH" "Modifying via $TOOL_NAME"
     log "Lock acquired: $FILE_PATH (expires: $EXPIRES_AT)"
 
-    # Add lock info and systemMessage to the output
+    # Add lock info and continue: true to the output
     echo "$INPUT" | jq --arg lock_id "$LOCK_ID" --arg expires "$EXPIRES_AT" \
-        '. + {"systemMessage": "Lock acquired", "_coordination": {"lock_id": $lock_id, "expires_at": $expires},"continue":true}'
+        '. + {"continue": true, "systemMessage": "Lock acquired", "_coordination": {"lock_id": $lock_id, "expires_at": $expires}}'
 }
 
 main

@@ -58,11 +58,7 @@ fi
 
 info "Spawning $SUBAGENT_TYPE agent: $DESCRIPTION"
 
-# ANSI colors for consolidated output
-GREEN=$'\033[32m'
-RESET=$'\033[0m'
-
-# Format: Task: ✓ Subagent
-MSG="${GREEN}✓${RESET} Subagent validated"
-echo "{\"systemMessage\":\"$MSG\", \"continue\": true}"
+# CC 2.1.2 Compliant: JSON output without ANSI colors
+# (Colors in JSON break JSON parsing)
+echo '{"systemMessage":"Subagent validated", "continue": true}'
 exit 0

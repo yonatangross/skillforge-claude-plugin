@@ -1,5 +1,6 @@
 #!/bin/bash
 # File Lock Check - PreToolUse Hook for Edit
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Prevents editing files locked by other Claude Code instances
 #
 # BLOCKS: When file is locked by another active instance
@@ -13,6 +14,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../../_lib/coordination.sh" 2>/dev/null || {
     # If coordination lib not available, allow operation
+    echo '{"continue": true}'
     exit 0
 }
 
@@ -24,6 +26,7 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
 if [[ -z "$FILE_PATH" ]]; then
     # No file path, can't check lock
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -33,6 +36,7 @@ LOCK_STATUS=$(is_file_locked "$FILE_PATH")
 if [[ "$LOCK_STATUS" == "false" ]]; then
     # Not locked, acquire lock and proceed
     acquire_file_lock "$FILE_PATH" "edit"
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -45,7 +49,7 @@ HOLDER_BRANCH=$(echo "$HOLDER_INFO" | jq -r '.branch // "unknown"')
 HOLDER_TASK=$(echo "$HOLDER_INFO" | jq -r '.task // "unknown task"')
 LOCK_REASON=$(echo "$LOCK_INFO" | jq -r '.reason // "editing"')
 
-# Output block message using correct hookSpecificOutput schema
+# Output block message using correct hookSpecificOutput schema with continue field
 jq -n \
   --arg file "$FILE_PATH" \
   --arg holder "$LOCK_HOLDER" \
@@ -53,6 +57,7 @@ jq -n \
   --arg task "$HOLDER_TASK" \
   --arg reason "$LOCK_REASON" \
   '{
+    "continue": false,
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "deny",

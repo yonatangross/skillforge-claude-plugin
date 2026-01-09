@@ -176,14 +176,9 @@ Proceeding with: $subagent_type - $description
   # Allow the agent to proceed
   log_hook "Context gate passed: $subagent_type"
 
-  # ANSI colors for consolidated output
-  GREEN=$'\033[32m'
-  CYAN=$'\033[36m'
-  RESET=$'\033[0m'
-
-  # Format: Task: ✓ Gate
-  MSG="${GREEN}✓${RESET} Context gate passed"
-  echo "{\"systemMessage\":\"$MSG\", \"continue\": true}"
+  # CC 2.1.2 Compliant: JSON output without ANSI colors
+  # (Colors in JSON break JSON parsing)
+  echo '{"systemMessage":"Context gate passed", "continue": true}'
   exit 0
 }
 

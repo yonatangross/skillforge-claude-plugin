@@ -28,12 +28,7 @@ if [[ "$TOOL_NAME" == "mcp__playwright__browser_file_upload" ]]; then
   log_hook "File upload: $PATHS"
 fi
 
-# ANSI colors for consolidated output
-GREEN=$'\033[32m'
-CYAN=$'\033[36m'
-RESET=$'\033[0m'
-
-# Format: Playwright: ✓ Safe
-MSG="${GREEN}✓${RESET} Browser safe"
-echo "{\"systemMessage\":\"$MSG\", \"continue\": true}"
+# CC 2.1.2 Compliant: JSON output without ANSI colors
+# (Colors in JSON break JSON parsing)
+echo '{"systemMessage":"Browser safe", "continue": true}'
 exit 0

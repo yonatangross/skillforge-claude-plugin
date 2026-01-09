@@ -22,12 +22,7 @@ echo "$(date -Iseconds) | $SKILL_NAME | ${SKILL_ARGS:-no args}" >> "$USAGE_LOG"
 # Info message
 info "Invoking skill: $SKILL_NAME"
 
-# ANSI colors for consolidated output
-GREEN=$'\033[32m'
-CYAN=$'\033[36m'
-RESET=$'\033[0m'
-
-# Format: Skill: ✓ Tracked
-MSG="${GREEN}✓${RESET} Skill tracked"
-echo "{\"systemMessage\":\"$MSG\", \"continue\": true}"
+# CC 2.1.2 Compliant: JSON output without ANSI colors
+# (Colors in JSON break JSON parsing)
+echo '{"systemMessage":"Skill tracked", "continue": true}'
 exit 0

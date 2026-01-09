@@ -1,5 +1,6 @@
 #!/bin/bash
 # Conflict Predictor - PreToolUse Hook for Bash
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Warns before git commit if potential conflicts exist with other worktrees
 #
 # Triggers on: git commit commands
@@ -16,6 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [[ -f "$SCRIPT_DIR/../../_lib/coordination.sh" ]]; then
     source "$SCRIPT_DIR/../../_lib/coordination.sh"
 else
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -25,6 +27,7 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
 # Only check for git commit commands
 if ! echo "$COMMAND" | grep -qE '^git\s+commit'; then
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -32,6 +35,7 @@ fi
 COORD_DIR=$(get_coordination_dir)
 
 if [[ ! -f "$COORD_DIR/registry.json" ]]; then
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -40,6 +44,7 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
 INSTANCE_ID=$(get_instance_id)
 
 if [[ -z "$CURRENT_BRANCH" ]]; then
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -48,6 +53,7 @@ OTHER_BRANCHES=$(echo "$REGISTRY" | jq -r --arg current "$CURRENT_BRANCH" --arg 
     '.instances | to_entries[] | select(.key != $id and .value.branch != $current) | .value.branch')
 
 if [[ -z "$OTHER_BRANCHES" ]]; then
+    echo '{"continue": true}'
     exit 0
 fi
 
@@ -75,18 +81,18 @@ done
 
 # If conflicts found, output warning (but don't block)
 if [[ -n "$CONFLICTS" ]]; then
-    echo ""
-    echo "╔═══════════════════════════════════════════════════════════════════╗"
-    echo "║  ⚠️  POTENTIAL MERGE CONFLICTS DETECTED                           ║"
-    echo "╠═══════════════════════════════════════════════════════════════════╣"
-    echo "║  Your branch may conflict with these active worktrees:            ║"
+    echo "" >&2
+    echo "+-------------------------------------------------------------------+" >&2
+    echo "|  WARNING: POTENTIAL MERGE CONFLICTS DETECTED                      |" >&2
+    echo "+-------------------------------------------------------------------+" >&2
+    echo "|  Your branch may conflict with these active worktrees:            |" >&2
     echo -e "$CONFLICTS" | while read -r line; do
-        printf "║  %-63s ║\n" "$line"
+        printf "|  %-63s |\n" "$line" >&2
     done
-    echo "║                                                                   ║"
-    echo "║  Consider running: cc-worktree-sync --check-conflicts             ║"
-    echo "╚═══════════════════════════════════════════════════════════════════╝"
-    echo ""
+    echo "|                                                                   |" >&2
+    echo "|  Consider running: cc-worktree-sync --check-conflicts             |" >&2
+    echo "+-------------------------------------------------------------------+" >&2
+    echo "" >&2
 fi
 
 # Always allow the commit (this is just a warning)
