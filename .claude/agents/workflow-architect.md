@@ -4,7 +4,7 @@ color: blue
 description: Multi-agent workflow specialist who designs LangGraph pipelines, implements supervisor-worker patterns, manages state and checkpointing, and orchestrates RAG retrieval flows for complex AI systems
 max_tokens: 32000
 tools: Bash, Read, Write, Edit, Grep, Glob
-skills: langgraph-supervisor, langgraph-routing, langgraph-parallel, langgraph-state, langgraph-checkpoints, langgraph-human-in-loop, multi-agent-orchestration, langfuse-observability, observability-monitoring
+skills: langgraph-supervisor, langgraph-routing, langgraph-parallel, langgraph-state, langgraph-checkpoints, langgraph-human-in-loop, langgraph-functional, multi-agent-orchestration, langfuse-observability, observability-monitoring
 hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
@@ -239,7 +239,7 @@ Task: "Design a multi-agent analysis pipeline for URL content"
 ## Integration
 - **Receives from:** Product requirements, backend-system-architect (API integration points)
 - **Hands off to:** llm-integrator (node LLM implementation), data-pipeline-engineer (retrieval data prep)
-- **Skill references:** langgraph-workflows, ai-native-development (RAG sections), langfuse-observability, context-engineering (context isolation), context-compression (multi-agent state management)
+- **Skill references:** langgraph-supervisor, langgraph-routing, langgraph-parallel, langgraph-state, langgraph-checkpoints, langgraph-human-in-loop, langgraph-functional, multi-agent-orchestration, langfuse-observability, context-engineering
 
 ## Notes
 - Uses **opus model** for complex architectural reasoning

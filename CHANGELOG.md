@@ -5,6 +5,40 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.3] - 2026-01-09
+
+### Added
+
+**6 New Retrieval & AI Skills**
+- `hyde-retrieval` - HyDE (Hypothetical Document Embeddings) for vocabulary mismatch resolution
+- `query-decomposition` - Multi-concept query handling with parallel retrieval and RRF fusion
+- `reranking-patterns` - Cross-encoder and LLM-based reranking for search precision
+- `contextual-retrieval` - Anthropic's context-prepending technique for improved RAG
+- `langgraph-functional` - New @entrypoint/@task decorator API for modern LangGraph workflows
+- `mcp-server-building` - Building MCP servers for Claude extensibility
+
+**Enhanced Existing Skills**
+- `embeddings` - Added late chunking, batch API patterns, embedding cache, Matryoshka dimensions
+- `rag-retrieval` - Added HyDE integration, agentic RAG, Self-RAG, Corrective RAG (CRAG) patterns
+
+**Subagent Integration**
+- `data-pipeline-engineer` agent now uses: hyde-retrieval, query-decomposition, reranking-patterns, contextual-retrieval
+- `workflow-architect` agent now uses: langgraph-functional
+- `backend-system-architect` agent now uses: mcp-server-building
+
+### Changed
+
+- Skills count increased from 72 to 78
+- Updated agent markdown files with new skill references
+- All new skills follow slim Tier 1/Tier 2 format with proper schema validation
+
+### Fixed
+
+- capabilities.json files now include required `$schema`, `description`, and `capabilities` fields
+- SKILL.md files now include required "When to Use" sections
+
+---
+
 ## [4.6.2] - 2026-01-09
 
 ### Added

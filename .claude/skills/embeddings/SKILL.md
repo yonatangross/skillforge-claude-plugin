@@ -99,10 +99,20 @@ similarity = cosine_similarity(vector1, vector2)
 - Using wrong similarity metric (cosine vs euclidean)
 - Re-embedding unchanged content (cache embeddings)
 
+## Advanced Patterns
+
+See `references/advanced-patterns.md` for:
+- **Late Chunking**: Embed full document, extract chunk vectors from contextualized tokens
+- **Batch API**: Production batching with rate limiting and retry
+- **Embedding Cache**: Redis-based caching to avoid re-embedding
+- **Matryoshka Embeddings**: Dimension reduction with text-embedding-3
+
 ## Related Skills
 
 - `rag-retrieval` - Using embeddings for RAG pipelines
-- `pgvector-search` - Storing embeddings in PostgreSQL
+- `hyde-retrieval` - Hypothetical document embeddings for vocabulary mismatch
+- `contextual-retrieval` - Anthropic's context-prepending technique
+- `reranking-patterns` - Cross-encoder reranking for precision
 - `ollama-local` - Local embeddings with nomic-embed-text
 
 ## Capability Details

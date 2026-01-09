@@ -1,8 +1,8 @@
 {
   "$schema": "https://claude-plugins.dev/schemas/plugin.schema.json",
   "name": "@skillforge/complete",
-  "version": "4.6.1",
-  "description": "Comprehensive AI-assisted development toolkit with 72 skills, 11 commands, 20 agents (6 product + 14 technical), 29 hooks, progressive loading, and production-ready patterns for modern full-stack development",
+  "version": "4.6.3",
+  "description": "Comprehensive AI-assisted development toolkit with 75 skills, 11 commands, 20 agents (6 product + 14 technical), 29 hooks, progressive loading, and production-ready patterns for modern full-stack development",
   "displayName": "SkillForge Complete",
   "author": {
     "name": "SkillForge Team",
@@ -69,6 +69,17 @@
       ]
     },
     {
+      "id": "api-versioning",
+      "name": "API Versioning",
+      "path": ".claude/skills/api-versioning",
+      "description": "API versioning strategies including URL path, header, and content negotiation",
+      "tags": [
+        "api",
+        "versioning",
+        "backend"
+      ]
+    },
+    {
       "id": "architecture-decision-record",
       "name": "Architecture Decision Record",
       "path": ".claude/skills/architecture-decision-record",
@@ -100,6 +111,29 @@
         "auth",
         "jwt",
         "oauth"
+      ]
+    },
+    {
+      "id": "backend-architecture-enforcer",
+      "name": "Backend Architecture Enforcer",
+      "path": ".claude/skills/backend-architecture-enforcer",
+      "description": "Enforce FastAPI Clean Architecture - layer separation, dependency injection, async patterns",
+      "tags": [
+        "backend",
+        "architecture",
+        "enforcement"
+      ]
+    },
+    {
+      "id": "background-jobs",
+      "name": "Background Jobs",
+      "path": ".claude/skills/background-jobs",
+      "description": "Async task processing with Celery, ARQ, and Redis for Python backends",
+      "tags": [
+        "backend",
+        "async",
+        "celery",
+        "redis"
       ]
     },
     {
@@ -137,6 +171,30 @@
       ]
     },
     {
+      "id": "caching-strategies",
+      "name": "Caching Strategies",
+      "path": ".claude/skills/caching-strategies",
+      "description": "Backend caching patterns with Redis including write-through, write-behind, cache-aside",
+      "tags": [
+        "backend",
+        "caching",
+        "redis",
+        "performance"
+      ]
+    },
+    {
+      "id": "clean-architecture",
+      "name": "Clean Architecture",
+      "path": ".claude/skills/clean-architecture",
+      "description": "SOLID principles, hexagonal architecture, ports & adapters, and DDD tactical patterns",
+      "tags": [
+        "architecture",
+        "solid",
+        "ddd",
+        "backend"
+      ]
+    },
+    {
       "id": "code-review-playbook",
       "name": "Code Review Playbook",
       "path": ".claude/skills/code-review-playbook",
@@ -145,6 +203,41 @@
         "code-review",
         "quality",
         "collaboration"
+      ]
+    },
+    {
+      "id": "context-compression",
+      "name": "Context Compression",
+      "path": ".claude/skills/context-compression",
+      "description": "Compress conversation context while preserving critical information using anchored summarization",
+      "tags": [
+        "llm",
+        "context",
+        "optimization"
+      ]
+    },
+    {
+      "id": "context-engineering",
+      "name": "Context Engineering",
+      "path": ".claude/skills/context-engineering",
+      "description": "Design agent system prompts, optimize RAG retrieval, and attention-aware context design",
+      "tags": [
+        "llm",
+        "context",
+        "prompts",
+        "optimization"
+      ]
+    },
+    {
+      "id": "contextual-retrieval",
+      "path": ".claude/skills/contextual-retrieval",
+      "description": "Anthropic's Contextual Retrieval technique for improved RAG. Use when chunks lose context during retrieval, implementing hybrid BM25+vector search, or reducing retrieval failures.",
+      "tags": [
+        "ai",
+        "rag",
+        "retrieval",
+        "embeddings",
+        "anthropic"
       ]
     },
     {
@@ -157,6 +250,17 @@
         "postgresql",
         "schema",
         "migrations"
+      ]
+    },
+    {
+      "id": "defense-in-depth",
+      "name": "Defense in Depth",
+      "path": ".claude/skills/defense-in-depth",
+      "description": "Build secure AI pipelines with 8 validation layers from edge to storage",
+      "tags": [
+        "security",
+        "ai",
+        "validation"
       ]
     },
     {
@@ -219,6 +323,18 @@
       ]
     },
     {
+      "id": "error-handling-rfc9457",
+      "name": "Error Handling RFC9457",
+      "path": ".claude/skills/error-handling-rfc9457",
+      "description": "Structured error responses using RFC 9457 Problem Details for HTTP APIs",
+      "tags": [
+        "api",
+        "errors",
+        "rfc9457",
+        "backend"
+      ]
+    },
+    {
       "id": "evidence-verification",
       "name": "Evidence Verification",
       "path": ".claude/skills/evidence-verification",
@@ -227,6 +343,17 @@
         "testing",
         "quality-assurance",
         "verification"
+      ]
+    },
+    {
+      "id": "fastapi-advanced",
+      "name": "FastAPI Advanced",
+      "path": ".claude/skills/fastapi-advanced",
+      "description": "FastAPI 2026 advanced patterns including lifespan, dependencies, middleware, and async",
+      "tags": [
+        "backend",
+        "fastapi",
+        "python"
       ]
     },
     {
@@ -286,6 +413,30 @@
       ]
     },
     {
+      "id": "hyde-retrieval",
+      "name": "HyDE Retrieval",
+      "path": ".claude/skills/hyde-retrieval",
+      "description": "Hypothetical Document Embeddings for vocabulary mismatch resolution in RAG",
+      "tags": [
+        "ai",
+        "rag",
+        "retrieval",
+        "embeddings"
+      ]
+    },
+    {
+      "id": "i18n-date-patterns",
+      "name": "i18n Date Patterns",
+      "path": ".claude/skills/i18n-date-patterns",
+      "description": "Internationalization in React with date/time handling, locale-aware formatting, ICU MessageFormat",
+      "tags": [
+        "frontend",
+        "i18n",
+        "react",
+        "dates"
+      ]
+    },
+    {
       "id": "input-validation",
       "name": "Input Validation",
       "path": ".claude/skills/input-validation",
@@ -328,6 +479,18 @@
         "langgraph",
         "persistence",
         "recovery"
+      ]
+    },
+    {
+      "id": "langgraph-functional",
+      "path": ".claude/skills/langgraph-functional",
+      "description": "LangGraph Functional API with @entrypoint and @task decorators. Use when building workflows with the modern LangGraph pattern, enabling parallel execution, persistence, and human-in-the-loop.",
+      "tags": [
+        "ai",
+        "langgraph",
+        "workflow",
+        "agents",
+        "orchestration"
       ]
     },
     {
@@ -398,6 +561,17 @@
       ]
     },
     {
+      "id": "llm-safety-patterns",
+      "name": "LLM Safety Patterns",
+      "path": ".claude/skills/llm-safety-patterns",
+      "description": "Secure LLM integrations against prompt injection, hallucination, and data leakage",
+      "tags": [
+        "llm",
+        "security",
+        "safety"
+      ]
+    },
+    {
       "id": "llm-streaming",
       "name": "LLM Streaming",
       "path": ".claude/skills/llm-streaming",
@@ -419,6 +593,30 @@
         "testing",
         "mocking",
         "deterministic"
+      ]
+    },
+    {
+      "id": "mcp-server-building",
+      "path": ".claude/skills/mcp-server-building",
+      "description": "Building MCP (Model Context Protocol) servers for Claude extensibility. Use when creating custom tools, integrating external services, or extending Claude's capabilities.",
+      "tags": [
+        "tools",
+        "mcp",
+        "claude",
+        "extensibility",
+        "integration"
+      ]
+    },
+    {
+      "id": "motion-animation-patterns",
+      "name": "Motion Animation Patterns",
+      "path": ".claude/skills/motion-animation-patterns",
+      "description": "Motion (Framer Motion) animations in React with presets, transitions, and RTL support",
+      "tags": [
+        "frontend",
+        "animation",
+        "react",
+        "motion"
       ]
     },
     {
@@ -517,6 +715,17 @@
       ]
     },
     {
+      "id": "project-structure-enforcer",
+      "name": "Project Structure Enforcer",
+      "path": ".claude/skills/project-structure-enforcer",
+      "description": "Enforce 2026 folder structure standards - feature-based organization, max nesting depth",
+      "tags": [
+        "architecture",
+        "structure",
+        "enforcement"
+      ]
+    },
+    {
       "id": "prompt-caching",
       "name": "Prompt Caching",
       "path": ".claude/skills/prompt-caching",
@@ -540,6 +749,18 @@
       ]
     },
     {
+      "id": "query-decomposition",
+      "name": "Query Decomposition",
+      "path": ".claude/skills/query-decomposition",
+      "description": "Multi-concept query handling with parallel retrieval and RRF fusion",
+      "tags": [
+        "ai",
+        "rag",
+        "retrieval",
+        "search"
+      ]
+    },
+    {
       "id": "rag-retrieval",
       "name": "RAG Retrieval",
       "path": ".claude/skills/rag-retrieval",
@@ -552,6 +773,18 @@
       ]
     },
     {
+      "id": "rate-limiting",
+      "name": "Rate Limiting",
+      "path": ".claude/skills/rate-limiting",
+      "description": "API rate limiting with token bucket, sliding window, and Redis distributed patterns",
+      "tags": [
+        "api",
+        "security",
+        "redis",
+        "backend"
+      ]
+    },
+    {
       "id": "react-server-components-framework",
       "name": "React Server Components",
       "path": ".claude/skills/react-server-components-framework",
@@ -561,6 +794,18 @@
         "frontend",
         "rsc",
         "react-19"
+      ]
+    },
+    {
+      "id": "reranking-patterns",
+      "name": "Reranking Patterns",
+      "path": ".claude/skills/reranking-patterns",
+      "description": "Cross-encoder and LLM-based reranking for improved search precision",
+      "tags": [
+        "ai",
+        "rag",
+        "retrieval",
+        "search"
       ]
     },
     {
@@ -612,6 +857,17 @@
       ]
     },
     {
+      "id": "system-design-interrogation",
+      "name": "System Design Interrogation",
+      "path": ".claude/skills/system-design-interrogation",
+      "description": "Structured questions covering scalability, security, data, and operational dimensions",
+      "tags": [
+        "architecture",
+        "planning",
+        "design"
+      ]
+    },
+    {
       "id": "test-data-management",
       "name": "Test Data Management",
       "path": ".claude/skills/test-data-management",
@@ -621,6 +877,17 @@
         "data",
         "fixtures",
         "factories"
+      ]
+    },
+    {
+      "id": "test-standards-enforcer",
+      "name": "Test Standards Enforcer",
+      "path": ".claude/skills/test-standards-enforcer",
+      "description": "Enforce testing best practices - AAA pattern, naming conventions, isolation, coverage",
+      "tags": [
+        "testing",
+        "enforcement",
+        "quality"
       ]
     },
     {
@@ -669,201 +936,6 @@
         "playwright",
         "e2e",
         "frontend"
-      ]
-    },
-    {
-      "id": "api-versioning",
-      "name": "API Versioning",
-      "path": ".claude/skills/api-versioning",
-      "description": "API versioning strategies including URL path, header, and content negotiation",
-      "tags": [
-        "api",
-        "versioning",
-        "backend"
-      ]
-    },
-    {
-      "id": "backend-architecture-enforcer",
-      "name": "Backend Architecture Enforcer",
-      "path": ".claude/skills/backend-architecture-enforcer",
-      "description": "Enforce FastAPI Clean Architecture - layer separation, dependency injection, async patterns",
-      "tags": [
-        "backend",
-        "architecture",
-        "enforcement"
-      ]
-    },
-    {
-      "id": "background-jobs",
-      "name": "Background Jobs",
-      "path": ".claude/skills/background-jobs",
-      "description": "Async task processing with Celery, ARQ, and Redis for Python backends",
-      "tags": [
-        "backend",
-        "async",
-        "celery",
-        "redis"
-      ]
-    },
-    {
-      "id": "caching-strategies",
-      "name": "Caching Strategies",
-      "path": ".claude/skills/caching-strategies",
-      "description": "Backend caching patterns with Redis including write-through, write-behind, cache-aside",
-      "tags": [
-        "backend",
-        "caching",
-        "redis",
-        "performance"
-      ]
-    },
-    {
-      "id": "clean-architecture",
-      "name": "Clean Architecture",
-      "path": ".claude/skills/clean-architecture",
-      "description": "SOLID principles, hexagonal architecture, ports & adapters, and DDD tactical patterns",
-      "tags": [
-        "architecture",
-        "solid",
-        "ddd",
-        "backend"
-      ]
-    },
-    {
-      "id": "context-compression",
-      "name": "Context Compression",
-      "path": ".claude/skills/context-compression",
-      "description": "Compress conversation context while preserving critical information using anchored summarization",
-      "tags": [
-        "llm",
-        "context",
-        "optimization"
-      ]
-    },
-    {
-      "id": "context-engineering",
-      "name": "Context Engineering",
-      "path": ".claude/skills/context-engineering",
-      "description": "Design agent system prompts, optimize RAG retrieval, and attention-aware context design",
-      "tags": [
-        "llm",
-        "context",
-        "prompts",
-        "optimization"
-      ]
-    },
-    {
-      "id": "defense-in-depth",
-      "name": "Defense in Depth",
-      "path": ".claude/skills/defense-in-depth",
-      "description": "Build secure AI pipelines with 8 validation layers from edge to storage",
-      "tags": [
-        "security",
-        "ai",
-        "validation"
-      ]
-    },
-    {
-      "id": "error-handling-rfc9457",
-      "name": "Error Handling RFC9457",
-      "path": ".claude/skills/error-handling-rfc9457",
-      "description": "Structured error responses using RFC 9457 Problem Details for HTTP APIs",
-      "tags": [
-        "api",
-        "errors",
-        "rfc9457",
-        "backend"
-      ]
-    },
-    {
-      "id": "fastapi-advanced",
-      "name": "FastAPI Advanced",
-      "path": ".claude/skills/fastapi-advanced",
-      "description": "FastAPI 2026 advanced patterns including lifespan, dependencies, middleware, and async",
-      "tags": [
-        "backend",
-        "fastapi",
-        "python"
-      ]
-    },
-    {
-      "id": "i18n-date-patterns",
-      "name": "i18n Date Patterns",
-      "path": ".claude/skills/i18n-date-patterns",
-      "description": "Internationalization in React with date/time handling, locale-aware formatting, ICU MessageFormat",
-      "tags": [
-        "frontend",
-        "i18n",
-        "react",
-        "dates"
-      ]
-    },
-    {
-      "id": "llm-safety-patterns",
-      "name": "LLM Safety Patterns",
-      "path": ".claude/skills/llm-safety-patterns",
-      "description": "Secure LLM integrations against prompt injection, hallucination, and data leakage",
-      "tags": [
-        "llm",
-        "security",
-        "safety"
-      ]
-    },
-    {
-      "id": "motion-animation-patterns",
-      "name": "Motion Animation Patterns",
-      "path": ".claude/skills/motion-animation-patterns",
-      "description": "Motion (Framer Motion) animations in React with presets, transitions, and RTL support",
-      "tags": [
-        "frontend",
-        "animation",
-        "react",
-        "motion"
-      ]
-    },
-    {
-      "id": "project-structure-enforcer",
-      "name": "Project Structure Enforcer",
-      "path": ".claude/skills/project-structure-enforcer",
-      "description": "Enforce 2026 folder structure standards - feature-based organization, max nesting depth",
-      "tags": [
-        "architecture",
-        "structure",
-        "enforcement"
-      ]
-    },
-    {
-      "id": "rate-limiting",
-      "name": "Rate Limiting",
-      "path": ".claude/skills/rate-limiting",
-      "description": "API rate limiting with token bucket, sliding window, and Redis distributed patterns",
-      "tags": [
-        "api",
-        "security",
-        "redis",
-        "backend"
-      ]
-    },
-    {
-      "id": "system-design-interrogation",
-      "name": "System Design Interrogation",
-      "path": ".claude/skills/system-design-interrogation",
-      "description": "Structured questions covering scalability, security, data, and operational dimensions",
-      "tags": [
-        "architecture",
-        "planning",
-        "design"
-      ]
-    },
-    {
-      "id": "test-standards-enforcer",
-      "name": "Test Standards Enforcer",
-      "path": ".claude/skills/test-standards-enforcer",
-      "description": "Enforce testing best practices - AAA pattern, naming conventions, isolation, coverage",
-      "tags": [
-        "testing",
-        "enforcement",
-        "quality"
       ]
     },
     {
@@ -1416,7 +1488,8 @@
         "edge-computing-patterns",
         "github-cli",
         "resilience-patterns",
-        "langgraph-supervisor"
+        "langgraph-supervisor",
+        "mcp-server-building"
       ],
       "model_preference": {
         "design": "sonnet",
@@ -1587,7 +1660,11 @@
         "pgvector-search",
         "golden-dataset-management",
         "golden-dataset-curation",
-        "golden-dataset-validation"
+        "golden-dataset-validation",
+        "hyde-retrieval",
+        "query-decomposition",
+        "reranking-patterns",
+        "contextual-retrieval"
       ],
       "model_preference": {
         "batch_processing": "sonnet",
@@ -2334,7 +2411,8 @@
         "langgraph-human-in-loop",
         "multi-agent-orchestration",
         "langfuse-observability",
-        "observability-monitoring"
+        "observability-monitoring",
+        "langgraph-functional"
       ],
       "model_preference": {
         "architecture": "opus",
@@ -3353,8 +3431,8 @@
         "state_file": "session/state.json",
         "position": "END",
         "token_budget": 500,
-        "compress_trigger": 0.70,
-        "compress_target": 0.50
+        "compress_trigger": 0.7,
+        "compress_target": 0.5
       },
       "knowledge": {
         "directory": "knowledge/",
@@ -3398,7 +3476,7 @@
       },
       "after_tool_use": {
         "monitor": "hooks/posttool/context-budget-monitor.sh",
-        "threshold": 0.70
+        "threshold": 0.7
       },
       "session_end": {
         "compressor": "hooks/stop/context-compressor.sh",
@@ -3420,8 +3498,8 @@
         "blockers": 150,
         "agent_context": 500
       },
-      "compress_trigger": 0.70,
-      "compress_target": 0.50
+      "compress_trigger": 0.7,
+      "compress_target": 0.5
     },
     "attention_positioning": {
       "START": [
