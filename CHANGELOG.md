@@ -5,6 +5,31 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.6.2] - 2026-01-09
+
+### Added
+
+**Claude Code 2.1.2 Support**
+- `agent_type` field parsing in `startup-dispatcher.sh`
+- Agent-aware context initialization in `session-context-loader.sh`
+- Agent type logging to session state in `session-env-setup.sh`
+
+**Comprehensive Hook Tests (138 new tests)**
+- `test-lifecycle-hooks.sh` - 57 tests for 7 lifecycle hooks
+- `test-file-lock-hooks.sh` - 31 tests for 6 file lock hooks
+- `test-permission-posttool-hooks.sh` - 50 tests for 5 hooks (permissions, posttool, input-mod)
+
+### Changed
+
+- Claude Code requirement updated from `>=2.1.0` to `>=2.1.2`
+- Migrated deprecated `shared-context.json` → Context 2.0 (`session/state.json`)
+
+### Fixed
+
+- Placeholder values (XXX KB) in `evidence-verification/SKILL.md` now show realistic sizes (245 KB, 18 KB)
+
+---
+
 ## [4.6.1] - 2026-01-08
 
 ### Added
