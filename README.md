@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin"><img src="https://img.shields.io/github/stars/yonatangross/skillforge-claude-plugin?style=flat-square" alt="GitHub Stars"></a>
-  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.6.4-green?style=flat-square" alt="Version"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.6.6-green?style=flat-square" alt="Version"></a>
   <a href="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml"><img src="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
   <a href="https://github.com/anthropics/claude-plugins-official/pull/86"><img src="https://img.shields.io/badge/anthropic--official-pending-yellow?style=flat-square" alt="Anthropic Official"></a>
@@ -61,7 +61,7 @@ cp -r skillforge-claude-plugin/.claude your-project/.claude
 Customize your installation anytime:
 
 ```bash
-/skillforge:configure
+/skf:configure
 ```
 
 Interactive wizard to:
@@ -201,7 +201,7 @@ Slash commands for common workflows:
 
 | Command | Description | Example |
 |---------|-------------|---------|
-| `/skillforge:configure` | Interactive configuration wizard | `/skillforge:configure` |
+| `/skf:configure` | Interactive configuration wizard | `/skf:configure` |
 | `/commit` | Smart commit with validation and auto-generated message | `/commit` |
 | `/explore` | Deep codebase exploration with parallel agents | `/explore auth system` |
 | `/implement` | Full-power feature implementation with 17 parallel subagents | `/implement user dashboard` |
