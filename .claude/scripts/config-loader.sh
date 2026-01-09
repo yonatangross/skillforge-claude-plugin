@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # SkillForge Configuration Loader
 # Reads config.json and exports enabled/disabled items
-# Version: 1.0.0
+# Version: 1.0.1
+# FIX: Use proper null checking instead of // operator for boolean values
 
 set -euo pipefail
 
@@ -10,11 +11,16 @@ SKILLFORGE_ROOT="${SKILLFORGE_ROOT:-$HOME/.claude/plugins/skillforge}"
 CONFIG_FILE="${SKILLFORGE_CONFIG:-$SKILLFORGE_ROOT/config.json}"
 DEFAULT_CONFIG="$SKILLFORGE_ROOT/.claude/defaults/config.json"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+# -----------------------------------------------------------------------------
+# Helper: Get boolean value with proper null handling
+# jq's // operator treats false as falsy, so we need explicit null check
+# -----------------------------------------------------------------------------
+get_bool() {
+    local json="$1"
+    local path="$2"
+    local default="$3"
+    echo "$json" | jq -r "if $path == null then \"$default\" else ($path | tostring) end"
+}
 
 # -----------------------------------------------------------------------------
 # Load Configuration
@@ -82,7 +88,7 @@ is_skill_enabled() {
     
     if [[ -n "$category" ]]; then
         local enabled
-        enabled=$(echo "$config" | jq -r ".skills.$category // true")
+        enabled=$(get_bool "$config" ".skills.$category" "true")
         [[ "$enabled" == "true" ]]
         return $?
     fi
@@ -109,7 +115,7 @@ is_agent_enabled() {
     
     if [[ -n "$category" ]]; then
         local enabled
-        enabled=$(echo "$config" | jq -r ".agents.$category // true")
+        enabled=$(get_bool "$config" ".agents.$category" "true")
         [[ "$enabled" == "true" ]]
         return $?
     fi
@@ -144,7 +150,10 @@ is_hook_enabled() {
     
     if [[ -n "$category" ]]; then
         local enabled
-        enabled=$(echo "$config" | jq -r ".hooks.$category // true")
+        # Notifications default to false, others default to true
+        local default="true"
+        [[ "$category" == "notifications" ]] && default="false"
+        enabled=$(get_bool "$config" ".hooks.$category" "$default")
         [[ "$enabled" == "true" ]]
         return $?
     fi
@@ -162,7 +171,7 @@ is_command_enabled() {
     
     # Check if commands are enabled
     local commands_enabled
-    commands_enabled=$(echo "$config" | jq -r ".commands.enabled // true")
+    commands_enabled=$(get_bool "$config" ".commands.enabled" "true")
     if [[ "$commands_enabled" != "true" ]]; then
         return 1
     fi
@@ -278,7 +287,7 @@ get_hook_category() {
 get_preset() {
     local config
     config=$(load_config)
-    echo "$config" | jq -r ".preset // \"complete\""
+    echo "$config" | jq -r 'if .preset == null then "complete" else .preset end'
 }
 
 # -----------------------------------------------------------------------------
@@ -289,31 +298,31 @@ get_summary() {
     config=$(load_config)
     
     local preset
-    preset=$(echo "$config" | jq -r ".preset // \"complete\"")
+    preset=$(echo "$config" | jq -r 'if .preset == null then "complete" else .preset end')
     
     echo "SkillForge Configuration"
     echo "------------------------"
     echo "Preset: $preset"
     echo ""
     echo "Skills:"
-    echo "  AI/ML:    $(echo "$config" | jq -r '.skills.ai_ml // true')"
-    echo "  Backend:  $(echo "$config" | jq -r '.skills.backend // true')"
-    echo "  Frontend: $(echo "$config" | jq -r '.skills.frontend // true')"
-    echo "  Testing:  $(echo "$config" | jq -r '.skills.testing // true')"
-    echo "  Security: $(echo "$config" | jq -r '.skills.security // true')"
-    echo "  DevOps:   $(echo "$config" | jq -r '.skills.devops // true')"
-    echo "  Planning: $(echo "$config" | jq -r '.skills.planning // true')"
+    echo "  AI/ML:    $(get_bool "$config" '.skills.ai_ml' 'true')"
+    echo "  Backend:  $(get_bool "$config" '.skills.backend' 'true')"
+    echo "  Frontend: $(get_bool "$config" '.skills.frontend' 'true')"
+    echo "  Testing:  $(get_bool "$config" '.skills.testing' 'true')"
+    echo "  Security: $(get_bool "$config" '.skills.security' 'true')"
+    echo "  DevOps:   $(get_bool "$config" '.skills.devops' 'true')"
+    echo "  Planning: $(get_bool "$config" '.skills.planning' 'true')"
     echo ""
     echo "Agents:"
-    echo "  Product:   $(echo "$config" | jq -r '.agents.product // true')"
-    echo "  Technical: $(echo "$config" | jq -r '.agents.technical // true')"
+    echo "  Product:   $(get_bool "$config" '.agents.product' 'true')"
+    echo "  Technical: $(get_bool "$config" '.agents.technical' 'true')"
     echo ""
     echo "Hooks:"
-    echo "  Safety:      always on"
-    echo "  Productivity: $(echo "$config" | jq -r '.hooks.productivity // true')"
-    echo "  Quality:     $(echo "$config" | jq -r '.hooks.quality_gates // true')"
-    echo "  Team:        $(echo "$config" | jq -r '.hooks.team_coordination // true')"
-    echo "  Notifications: $(echo "$config" | jq -r '.hooks.notifications // false')"
+    echo "  Safety:       always on"
+    echo "  Productivity: $(get_bool "$config" '.hooks.productivity' 'true')"
+    echo "  Quality:      $(get_bool "$config" '.hooks.quality_gates' 'true')"
+    echo "  Team:         $(get_bool "$config" '.hooks.team_coordination' 'true')"
+    echo "  Notifications: $(get_bool "$config" '.hooks.notifications' 'false')"
 }
 
 # -----------------------------------------------------------------------------
