@@ -329,3 +329,36 @@ exit_if_disabled() {
 
 # Export config-aware functions
 export -f is_hook_enabled_by_config exit_if_disabled
+
+# -----------------------------------------------------------------------------
+# Silent output helpers for hooks
+# -----------------------------------------------------------------------------
+
+# Output silent success - hook completed without errors, no user-visible output
+# Usage: output_silent_success
+output_silent_success() {
+  echo '{"continue": true, "suppressOutput": true}'
+}
+
+# Output silent allow - permission hook approves silently
+# Usage: output_silent_allow
+output_silent_allow() {
+  echo '{"decision":{"behavior":"allow"}, "continue": true, "suppressOutput": true}'
+}
+
+# Output error message - only use when there's an actual problem
+# Usage: output_error "Error message"
+output_error() {
+  local msg="$1"
+  jq -n --arg msg "$msg" '{continue: true, systemMessage: $msg}'
+}
+
+# Output block - stops the operation with an error
+# Usage: output_block "Reason"
+output_block() {
+  local reason="$1"
+  jq -n --arg r "$reason" '{continue: false, stopReason: $r}'
+}
+
+# Export output helpers
+export -f output_silent_success output_silent_allow output_error output_block
