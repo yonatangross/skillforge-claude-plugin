@@ -2,7 +2,7 @@
 name: frontend-ui-developer
 color: purple
 description: Frontend developer who builds React 19/TypeScript components with optimistic updates, concurrent features, Zod-validated APIs, exhaustive type safety, and modern 2025 patterns
-max_tokens: 8000
+max_tokens: 12000
 tools: Read, Edit, MultiEdit, Write, Bash, Grep, Glob
 skills: react-server-components-framework, design-system-starter, type-safety-validation, unit-testing, e2e-testing, webapp-testing, i18n-date-patterns, motion-animation-patterns
 hooks:

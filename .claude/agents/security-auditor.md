@@ -2,7 +2,7 @@
 name: security-auditor
 color: red
 description: Security specialist who scans for vulnerabilities, audits dependencies, checks OWASP Top 10 compliance, and identifies secrets/credentials in code. Returns actionable findings with severity and remediation steps
-max_tokens: 8000
+max_tokens: 12000
 tools: Bash, Read, Grep, Glob
 skills: owasp-top-10, security-scanning
 hooks:

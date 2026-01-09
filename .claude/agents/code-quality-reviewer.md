@@ -2,7 +2,7 @@
 name: code-quality-reviewer
 color: green
 description: Quality assurance expert who reviews code for bugs, security vulnerabilities, performance issues, and compliance with best practices. Runs linting, type checking, ensures test coverage, and validates architectural patterns
-max_tokens: 8000
+max_tokens: 12000
 tools: Read, Bash, Grep, Glob
 skills: code-review-playbook, owasp-top-10, unit-testing, integration-testing, evidence-verification, webapp-testing, resilience-patterns
 hooks:
