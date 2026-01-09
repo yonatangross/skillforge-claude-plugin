@@ -20,7 +20,7 @@
       "keywords": ["test results", "test output", "coverage report", "test evidence", "jest", "pytest", "test suite", "passed", "failed"],
       "solves": [
         "How do I capture test evidence?",
-        "Record test results in shared context",
+        "Record test results in session state",
         "Prove tests passed with exit code 0",
         "Document test coverage percentage",
         "Capture passed/failed/skipped counts"
@@ -77,10 +77,10 @@
       "token_cost": 100
     },
     "evidence-storage": {
-      "keywords": ["shared context", "context.json", "evidence storage", "record evidence", "save results", "quality_evidence"],
+      "keywords": ["session state", "state.json", "evidence storage", "record evidence", "save results", "quality_evidence", "context 2.0"],
       "solves": [
         "How do I store evidence in context?",
-        "Update shared-context.json with results",
+        "Update session/state.json with results",
         "Structure evidence data properly",
         "Add timestamp to evidence records",
         "Link to evidence log files"
@@ -196,6 +196,6 @@
   "auto_trigger": {
     "on_agent": "code-quality-reviewer",
     "when": "after running tests/builds/linters",
-    "action": "capture exit codes and results in shared context"
+    "action": "capture exit codes and results in session state"
   }
 }

@@ -161,8 +161,8 @@ Use this template when building:
 **Exit Code:** 0 ✅ / non-zero ❌
 **Duration:** X seconds
 **Artifacts Created:**
-- dist/bundle.js (XXX KB)
-- dist/styles.css (XXX KB)
+- dist/bundle.js (245 KB)
+- dist/styles.css (18 KB)
 
 **Errors:** X
 **Warnings:** X
