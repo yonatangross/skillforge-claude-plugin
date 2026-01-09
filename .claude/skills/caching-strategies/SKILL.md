@@ -343,3 +343,35 @@ except:
 - `redis-patterns` - Advanced Redis usage
 - `resilience-patterns` - Fallback strategies
 - `observability-monitoring` - Cache hit metrics
+
+## Capability Details
+
+### cache-aside
+**Keywords:** cache aside, lazy loading, cache miss, get or set
+**Solves:**
+- How to implement lazy loading cache?
+- Cache on read pattern
+
+### write-through
+**Keywords:** write through, cache consistency, synchronous cache
+**Solves:**
+- How to keep cache consistent with database?
+- Strong consistency caching
+
+### write-behind
+**Keywords:** write behind, write back, async cache, batch writes
+**Solves:**
+- High write throughput caching
+- Async database writes
+
+### cache-invalidation
+**Keywords:** invalidation, cache bust, TTL, cache tags
+**Solves:**
+- How to invalidate cache?
+- When to expire cached data
+
+### stampede-prevention
+**Keywords:** stampede, thundering herd, cache lock, singleflight
+**Solves:**
+- Prevent cache stampede
+- Multiple requests hitting DB

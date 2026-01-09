@@ -192,3 +192,33 @@ Evaluate:
 - `embeddings` - Creating vectors for retrieval
 - `pgvector-search` - Hybrid search with PostgreSQL
 - `hyde-search` - Hypothetical document embeddings
+
+## Capability Details
+
+### retrieval-patterns
+**Keywords:** retrieval, context, chunks, relevance
+**Solves:**
+- Retrieve relevant context for LLM
+- Implement RAG pipeline
+- Optimize retrieval quality
+
+### hybrid-search
+**Keywords:** hybrid, bm25, vector, fusion
+**Solves:**
+- Combine keyword and semantic search
+- Implement reciprocal rank fusion
+- Balance precision and recall
+
+### chatbot-example
+**Keywords:** chatbot, rag, example, typescript
+**Solves:**
+- Build RAG chatbot example
+- TypeScript implementation
+- End-to-end RAG pipeline
+
+### pipeline-template
+**Keywords:** pipeline, template, implementation, starter
+**Solves:**
+- RAG pipeline starter template
+- Production-ready code
+- Copy-paste implementation

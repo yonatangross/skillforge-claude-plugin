@@ -135,3 +135,47 @@ return "Invalid credentials"
 - `owasp-top-10` - Security fundamentals
 - `input-validation` - Data validation
 - `api-design-framework` - API security
+
+## Capability Details
+
+### password-hashing
+**Keywords:** password, hashing, bcrypt, argon2, hash
+**Solves:**
+- Securely hash passwords with modern algorithms
+- Configure appropriate cost factors
+- Migrate legacy password hashes
+
+### jwt-tokens
+**Keywords:** JWT, token, access token, claims, jsonwebtoken
+**Solves:**
+- Generate and validate JWT access tokens
+- Implement proper token expiration
+- Handle token refresh securely
+
+### oauth2-pkce
+**Keywords:** OAuth, PKCE, OAuth 2.1, authorization code, code verifier
+**Solves:**
+- Implement OAuth 2.1 with PKCE flow
+- Secure authorization for SPAs and mobile apps
+- Handle OAuth provider integration
+
+### passkeys-webauthn
+**Keywords:** passkey, WebAuthn, FIDO2, passwordless, biometric
+**Solves:**
+- Implement passwordless authentication
+- Configure WebAuthn registration and login
+- Support cross-device passkeys
+
+### session-management
+**Keywords:** session, cookie, session storage, logout, invalidate
+**Solves:**
+- Manage user sessions securely
+- Implement session invalidation on logout
+- Handle concurrent sessions
+
+### role-based-access
+**Keywords:** RBAC, role, permission, authorization, access control
+**Solves:**
+- Implement role-based access control
+- Define permission hierarchies
+- Check authorization in routes

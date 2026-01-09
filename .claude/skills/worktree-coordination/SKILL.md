@@ -171,3 +171,32 @@ cc-worktree-sync [--check-conflicts] [--pull-decisions]
 The heartbeat hook will auto-register on first tool use. If issues persist:
 1. Check `.claude-local/instance-id.txt` exists
 2. Verify `.claude/coordination/` is symlinked correctly
+## Capability Details
+
+### status-check
+**Keywords:** worktree, status, instances, active, who
+**Solves:**
+- How to see all active Claude Code instances
+- Check which files are locked
+- Find stale instances
+
+### file-locking
+**Keywords:** lock, claim, release, conflict, blocked
+**Solves:**
+- How to prevent file conflicts between instances
+- Claim a file before editing
+- Release a lock when done
+
+### decision-sync
+**Keywords:** decision, sync, share, coordinate
+**Solves:**
+- Share architectural decisions across instances
+- See what other instances decided
+- Coordinate approach between worktrees
+
+### conflict-prevention
+**Keywords:** conflict, merge, overlap, collision
+**Solves:**
+- Check for merge conflicts before committing
+- Avoid overlapping work
+- Coordinate parallel development

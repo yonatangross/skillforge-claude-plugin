@@ -324,3 +324,23 @@ except Exception:
 - `api-design-framework` - REST API patterns
 - `observability-monitoring` - Error tracking
 - `input-validation` - Validation patterns
+
+## Capability Details
+
+### problem-details
+**Keywords:** problem details, RFC 9457, RFC 7807, structured error
+**Solves:**
+- How to standardize API error responses?
+- What format for API errors?
+
+### fastapi-errors
+**Keywords:** fastapi exception, error handler, HTTPException
+**Solves:**
+- How to handle errors in FastAPI?
+- Custom exception handlers
+
+### error-registry
+**Keywords:** error registry, problem types, error catalog
+**Solves:**
+- How to document all API errors?
+- Error type management

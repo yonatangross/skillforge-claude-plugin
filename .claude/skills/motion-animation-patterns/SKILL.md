@@ -395,3 +395,61 @@ When adding animations:
 **Skill Version**: 1.0.0
 **Last Updated**: 2026-01-06
 **Maintained by**: SkillForge Team
+
+## Capability Details
+
+### animation-presets
+**Keywords:** animation, motion, preset, fadeIn, slideUp, scaleIn
+**Solves:**
+- How do I create consistent animations?
+- What animation presets are available?
+- Where should I define animations?
+
+### page-transitions
+**Keywords:** page, transition, route, navigation, AnimatePresence
+**Solves:**
+- How do I animate page transitions?
+- Add route change animations
+- AnimatePresence for page exits
+
+### modal-animations
+**Keywords:** modal, dialog, overlay, backdrop, entrance, exit
+**Solves:**
+- How do I animate modals?
+- Dialog entrance/exit animations
+- Backdrop fade effects
+
+### stagger-animations
+**Keywords:** stagger, list, children, delay, sequence
+**Solves:**
+- How do I stagger list animations?
+- Animate children sequentially
+- List item entrance effects
+
+### hover-interactions
+**Keywords:** hover, tap, whileHover, whileTap, micro-interaction
+**Solves:**
+- How do I add hover effects?
+- Button press animations
+- Micro-interactions for buttons
+
+### skeleton-loaders
+**Keywords:** skeleton, loading, pulse, placeholder, shimmer
+**Solves:**
+- How do I create skeleton loaders?
+- Animated loading placeholders
+- Pulse animation for loading states
+
+### rtl-animations
+**Keywords:** rtl, ltr, hebrew, arabic, direction, i18n
+**Solves:**
+- How do I handle RTL animations?
+- Direction-aware slide animations
+- Hebrew/Arabic animation support
+
+### collapse-expand
+**Keywords:** collapse, expand, accordion, height, auto
+**Solves:**
+- How do I animate height changes?
+- Accordion expand/collapse
+- Animate to auto height

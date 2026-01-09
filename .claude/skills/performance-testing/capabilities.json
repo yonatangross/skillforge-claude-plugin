@@ -3,75 +3,13 @@
   "name": "performance-testing",
   "version": "1.0.0",
   "description": "Performance and load testing patterns with k6 and Locust",
-  "capabilities": {
-    "load-testing": {
-      "keywords": [
-        "load test",
-        "concurrent users",
-        "k6",
-        "Locust",
-        "ramp up"
-      ],
-      "solves": [
-        "Simulate concurrent user load",
-        "Configure ramp-up patterns",
-        "Test system under expected load"
-      ]
-    },
-    "stress-testing": {
-      "keywords": [
-        "stress test",
-        "breaking point",
-        "peak load",
-        "overload"
-      ],
-      "solves": [
-        "Find system breaking points",
-        "Test beyond expected capacity",
-        "Identify failure modes under stress"
-      ]
-    },
-    "latency-measurement": {
-      "keywords": [
-        "latency",
-        "response time",
-        "p95",
-        "p99",
-        "percentile"
-      ],
-      "solves": [
-        "Measure response time percentiles",
-        "Track latency distribution",
-        "Set latency SLO thresholds"
-      ]
-    },
-    "throughput-testing": {
-      "keywords": [
-        "throughput",
-        "requests per second",
-        "RPS",
-        "TPS"
-      ],
-      "solves": [
-        "Measure maximum throughput",
-        "Test transactions per second",
-        "Verify capacity requirements"
-      ]
-    },
-    "bottleneck-identification": {
-      "keywords": [
-        "bottleneck",
-        "profiling",
-        "hot path",
-        "performance issue"
-      ],
-      "solves": [
-        "Identify performance bottlenecks",
-        "Profile critical code paths",
-        "Diagnose slow operations"
-      ]
-    }
-  },
+  "capabilities": [
+    "bottleneck-identification",
+    "latency-measurement",
+    "load-testing",
+    "stress-testing",
+    "throughput-testing"
+  ],
   "triggers": {
     "high_confidence": [
       "performance.*test",

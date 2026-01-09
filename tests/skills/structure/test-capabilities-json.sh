@@ -3,6 +3,7 @@
 # Skill Capabilities.json Validation Test Suite
 # ============================================================================
 # Comprehensive validation of all skill capabilities.json files
+# Supports both slim array format (recommended) and legacy object format.
 #
 # Tests:
 # 1. All skills have capabilities.json (file existence)
@@ -10,10 +11,8 @@
 # 3. Required fields exist: $schema, name, version, description, capabilities
 # 4. Name field matches directory name (consistency check)
 # 5. Version follows semver pattern (^\d+\.\d+\.\d+$)
-# 6. Capabilities object has at least one capability
-# 7. Each capability has keywords array (non-empty)
-# 8. Each capability has solves array (non-empty)
-# 9. Token budget is under 500 tokens (chars/4 approximation)
+# 6. Capabilities has at least one entry (array or object)
+# 7. Token budget is under limit
 #
 # Usage: ./test-capabilities-json.sh [--verbose]
 # Exit codes: 0 = all pass, 1 = failures found
@@ -80,25 +79,6 @@ verbose() {
 count_tokens() {
     local file="$1"
     if [[ -f "$file" ]]; then
-        # Try tiktoken first (accurate) if python3 available
-        if command -v python3 &>/dev/null; then
-            local result
-            result=$(python3 -c "
-import sys
-try:
-    import tiktoken
-    enc = tiktoken.get_encoding('cl100k_base')
-    with open(sys.argv[1], 'r', encoding='utf-8', errors='ignore') as f:
-        print(len(enc.encode(f.read())))
-except:
-    sys.exit(1)
-" "$file" 2>/dev/null) || true
-            if [[ -n "$result" && "$result" =~ ^[0-9]+$ ]]; then
-                echo "$result"
-                return
-            fi
-        fi
-        # Fallback: chars/4 approximation
         local chars
         chars=$(wc -c < "$file" | tr -d ' ')
         echo $((chars / 4))
@@ -113,6 +93,12 @@ check_json_field() {
     local field="$2"
     # Use --arg to safely pass the field name to jq
     jq -e --arg f "$field" '.[$f]' "$file" >/dev/null 2>&1
+}
+
+# Check if capabilities is array format (slim) or object format (legacy)
+is_slim_format() {
+    local file="$1"
+    jq -e '.capabilities | type == "array"' "$file" >/dev/null 2>&1
 }
 
 # ============================================================================
@@ -309,13 +295,16 @@ fi
 echo ""
 
 # ============================================================================
-# Test 6: Capabilities object has at least one capability
+# Test 6: Capabilities has at least one entry (array or object)
 # ============================================================================
 echo "----------------------------------------------------------------------------"
-echo "Test 6: Capabilities Present - capabilities object must have at least one entry"
+echo "Test 6: Capabilities Present - capabilities must have at least one entry"
 echo "----------------------------------------------------------------------------"
 
 empty_capabilities=0
+slim_count=0
+legacy_count=0
+
 for caps_file in "$SKILLS_DIR"/*/capabilities.json; do
     if [[ -f "$caps_file" ]]; then
         skill_dir=$(dirname "$caps_file")
@@ -326,7 +315,15 @@ for caps_file in "$SKILLS_DIR"/*/capabilities.json; do
             continue
         fi
 
-        cap_count=$(jq '.capabilities | keys | length' "$caps_file" 2>/dev/null || echo "0")
+        if is_slim_format "$caps_file"; then
+            # Slim array format
+            ((slim_count++)) || true
+            cap_count=$(jq '.capabilities | length' "$caps_file" 2>/dev/null || echo "0")
+        else
+            # Legacy object format
+            ((legacy_count++)) || true
+            cap_count=$(jq '.capabilities | keys | length' "$caps_file" 2>/dev/null || echo "0")
+        fi
 
         if [[ "$cap_count" -eq 0 ]]; then
             fail "Empty capabilities: $skill_name/capabilities.json"
@@ -341,100 +338,18 @@ if [[ "$empty_capabilities" -eq 0 ]]; then
     pass "All capabilities.json files have at least one capability"
 fi
 
-echo ""
-
-# ============================================================================
-# Test 7: Each capability has keywords array (non-empty)
-# ============================================================================
-echo "----------------------------------------------------------------------------"
-echo "Test 7: Keywords Required - each capability must have non-empty keywords array"
-echo "----------------------------------------------------------------------------"
-
-missing_keywords=0
-for caps_file in "$SKILLS_DIR"/*/capabilities.json; do
-    if [[ -f "$caps_file" ]]; then
-        skill_dir=$(dirname "$caps_file")
-        skill_name=$(basename "$skill_dir")
-
-        # Skip invalid JSON files
-        if ! jq empty "$caps_file" 2>/dev/null; then
-            continue
-        fi
-
-        # Get all capability keys and check each one
-        cap_keys=$(jq -r '.capabilities | keys[]' "$caps_file" 2>/dev/null)
-
-        while IFS= read -r cap_key; do
-            if [[ -n "$cap_key" ]]; then
-                keywords_count=$(jq --arg key "$cap_key" '.capabilities[$key].keywords | if type == "array" then length else 0 end' "$caps_file" 2>/dev/null || echo "0")
-
-                if [[ "$keywords_count" -eq 0 ]]; then
-                    fail "Missing/empty keywords: $skill_name.$cap_key"
-                    ((missing_keywords++)) || true
-                else
-                    verbose "Has $keywords_count keywords: $skill_name.$cap_key"
-                fi
-            fi
-        done <<< "$cap_keys"
-    fi
-done
-
-if [[ "$missing_keywords" -eq 0 ]]; then
-    pass "All capabilities have non-empty keywords arrays"
-fi
+info "Format breakdown: $slim_count slim (array), $legacy_count legacy (object)"
 
 echo ""
 
 # ============================================================================
-# Test 8: Each capability has solves array (non-empty)
+# Test 7: Token budget is under limit
 # ============================================================================
 echo "----------------------------------------------------------------------------"
-echo "Test 8: Solves Required - each capability must have non-empty solves array"
+echo "Test 7: Token Budget - capabilities.json should be under 350 tokens"
 echo "----------------------------------------------------------------------------"
 
-missing_solves=0
-for caps_file in "$SKILLS_DIR"/*/capabilities.json; do
-    if [[ -f "$caps_file" ]]; then
-        skill_dir=$(dirname "$caps_file")
-        skill_name=$(basename "$skill_dir")
-
-        # Skip invalid JSON files
-        if ! jq empty "$caps_file" 2>/dev/null; then
-            continue
-        fi
-
-        # Get all capability keys and check each one
-        cap_keys=$(jq -r '.capabilities | keys[]' "$caps_file" 2>/dev/null)
-
-        while IFS= read -r cap_key; do
-            if [[ -n "$cap_key" ]]; then
-                solves_count=$(jq --arg key "$cap_key" '.capabilities[$key].solves | if type == "array" then length else 0 end' "$caps_file" 2>/dev/null || echo "0")
-
-                if [[ "$solves_count" -eq 0 ]]; then
-                    fail "Missing/empty solves: $skill_name.$cap_key"
-                    ((missing_solves++)) || true
-                else
-                    verbose "Has $solves_count solves: $skill_name.$cap_key"
-                fi
-            fi
-        done <<< "$cap_keys"
-    fi
-done
-
-if [[ "$missing_solves" -eq 0 ]]; then
-    pass "All capabilities have non-empty solves arrays"
-fi
-
-echo ""
-
-# ============================================================================
-# Test 9: Token budget is under 2500 tokens
-# ============================================================================
-echo "----------------------------------------------------------------------------"
-echo "Test 9: Token Budget - capabilities.json should be under 2500 tokens"
-echo "----------------------------------------------------------------------------"
-
-TOKEN_LIMIT=2500
+TOKEN_LIMIT=350
 over_budget=0
 total_tokens=0
 

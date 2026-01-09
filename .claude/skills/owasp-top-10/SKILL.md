@@ -229,3 +229,26 @@ if urlparse(url).hostname not in ALLOWED:
 - `auth-patterns` - Authentication implementation
 - `input-validation` - Sanitization patterns
 - `security-scanning` - Automated scanning
+
+## Capability Details
+
+### injection
+**Keywords:** sql injection, command injection, injection, parameterized
+**Solves:**
+- Prevent SQL injection
+- Fix command injection
+- Use parameterized queries
+
+### access-control
+**Keywords:** access control, authorization, idor, privilege
+**Solves:**
+- Fix broken access control
+- Prevent IDOR vulnerabilities
+- Implement authorization checks
+
+### owasp-fixes
+**Keywords:** fix, mitigation, example, vulnerability
+**Solves:**
+- OWASP vulnerability fixes
+- Mitigation examples
+- Code fix patterns

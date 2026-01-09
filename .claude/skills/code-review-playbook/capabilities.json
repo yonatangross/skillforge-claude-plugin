@@ -3,44 +3,29 @@
   "name": "code-review-playbook",
   "version": "1.0.0",
   "description": "Structured review processes, conventional comments, language-specific checklists, and feedback templates",
-
-  "capabilities": {
-    "review-process": {
-      "keywords": ["code review", "pr review", "review process", "feedback"],
-      "solves": ["How to review PRs", "Conventional comments format", "Review best practices"],
-      "reference_file": "SKILL.md#review-process",
-      "token_cost": 180
-    },
-    "quality-checks": {
-      "keywords": ["readability", "solid", "dry", "complexity", "naming"],
-      "solves": ["Check code quality", "SOLID principles review", "Cyclomatic complexity"],
-      "reference_file": "SKILL.md#general-code-quality",
-      "token_cost": 140
-    },
-    "security-review": {
-      "keywords": ["security", "authentication", "authorization", "injection", "xss"],
-      "solves": ["Security review checklist", "Find vulnerabilities", "Auth validation"],
-      "reference_file": "SKILL.md#security",
-      "token_cost": 180
-    },
-    "language-specific": {
-      "keywords": ["typescript", "python", "type hints", "async await", "pep8"],
-      "solves": ["TypeScript review", "Python review", "Language-specific patterns"],
-      "reference_file": "SKILL.md#language-specific",
-      "token_cost": 150
-    },
-    "pr-template": {
-      "keywords": ["pr template", "pull request", "description"],
-      "solves": ["PR description format", "Review checklist"],
-      "template_file": "templates/pr-template.md",
-      "token_cost": 180
-    }
-  },
-
+  "capabilities": [
+    "language-specific",
+    "pr-template",
+    "quality-checks",
+    "review-process",
+    "security-review"
+  ],
   "triggers": {
-    "high_confidence": ["review.*code", "pr.*review", "review.*this", "code.*review"],
-    "medium_confidence": ["look.*at.*code", "what.*think.*about", "conventional.*comment"]
+    "high_confidence": [
+      "review.*code",
+      "pr.*review",
+      "review.*this",
+      "code.*review"
+    ],
+    "medium_confidence": [
+      "look.*at.*code",
+      "what.*think.*about",
+      "conventional.*comment"
+    ]
   },
-
-  "integrates_with": ["security-scanning", "unit-testing", "api-design-framework"]
+  "integrates_with": [
+    "security-scanning",
+    "unit-testing",
+    "api-design-framework"
+  ]
 }

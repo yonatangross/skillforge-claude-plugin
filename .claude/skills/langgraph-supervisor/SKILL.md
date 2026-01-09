@@ -192,3 +192,40 @@ def agent_node_factory(agent_name: str):
 - `langgraph-routing` - Conditional edges
 - `multi-agent-orchestration` - Fan-out patterns
 - `langgraph-state` - State for agent tracking
+
+## Capability Details
+
+### supervisor-design
+**Keywords:** supervisor, orchestration, routing, delegation
+**Solves:**
+- Design supervisor agent patterns
+- Route tasks to specialized workers
+- Coordinate multi-agent workflows
+
+### worker-delegation
+**Keywords:** worker, delegation, specialized, agent
+**Solves:**
+- Create specialized worker agents
+- Define worker capabilities
+- Implement delegation logic
+
+### skillforge-workflow
+**Keywords:** skillforge, analysis, content, workflow
+**Solves:**
+- SkillForge analysis workflow example
+- Production supervisor implementation
+- Real-world orchestration pattern
+
+### supervisor-template
+**Keywords:** template, implementation, code, starter
+**Solves:**
+- Supervisor workflow template
+- Production-ready code
+- Copy-paste implementation
+
+### content-analysis
+**Keywords:** content, analysis, graph, multi-agent
+**Solves:**
+- Content analysis graph template
+- SkillForge-specific workflow
+- Multi-agent content processing

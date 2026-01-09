@@ -314,3 +314,103 @@ mypy .                 # Run type checker
 ---
 
 **Remember:** Evidence-first development prevents hallucinations, ensures production quality, and builds confidence. When in doubt, collect more evidence, not less.
+
+## Capability Details
+
+### exit-code-validation
+**Keywords:** exit code, return code, success, failure, status, $?, exit 0, non-zero
+**Solves:**
+- How do I verify command succeeded?
+- Check exit codes for evidence (0 = pass)
+- Validate build/test success with exit codes
+- Capture command exit status in evidence
+
+### test-evidence
+**Keywords:** test results, test output, coverage report, test evidence, jest, pytest, test suite, passed, failed
+**Solves:**
+- How do I capture test evidence?
+- Record test results in session state
+- Prove tests passed with exit code 0
+- Document test coverage percentage
+- Capture passed/failed/skipped counts
+
+### build-evidence
+**Keywords:** build log, build output, compile, bundle, webpack, vite, cargo build, npm build
+**Solves:**
+- How do I capture build evidence?
+- Record build success with exit code
+- Verify compilation without errors
+- Document build artifacts created
+- Track build duration and warnings
+
+### code-quality-evidence
+**Keywords:** linter, lint, eslint, ruff, type check, mypy, typescript, code quality, warnings, errors
+**Solves:**
+- How do I capture code quality evidence?
+- Run linter and capture results
+- Execute type checker and record errors
+- Document linter errors and warnings count
+- Prove code quality checks passed
+
+### deployment-evidence
+**Keywords:** deployment, deploy, production, staging, health check, rollback, deployment status
+**Solves:**
+- How do I verify deployment succeeded?
+- Check health endpoints after deploy
+- Verify application started successfully
+- Document deployment status and environment
+- Confirm rollback capability exists
+
+### security-scan-evidence
+**Keywords:** security, vulnerability, npm audit, pip-audit, security scan, cve, critical vulnerabilities
+**Solves:**
+- How do I capture security scan results?
+- Run npm audit or pip-audit
+- Document critical vulnerabilities found
+- Record security scan exit code
+- Prove no critical security issues
+
+### evidence-storage
+**Keywords:** session state, state.json, evidence storage, record evidence, save results, quality_evidence, context 2.0
+**Solves:**
+- How do I store evidence in context?
+- Update session/state.json with results
+- Structure evidence data properly
+- Add timestamp to evidence records
+- Link to evidence log files
+
+### combined-evidence-report
+**Keywords:** evidence report, task completion, verification summary, proof of completion, comprehensive evidence
+**Solves:**
+- How do I create complete evidence report?
+- Combine test, build, and quality evidence
+- Create task completion evidence summary
+- Document all verification checks run
+- Provide comprehensive proof of completion
+
+### evidence-collection-workflow
+**Keywords:** evidence workflow, verification steps, evidence protocol, collection process, verification checklist
+**Solves:**
+- What steps to collect evidence?
+- Follow evidence collection protocol
+- Run all necessary verification checks
+- Complete evidence checklist before marking done
+- Ensure minimum evidence requirements met
+
+### quality-standards
+**Keywords:** quality standards, minimum requirements, production-grade, gold standard, evidence thresholds
+**Solves:**
+- What evidence is required to pass?
+- Understand minimum vs production-grade standards
+- Meet gold standard evidence requirements
+- Know when evidence is sufficient
+- Validate evidence meets project standards
+
+### evidence-pitfalls
+**Keywords:** evidence mistakes, common errors, skip evidence, fake evidence, ignore failures
+**Solves:**
+- What evidence mistakes to avoid?
+- Never skip evidence collection
+- Don't fake evidence results
+- Don't ignore failed evidence
+- Always re-collect after changes

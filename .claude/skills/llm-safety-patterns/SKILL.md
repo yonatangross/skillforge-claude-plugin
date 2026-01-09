@@ -275,3 +275,39 @@ backend/app/services/
 ---
 
 **Version:** 1.0.0 (December 2025)
+## Capability Details
+
+### context-separation
+**Keywords:** context separation, prompt context, id in prompt, parameterized
+**Solves:**
+- How do I prevent IDs from leaking into prompts?
+- How do I separate system context from prompt content?
+- What should never appear in LLM prompts?
+
+### pre-llm-filtering
+**Keywords:** pre-llm, rag filter, data filter, tenant filter
+**Solves:**
+- How do I filter data before sending to LLM?
+- How do I ensure tenant isolation in RAG?
+- How do I scope retrieval to current user?
+
+### post-llm-attribution
+**Keywords:** attribution, source tracking, provenance, citation
+**Solves:**
+- How do I track which sources the LLM used?
+- How do I attribute results correctly?
+- How do I avoid LLM-generated IDs?
+
+### output-guardrails
+**Keywords:** guardrail, output validation, hallucination, toxicity
+**Solves:**
+- How do I validate LLM output?
+- How do I detect hallucinations?
+- How do I prevent toxic content generation?
+
+### prompt-audit
+**Keywords:** prompt audit, prompt security, prompt injection
+**Solves:**
+- How do I verify no IDs leaked to prompts?
+- How do I audit prompts for security?
+- How do I prevent prompt injection?

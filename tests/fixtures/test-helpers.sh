@@ -225,6 +225,17 @@ assert_log_contains() {
 }
 
 # Assert JSON is valid
+# Usage: assert_valid_json "$json"
+assert_valid_json() {
+  local json="$1"
+
+  if echo "$json" | jq empty 2>/dev/null; then
+    return 0
+  else
+    echo -e "${RED}ASSERTION FAILED${NC}: Invalid JSON: ${json:0:100}..." >&2
+    return 1
+  fi
+}
 
 # Assert JSON field equals value
 # Usage: assert_json_field "$json" ".field" "expected_value"

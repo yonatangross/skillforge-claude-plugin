@@ -317,3 +317,33 @@ src/features/users/... imports from src/shared/types/user
 - `backend-architecture-enforcer` - FastAPI layer separation
 - `clean-architecture` - DDD patterns
 - `type-safety-validation` - TypeScript strictness
+
+## Capability Details
+
+### folder-structure
+**Keywords:** folder structure, directory structure, project layout, organization
+**Solves:**
+- Enforce feature-based organization
+- Validate proper file placement
+- Maintain consistent project structure
+
+### nesting-depth
+**Keywords:** nesting, depth, levels, max depth, deep nesting
+**Solves:**
+- Limit directory nesting to 4 levels
+- Prevent overly complex structures
+- Improve navigability
+
+### import-direction
+**Keywords:** import, unidirectional, circular, dependency direction
+**Solves:**
+- Enforce unidirectional imports
+- Prevent circular dependencies
+- Maintain clean architecture
+
+### component-location
+**Keywords:** component location, file placement, where to put
+**Solves:**
+- Validate React component placement
+- Enforce hook location rules
+- Block barrel files

@@ -217,3 +217,33 @@ context.quality_evidence.security_scan = {
 - `owasp-top-10` - Vulnerability context
 - `devops-deployment` - CI/CD integration
 - `code-review-playbook` - Review process
+
+## Capability Details
+
+### dependency-scanning
+**Keywords:** npm audit, pip-audit, dependency, vulnerability
+**Solves:**
+- Scan npm dependencies
+- Audit Python packages
+- Find vulnerable dependencies
+
+### secret-detection
+**Keywords:** secret, credential, api key, trufflehog, gitleaks
+**Solves:**
+- Detect secrets in code
+- Scan for API keys
+- Find exposed credentials
+
+### api-security-audit
+**Keywords:** api, audit, security, example
+**Solves:**
+- API security audit example
+- Security review checklist
+- Real audit walkthrough
+
+### audit-template
+**Keywords:** template, audit, report, security
+**Solves:**
+- Security audit template
+- Audit report structure
+- Copy-paste audit format

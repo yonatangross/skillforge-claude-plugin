@@ -3,89 +3,14 @@
   "name": "i18n-date-patterns",
   "version": "1.2.0",
   "description": "Comprehensive internationalization patterns for React applications",
-  "capabilities": {
-    "translation-hooks": {
-      "keywords": [
-        "useTranslation",
-        "t()",
-        "i18n hook",
-        "translation hook"
-      ],
-      "solves": [
-        "Translate UI strings with useTranslation",
-        "Implement namespaced translations",
-        "Handle missing translation keys"
-      ]
-    },
-    "formatting-hooks": {
-      "keywords": [
-        "useFormatting",
-        "formatCurrency",
-        "formatList",
-        "formatOrdinal"
-      ],
-      "solves": [
-        "Format currency values with locale",
-        "Format lists with proper separators",
-        "Handle ordinal numbers across locales"
-      ]
-    },
-    "icu-messageformat": {
-      "keywords": [
-        "ICU",
-        "MessageFormat",
-        "plural",
-        "select",
-        "pluralization"
-      ],
-      "solves": [
-        "Implement pluralization rules",
-        "Handle gender-specific translations",
-        "Build complex message patterns"
-      ]
-    },
-    "date-time-formatting": {
-      "keywords": [
-        "date format",
-        "time format",
-        "dayjs",
-        "locale date",
-        "calendar"
-      ],
-      "solves": [
-        "Format dates with dayjs and locale",
-        "Handle timezone-aware formatting",
-        "Build calendar components with i18n"
-      ]
-    },
-    "rtl-support": {
-      "keywords": [
-        "RTL",
-        "right-to-left",
-        "hebrew",
-        "arabic",
-        "direction"
-      ],
-      "solves": [
-        "Support RTL languages like Hebrew",
-        "Handle bidirectional text",
-        "Configure RTL-aware layouts"
-      ]
-    },
-    "trans-component": {
-      "keywords": [
-        "Trans",
-        "rich text",
-        "embedded JSX",
-        "interpolation"
-      ],
-      "solves": [
-        "Embed React components in translations",
-        "Handle rich text formatting",
-        "Implement safe HTML in translations"
-      ]
-    }
-  },
+  "capabilities": [
+    "date-time-formatting",
+    "formatting-hooks",
+    "icu-messageformat",
+    "rtl-support",
+    "trans-component",
+    "translation-hooks"
+  ],
   "triggers": {
     "high_confidence": [
       "i18n",

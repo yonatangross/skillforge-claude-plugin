@@ -172,3 +172,26 @@ async def parallel_with_timeout(agents: list, content: str, timeout: int = 30):
 - `langgraph-state` - Accumulating state
 - `multi-agent-orchestration` - Coordination patterns
 - `langgraph-supervisor` - Supervised parallel execution
+
+## Capability Details
+
+### fanout-pattern
+**Keywords:** fanout, parallel, concurrent, scatter
+**Solves:**
+- Run agents in parallel
+- Implement fan-out pattern
+- Distribute work across workers
+
+### fanin-pattern
+**Keywords:** fanin, gather, aggregate, collect
+**Solves:**
+- Aggregate parallel results
+- Implement fan-in pattern
+- Collect worker outputs
+
+### parallel-template
+**Keywords:** template, implementation, parallel, agent
+**Solves:**
+- Parallel agent fanout template
+- Production-ready code
+- Copy-paste implementation

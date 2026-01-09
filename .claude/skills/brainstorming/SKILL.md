@@ -310,3 +310,66 @@ that pattern with a new route handler..."
 
 **Version:** 2.0.0 (January 2026)
 **Status:** Production patterns from SkillForge brainstorming sessions
+
+## Capability Details
+
+### phase-1-understanding
+**Keywords:** brainstorm, idea, explore, requirements, constraints, purpose
+**Solves:**
+- Help me think through this idea
+- What questions should I answer first?
+- Clarify requirements and constraints
+- Understand the purpose of this feature
+
+### socratic-questions
+**Keywords:** why, what problem, how measure, who uses, constraints
+**Solves:**
+- What questions should I ask about this feature?
+- Help me discover requirements through questioning
+- Uncover implicit constraints
+
+### phase-2-exploration
+**Keywords:** alternatives, options, different approach, trade-offs, compare
+**Solves:**
+- What are alternative approaches?
+- Compare implementation options
+- Explore trade-offs between solutions
+- Which approach is best?
+
+### trade-off-analysis
+**Keywords:** pros, cons, trade-off, complexity, cost, performance
+**Solves:**
+- What are the trade-offs of each approach?
+- Compare complexity vs features
+- Speed vs maintainability decisions
+
+### phase-3-design
+**Keywords:** design, architecture, components, data flow, implementation
+**Solves:**
+- Present the complete design incrementally
+- How should I structure this solution?
+- What are the key components?
+- Design validation and feedback
+
+### mvp-scoping
+**Keywords:** mvp, minimum, yagni, simplify, essential, start small
+**Solves:**
+- What's the minimum viable version?
+- How do I avoid over-engineering?
+- Apply YAGNI ruthlessly
+- Start simple, scale later
+
+### real-world-examples
+**Keywords:** example, skillforge, caching, dashboard, authentication
+**Solves:**
+- Show me real examples of brainstorming sessions
+- How was SkillForge designed?
+- Caching strategy examples
+- Real-time dashboard design decisions
+
+### design-documentation
+**Keywords:** document, adr, decision record, design doc
+**Solves:**
+- How do I document this design?
+- Create an architecture decision record
+- Document trade-offs and rationale

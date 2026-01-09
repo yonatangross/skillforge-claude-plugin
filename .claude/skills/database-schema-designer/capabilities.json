@@ -3,38 +3,27 @@
   "name": "database-schema-designer",
   "version": "1.0.0",
   "description": "SQL/NoSQL schema design, normalization, indexing, migrations, optimization",
-
-  "capabilities": {
-    "schema-design": {
-      "keywords": ["schema", "table", "entity", "relationship", "erd"],
-      "solves": ["Design database schema", "Model relationships", "ERD creation"],
-      "reference_file": "SKILL.md#schema-design",
-      "token_cost": 180
-    },
-    "normalization": {
-      "keywords": ["normalize", "1nf", "2nf", "3nf", "denormalize"],
-      "solves": ["Normalization levels", "When to denormalize", "Reduce redundancy"],
-      "reference_file": "SKILL.md#normalization",
-      "token_cost": 150
-    },
-    "indexing": {
-      "keywords": ["index", "b-tree", "composite", "query performance"],
-      "solves": ["Which columns to index", "Optimize slow queries", "Index types"],
-      "reference_file": "SKILL.md#indexing",
-      "token_cost": 160
-    },
-    "migrations": {
-      "keywords": ["migration", "alter table", "zero downtime", "backward compatible"],
-      "solves": ["Write safe migrations", "Zero-downtime changes", "Reversible migrations"],
-      "reference_file": "SKILL.md#migrations",
-      "token_cost": 170
-    }
-  },
-
+  "capabilities": [
+    "indexing",
+    "migrations",
+    "normalization",
+    "schema-design"
+  ],
   "triggers": {
-    "high_confidence": ["database.*design", "schema.*design", "create.*table"],
-    "medium_confidence": ["normalize", "index", "migration", "query.*slow"]
+    "high_confidence": [
+      "database.*design",
+      "schema.*design",
+      "create.*table"
+    ],
+    "medium_confidence": [
+      "normalize",
+      "index",
+      "migration",
+      "query.*slow"
+    ]
   },
-
-  "integrates_with": ["api-design-framework", "performance-optimization"]
+  "integrates_with": [
+    "api-design-framework",
+    "performance-optimization"
+  ]
 }

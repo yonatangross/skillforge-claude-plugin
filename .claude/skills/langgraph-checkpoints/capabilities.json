@@ -3,72 +3,13 @@
   "name": "langgraph-checkpoints",
   "version": "1.0.0",
   "description": "LangGraph checkpointing and persistence patterns",
-  "capabilities": {
-    "checkpoint-saving": {
-      "keywords": [
-        "save checkpoint",
-        "checkpoint",
-        "persist state",
-        "save state"
-      ],
-      "solves": [
-        "Save workflow state at key points",
-        "Implement checkpoint strategies",
-        "Handle checkpoint serialization"
-      ]
-    },
-    "checkpoint-loading": {
-      "keywords": [
-        "load checkpoint",
-        "restore",
-        "resume",
-        "recovery"
-      ],
-      "solves": [
-        "Resume workflows from checkpoints",
-        "Implement state recovery",
-        "Handle checkpoint versioning"
-      ]
-    },
-    "memory-backends": {
-      "keywords": [
-        "memory backend",
-        "MemorySaver",
-        "SqliteSaver",
-        "PostgresSaver"
-      ],
-      "solves": [
-        "Configure checkpoint storage backends",
-        "Choose between memory/SQLite/Postgres",
-        "Implement custom checkpoint storage"
-      ]
-    },
-    "async-checkpoints": {
-      "keywords": [
-        "async checkpoint",
-        "AsyncSqliteSaver",
-        "async persistence"
-      ],
-      "solves": [
-        "Implement async checkpoint operations",
-        "Handle concurrent checkpoint access",
-        "Optimize checkpoint performance"
-      ]
-    },
-    "conversation-history": {
-      "keywords": [
-        "conversation",
-        "history",
-        "message history",
-        "thread"
-      ],
-      "solves": [
-        "Persist conversation history",
-        "Implement thread-based checkpoints",
-        "Manage conversation state"
-      ]
-    }
-  },
+  "capabilities": [
+    "async-checkpoints",
+    "checkpoint-loading",
+    "checkpoint-saving",
+    "conversation-history",
+    "memory-backends"
+  ],
   "triggers": {
     "high_confidence": [
       "LangGraph.*checkpoint",

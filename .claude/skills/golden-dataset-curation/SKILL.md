@@ -589,3 +589,33 @@ Always record:
 
 **Version:** 1.0.0 (December 2025)
 **Issue:** #599
+
+## Capability Details
+
+### content-classification
+**Keywords:** content type, classification, document type, golden dataset
+**Solves:**
+- Classify document content types for golden dataset
+- Categorize entries by domain and purpose
+- Identify content requiring special handling
+
+### difficulty-stratification
+**Keywords:** difficulty, stratification, complexity level, challenge rating
+**Solves:**
+- Assign difficulty levels to golden dataset entries
+- Ensure balanced difficulty distribution
+- Identify edge cases and challenging examples
+
+### quality-evaluation
+**Keywords:** quality, evaluation, quality dimensions, quality criteria
+**Solves:**
+- Evaluate entry quality against defined criteria
+- Score entries on multiple quality dimensions
+- Identify entries needing improvement
+
+### multi-agent-analysis
+**Keywords:** multi-agent, parallel analysis, consensus, agent evaluation
+**Solves:**
+- Run parallel agent evaluations on entries
+- Aggregate consensus from multiple analysts
+- Resolve disagreements in classifications

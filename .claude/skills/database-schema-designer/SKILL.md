@@ -215,3 +215,33 @@ When designing a new schema:
 **Skill Version**: 2.0.0
 **Last Updated**: 2026-01-08
 **Maintained by**: AI Agent Hub Team
+
+## Capability Details
+
+### schema-design
+**Keywords:** schema, table, entity, relationship, erd
+**Solves:**
+- Design database schema
+- Model relationships
+- ERD creation
+
+### normalization
+**Keywords:** normalize, 1nf, 2nf, 3nf, denormalize
+**Solves:**
+- Normalization levels
+- When to denormalize
+- Reduce redundancy
+
+### indexing
+**Keywords:** index, b-tree, composite, query performance
+**Solves:**
+- Which columns to index
+- Optimize slow queries
+- Index types
+
+### migrations
+**Keywords:** migration, alter table, zero downtime, backward compatible
+**Solves:**
+- Write safe migrations
+- Zero-downtime changes
+- Reversible migrations

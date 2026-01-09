@@ -278,3 +278,40 @@ Actions required:
 - `e2e-testing` - End-to-end with Playwright
 - `msw-mocking` - Network mocking
 - `test-data-management` - Fixtures and factories
+
+## Capability Details
+
+### aaa-pattern
+**Keywords:** AAA, arrange act assert, test structure, test pattern
+**Solves:**
+- Enforce Arrange-Act-Assert pattern
+- Ensure clear test structure
+- Improve test readability
+
+### test-naming
+**Keywords:** test name, test naming, descriptive test, test description
+**Solves:**
+- Enforce descriptive test names
+- Block generic test names like test1
+- Improve test documentation
+
+### test-location
+**Keywords:** test location, test directory, tests folder, where tests
+**Solves:**
+- Validate test file placement
+- Block tests mixed with source
+- Enforce test directory structure
+
+### coverage-threshold
+**Keywords:** coverage, test coverage, code coverage, 80%, threshold
+**Solves:**
+- Enforce minimum 80% coverage
+- Block merges with low coverage
+- Maintain quality standards
+
+### test-isolation
+**Keywords:** test isolation, shared state, independent tests, flaky
+**Solves:**
+- Detect shared mutable state
+- Ensure test independence
+- Prevent flaky tests

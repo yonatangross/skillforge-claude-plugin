@@ -140,3 +140,47 @@ db.query('SELECT * FROM users WHERE name = ?', [name]);
 - `owasp-top-10` - Injection prevention
 - `auth-patterns` - User input in auth
 - `type-safety-validation` - TypeScript patterns
+
+## Capability Details
+
+### schema-validation
+**Keywords:** schema, validate, Zod, Pydantic, validation
+**Solves:**
+- Validate input against schemas
+- Define validation rules declaratively
+- Handle validation errors gracefully
+
+### type-coercion
+**Keywords:** coerce, coercion, type conversion, parse
+**Solves:**
+- Automatically convert input types
+- Parse strings to numbers/dates
+- Handle type mismatches
+
+### allowlist-validation
+**Keywords:** allowlist, whitelist, enum, literal, allowed values
+**Solves:**
+- Validate against allowed values
+- Prevent injection attacks
+- Restrict input to safe options
+
+### html-sanitization
+**Keywords:** sanitize, HTML, XSS, escape, DOMPurify
+**Solves:**
+- Sanitize HTML input safely
+- Prevent XSS attacks
+- Allow safe HTML subset
+
+### file-validation
+**Keywords:** file, upload, MIME type, file size, file type
+**Solves:**
+- Validate file uploads securely
+- Check file content not just extension
+- Enforce size limits
+
+### error-formatting
+**Keywords:** error, error message, validation error, user-friendly
+**Solves:**
+- Format validation errors for users
+- Avoid exposing internal details
+- Provide actionable error messages

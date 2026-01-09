@@ -183,3 +183,36 @@ Keep ADRs in version control alongside code:
 **Skill Version**: 2.0.0
 **Last Updated**: 2026-01-08
 **Maintained by**: AI Agent Hub Team
+
+## Capability Details
+
+### adr-creation
+**Keywords:** adr, architecture decision, decision record, document decision
+**Solves:**
+- How do I document an architectural decision?
+- Create an ADR
+- Architecture decision template
+
+### adr-best-practices
+**Keywords:** when to write adr, adr lifecycle, adr workflow, adr process, adr review, quantify impact
+**Solves:**
+- When should I write an ADR?
+- How do I manage ADR lifecycle?
+- What's the ADR review process?
+- How to quantify decision impact?
+- ADR anti-patterns to avoid
+- Link related ADRs
+
+### tradeoff-analysis
+**Keywords:** tradeoff, pros cons, alternatives, comparison, evaluate options
+**Solves:**
+- How do I analyze tradeoffs?
+- Compare architectural options
+- Document alternatives considered
+
+### consequences
+**Keywords:** consequence, impact, risk, benefit, outcome
+**Solves:**
+- What are the consequences of this decision?
+- Document decision impact
+- Risk and benefit analysis

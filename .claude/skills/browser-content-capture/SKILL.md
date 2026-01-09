@@ -251,3 +251,40 @@ User requests content from URL
 
 **Version:** 1.0.0 (December 2025)
 **MCP Requirement:** Playwright MCP server or Claude Chrome extension
+
+## Capability Details
+
+### spa-extraction
+**Keywords:** react, vue, angular, spa, javascript, client-side, hydration, ssr
+**Solves:**
+- WebFetch returns empty content
+- Page requires JavaScript to render
+- React/Vue app content extraction
+
+### auth-handling
+**Keywords:** login, authentication, session, cookie, protected, private, gated
+**Solves:**
+- Content behind login wall
+- Need to authenticate first
+- Private documentation access
+
+### multi-page-crawl
+**Keywords:** crawl, sitemap, navigation, multiple pages, documentation, tutorial series
+**Solves:**
+- Capture entire documentation site
+- Extract multiple pages
+- Follow navigation links
+
+### mcp-tools
+**Keywords:** playwright, mcp, browser_navigate, browser_evaluate, browser_click
+**Solves:**
+- Which MCP tool to use
+- Browser automation commands
+- Playwright MCP reference
+
+### skillforge-integration
+**Keywords:** queue, analyze, pipeline, api, skillforge, content_override
+**Solves:**
+- Send captured content to SkillForge
+- Queue URL for analysis
+- Integrate with analysis pipeline

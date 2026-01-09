@@ -153,3 +153,26 @@ test('form submits and shows success', async () => {
 - `unit-testing` - Isolated tests
 - `msw-mocking` - Network mocking
 - `e2e-testing` - Full flow testing
+
+## Capability Details
+
+### api-testing
+**Keywords:** api, endpoint, httpx, testclient
+**Solves:**
+- Test FastAPI endpoints
+- Integration test patterns
+- API contract testing
+
+### database-testing
+**Keywords:** database, fixture, transaction, rollback
+**Solves:**
+- Test database operations
+- Use transaction rollback
+- Create test fixtures
+
+### test-plan-template
+**Keywords:** plan, template, strategy, coverage
+**Solves:**
+- Integration test plan template
+- Coverage strategy
+- Test organization

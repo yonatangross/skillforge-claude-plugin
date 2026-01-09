@@ -202,3 +202,47 @@ See `checklists/i18n-checklist.md` for complete implementation and review checkl
 **Skill Version**: 1.2.0
 **Last Updated**: 2026-01-06
 **Maintained by**: SkillForge Team
+
+## Capability Details
+
+### translation-hooks
+**Keywords:** useTranslation, t(), i18n hook, translation hook
+**Solves:**
+- Translate UI strings with useTranslation
+- Implement namespaced translations
+- Handle missing translation keys
+
+### formatting-hooks
+**Keywords:** useFormatting, formatCurrency, formatList, formatOrdinal
+**Solves:**
+- Format currency values with locale
+- Format lists with proper separators
+- Handle ordinal numbers across locales
+
+### icu-messageformat
+**Keywords:** ICU, MessageFormat, plural, select, pluralization
+**Solves:**
+- Implement pluralization rules
+- Handle gender-specific translations
+- Build complex message patterns
+
+### date-time-formatting
+**Keywords:** date format, time format, dayjs, locale date, calendar
+**Solves:**
+- Format dates with dayjs and locale
+- Handle timezone-aware formatting
+- Build calendar components with i18n
+
+### rtl-support
+**Keywords:** RTL, right-to-left, hebrew, arabic, direction
+**Solves:**
+- Support RTL languages like Hebrew
+- Handle bidirectional text
+- Configure RTL-aware layouts
+
+### trans-component
+**Keywords:** Trans, rich text, embedded JSX, interpolation
+**Solves:**
+- Embed React components in translations
+- Handle rich text formatting
+- Implement safe HTML in translations

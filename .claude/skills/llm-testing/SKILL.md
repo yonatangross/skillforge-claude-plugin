@@ -134,3 +134,47 @@ async def test_llm_integration():
 - `vcr-http-recording` - Record LLM responses
 - `llm-evaluation` - Quality assessment
 - `unit-testing` - Test fundamentals
+
+## Capability Details
+
+### llm-response-mocking
+**Keywords:** mock LLM, fake response, stub LLM, mock AI
+**Solves:**
+- Mock LLM responses in tests
+- Create deterministic AI test fixtures
+- Avoid live API calls in CI
+
+### async-timeout-testing
+**Keywords:** timeout, async test, wait for, polling
+**Solves:**
+- Test async LLM operations
+- Handle timeout scenarios
+- Implement polling assertions
+
+### structured-output-validation
+**Keywords:** structured output, JSON validation, schema validation, output format
+**Solves:**
+- Validate structured LLM output
+- Test JSON schema compliance
+- Assert output structure
+
+### deepeval-assertions
+**Keywords:** DeepEval, assert_test, LLMTestCase, metric assertion
+**Solves:**
+- Use DeepEval for LLM assertions
+- Implement metric-based tests
+- Configure quality thresholds
+
+### golden-dataset-testing
+**Keywords:** golden dataset, golden test, reference output, expected output
+**Solves:**
+- Test against golden datasets
+- Compare with reference outputs
+- Implement regression testing
+
+### vcr-recording
+**Keywords:** VCR, cassette, record, replay, HTTP recording
+**Solves:**
+- Record LLM API responses
+- Replay recordings in tests
+- Create deterministic test suites

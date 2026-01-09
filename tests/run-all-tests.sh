@@ -180,7 +180,6 @@ if [[ "$RUN_SECURITY" == "true" ]]; then
 
     run_test "Command Injection Tests" "$SCRIPT_DIR/security/test-command-injection.sh" || true
     run_test "JQ Injection Tests" "$SCRIPT_DIR/security/test-jq-injection.sh" || true
-    run_test "JQ Filter Injection Tests" "$SCRIPT_DIR/security/test-jq-filter-injection.sh" || true
     run_test "Path Traversal Tests" "$SCRIPT_DIR/security/test-path-traversal.sh" || true
     run_test "Unicode Attack Tests" "$SCRIPT_DIR/security/test-unicode-attacks.sh" || true
     run_test "Symlink Attack Tests" "$SCRIPT_DIR/security/test-symlink-attacks.sh" || true

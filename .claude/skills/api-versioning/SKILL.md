@@ -311,3 +311,29 @@ class UserResponse(BaseModel):
 - `api-design-framework` - REST API patterns
 - `error-handling-rfc9457` - Consistent errors across versions
 - `observability-monitoring` - Version usage metrics
+
+## Capability Details
+
+### url-versioning
+**Keywords:** url version, path version, /v1/, /v2/
+**Solves:**
+- How to version REST APIs?
+- URL-based API versioning
+
+### header-versioning
+**Keywords:** header version, X-API-Version, custom header
+**Solves:**
+- Clean URL versioning
+- Header-based API version
+
+### deprecation
+**Keywords:** deprecation, sunset, version lifecycle, backward compatible
+**Solves:**
+- How to deprecate API versions?
+- Version sunset policy
+
+### breaking-changes
+**Keywords:** breaking change, non-breaking, backward compatible
+**Solves:**
+- What requires a version bump?
+- Breaking vs non-breaking changes

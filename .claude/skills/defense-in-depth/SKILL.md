@@ -197,3 +197,33 @@ This skill integrates with:
 ---
 
 **Version:** 1.0.0 (December 2025)
+
+## Capability Details
+
+### 8-layer-architecture
+**Keywords:** defense in depth, security layers, validation layers, multi-layer
+**Solves:**
+- How do I secure my AI application end-to-end?
+- What validation layers do I need?
+- How do I implement defense in depth?
+
+### request-context
+**Keywords:** request context, immutable context, context object, user context
+**Solves:**
+- How do I pass user identity through the system?
+- How do I create an immutable request context?
+- What should be in the request context?
+
+### tenant-isolation
+**Keywords:** multi-tenant, tenant isolation, tenant filter, cross-tenant
+**Solves:**
+- How do I ensure tenant isolation?
+- How do I prevent cross-tenant data access?
+- How do I filter queries by tenant?
+
+### audit-logging
+**Keywords:** audit log, audit trail, logging, compliance
+**Solves:**
+- What should I log for compliance?
+- How do I create audit trails?
+- How do I log without leaking PII?

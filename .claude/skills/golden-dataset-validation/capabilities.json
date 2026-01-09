@@ -3,64 +3,12 @@
   "name": "golden-dataset-validation",
   "version": "1.0.0",
   "description": "Validation rules, schema checks, duplicate detection, and coverage analysis for golden dataset integrity",
-  "capabilities": {
-    "schema-validation": {
-      "keywords": [
-        "schema",
-        "validation",
-        "schema check",
-        "format validation"
-      ],
-      "solves": [
-        "Validate entries against document schema",
-        "Check required fields are present",
-        "Verify data types and constraints"
-      ],
-      "reference_file": "SKILL.md#schema-validation"
-    },
-    "duplicate-detection": {
-      "keywords": [
-        "duplicate",
-        "detection",
-        "deduplication",
-        "similarity check"
-      ],
-      "solves": [
-        "Detect duplicate or near-duplicate entries",
-        "Use semantic similarity for fuzzy matching",
-        "Prevent redundant entries in dataset"
-      ],
-      "reference_file": "SKILL.md#duplicate-detection"
-    },
-    "referential-integrity": {
-      "keywords": [
-        "referential",
-        "integrity",
-        "foreign key",
-        "relationship"
-      ],
-      "solves": [
-        "Verify relationships between documents and queries",
-        "Check source URL mappings are valid",
-        "Ensure cross-references are consistent"
-      ],
-      "reference_file": "SKILL.md#referential-integrity"
-    },
-    "coverage-analysis": {
-      "keywords": [
-        "coverage",
-        "analysis",
-        "distribution",
-        "completeness"
-      ],
-      "solves": [
-        "Analyze dataset coverage across domains",
-        "Identify gaps in difficulty distribution",
-        "Report coverage metrics and recommendations"
-      ],
-      "reference_file": "SKILL.md#coverage-analysis"
-    }
-  },
+  "capabilities": [
+    "coverage-analysis",
+    "duplicate-detection",
+    "referential-integrity",
+    "schema-validation"
+  ],
   "triggers": {
     "high_confidence": [
       "validate.*golden.*dataset",

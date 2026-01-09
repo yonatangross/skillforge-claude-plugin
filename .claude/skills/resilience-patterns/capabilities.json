@@ -3,89 +3,13 @@
   "name": "resilience-patterns",
   "version": "1.0.0",
   "description": "Production-grade resilience patterns for distributed systems and LLM workflows",
-  "capabilities": {
-    "circuit-breaker": {
-      "keywords": [
-        "circuit breaker",
-        "failure threshold",
-        "cascade failure",
-        "trip",
-        "half-open"
-      ],
-      "solves": [
-        "Prevent cascade failures when external services fail",
-        "Automatically recover when services come back online",
-        "Fail fast instead of waiting for timeouts"
-      ],
-      "reference_file": "references/circuit-breaker.md",
-      "template_file": "templates/circuit-breaker.py"
-    },
-    "bulkhead": {
-      "keywords": [
-        "bulkhead",
-        "isolation",
-        "semaphore",
-        "thread pool",
-        "resource pool",
-        "tier"
-      ],
-      "solves": [
-        "Isolate failures to prevent entire system crashes",
-        "Prioritize critical operations over optional ones",
-        "Limit concurrent requests to protect resources"
-      ],
-      "reference_file": "references/bulkhead-pattern.md",
-      "template_file": "templates/bulkhead.py"
-    },
-    "retry-strategies": {
-      "keywords": [
-        "retry",
-        "backoff",
-        "exponential",
-        "jitter",
-        "thundering herd"
-      ],
-      "solves": [
-        "Handle transient failures automatically",
-        "Avoid overwhelming recovering services",
-        "Classify errors as retryable vs non-retryable"
-      ],
-      "reference_file": "references/retry-strategies.md",
-      "template_file": "templates/retry-handler.py"
-    },
-    "llm-resilience": {
-      "keywords": [
-        "LLM",
-        "fallback",
-        "model",
-        "token budget",
-        "rate limit",
-        "context length"
-      ],
-      "solves": [
-        "Handle LLM API rate limits gracefully",
-        "Fall back to alternative models when primary fails",
-        "Manage token budgets to prevent context overflow"
-      ],
-      "reference_file": "references/llm-resilience.md",
-      "template_file": "templates/llm-fallback-chain.py"
-    },
-    "error-classification": {
-      "keywords": [
-        "error",
-        "retryable",
-        "transient",
-        "permanent",
-        "classification"
-      ],
-      "solves": [
-        "Determine which errors should be retried",
-        "Categorize errors by severity and recoverability",
-        "Map HTTP status codes to resilience actions"
-      ],
-      "reference_file": "references/error-classification.md"
-    }
-  },
+  "capabilities": [
+    "bulkhead",
+    "circuit-breaker",
+    "error-classification",
+    "llm-resilience",
+    "retry-strategies"
+  ],
   "triggers": {
     "high_confidence": [
       "circuit.*breaker",

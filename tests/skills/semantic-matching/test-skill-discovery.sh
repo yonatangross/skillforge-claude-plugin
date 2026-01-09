@@ -25,6 +25,19 @@ VERBOSE="${1:-}"
 # SEMANTIC MATCHING FUNCTIONS
 # ============================================================================
 
+# Check if skill uses slim array format (capabilities as string array)
+is_slim_format() {
+    local skill_name="$1"
+    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    
+    if [[ ! -f "$caps_file" ]]; then
+        return 1
+    fi
+    
+    jq -e '.capabilities | type == "array"' "$caps_file" >/dev/null 2>&1
+}
+
+
 # Match query against high_confidence triggers in capabilities.json
 # Returns 0 if matched, 1 if not matched
 match_high_confidence() {
@@ -96,19 +109,30 @@ match_medium_confidence() {
 }
 
 # Match query against capability keywords
+# Supports both slim format (reads from SKILL.md) and legacy format (reads from capabilities.json)
 match_keywords() {
     local query="$1"
     local skill_name="$2"
     local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
     local min_matches="${3:-2}"  # Minimum keyword matches required
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
     fi
 
-    # Get all keywords from all capabilities
-    local keywords
-    keywords=$(jq -r '.capabilities[].keywords[]?' "$caps_file" 2>/dev/null | sort -u)
+    local keywords=""
+    
+    # Check format and extract keywords accordingly
+    if is_slim_format "$skill_name"; then
+        # Slim format: extract keywords from SKILL.md "**Keywords:**" lines
+        if [[ -f "$skill_md" ]]; then
+            keywords=$(grep -o '\*\*Keywords:\*\* [^*]*' "$skill_md" 2>/dev/null | sed 's/\*\*Keywords:\*\* //' | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sort -u)
+        fi
+    else
+        # Legacy format: get keywords from capabilities.json
+        keywords=$(jq -r '.capabilities[].keywords[]?' "$caps_file" 2>/dev/null | sort -u)
+    fi
 
     if [[ -z "$keywords" ]]; then
         return 1
@@ -137,18 +161,29 @@ match_keywords() {
 }
 
 # Match query against solves questions
+# Supports both slim format (reads from SKILL.md) and legacy format (reads from capabilities.json)
 match_solves() {
     local query="$1"
     local skill_name="$2"
     local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
     fi
 
-    # Get all solves questions
-    local solves
-    solves=$(jq -r '.capabilities[].solves[]?' "$caps_file" 2>/dev/null)
+    local solves=""
+    
+    # Check format and extract solves accordingly
+    if is_slim_format "$skill_name"; then
+        # Slim format: extract solves from SKILL.md "**Solves:**" sections (lines starting with "- ")
+        if [[ -f "$skill_md" ]]; then
+            solves=$(awk '/\*\*Solves:\*\*/{flag=1; next} /^###|^\*\*/{flag=0} flag && /^- /{sub(/^- /, ""); print}' "$skill_md" 2>/dev/null)
+        fi
+    else
+        # Legacy format: get solves from capabilities.json
+        solves=$(jq -r '.capabilities[].solves[]?' "$caps_file" 2>/dev/null)
+    fi
 
     if [[ -z "$solves" ]]; then
         return 1
@@ -185,18 +220,33 @@ match_solves() {
 }
 
 # Check if skill belongs to a category by keyword presence
+# Supports both slim format (reads from SKILL.md) and legacy format (reads from capabilities.json)
 check_category_keywords() {
     local skill_name="$1"
     shift
     local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
     fi
 
     # Get all keywords and description
-    local all_text
-    all_text=$(jq -r '(.description // "") + " " + (.capabilities[].keywords[]? // "")' "$caps_file" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    local all_text=""
+    
+    if is_slim_format "$skill_name"; then
+        # Slim format: get description from capabilities.json + keywords from SKILL.md
+        local desc
+        desc=$(jq -r '.description // ""' "$caps_file" 2>/dev/null)
+        local keywords=""
+        if [[ -f "$skill_md" ]]; then
+            keywords=$(grep -o '\*\*Keywords:\*\* [^*]*' "$skill_md" 2>/dev/null | sed 's/\*\*Keywords:\*\* //' | tr ',' ' ')
+        fi
+        all_text=$(echo "$desc $keywords" | tr '[:upper:]' '[:lower:]')
+    else
+        # Legacy format
+        all_text=$(jq -r '(.description // "") + " " + (.capabilities[].keywords[]? // "")' "$caps_file" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    fi
 
     # Check if at least one required keyword is present
     for keyword in "$@"; do
@@ -1145,9 +1195,20 @@ test_capabilities_keywords_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
+        local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
 
-        local keyword_count
-        keyword_count=$(jq -r '[.capabilities[].keywords[]?] | length' "$caps_file" 2>/dev/null)
+        local keyword_count=0
+        
+        # Check format and count keywords accordingly
+        if is_slim_format "$skill_name"; then
+            # Slim format: count keywords from SKILL.md
+            if [[ -f "$skill_md" ]]; then
+                keyword_count=$(grep -c '\*\*Keywords:\*\*' "$skill_md" 2>/dev/null || echo "0")
+            fi
+        else
+            # Legacy format
+            keyword_count=$(jq -r '[.capabilities[].keywords[]?] | length' "$caps_file" 2>/dev/null)
+        fi
 
         if [[ -z "$keyword_count" ]] || [[ "$keyword_count" -eq 0 ]]; then
             echo "No keywords found: $skill_name" >&2
@@ -1171,9 +1232,20 @@ test_capabilities_solves_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
+        local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
 
-        local solves_count
-        solves_count=$(jq -r '[.capabilities[].solves[]?] | length' "$caps_file" 2>/dev/null)
+        local solves_count=0
+        
+        # Check format and count solves accordingly
+        if is_slim_format "$skill_name"; then
+            # Slim format: count solves from SKILL.md (lines starting with "- " after "**Solves:**")
+            if [[ -f "$skill_md" ]]; then
+                solves_count=$(grep -c '\*\*Solves:\*\*' "$skill_md" 2>/dev/null || echo "0")
+            fi
+        else
+            # Legacy format
+            solves_count=$(jq -r '[.capabilities[].solves[]?] | length' "$caps_file" 2>/dev/null)
+        fi
 
         if [[ -z "$solves_count" ]] || [[ "$solves_count" -eq 0 ]]; then
             echo "No solves questions: $skill_name" >&2

@@ -288,3 +288,39 @@ cache.set(key, value, CACHE_TTL_SECONDS);
 **Skill Version**: 2.0.0
 **Last Updated**: 2026-01-08
 **Maintained by**: AI Agent Hub Team
+
+## Capability Details
+
+### review-process
+**Keywords:** code review, pr review, review process, feedback
+**Solves:**
+- How to review PRs
+- Conventional comments format
+- Review best practices
+
+### quality-checks
+**Keywords:** readability, solid, dry, complexity, naming
+**Solves:**
+- Check code quality
+- SOLID principles review
+- Cyclomatic complexity
+
+### security-review
+**Keywords:** security, authentication, authorization, injection, xss
+**Solves:**
+- Security review checklist
+- Find vulnerabilities
+- Auth validation
+
+### language-specific
+**Keywords:** typescript, python, type hints, async await, pep8
+**Solves:**
+- TypeScript review
+- Python review
+- Language-specific patterns
+
+### pr-template
+**Keywords:** pr template, pull request, description
+**Solves:**
+- PR description format
+- Review checklist

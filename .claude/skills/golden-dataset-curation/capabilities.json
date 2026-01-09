@@ -3,64 +3,12 @@
   "name": "golden-dataset-curation",
   "version": "1.0.0",
   "description": "Quality criteria, workflows, and multi-agent analysis patterns for curating high-quality golden dataset entries",
-  "capabilities": {
-    "content-classification": {
-      "keywords": [
-        "content type",
-        "classification",
-        "document type",
-        "golden dataset"
-      ],
-      "solves": [
-        "Classify document content types for golden dataset",
-        "Categorize entries by domain and purpose",
-        "Identify content requiring special handling"
-      ],
-      "reference_file": "SKILL.md#content-classification"
-    },
-    "difficulty-stratification": {
-      "keywords": [
-        "difficulty",
-        "stratification",
-        "complexity level",
-        "challenge rating"
-      ],
-      "solves": [
-        "Assign difficulty levels to golden dataset entries",
-        "Ensure balanced difficulty distribution",
-        "Identify edge cases and challenging examples"
-      ],
-      "reference_file": "SKILL.md#difficulty-levels"
-    },
-    "quality-evaluation": {
-      "keywords": [
-        "quality",
-        "evaluation",
-        "quality dimensions",
-        "quality criteria"
-      ],
-      "solves": [
-        "Evaluate entry quality against defined criteria",
-        "Score entries on multiple quality dimensions",
-        "Identify entries needing improvement"
-      ],
-      "reference_file": "SKILL.md#quality-dimensions"
-    },
-    "multi-agent-analysis": {
-      "keywords": [
-        "multi-agent",
-        "parallel analysis",
-        "consensus",
-        "agent evaluation"
-      ],
-      "solves": [
-        "Run parallel agent evaluations on entries",
-        "Aggregate consensus from multiple analysts",
-        "Resolve disagreements in classifications"
-      ],
-      "reference_file": "SKILL.md#multi-agent-analysis"
-    }
-  },
+  "capabilities": [
+    "content-classification",
+    "difficulty-stratification",
+    "multi-agent-analysis",
+    "quality-evaluation"
+  ],
   "triggers": {
     "high_confidence": [
       "golden.*dataset.*curate",

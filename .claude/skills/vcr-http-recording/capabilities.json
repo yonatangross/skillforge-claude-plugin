@@ -3,86 +3,14 @@
   "name": "vcr-http-recording",
   "version": "1.0.0",
   "description": "VCR.py HTTP recording for deterministic Python tests",
-  "capabilities": {
-    "http-recording": {
-      "keywords": [
-        "record HTTP",
-        "vcr.use_cassette",
-        "record mode",
-        "capture HTTP"
-      ],
-      "solves": [
-        "Record HTTP interactions for replay",
-        "Capture real API responses",
-        "Create deterministic test fixtures"
-      ]
-    },
-    "cassette-replay": {
-      "keywords": [
-        "replay",
-        "cassette",
-        "playback",
-        "mock replay"
-      ],
-      "solves": [
-        "Replay recorded HTTP interactions",
-        "Run tests without network access",
-        "Ensure consistent test results"
-      ]
-    },
-    "async-support": {
-      "keywords": [
-        "async",
-        "aiohttp",
-        "httpx async",
-        "async cassette"
-      ],
-      "solves": [
-        "Record async HTTP clients",
-        "Handle aiohttp and httpx async",
-        "Test async API integrations"
-      ]
-    },
-    "sensitive-data-filtering": {
-      "keywords": [
-        "filter",
-        "scrub",
-        "redact",
-        "sensitive data",
-        "before_record"
-      ],
-      "solves": [
-        "Scrub API keys from cassettes",
-        "Redact sensitive data",
-        "Implement before_record hooks"
-      ]
-    },
-    "custom-matchers": {
-      "keywords": [
-        "matcher",
-        "match on",
-        "request matching",
-        "custom match"
-      ],
-      "solves": [
-        "Configure request matching rules",
-        "Ignore dynamic request parts",
-        "Match by method/host/path"
-      ]
-    },
-    "llm-api-testing": {
-      "keywords": [
-        "LLM cassette",
-        "OpenAI recording",
-        "Anthropic recording"
-      ],
-      "solves": [
-        "Record LLM API responses",
-        "Test AI integrations deterministically",
-        "Avoid costly API calls in tests"
-      ]
-    }
-  },
+  "capabilities": [
+    "async-support",
+    "cassette-replay",
+    "custom-matchers",
+    "http-recording",
+    "llm-api-testing",
+    "sensitive-data-filtering"
+  ],
   "triggers": {
     "high_confidence": [
       "VCR",

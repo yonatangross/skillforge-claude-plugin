@@ -3,48 +3,11 @@
   "name": "context-compression",
   "version": "1.0.0",
   "description": "Compress conversation history while preserving task-critical information using anchored summarization",
-  "capabilities": {
-    "anchored-summarization": {
-      "keywords": [
-        "compress",
-        "summarize history",
-        "context too long",
-        "anchored summary"
-      ],
-      "solves": [
-        "Reduce context size while preserving critical information",
-        "Implement structured compression with required sections",
-        "Maintain session intent and decisions through compression"
-      ],
-      "reference_file": "references/compression-strategies.md"
-    },
-    "compression-triggers": {
-      "keywords": [
-        "token limit",
-        "running out of context",
-        "when to compress"
-      ],
-      "solves": [
-        "Determine when to trigger compression (70% utilization)",
-        "Set compression targets (50% utilization)",
-        "Preserve last 5 messages uncompressed"
-      ],
-      "reference_file": "SKILL.md#loading_tiers"
-    },
-    "probe-evaluation": {
-      "keywords": [
-        "evaluate compression",
-        "test compression",
-        "probe"
-      ],
-      "solves": [
-        "Validate compression quality with functional probes",
-        "Test information preservation after compression",
-        "Achieve >90% probe pass rate"
-      ],
-      "reference_file": "SKILL.md#tier_3"
-    }
-  },
+  "capabilities": [
+    "anchored-summarization",
+    "compression-triggers",
+    "probe-evaluation"
+  ],
   "triggers": {
     "high_confidence": [
       "context.*too.*long",

@@ -3,40 +3,12 @@
   "name": "worktree-coordination",
   "version": "1.0.0",
   "description": "Multi-instance coordination for parallel Claude Code development across git worktrees",
-  "capabilities": {
-    "status-check": {
-      "keywords": ["worktree", "status", "instances", "active", "who"],
-      "solves": [
-        "How to see all active Claude Code instances",
-        "Check which files are locked",
-        "Find stale instances"
-      ]
-    },
-    "file-locking": {
-      "keywords": ["lock", "claim", "release", "conflict", "blocked"],
-      "solves": [
-        "How to prevent file conflicts between instances",
-        "Claim a file before editing",
-        "Release a lock when done"
-      ]
-    },
-    "decision-sync": {
-      "keywords": ["decision", "sync", "share", "coordinate"],
-      "solves": [
-        "Share architectural decisions across instances",
-        "See what other instances decided",
-        "Coordinate approach between worktrees"
-      ]
-    },
-    "conflict-prevention": {
-      "keywords": ["conflict", "merge", "overlap", "collision"],
-      "solves": [
-        "Check for merge conflicts before committing",
-        "Avoid overlapping work",
-        "Coordinate parallel development"
-      ]
-    }
-  },
+  "capabilities": [
+    "conflict-prevention",
+    "decision-sync",
+    "file-locking",
+    "status-check"
+  ],
   "triggers": {
     "high_confidence": [
       "worktree",
@@ -51,10 +23,7 @@
       "who is working on"
     ]
   },
-  "integrates_with": ["github-cli"],
-  "cli_commands": [
-    "cc-worktree-new",
-    "cc-worktree-status",
-    "cc-worktree-sync"
+  "integrates_with": [
+    "github-cli"
   ]
 }

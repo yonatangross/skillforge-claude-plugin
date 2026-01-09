@@ -3,73 +3,13 @@
   "name": "test-data-management",
   "version": "1.0.0",
   "description": "Test data generation and management with fixtures and factories",
-  "capabilities": {
-    "fixture-generation": {
-      "keywords": [
-        "fixture",
-        "test fixture",
-        "pytest fixture",
-        "conftest"
-      ],
-      "solves": [
-        "Create reusable test fixtures",
-        "Implement fixture composition",
-        "Handle fixture cleanup"
-      ]
-    },
-    "factory-patterns": {
-      "keywords": [
-        "factory",
-        "FactoryBoy",
-        "test factory",
-        "model factory"
-      ],
-      "solves": [
-        "Generate test data with factories",
-        "Implement factory inheritance",
-        "Create related object graphs"
-      ]
-    },
-    "data-seeding": {
-      "keywords": [
-        "seed",
-        "seed data",
-        "database seed",
-        "initial data"
-      ],
-      "solves": [
-        "Seed databases for testing",
-        "Create consistent test environments",
-        "Implement idempotent seeding"
-      ]
-    },
-    "cleanup-strategies": {
-      "keywords": [
-        "cleanup",
-        "teardown",
-        "reset",
-        "isolation"
-      ],
-      "solves": [
-        "Clean up test data after runs",
-        "Implement transaction rollback",
-        "Ensure test isolation"
-      ]
-    },
-    "data-anonymization": {
-      "keywords": [
-        "anonymize",
-        "faker",
-        "synthetic data",
-        "mock data"
-      ],
-      "solves": [
-        "Generate realistic fake data",
-        "Anonymize production data for tests",
-        "Create synthetic datasets"
-      ]
-    }
-  },
+  "capabilities": [
+    "cleanup-strategies",
+    "data-anonymization",
+    "data-seeding",
+    "factory-patterns",
+    "fixture-generation"
+  ],
   "triggers": {
     "high_confidence": [
       "test.*data",

@@ -342,3 +342,29 @@ background_tasks.add_task(long_running_job)  # Lost if server restarts
 - `langgraph-checkpoints` - LLM workflow persistence
 - `resilience-patterns` - Retry and fallback
 - `observability-monitoring` - Job metrics
+
+## Capability Details
+
+### arq-tasks
+**Keywords:** arq, async queue, redis queue, background task
+**Solves:**
+- How to run async background tasks in FastAPI?
+- Simple Redis job queue
+
+### celery-tasks
+**Keywords:** celery, task queue, distributed tasks, worker
+**Solves:**
+- Enterprise task queue
+- Complex job workflows
+
+### celery-workflows
+**Keywords:** chain, group, chord, celery workflow
+**Solves:**
+- Sequential task execution
+- Parallel task processing
+
+### periodic-tasks
+**Keywords:** periodic, scheduled, cron, celery beat
+**Solves:**
+- Run tasks on schedule
+- Cron-like job scheduling

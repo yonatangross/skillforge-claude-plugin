@@ -3,38 +3,26 @@
   "name": "design-system-starter",
   "version": "1.0.0",
   "description": "Design system patterns: tokens, component architecture, accessibility, theming",
-
-  "capabilities": {
-    "design-tokens": {
-      "keywords": ["design tokens", "css variables", "theme", "colors", "spacing"],
-      "solves": ["Create design token system", "Color palette", "Typography scale"],
-      "reference_file": "SKILL.md#design-tokens",
-      "token_cost": 150
-    },
-    "component-architecture": {
-      "keywords": ["component library", "atomic design", "atoms", "molecules"],
-      "solves": ["Structure component library", "Compound components", "Variants"],
-      "reference_file": "SKILL.md#component-architecture",
-      "token_cost": 180
-    },
-    "accessibility": {
-      "keywords": ["a11y", "wcag", "aria", "keyboard navigation", "focus"],
-      "solves": ["WCAG 2.1 AA compliance", "ARIA attributes", "Keyboard support"],
-      "reference_file": "SKILL.md#accessibility",
-      "token_cost": 160
-    },
-    "theming": {
-      "keywords": ["theme", "dark mode", "light mode", "color scheme"],
-      "solves": ["Implement dark/light mode", "Theme switching", "CSS custom properties"],
-      "reference_file": "SKILL.md#theming",
-      "token_cost": 140
-    }
-  },
-
+  "capabilities": [
+    "accessibility",
+    "component-architecture",
+    "design-tokens",
+    "theming"
+  ],
   "triggers": {
-    "high_confidence": ["design.*system", "component.*library", "design.*tokens"],
-    "medium_confidence": ["color.*palette", "dark.*mode", "a11y"]
+    "high_confidence": [
+      "design.*system",
+      "component.*library",
+      "design.*tokens"
+    ],
+    "medium_confidence": [
+      "color.*palette",
+      "dark.*mode",
+      "a11y"
+    ]
   },
-
-  "integrates_with": ["react-server-components-framework", "type-safety-validation"]
+  "integrates_with": [
+    "react-server-components-framework",
+    "type-safety-validation"
+  ]
 }

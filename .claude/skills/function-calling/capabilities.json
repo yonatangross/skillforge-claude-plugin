@@ -3,74 +3,13 @@
   "name": "function-calling",
   "version": "2.0.0",
   "description": "LLM function calling and tool use patterns with strict mode schemas",
-  "capabilities": {
-    "tool-definition": {
-      "keywords": [
-        "tool",
-        "function",
-        "define tool",
-        "tool schema",
-        "function schema"
-      ],
-      "solves": [
-        "Define tools with clear descriptions",
-        "Create JSON schemas for tool parameters",
-        "Document tool behavior for LLM"
-      ]
-    },
-    "tool-execution-loop": {
-      "keywords": [
-        "execution loop",
-        "tool call",
-        "agent loop",
-        "run tool"
-      ],
-      "solves": [
-        "Implement tool execution loops",
-        "Handle multiple tool calls",
-        "Process tool results"
-      ]
-    },
-    "structured-output": {
-      "keywords": [
-        "structured output",
-        "JSON output",
-        "typed response",
-        "response schema"
-      ],
-      "solves": [
-        "Get structured JSON from LLM",
-        "Enforce output schemas",
-        "Parse and validate responses"
-      ]
-    },
-    "parallel-tool-calls": {
-      "keywords": [
-        "parallel",
-        "concurrent",
-        "multiple tools",
-        "batch tools"
-      ],
-      "solves": [
-        "Execute multiple tools in parallel",
-        "Handle concurrent tool results",
-        "Optimize tool call latency"
-      ]
-    },
-    "strict-mode-schemas": {
-      "keywords": [
-        "strict mode",
-        "strict schema",
-        "additionalProperties",
-        "required fields"
-      ],
-      "solves": [
-        "Enforce strict JSON schemas",
-        "Prevent extra fields in output",
-        "Ensure schema compliance"
-      ]
-    }
-  },
+  "capabilities": [
+    "parallel-tool-calls",
+    "strict-mode-schemas",
+    "structured-output",
+    "tool-definition",
+    "tool-execution-loop"
+  ],
   "triggers": {
     "high_confidence": [
       "function.*calling",

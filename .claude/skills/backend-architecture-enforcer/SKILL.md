@@ -511,3 +511,33 @@ class UserRepository:
 - `fastapi-advanced` - Advanced FastAPI patterns
 - `dependency-injection` - DI patterns
 - `project-structure-enforcer` - Folder structure
+
+## Capability Details
+
+### layer-separation
+**Keywords:** router, service, repository, layer, clean architecture, separation
+**Solves:**
+- Prevent database operations in routers
+- Block business logic in route handlers
+- Ensure proper layer boundaries
+
+### dependency-injection
+**Keywords:** depends, dependency injection, DI, fastapi depends, inject
+**Solves:**
+- Enforce use of FastAPI Depends() pattern
+- Block direct instantiation in routers
+- Ensure testable code structure
+
+### file-naming
+**Keywords:** naming convention, file name, router_, _service, _repository
+**Solves:**
+- Enforce consistent file naming patterns
+- Validate router/service/repository naming
+- Maintain codebase consistency
+
+### async-patterns
+**Keywords:** async, await, sync, blocking call, asyncio
+**Solves:**
+- Detect sync calls in async functions
+- Prevent blocking operations in async code
+- Ensure async consistency

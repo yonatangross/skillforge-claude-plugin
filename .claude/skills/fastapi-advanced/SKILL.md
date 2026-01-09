@@ -438,3 +438,35 @@ async def lifespan(app: FastAPI):
 - `clean-architecture` - Service layer patterns
 - `database-schema-designer` - SQLAlchemy models
 - `observability-monitoring` - Logging and metrics
+
+## Capability Details
+
+### lifespan
+**Keywords:** lifespan, startup, shutdown, asynccontextmanager
+**Solves:**
+- FastAPI startup/shutdown
+- Resource management in FastAPI
+
+### dependencies
+**Keywords:** dependency injection, Depends, get_db, service dependency
+**Solves:**
+- FastAPI dependency injection patterns
+- Reusable dependencies
+
+### middleware
+**Keywords:** middleware, request id, timing, cors, logging middleware
+**Solves:**
+- Custom FastAPI middleware
+- Request/response interceptors
+
+### settings
+**Keywords:** settings, pydantic settings, env, configuration
+**Solves:**
+- FastAPI configuration management
+- Environment variables
+
+### health-checks
+**Keywords:** health check, readiness, liveness, health endpoint
+**Solves:**
+- Kubernetes health checks
+- Service health monitoring

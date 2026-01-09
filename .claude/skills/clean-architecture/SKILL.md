@@ -276,3 +276,23 @@ class UserService:
 - `repository-patterns` - Detailed repository implementations
 - `api-design-framework` - REST API patterns
 - `database-schema-designer` - Schema design
+
+## Capability Details
+
+### solid-principles
+**Keywords:** SOLID, single responsibility, open closed, liskov, interface segregation, dependency inversion
+**Solves:**
+- How do I apply SOLID principles in Python?
+- My classes are doing too much
+
+### hexagonal-architecture
+**Keywords:** hexagonal, ports and adapters, clean architecture, onion
+**Solves:**
+- How do I structure my FastAPI app?
+- How to separate infrastructure from domain?
+
+### ddd-tactical
+**Keywords:** entity, value object, aggregate, domain event, DDD
+**Solves:**
+- What's the difference between entity and value object?
+- How to design aggregates?
