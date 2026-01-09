@@ -1,151 +1,23 @@
 {
-  "name": "skillforge-complete",
-  "displayName": "@skillforge/complete",
-  "owner": "yonatangross",
-  "version": "4.6.3",
-  "description": "The Complete AI Development Toolkit - 78 skills, 20 agents, 12 commands, 90 hooks",
-  "repository": "https://github.com/yonatangross/skillforge-claude-plugin",
-  "license": "MIT",
-  "strict": false,
-  "marketplace_status": {
-    "anthropic_official": {
-      "status": "pending",
-      "pr": "https://github.com/anthropics/claude-plugins-official/pull/86"
-    },
-    "cc_marketplace": {
-      "status": "pending",
-      "pr": "https://github.com/ananddtyagi/cc-marketplace/pull/24"
-    },
-    "note": "Marketplace installation will work once PRs are approved. Until then, use manual installation."
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "skillforge",
+  "description": "The Complete AI Development Toolkit - 78 skills, 20 agents, 12 commands, 90 hooks for full-stack development",
+  "owner": {
+    "name": "Yonatan Gross",
+    "email": "yonatangross@gmail.com"
   },
   "plugins": [
     {
-      "name": "complete",
-      "description": "Full toolkit - all 78 skills, 20 agents, 12 commands, 90 hooks",
-      "skills": [
-        "*"
-      ],
-      "includes_agents": true,
-      "includes_commands": true,
-      "includes_hooks": true
-    },
-    {
-      "name": "ai-development",
-      "description": "AI & LLM patterns: agents, RAG, embeddings, LangGraph, caching (23 skills)",
-      "skills": [
-        "agent-loops",
-        "cache-cost-tracking",
-        "context-compression",
-        "context-engineering",
-        "embeddings",
-        "function-calling",
-        "langfuse-observability",
-        "langgraph-checkpoints",
-        "langgraph-human-in-loop",
-        "langgraph-parallel",
-        "langgraph-routing",
-        "langgraph-state",
-        "langgraph-supervisor",
-        "llm-evaluation",
-        "llm-safety-patterns",
-        "llm-streaming",
-        "llm-testing",
-        "multi-agent-orchestration",
-        "ollama-local",
-        "pgvector-search",
-        "prompt-caching",
-        "rag-retrieval",
-        "semantic-caching"
-      ]
-    },
-    {
-      "name": "backend",
-      "description": "Backend patterns: APIs, databases, caching, rate limiting, architecture (12 skills)",
-      "skills": [
-        "api-design-framework",
-        "api-versioning",
-        "background-jobs",
-        "caching-strategies",
-        "clean-architecture",
-        "database-schema-designer",
-        "error-handling-rfc9457",
-        "fastapi-advanced",
-        "rate-limiting",
-        "resilience-patterns",
-        "streaming-api-patterns",
-        "type-safety-validation"
-      ]
-    },
-    {
-      "name": "frontend",
-      "description": "Frontend patterns: React 19, RSC, animations, i18n, edge (6 skills)",
-      "skills": [
-        "design-system-starter",
-        "edge-computing-patterns",
-        "i18n-date-patterns",
-        "motion-animation-patterns",
-        "performance-optimization",
-        "react-server-components-framework"
-      ]
-    },
-    {
-      "name": "quality-testing",
-      "description": "Testing patterns: unit, integration, E2E, mocking, golden datasets (14 skills)",
-      "skills": [
-        "code-review-playbook",
-        "e2e-testing",
-        "evidence-verification",
-        "golden-dataset-curation",
-        "golden-dataset-management",
-        "golden-dataset-validation",
-        "integration-testing",
-        "msw-mocking",
-        "performance-testing",
-        "quality-gates",
-        "test-data-management",
-        "unit-testing",
-        "vcr-http-recording",
-        "webapp-testing"
-      ]
-    },
-    {
-      "name": "devops-security",
-      "description": "DevOps & security: CI/CD, observability, OWASP, auth (7 skills)",
-      "skills": [
-        "auth-patterns",
-        "defense-in-depth",
-        "devops-deployment",
-        "input-validation",
-        "observability-monitoring",
-        "owasp-top-10",
-        "security-scanning"
-      ]
-    },
-    {
-      "name": "process-planning",
-      "description": "Planning patterns: brainstorming, ADRs, GitHub CLI (6 skills)",
-      "skills": [
-        "architecture-decision-record",
-        "ascii-visualizer",
-        "brainstorming",
-        "browser-content-capture",
-        "github-cli",
-        "system-design-interrogation"
-      ]
+      "name": "skillforge",
+      "description": "Complete AI development toolkit with 78 skills covering AI/LLM, backend, frontend, security, and testing patterns. Includes 20 specialized agents, 12 commands, and 90 lifecycle hooks.",
+      "version": "4.6.4",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatangross@gmail.com"
+      },
+      "source": ".",
+      "category": "development",
+      "homepage": "https://github.com/yonatangross/skillforge-claude-plugin"
     }
-  ],
-  "features": {
-    "skills": 78,
-    "agents": 20,
-    "commands": 12,
-    "hooks": 90,
-    "progressive_loading": true,
-    "capabilities_json": true
-  },
-  "installation": {
-    "manual": "git clone https://github.com/yonatangross/skillforge-claude-plugin ~/.claude/plugins/skillforge",
-    "project_scoped": "cp -r skillforge-claude-plugin/.claude your-project/.claude",
-    "marketplace_full": "/plugin install skillforge-complete@complete",
-    "marketplace_category": "/plugin install skillforge-complete@{bundle-name}"
-  }
+  ]
 }
