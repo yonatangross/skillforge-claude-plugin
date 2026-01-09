@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Memory Validator - Warns on destructive memory operations
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Hook: PreToolUse (mcp__memory__*)
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues

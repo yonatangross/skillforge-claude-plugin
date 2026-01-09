@@ -1,6 +1,6 @@
 #!/bin/bash
 # Stop Dispatcher - Runs all stop hooks and outputs combined status
-# CC 2.1.1 Compliant: silent on success, visible on failure
+# CC 2.1.2 Compliant: silent on success, visible on failure
 # Consolidates: task-completion-check, auto-save-context
 set -euo pipefail
 

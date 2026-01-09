@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Skill Tracker - Logs Skill tool invocations
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Hook: PreToolUse (Skill)
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues

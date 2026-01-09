@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Subagent Validator - Source of truth for subagent tracking
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Hook: PreToolUse (Task)
 #
 # This is the ONLY place we track subagent usage because:

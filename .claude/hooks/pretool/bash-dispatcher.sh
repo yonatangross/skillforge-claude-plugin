@@ -1,6 +1,6 @@
 #!/bin/bash
 # Bash PreToolUse Dispatcher - Combines defaults, protection, and validation
-# CC 2.1.1 Compliant: silent on success, visible on failure
+# CC 2.1.2 Compliant: silent on success, visible on failure
 set -euo pipefail
 
 _HOOK_INPUT=$(cat)

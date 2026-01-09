@@ -2,7 +2,7 @@
 # ============================================================================
 # Pretool MCP Hooks Unit Tests
 # ============================================================================
-# Tests all MCP-related pretool hooks for CC 2.1.1 compliance
+# Tests all MCP-related pretool hooks for CC 2.1.2 compliance
 # ============================================================================
 
 set -euo pipefail
@@ -29,9 +29,9 @@ test_context7_tracker_handles_resolve_library() {
     output=$(echo "$input" | bash "$hook" 2>/dev/null) || true
 
     assert_valid_json "$output"
-    # Check for continue field (CC 2.1.1)
+    # Check for continue field (CC 2.1.2)
     if ! strip_ansi "$output" | jq -e '.continue == true' >/dev/null 2>&1; then
-        fail "Missing continue:true field (CC 2.1.1 compliance)"
+        fail "Missing continue:true field (CC 2.1.2 compliance)"
     fi
 }
 

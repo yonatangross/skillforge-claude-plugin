@@ -1,7 +1,7 @@
 #!/bin/bash
 # Agent Context Loader - Before Subagent Hook
 # Loads agent-specific context when spawning a subagent
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 #
 # Receives agent_id from hook input and loads corresponding context file
 # Part of Context Engineering 2.0
@@ -119,7 +119,7 @@ if [ -n "$knowledge" ]; then
     fi
 fi
 
-# Output CC 2.1.1 compliant JSON
+# Output CC 2.1.2 compliant JSON
 if [ -n "$system_message" ]; then
     jq -n --arg msg "$system_message" '{systemMessage: $msg, continue: true}' 2>/dev/null || \
         echo '{"systemMessage":"Agent context loaded","continue":true}'

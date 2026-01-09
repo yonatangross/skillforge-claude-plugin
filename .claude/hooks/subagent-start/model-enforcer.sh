@@ -1,7 +1,7 @@
 #!/bin/bash
 # Model Enforcer - Displays model preferences for agents
 # Hook: SubagentStart
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 #
 # Reads agent's model_preference from plugin.json and shows available options.
 
@@ -118,7 +118,7 @@ ${BOLD}Available modes:${RESET}
 $MODEL_OPTIONS"
 fi
 
-# Output CC 2.1.1 compliant JSON with model guidance
+# Output CC 2.1.2 compliant JSON with model guidance
 jq -n \
     --arg msg "$MODEL_GUIDE" \
     --arg default "$DEFAULT_MODEL" \

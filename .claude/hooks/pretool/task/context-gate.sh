@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Context Gate - Pre-Tool Hook for Task
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 # Prevents context overflow by limiting concurrent background agents
 #
 # Strategy:

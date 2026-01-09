@@ -2,7 +2,7 @@
 # ============================================================================
 # Pretool Task Hooks Unit Tests
 # ============================================================================
-# Tests Task-related pretool hooks for CC 2.1.1 compliance
+# Tests Task-related pretool hooks for CC 2.1.2 compliance
 # ============================================================================
 
 set -euo pipefail

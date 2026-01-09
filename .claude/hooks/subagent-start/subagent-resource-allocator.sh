@@ -2,7 +2,7 @@
 set -euo pipefail
 # Subagent Resource Allocator - Pre-allocates context for subagent launch
 # Hook: SubagentStart
-# CC 2.1.1 Compliant: includes continue field in all outputs
+# CC 2.1.2 Compliant: includes continue field in all outputs
 #
 # This hook:
 # 1. Logs the subagent type being launched
@@ -67,7 +67,7 @@ export SUBAGENT_PARENT_PROJECT="$CLAUDE_PROJECT_DIR"
 
 log_hook "Environment variables set: SUBAGENT_TYPE=$SUBAGENT_TYPE, SESSION_ID=$SESSION_ID"
 
-# === RETURN JSON WITH SYSTEM MESSAGE (CC 2.1.1 Compliant) ===
+# === RETURN JSON WITH SYSTEM MESSAGE (CC 2.1.2 Compliant) ===
 
 # Return JSON response with systemMessage and continue field
 if [[ -n "$SYSTEM_MESSAGE" ]]; then
