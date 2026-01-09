@@ -3,11 +3,10 @@
 # Agent Lifecycle E2E Test
 # ============================================================================
 # Verifies that agents:
-# 1. Are properly defined in plugin.json
-# 2. Have all required fields (model_preference, boundaries, skills_used)
+# 1. Are discovered from agents/ directory (Claude Code auto-discovery)
+# 2. Have proper YAML frontmatter and markdown structure
 # 3. Reference only existing skills
-# 4. Have corresponding .md files with proper structure
-# 5. Can be validated for spawning readiness
+# 4. Can be validated for spawning readiness
 # ============================================================================
 
 set -euo pipefail
@@ -16,7 +15,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 AGENTS_DIR="$PROJECT_ROOT/.claude/agents"
 SKILLS_DIR="$PROJECT_ROOT/.claude/skills"
-PLUGIN_JSON="$PROJECT_ROOT/plugin.json"
 
 # Colors
 RED='\033[0;31m'
@@ -38,13 +36,13 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 # ============================================================================
-# Test 1: Plugin.json Agent Definitions
+# Test 1: Agent Directory Discovery (Claude Code auto-discovery)
 # ============================================================================
-echo "▶ Test 1: Plugin.json Agent Definitions"
+echo "▶ Test 1: Agent Directory Discovery"
 echo "────────────────────────────────────────"
 
-if [ ! -f "$PLUGIN_JSON" ]; then
-    fail "plugin.json not found"
+if [ ! -d "$AGENTS_DIR" ]; then
+    fail "agents/ directory not found at $AGENTS_DIR"
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "  Results: $PASS_COUNT passed, $FAIL_COUNT failed"
@@ -52,98 +50,85 @@ if [ ! -f "$PLUGIN_JSON" ]; then
     exit 1
 fi
 
-agent_count=$(jq '.agents | length' "$PLUGIN_JSON" 2>/dev/null || echo "0")
+# Count .md files (excluding README)
+agent_files=($(find "$AGENTS_DIR" -maxdepth 1 -name "*.md" ! -name "README.md" 2>/dev/null))
+agent_count=${#agent_files[@]}
 
 if [ "$agent_count" -gt 0 ]; then
-    pass "Found $agent_count agents in plugin.json"
+    pass "Found $agent_count agents in agents/ directory"
 else
-    fail "No agents defined in plugin.json"
+    fail "No agent .md files found in agents/ directory"
 fi
+
+# Build list of agent IDs from filenames
+declare -a AGENT_IDS
+for agent_file in "${agent_files[@]}"; do
+    agent_id=$(basename "$agent_file" .md)
+    AGENT_IDS+=("$agent_id")
+done
 
 echo ""
 
 # ============================================================================
-# Test 2: Required Fields Validation
+# Test 2: YAML Frontmatter Validation
 # ============================================================================
-echo "▶ Test 2: Required Fields Validation"
+echo "▶ Test 2: YAML Frontmatter Validation"
 echo "────────────────────────────────────────"
 
-# Required fields for each agent
-required_fields=("id" "name" "capabilities" "model_preference")
+# Required frontmatter fields
+required_frontmatter=("name" "description" "tools")
 
-agents_with_missing_fields=0
+agents_with_missing_frontmatter=0
 
-while IFS= read -r agent_id; do
+for agent_id in "${AGENT_IDS[@]}"; do
+    md_file="$AGENTS_DIR/${agent_id}.md"
     missing_fields=()
 
-    for field in "${required_fields[@]}"; do
-        if ! jq -e --arg id "$agent_id" --arg field "$field" '
-            .agents[] | select(.id == $id) | .[$field]
-        ' "$PLUGIN_JSON" >/dev/null 2>&1; then
+    # Check file starts with frontmatter
+    if ! head -1 "$md_file" | grep -q "^---$"; then
+        fail "Agent '$agent_id' missing YAML frontmatter"
+        ((agents_with_missing_frontmatter++)) || true
+        continue
+    fi
+
+    for field in "${required_frontmatter[@]}"; do
+        if ! grep -q "^${field}:" "$md_file" 2>/dev/null; then
             missing_fields+=("$field")
         fi
     done
 
     if [ ${#missing_fields[@]} -gt 0 ]; then
-        fail "Agent '$agent_id' missing fields: ${missing_fields[*]}"
-        ((agents_with_missing_fields++)) || true
+        fail "Agent '$agent_id' missing frontmatter: ${missing_fields[*]}"
+        ((agents_with_missing_frontmatter++)) || true
     fi
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
+done
 
-if [ "$agents_with_missing_fields" -eq 0 ]; then
-    pass "All agents have required fields"
+if [ "$agents_with_missing_frontmatter" -eq 0 ]; then
+    pass "All agents have valid YAML frontmatter"
 fi
 
 echo ""
 
 # ============================================================================
-# Test 3: Model Preference Validation
+# Test 3: Directive Section Validation
 # ============================================================================
-echo "▶ Test 3: Model Preference Validation"
+echo "▶ Test 3: Directive Section Validation"
 echo "────────────────────────────────────────"
 
-valid_models=("opus" "sonnet" "haiku")
-invalid_model_agents=0
+agents_without_directive=0
 
-while IFS= read -r agent_id; do
-    # Get model preference (can be string or array)
-    model_pref=$(jq -r --arg id "$agent_id" '
-        .agents[] | select(.id == $id) | .model_preference
-    ' "$PLUGIN_JSON" 2>/dev/null)
+for agent_id in "${AGENT_IDS[@]}"; do
+    md_file="$AGENTS_DIR/${agent_id}.md"
 
-    if [ "$model_pref" = "null" ] || [ -z "$model_pref" ]; then
-        fail "Agent '$agent_id' has no model_preference"
-        ((invalid_model_agents++)) || true
-        continue
+    # Check for Directive section (## Directive)
+    if ! grep -qi "^## Directive\|^## Purpose\|^## Role" "$md_file" 2>/dev/null; then
+        fail "Agent '$agent_id' missing Directive/Purpose section"
+        ((agents_without_directive++)) || true
     fi
+done
 
-    # Handle both string and array formats
-    if [[ "$model_pref" == "["* ]]; then
-        # It's an array, extract first model
-        first_model=$(jq -r --arg id "$agent_id" '
-            .agents[] | select(.id == $id) | .model_preference[0]
-        ' "$PLUGIN_JSON" 2>/dev/null)
-    else
-        first_model="$model_pref"
-    fi
-
-    # Validate model is valid
-    model_valid=false
-    for valid in "${valid_models[@]}"; do
-        if [[ "$first_model" == *"$valid"* ]]; then
-            model_valid=true
-            break
-        fi
-    done
-
-    if ! $model_valid; then
-        fail "Agent '$agent_id' has invalid model: $first_model"
-        ((invalid_model_agents++)) || true
-    fi
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
-
-if [ "$invalid_model_agents" -eq 0 ]; then
-    pass "All agents have valid model preferences"
+if [ "$agents_without_directive" -eq 0 ]; then
+    pass "All agents have directive sections"
 fi
 
 echo ""
@@ -154,24 +139,31 @@ echo ""
 echo "▶ Test 4: Skills Reference Validation"
 echo "────────────────────────────────────────"
 
-# Get all valid skill IDs
-valid_skill_ids=$(jq -r '.skills[].id // empty' "$PLUGIN_JSON" 2>/dev/null | sort -u)
+# Get all valid skill IDs from skills directory
+valid_skill_ids=$(find "$SKILLS_DIR" -maxdepth 1 -type d ! -name "skills" -exec basename {} \; 2>/dev/null | sort -u)
 
 invalid_skill_refs=0
 
-while IFS= read -r agent_id; do
-    # Get skills_used for this agent
-    skills_used=$(jq -r --arg id "$agent_id" '
-        .agents[] | select(.id == $id) | .skills_used[]? // empty
-    ' "$PLUGIN_JSON" 2>/dev/null)
+for agent_id in "${AGENT_IDS[@]}"; do
+    md_file="$AGENTS_DIR/${agent_id}.md"
 
-    for skill in $skills_used; do
-        if ! echo "$valid_skill_ids" | grep -qx "$skill"; then
-            fail "Agent '$agent_id' references non-existent skill: $skill"
-            ((invalid_skill_refs++)) || true
-        fi
-    done
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
+    # Extract skills from frontmatter (skills: skill1, skill2, skill3)
+    skills_line=$(grep "^skills:" "$md_file" 2>/dev/null || echo "")
+
+    if [ -n "$skills_line" ]; then
+        # Parse comma-separated skills
+        skills_value="${skills_line#skills:}"
+        skills_value=$(echo "$skills_value" | tr ',' '\n' | tr -d ' ')
+
+        for skill in $skills_value; do
+            skill=$(echo "$skill" | tr -d '[:space:]')
+            if [ -n "$skill" ] && ! echo "$valid_skill_ids" | grep -qx "$skill"; then
+                fail "Agent '$agent_id' references non-existent skill: $skill"
+                ((invalid_skill_refs++)) || true
+            fi
+        done
+    fi
+done
 
 if [ "$invalid_skill_refs" -eq 0 ]; then
     pass "All agent skill references are valid"
@@ -180,60 +172,60 @@ fi
 echo ""
 
 # ============================================================================
-# Test 5: Agent Markdown Files
+# Test 5: Agent File Structure
 # ============================================================================
-echo "▶ Test 5: Agent Markdown Files"
+echo "▶ Test 5: Agent File Structure"
 echo "────────────────────────────────────────"
 
-missing_md_files=0
+empty_files=0
+small_files=0
 
-while IFS= read -r agent_id; do
-    # Check for corresponding .md file
+for agent_id in "${AGENT_IDS[@]}"; do
     md_file="$AGENTS_DIR/${agent_id}.md"
 
-    if [ ! -f "$md_file" ]; then
-        fail "Missing markdown file for agent: $agent_id"
-        ((missing_md_files++)) || true
+    if [ ! -s "$md_file" ]; then
+        fail "Agent '$agent_id' has empty .md file"
+        ((empty_files++)) || true
+        continue
     fi
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
 
-if [ "$missing_md_files" -eq 0 ]; then
-    pass "All agents have corresponding .md files"
+    # Check minimum content (at least 200 bytes for meaningful agent definition)
+    file_size=$(wc -c < "$md_file" | tr -d ' ')
+    if [ "$file_size" -lt 200 ]; then
+        fail "Agent '$agent_id' has insufficient content ($file_size bytes)"
+        ((small_files++)) || true
+    fi
+done
+
+if [ "$empty_files" -eq 0 ] && [ "$small_files" -eq 0 ]; then
+    pass "All agents have proper file structure"
 fi
 
 echo ""
 
 # ============================================================================
-# Test 6: Boundaries Validation
+# Test 6: Tools Declaration Validation
 # ============================================================================
-echo "▶ Test 6: Boundaries Validation"
+echo "▶ Test 6: Tools Declaration Validation"
 echo "────────────────────────────────────────"
 
-agents_without_boundaries=0
+valid_tools=("Read" "Write" "Edit" "MultiEdit" "Bash" "Glob" "Grep" "WebFetch" "WebSearch" "Task" "Skill" "NotebookEdit")
+agents_with_invalid_tools=0
 
-while IFS= read -r agent_id; do
-    # Check if boundaries field exists
-    has_boundaries=$(jq -r --arg id "$agent_id" '
-        .agents[] | select(.id == $id) | has("boundaries")
-    ' "$PLUGIN_JSON" 2>/dev/null)
+for agent_id in "${AGENT_IDS[@]}"; do
+    md_file="$AGENTS_DIR/${agent_id}.md"
 
-    if [ "$has_boundaries" != "true" ]; then
-        # Check the markdown file for boundaries section
-        md_file="$AGENTS_DIR/${agent_id}.md"
-        if [ -f "$md_file" ]; then
-            if ! grep -qi "boundaries\|limitations\|scope" "$md_file" 2>/dev/null; then
-                fail "Agent '$agent_id' has no boundaries defined"
-                ((agents_without_boundaries++)) || true
-            fi
-        else
-            fail "Agent '$agent_id' has no boundaries (no md file)"
-            ((agents_without_boundaries++)) || true
-        fi
+    # Extract tools from frontmatter
+    tools_line=$(grep "^tools:" "$md_file" 2>/dev/null || echo "")
+
+    if [ -z "$tools_line" ]; then
+        fail "Agent '$agent_id' has no tools declared"
+        ((agents_with_invalid_tools++)) || true
     fi
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
+done
 
-if [ "$agents_without_boundaries" -eq 0 ]; then
-    pass "All agents have boundaries defined"
+if [ "$agents_with_invalid_tools" -eq 0 ]; then
+    pass "All agents have tools declared"
 fi
 
 echo ""
@@ -248,35 +240,26 @@ simulate_spawn() {
     local agent_id="$1"
     local errors=0
 
-    # 1. Check agent exists
-    if ! jq -e --arg id "$agent_id" '.agents[] | select(.id == $id)' "$PLUGIN_JSON" >/dev/null 2>&1; then
-        fail "Cannot spawn '$agent_id': not found in plugin.json"
+    # 1. Check agent .md file exists
+    if [ ! -f "$AGENTS_DIR/${agent_id}.md" ]; then
+        fail "Cannot spawn '$agent_id': .md file not found"
         return 1
     fi
 
-    # 2. Check all skills_used exist and can be loaded
-    local skills_used
-    skills_used=$(jq -r --arg id "$agent_id" '
-        .agents[] | select(.id == $id) | .skills_used[]? // empty
-    ' "$PLUGIN_JSON" 2>/dev/null)
+    # 2. Check file has frontmatter
+    if ! head -1 "$AGENTS_DIR/${agent_id}.md" | grep -q "^---$"; then
+        fail "Cannot spawn '$agent_id': missing frontmatter"
+        return 1
+    fi
 
-    for skill in $skills_used; do
-        skill_dir="$SKILLS_DIR/$skill"
-        if [ ! -d "$skill_dir" ]; then
-            fail "Cannot spawn '$agent_id': skill '$skill' directory not found"
-            ((errors++)) || true
-            continue
-        fi
+    # 3. Check it has name and description
+    if ! grep -q "^name:" "$AGENTS_DIR/${agent_id}.md" 2>/dev/null; then
+        fail "Cannot spawn '$agent_id': missing name in frontmatter"
+        ((errors++)) || true
+    fi
 
-        if [ ! -f "$skill_dir/capabilities.json" ]; then
-            fail "Cannot spawn '$agent_id': skill '$skill' missing capabilities.json"
-            ((errors++)) || true
-        fi
-    done
-
-    # 3. Check markdown file exists
-    if [ ! -f "$AGENTS_DIR/${agent_id}.md" ]; then
-        fail "Cannot spawn '$agent_id': markdown file not found"
+    if ! grep -q "^description:" "$AGENTS_DIR/${agent_id}.md" 2>/dev/null; then
+        fail "Cannot spawn '$agent_id': missing description in frontmatter"
         ((errors++)) || true
     fi
 
@@ -292,7 +275,11 @@ simulate_spawn() {
 key_agents=("backend-system-architect" "frontend-ui-developer" "code-quality-reviewer" "security-auditor" "workflow-architect")
 
 for agent in "${key_agents[@]}"; do
-    simulate_spawn "$agent" || true
+    if [ -f "$AGENTS_DIR/${agent}.md" ]; then
+        simulate_spawn "$agent" || true
+    else
+        info "Key agent '$agent' not found (optional)"
+    fi
 done
 
 echo ""
@@ -303,22 +290,18 @@ echo ""
 echo "▶ Test 8: Agent Handoff Protocol"
 echo "────────────────────────────────────────"
 
-# Check that agents with handoff capabilities have proper configuration
-handoff_issues=0
-
-while IFS= read -r agent_id; do
+# Check that agents with hooks have proper configuration
+for agent_id in "${AGENT_IDS[@]}"; do
     md_file="$AGENTS_DIR/${agent_id}.md"
 
-    if [ -f "$md_file" ]; then
-        # Check if agent mentions handoff
-        if grep -qi "handoff\|delegate\|spawn" "$md_file" 2>/dev/null; then
-            # Verify it has clear handoff criteria
-            if ! grep -qi "when to\|criteria\|delegate when" "$md_file" 2>/dev/null; then
-                info "Agent '$agent_id' mentions handoff but may lack clear criteria"
-            fi
+    # Check if agent has hooks defined
+    if grep -q "^hooks:" "$md_file" 2>/dev/null; then
+        # Verify hooks section has at least one hook
+        if ! grep -q "command:" "$md_file" 2>/dev/null; then
+            info "Agent '$agent_id' has hooks section but no commands defined"
         fi
     fi
-done < <(jq -r '.agents[].id' "$PLUGIN_JSON" 2>/dev/null)
+done
 
 pass "Handoff protocol check complete"
 
