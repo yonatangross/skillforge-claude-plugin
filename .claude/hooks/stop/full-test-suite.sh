@@ -7,9 +7,9 @@
 
 set -euo pipefail
 
-# Source common utilities
+# Source common utilities (check file exists first to avoid set -e exit)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../common.sh" 2>/dev/null || true
+[[ -f "$SCRIPT_DIR/../common.sh" ]] && source "$SCRIPT_DIR/../common.sh" || true
 
 # Log file
 LOG_FILE="${CLAUDE_PROJECT_DIR:-$PWD}/.claude/hooks/logs/full-test-suite.log"

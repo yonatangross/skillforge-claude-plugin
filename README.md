@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  79 skills | 20 agents | 93 hooks | 4 tiers
+  90 skills | 20 agents | 96 hooks | 4 tiers
 </p>
 
 ---
@@ -37,7 +37,7 @@
 /plugin marketplace add yonatangross/skillforge-claude-plugin
 
 # Step 2: Install (default = complete with everything)
-/plugin install @skillforge                    # Everything (78 skills, 20 agents)
+/plugin install @skillforge                    # Everything (90 skills, 20 agents)
 
 # Or choose a lighter tier:
 /plugin install @skillforge/standard           # All skills, no agents
@@ -80,10 +80,10 @@ Config: `~/.claude/plugins/skillforge/config.json`
 
 | Tier | Skills | Agents | Commands | Hooks | Use Case |
 |------|--------|--------|----------|-------|----------|
-| **complete** | 78 | 20 | 12 | 90 | Full AI-assisted development (default) |
-| standard | 78 | 0 | 12 | 90 | All skills, spawn agents manually |
-| lite | 10 | 0 | 5 | 90 | Essential skills, minimal context |
-| hooks-only | 0 | 0 | 0 | 90 | Safety guardrails only |
+| **complete** | 78 | 20 | 12 | 96 | Full AI-assisted development (default) |
+| standard | 78 | 0 | 12 | 96 | All skills, spawn agents manually |
+| lite | 10 | 0 | 5 | 96 | Essential skills, minimal context |
+| hooks-only | 0 | 0 | 0 | 96 | Safety guardrails only |
 
 After installation, skills load automatically based on task context.
 
@@ -360,7 +360,7 @@ mcp__context7__query-docs(
 
 ### Hook Auditing
 
-All 90 hooks have been security-audited and follow these standards:
+All 96 hooks have been security-audited and follow these standards:
 
 - **Strict mode enabled**: `set -euo pipefail` in all bash hooks
 - **Input validation**: All hook inputs are validated via JSON schema
@@ -417,7 +417,7 @@ fi
 |   +-- product-strategist.md
 |   +-- llm-integrator.md
 |   +-- ...
-+-- hooks/                     # 90 lifecycle hooks
++-- hooks/                     # 96 lifecycle hooks
 |   +-- pretool/
 |   +-- posttool/
 |   +-- lifecycle/

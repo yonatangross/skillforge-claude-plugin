@@ -9,7 +9,7 @@ This document provides essential context for Claude Code when working with the S
 - **78 skills**: Reusable knowledge modules covering AI/LLM, backend, frontend, testing, security, and DevOps
 - **20 agents**: Specialized AI personas for product thinking, system architecture, code quality, and more
 - **12 commands**: Pre-configured workflows for common development tasks
-- **90 hooks**: Lifecycle automation for sessions, tools, permissions, and quality gates
+- **96 hooks**: Lifecycle automation for sessions, tools, permissions, and quality gates
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 
 **Purpose**: Enable AI-assisted development of production-grade applications with built-in best practices, security patterns, and quality gates.
@@ -26,7 +26,7 @@ This document provides essential context for Claude Code when working with the S
 ├── commands/            # 11 pre-configured development workflows
 ├── context/             # Session state, knowledge base, and shared context
 ├── coordination/        # Multi-worktree coordination system (locks, registries)
-├── hooks/               # 89 lifecycle hooks for automation
+├── hooks/               # 96 lifecycle hooks for automation
 │   ├── lifecycle/       # Session start/end hooks
 │   ├── permission/      # Auto-approval for safe operations
 │   ├── pretool/         # Pre-execution validation (bash, write, skill, MCP)
