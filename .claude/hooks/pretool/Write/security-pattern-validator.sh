@@ -30,22 +30,22 @@ esac
 SECURITY_ISSUES=()
 
 # Check for hardcoded secrets patterns
-if echo "$CONTENT" | grep -qiE "(api[_-]?key|password|secret|token)\s*[=:]\s*['"][^'"]+['"]"; then
+if echo "$CONTENT" | grep -qiE '(api[_-]?key|password|secret|token)\s*[=:]\s*['"'"'"][^'"'"'"]+['"'"'"]'; then
     SECURITY_ISSUES+=("Potential hardcoded secret detected")
 fi
 
 # Check for SQL injection patterns (raw string concatenation in queries)
-if echo "$CONTENT" | grep -qE "execute\s*\(\s*['"].*\+|f['"].*SELECT.*\{"; then
+if echo "$CONTENT" | grep -qE 'execute\s*\(\s*['"'"'"].*\+|f['"'"'"].*SELECT.*\{'; then
     SECURITY_ISSUES+=("Potential SQL injection vulnerability")
 fi
 
 # Check for eval/exec patterns
-if echo "$CONTENT" | grep -qE "eval\s*\(|exec\s*\("; then
+if echo "$CONTENT" | grep -qE 'eval\s*\(|exec\s*\('; then
     SECURITY_ISSUES+=("Dangerous eval/exec usage detected")
 fi
 
 # Check for subprocess without shell=False
-if echo "$CONTENT" | grep -qE "subprocess\.(run|call|Popen).*shell\s*=\s*True"; then
+if echo "$CONTENT" | grep -qE 'subprocess\.(run|call|Popen).*shell\s*=\s*True'; then
     SECURITY_ISSUES+=("Subprocess with shell=True detected")
 fi
 
@@ -66,7 +66,7 @@ if [[ ${#SECURITY_ISSUES[@]} -gt 0 ]]; then
     done
 
     # Output with warning in systemMessage
-    jq -n --arg msg "$WARNING_MSG" '{continue: true, suppressOutput: false, systemMessage: ("⚠️ " + $msg)}'
+    jq -n --arg msg "$WARNING_MSG" '{continue: true, suppressOutput: false, systemMessage: $msg}'
     exit 0
 else
     echo "[$(date -Iseconds)] SECURITY_OK: $FILE_PATH" >> "$LOG_DIR/security-validator.log"
