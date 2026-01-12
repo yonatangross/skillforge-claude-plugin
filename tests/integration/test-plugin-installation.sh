@@ -127,7 +127,7 @@ echo ""
 # =============================================================================
 echo "--- Test 4: Skill discovery ---"
 
-SKILL_COUNT=$(find "$PLUGIN_ROOT/skills" -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+SKILL_COUNT=$(find -L "$PLUGIN_ROOT/skills" -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 if [[ "$SKILL_COUNT" -gt 0 ]]; then
   pass "Found $SKILL_COUNT skills with SKILL.md"
 else
@@ -159,7 +159,7 @@ while IFS= read -r hook; do
     ((NON_EXEC_COUNT++))
     warn "Hook not executable: $(basename "$hook")"
   fi
-done < <(find "$PLUGIN_ROOT/hooks" -name "*.sh" -type f 2>/dev/null)
+done < <(find -L "$PLUGIN_ROOT/hooks" -name "*.sh" -type f 2>/dev/null)
 
 if [[ "$NON_EXEC_COUNT" -eq 0 ]]; then
   pass "All $HOOK_COUNT hooks are executable"
