@@ -45,10 +45,10 @@ run_hook "Todo" "$SCRIPT_DIR/todo-enforcer.sh"
 # Output: silent on success, show warnings if any
 if [[ ${#WARNINGS[@]} -gt 0 ]]; then
   WARN_MSG=$(IFS="; "; echo "${WARNINGS[*]}")
-  echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true}"
+  echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true, \"suppressOutput\": false}"
 else
   # Silent success - no systemMessage
-  echo "{\"continue\": true}"
+  echo "{\"continue\": true, \"suppressOutput\": true}"
 fi
 
 exit 0

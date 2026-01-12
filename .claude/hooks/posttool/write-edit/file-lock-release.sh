@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Source coordination lib with fallback
 source "${SCRIPT_DIR}/../../../coordination/lib/coordination.sh" 2>/dev/null || {
     trap - EXIT
-    echo '{"continue": true}'
+    echo '{"continue": true, "suppressOutput": true}'
     exit 0
 }
 
@@ -27,7 +27,7 @@ fi
 TOOL_INPUT="${TOOL_INPUT:-}"
 if [[ -z "${TOOL_INPUT}" ]]; then
   trap - EXIT
-  echo '{"continue": true}'
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
@@ -41,14 +41,14 @@ fi
 
 if [[ -z "${FILE_PATH}" ]]; then
   trap - EXIT
-  echo '{"continue": true}'
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
 # Skip if file is in coordination directory
 if [[ "${FILE_PATH}" =~ /.claude/coordination/ ]]; then
   trap - EXIT
-  echo '{"continue": true}'
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
@@ -57,7 +57,7 @@ TOOL_ERROR="${TOOL_ERROR:-}"
 if [[ -n "${TOOL_ERROR}" ]]; then
   # Keep lock on error, will auto-expire in 5 minutes
   trap - EXIT
-  echo '{"continue": true}'
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
@@ -66,5 +66,5 @@ coord_release_lock "${FILE_PATH}" 2>/dev/null || true
 
 # Success - output JSON and clear trap
 trap - EXIT
-echo '{"continue": true}'
+echo '{"continue": true, "suppressOutput": true}'
 exit 0

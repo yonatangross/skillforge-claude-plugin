@@ -14,7 +14,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../coordination/lib/coordination.sh" 2>/dev/null || {
     # Coordination lib not available, exit cleanly with JSON
     trap - EXIT
-    echo '{"continue": true}'
+    echo '{"continue": true, "suppressOutput": true}'
     exit 0
 }
 
@@ -29,5 +29,5 @@ coord_heartbeat 2>/dev/null || true
 
 # Success - output JSON and clear trap
 trap - EXIT
-echo '{"continue": true}'
+echo '{"continue": true, "suppressOutput": true}'
 exit 0
