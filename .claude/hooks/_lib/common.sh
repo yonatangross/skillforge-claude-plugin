@@ -322,7 +322,7 @@ exit_if_disabled() {
 
   if ! is_hook_enabled_by_config "$hook_name"; then
     # Output continue: true so Claude Code proceeds without this hook
-    echo '{"continue": true}'
+    echo '{"continue": true, "suppressOutput": true}'
     exit 0
   fi
 }
