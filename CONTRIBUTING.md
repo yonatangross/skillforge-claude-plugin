@@ -1,6 +1,6 @@
 # Contributing to SkillForge Plugin
 
-Welcome to the SkillForge plugin for Claude Code! We're excited that you're interested in contributing. This plugin extends Claude Code with specialized skills, commands, and agents for AI-native development workflows.
+Welcome to the SkillForge plugin for Claude Code! We're excited that you're interested in contributing. This plugin extends Claude Code with specialized skills, agents, and hooks for AI-native development workflows.
 
 ## How to Contribute
 
@@ -9,8 +9,8 @@ Welcome to the SkillForge plugin for Claude Code! We're excited that you're inte
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/SkillForge.git
-   cd SkillForge
+   git clone https://github.com/YOUR_USERNAME/skillforge-claude-plugin.git
+   cd skillforge-claude-plugin
    ```
 3. **Create a feature branch**:
    ```bash
@@ -25,27 +25,64 @@ Welcome to the SkillForge plugin for Claude Code! We're excited that you're inte
 ### Branch Naming Convention
 
 - `feature/` - New features or enhancements
-- `issue/` - Bug fixes or issue resolutions
+- `fix/` - Bug fixes
 - `docs/` - Documentation updates
+
+## Project Structure
+
+```
+.claude/
+├── skills/           # 90 skills (78 knowledge + 12 commands)
+│   └── skill-name/
+│       ├── capabilities.json   # Tier 1: Discovery metadata
+│       ├── SKILL.md           # Tier 2: Patterns and best practices
+│       ├── references/        # Tier 3: Specific implementations
+│       └── templates/         # Tier 4: Code generation
+├── agents/           # 20 specialized AI personas
+├── hooks/            # 96 lifecycle hooks
+└── context/          # Session and knowledge management
+```
 
 ## Adding New Skills
 
-Skills are markdown files that provide specialized knowledge and workflows to Claude Code.
+Skills follow a 4-tier progressive loading structure.
 
-### Directory Structure
+### 1. Create Skill Directory
 
-```
-.claude-plugin/
-└── skills/
-    └── your-skill-name.md
+```bash
+mkdir -p .claude/skills/your-skill-name/references
 ```
 
-### Skill File Format
+### 2. Create capabilities.json (Tier 1 - Required)
 
-Each skill should follow this structure:
+```json
+{
+  "id": "your-skill-name",
+  "name": "Your Skill Name",
+  "version": "1.0.0",
+  "description": "Brief description for skill discovery",
+  "category": "backend",
+  "tags": ["keyword1", "keyword2", "keyword3"],
+  "triggers": {
+    "keywords": ["trigger1", "trigger2"],
+    "file_patterns": ["*.py", "*.ts"],
+    "context_signals": ["when user asks about X"]
+  },
+  "token_budget": {
+    "tier1_discovery": 100,
+    "tier2_overview": 500,
+    "tier3_specific": 300,
+    "tier4_templates": 200
+  }
+}
+```
+
+**Categories**: `ai`, `backend`, `frontend`, `testing`, `security`, `devops`, `workflow`
+
+### 3. Create SKILL.md (Tier 2 - Required)
 
 ```markdown
-# Skill Name
+# Your Skill Name
 
 Brief description of what this skill provides.
 
@@ -54,293 +91,187 @@ Brief description of what this skill provides.
 - Use case 1
 - Use case 2
 
-## Key Concepts
+## Key Patterns
 
-Detailed explanation of concepts, patterns, or workflows.
+### Pattern 1
+Explanation and code example.
 
-## Examples
-
-Code examples and usage patterns.
+### Pattern 2
+Explanation and code example.
 
 ## Best Practices
 
 - Practice 1
 - Practice 2
+
+## Anti-Patterns
+
+- What NOT to do
 ```
 
-### Updating capabilities.json
+### 4. Add References (Tier 3 - Optional)
 
-After adding a skill, register it in `.claude-plugin/capabilities.json`:
+Create specific implementation guides in `references/`:
+- `implementation-guide.md`
+- `advanced-patterns.md`
+
+### 5. Add Templates (Tier 4 - Optional)
+
+Create code templates in `templates/`:
+- `component-template.py`
+- `test-template.py`
+
+### 6. Register in plugin.json
+
+Add to the `skills` array in `plugin.json`:
 
 ```json
 {
-  "skills": {
-    "your-skill-name": {
-      "name": "your-skill-name",
-      "description": "Brief description for skill discovery",
-      "file": "skills/your-skill-name.md",
-      "category": "appropriate-category",
-      "triggers": ["keyword1", "keyword2"]
-    }
-  }
+  "path": ".claude/skills/your-skill-name",
+  "tags": ["keyword1", "keyword2"],
+  "description": "Brief description"
 }
 ```
 
-**Categories**: `ai-development`, `backend`, `frontend`, `devops`, `testing`, `security`, `observability`, `workflow`
-
-## Adding New Commands
-
-Commands are markdown files that define slash commands for Claude Code.
-
-### Directory Structure
-
-```
-.claude-plugin/
-└── commands/
-    └── your-command.md
-```
-
-### Command File Format
-
-```markdown
-# /your-command
-
-Brief description of what this command does.
-
-## Usage
-
-```
-/your-command [arguments]
-```
-
-## Arguments
-
-- `arg1` - Description of argument 1
-- `arg2` - (Optional) Description of argument 2
-
-## Workflow
-
-1. Step 1 of what the command does
-2. Step 2
-3. Step 3
-
-## Example
+### 7. Validate
 
 ```bash
-/your-command example-usage
-```
-```
-
-### Registering Commands
-
-Add to `.claude-plugin/capabilities.json`:
-
-```json
-{
-  "commands": {
-    "your-command": {
-      "name": "your-command",
-      "description": "What the command does",
-      "file": "commands/your-command.md"
-    }
-  }
-}
+./bin/validate-skill.sh .claude/skills/your-skill-name
+./tests/schemas/validate-all.sh
 ```
 
 ## Adding New Agents
 
-Agents are specialized AI personas with focused capabilities.
+Agents are specialized AI personas defined in markdown.
 
-### Directory Structure
+### Create Agent File
 
-```
-.claude-plugin/
-└── agents/
-    └── your-agent.md
-```
-
-### Agent File Format
+Create `.claude/agents/your-agent.md`:
 
 ```markdown
-# Agent: Your Agent Name
+# Your Agent Name
 
 ## Role
-
 Brief description of the agent's specialized role.
 
 ## Capabilities
-
 - Capability 1
 - Capability 2
-- Capability 3
+
+## Tools Available
+- Tool 1
+- Tool 2
 
 ## Workflow
-
 How the agent approaches tasks.
 
-## Collaboration
+## Success Criteria
+What constitutes successful completion.
 
-How this agent works with other agents or the main Claude instance.
-
-## Constraints
-
-Any limitations or boundaries for this agent.
+## Model Preference
+haiku | sonnet | opus
 ```
 
-### Registering Agents
+### Register in plugin.json
 
-Add to `.claude-plugin/capabilities.json`:
+Add to the `agents` array in `plugin.json`.
 
-```json
-{
-  "agents": {
-    "your-agent": {
-      "name": "your-agent",
-      "description": "Agent's specialized purpose",
-      "file": "agents/your-agent.md"
-    }
-  }
-}
-```
+## Adding New Hooks
 
-## Code Style for Hooks
+Hooks provide lifecycle automation for Claude Code.
 
-All shell hooks must follow these conventions for security and reliability.
+### Hook Requirements
 
-### Required Header
+1. **Shebang and strict mode**:
+   ```bash
+   #!/usr/bin/env bash
+   set -euo pipefail
+   ```
 
-Every hook script must start with:
+2. **CC 2.1.4+ JSON output** (for pretool hooks):
+   ```bash
+   echo '{"continue": true, "suppressOutput": true}'
+   exit 0
+   ```
+
+3. **Source common utilities** (if needed):
+   ```bash
+   source "$(dirname "$0")/../_lib/common.sh"
+   ```
+
+### Hook Categories
+
+| Directory | Purpose |
+|-----------|---------|
+| `pretool/` | Validate before tool execution |
+| `posttool/` | Act after tool execution |
+| `permission/` | Auto-approve safe operations |
+| `lifecycle/` | Session start/end |
+| `stop/` | Conversation end handlers |
+
+### Register Hook
+
+Add to `.claude/settings.json` under appropriate matcher.
+
+### Test Hook
 
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
+# Syntax check
+bash -n .claude/hooks/your-hook.sh
 
-# Source common utilities
-source "$(dirname "$0")/common.sh"
-```
-
-### Flags Explained
-
-- `set -e` - Exit immediately on error
-- `set -u` - Error on undefined variables
-- `set -o pipefail` - Catch errors in pipelines
-
-### Example Hook
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-source "$(dirname "$0")/common.sh"
-
-# Your hook logic here
-log_info "Starting hook execution"
-
-# Use functions from common.sh
-validate_input "$1"
+# Full test suite
+./tests/unit/test-shell-syntax.sh
 ```
 
 ## Security Guidelines
 
-Security is critical for Claude Code plugins. Follow these rules strictly:
+### Required Practices
+
+- Always use `set -euo pipefail`
+- Quote all variables: `"${var}"`
+- Validate file paths before operations
+- Use `jq --arg` for JSON variable interpolation
 
 ### Prohibited Patterns
 
-1. **No `eval`** - Never use `eval` or similar dynamic execution
-   ```bash
-   # BAD - Never do this
-   eval "$user_input"
+- **No `eval`** - Never use dynamic execution
+- **No network calls** in hooks
+- **No secrets** in skill files
+- **No `--no-verify`** on git commands
 
-   # GOOD - Use explicit commands
-   case "$user_input" in
-     "option1") do_thing_1 ;;
-     "option2") do_thing_2 ;;
-   esac
-   ```
+## Testing
 
-2. **No network calls in hooks** - Hooks must not make HTTP requests
-   ```bash
-   # BAD - No network calls
-   curl "$some_url"
-   wget "$some_url"
-
-   # GOOD - Work with local files only
-   cat "$local_file"
-   ```
-
-3. **Escape user input** - Always sanitize and quote user input
-   ```bash
-   # BAD - Unquoted variable
-   echo $user_input
-
-   # GOOD - Quoted variable
-   echo "${user_input}"
-
-   # GOOD - Using printf for safety
-   printf '%s\n' "${user_input}"
-   ```
-
-### Additional Security Requirements
-
-- Never store secrets or credentials in skill files
-- Validate all file paths before operations
-- Use `readonly` for constants
-- Prefer explicit allowlists over denylists
-
-## Testing Guidelines
-
-### Testing Skills
-
-1. Test skill discovery by searching for relevant keywords
-2. Verify the skill content is accurate and up-to-date
-3. Test all code examples in the skill documentation
-
-### Testing Commands
-
-1. Test command execution with various arguments
-2. Test error handling with invalid inputs
-3. Verify output formatting
-
-### Testing Agents
-
-1. Test agent invocation through the Task tool
-2. Verify agent stays within its defined scope
-3. Test collaboration with other agents
-
-### Testing Hooks
+### Run All Tests
 
 ```bash
-# Run hook tests
-cd .claude-plugin/hooks
-./test_hooks.sh
+./tests/run-all-tests.sh
+```
 
-# Test individual hook
-bash -x your-hook.sh test-argument
+### Individual Test Suites
+
+```bash
+# Shell syntax
+./tests/unit/test-shell-syntax.sh
+
+# Schema validation
+./tests/schemas/validate-all.sh
+
+# Security tests
+./tests/security/run-security-tests.sh
+
+# Component counts
+./bin/validate-counts.sh
 ```
 
 ### Before Submitting
 
-- [ ] All new skills/commands/agents are registered in `capabilities.json`
-- [ ] Documentation is clear and complete
-- [ ] Code examples are tested and working
-- [ ] Hook scripts use `set -euo pipefail`
-- [ ] No security violations (eval, network calls, unescaped input)
-- [ ] Changelog updated with your changes
-
-## Code of Conduct
-
-This project adheres to a Code of Conduct that all contributors are expected to follow. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
-
-In summary:
-
-- Be respectful and inclusive
-- Welcome newcomers and help them learn
-- Focus on constructive feedback
-- Maintain a harassment-free environment
+- [ ] New skills have `capabilities.json` and `SKILL.md`
+- [ ] All tests pass locally
+- [ ] Hook scripts output valid JSON
+- [ ] No security violations
+- [ ] CHANGELOG.md updated
 
 ## Questions?
-
-If you have questions about contributing:
 
 1. Check existing issues and discussions
 2. Open a new discussion for general questions
