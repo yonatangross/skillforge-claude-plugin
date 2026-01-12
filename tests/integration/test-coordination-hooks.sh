@@ -222,10 +222,10 @@ test_hooks_without_coordination() {
 
     # Test each hook
     local hooks=(
-        ".claude/hooks/lifecycle/coordination-init.sh"
-        ".claude/hooks/lifecycle/coordination-cleanup.sh"
-        ".claude/hooks/posttool/coordination-heartbeat.sh"
-        ".claude/hooks/pretool/write-edit/file-lock-check.sh"
+        "hooks/lifecycle/coordination-init.sh"
+        "hooks/lifecycle/coordination-cleanup.sh"
+        "hooks/posttool/coordination-heartbeat.sh"
+        "hooks/pretool/write-edit/file-lock-check.sh"
     )
 
     for hook in "${hooks[@]}"; do

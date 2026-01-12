@@ -198,13 +198,13 @@ main() {
 
     # Hooks that were fixed (P0 + P1)
     local FIXED_HOOKS=(
-        ".claude/hooks/posttool/coordination-heartbeat.sh"
-        ".claude/hooks/posttool/write-edit/file-lock-release.sh"
-        ".claude/hooks/lifecycle/instance-heartbeat.sh"
-        ".claude/hooks/stop/cleanup-instance.sh"
-        ".claude/hooks/lifecycle/coordination-init.sh"
-        ".claude/hooks/lifecycle/coordination-cleanup.sh"
-        ".claude/hooks/pretool/write-edit/file-lock-check.sh"
+        "hooks/posttool/coordination-heartbeat.sh"
+        "hooks/posttool/write-edit/file-lock-release.sh"
+        "hooks/lifecycle/instance-heartbeat.sh"
+        "hooks/stop/cleanup-instance.sh"
+        "hooks/lifecycle/coordination-init.sh"
+        "hooks/lifecycle/coordination-cleanup.sh"
+        "hooks/pretool/write-edit/file-lock-check.sh"
     )
 
     log_section "Test 1: EXIT Trap Presence"

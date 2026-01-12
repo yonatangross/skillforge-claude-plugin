@@ -445,12 +445,12 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 
 ```bash
 # Create a new skill
-mkdir .claude/skills/my-skill
-touch .claude/skills/my-skill/{capabilities.json,SKILL.md}
+mkdir skills/my-skill
+touch skills/my-skill/{capabilities.json,SKILL.md}
 
 # Validate capabilities.json schema
 npx ajv validate -s .claude/schemas/skill-capabilities.schema.json \
-                 -d .claude/skills/my-skill/capabilities.json
+                 -d skills/my-skill/capabilities.json
 ```
 
 ---

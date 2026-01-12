@@ -113,14 +113,14 @@ ls ~/.claude/plugins/skillforge/skills
 ### Hook Management
 ```bash
 # View hook logs
-tail -f .claude/hooks/logs/pretool-bash.log
-tail -f .claude/hooks/logs/posttool.log
+tail -f hooks/logs/pretool-bash.log
+tail -f hooks/logs/posttool.log
 
 # Test specific hook
-.claude/hooks/pretool/bash/git-branch-protection.sh
+hooks/pretool/bash/git-branch-protection.sh
 
 # Clear hook logs
-rm -rf .claude/hooks/logs/*.log
+rm -rf hooks/logs/*.log
 ```
 
 ### Coordination System
@@ -138,7 +138,7 @@ rm -rf .claude/hooks/logs/*.log
 ### Skill Development
 ```bash
 # Validate new skill structure
-./bin/validate-skill.sh .claude/skills/my-new-skill
+./bin/validate-skill.sh skills/my-new-skill
 
 # Test progressive loading
 ./bin/test-progressive-load.sh my-skill-id
@@ -204,16 +204,16 @@ Tier 1 (Discovery) → Tier 2 (Overview) → Tier 3 (Specific) → Tier 4 (Gener
 **Example**:
 ```bash
 # Step 1: Read capabilities.json to check if skill is relevant
-Read .claude/skills/api-design-framework/capabilities.json
+Read skills/api-design-framework/capabilities.json
 
 # Step 2: If relevant, read SKILL.md for patterns
-Read .claude/skills/api-design-framework/SKILL.md
+Read skills/api-design-framework/SKILL.md
 
 # Step 3: If implementing specific pattern, read reference
-Read .claude/skills/api-design-framework/references/rest-pagination.md
+Read skills/api-design-framework/references/rest-pagination.md
 
 # Step 4: If generating code, use template
-Read .claude/skills/api-design-framework/templates/endpoint-template.py
+Read skills/api-design-framework/templates/endpoint-template.py
 ```
 
 ### 2. Hook Dispatcher Pattern
@@ -246,7 +246,7 @@ release_lock "decision-log"
 ### 4. Agent Handoff Pattern
 When delegating to specialized agents:
 ```markdown
-1. Read `.claude/agents/{agent-id}.md` for capabilities
+1. Read `agents/{agent-id}.md` for capabilities
 2. Check `plugin.json` for agent skills_used
 3. Load required skills BEFORE spawning agent
 4. Use Task tool with proper context
@@ -292,7 +292,7 @@ Subagent completion triggers quality gates:
 - Schema validation passes
 - No TODO/FIXME in critical paths
 
-Configure in `.claude/hooks/subagent-stop/subagent-quality-gate.sh`
+Configure in `hooks/subagent-stop/subagent-quality-gate.sh`
 
 ---
 
@@ -345,17 +345,17 @@ Configure in `.claude/hooks/subagent-stop/subagent-quality-gate.sh`
 ./bin/generate-skill.sh --name "My Skill" --category backend
 
 # Step 2: Create progressive loading files
-mkdir -p .claude/skills/my-skill/references
-touch .claude/skills/my-skill/capabilities.json  # Tier 1
-touch .claude/skills/my-skill/SKILL.md          # Tier 2
-touch .claude/skills/my-skill/references/impl.md # Tier 3
+mkdir -p skills/my-skill/references
+touch skills/my-skill/capabilities.json  # Tier 1
+touch skills/my-skill/SKILL.md          # Tier 2
+touch skills/my-skill/references/impl.md # Tier 3
 
 # Step 3: Update plugin.json
 # Add to "skills" array with path, tags, description
 
 # Step 4: Validate
 ./tests/schemas/validate-all.sh
-./bin/validate-skill.sh .claude/skills/my-skill
+./bin/validate-skill.sh skills/my-skill
 
 # Step 5: Test discovery
 ./bin/test-progressive-load.sh my-skill
@@ -364,7 +364,7 @@ touch .claude/skills/my-skill/references/impl.md # Tier 3
 ### 2. Creating a New Agent
 ```bash
 # Step 1: Create agent markdown
-cat > .claude/agents/my-agent.md <<EOF
+cat > agents/my-agent.md <<EOF
 # My Agent
 [Agent definition following template]
 EOF
@@ -382,12 +382,12 @@ EOF
 ### 3. Implementing a Security Hook
 ```bash
 # Step 1: Create hook file
-cat > .claude/hooks/pretool/bash/my-security-hook.sh <<EOF
+cat > hooks/pretool/bash/my-security-hook.sh <<EOF
 #!/usr/bin/env bash
 # Security hook implementation
 exit 0  # 0=approve, 1=reject
 EOF
-chmod +x .claude/hooks/pretool/bash/my-security-hook.sh
+chmod +x hooks/pretool/bash/my-security-hook.sh
 
 # Step 2: Add to bash-dispatcher.sh
 # Source and call hook in dispatcher
@@ -424,7 +424,7 @@ cat > tests/security/test-my-hook.sh
 $CLAUDE_PROJECT_DIR/.claude/
 
 # Hook logs
-.claude/hooks/logs/
+hooks/logs/
 
 # Coordination state
 .claude/coordination/work-registry.json
@@ -455,16 +455,16 @@ CLAUDE_AGENT_ID=<agent-id-if-subagent>
 ./tests/schemas/validate-all.sh
 
 # View recent hook activity
-tail -20 .claude/hooks/logs/pretool-bash.log
+tail -20 hooks/logs/pretool-bash.log
 
 # Check coordination locks
 cat .claude/coordination/work-registry.json | jq '.locks'
 
 # List available skills
-ls .claude/skills/
+ls skills/
 
 # List available agents
-ls .claude/agents/
+ls agents/
 ```
 
 ---
@@ -493,7 +493,7 @@ ls .claude/agents/
 export CLAUDE_HOOK_DEBUG=1
 
 # Check hook execution
-tail -f .claude/hooks/logs/*.log
+tail -f hooks/logs/*.log
 
 # Validate coordination state
 .claude/coordination/lib/coordination.sh status

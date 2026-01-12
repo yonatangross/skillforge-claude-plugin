@@ -3,12 +3,12 @@
 # Tests file locking functionality for multi-instance coordination
 #
 # Hooks tested:
-# 1. .claude/hooks/pretool/write-edit/file-lock-check.sh
-# 2. .claude/hooks/pretool/write-edit/multi-instance-lock.sh
-# 3. .claude/hooks/pretool/Write/file-lock-check.sh
-# 4. .claude/hooks/pretool/Edit/file-lock-check.sh
-# 5. .claude/hooks/posttool/write-edit/file-lock-release.sh
-# 6. .claude/hooks/posttool/Write/release-lock-on-commit.sh
+# 1. hooks/pretool/write-edit/file-lock-check.sh
+# 2. hooks/pretool/write-edit/multi-instance-lock.sh
+# 3. hooks/pretool/Write/file-lock-check.sh
+# 4. hooks/pretool/Edit/file-lock-check.sh
+# 5. hooks/posttool/write-edit/file-lock-release.sh
+# 6. hooks/posttool/Write/release-lock-on-commit.sh
 #
 # Usage: ./test-file-lock-hooks.sh [--verbose]
 # Exit codes: 0 = all pass, 1 = failures found
