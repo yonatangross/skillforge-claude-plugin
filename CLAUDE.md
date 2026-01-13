@@ -586,7 +586,7 @@ ls agents/
 
 ## Version Information
 
-- **Current Version**: 4.10.0 (as of 2026-01-13)
+- **Current Version**: 4.11.0 (as of 2026-01-13)
 - **Claude Code Requirement**: >= 2.1.6
 - **Skills Structure**: CC 2.1.6 nested (.claude/skills/ pattern)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
@@ -629,4 +629,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-13 (v4.10.0 - CC 2.1.6 Native Agent Skills)
+**Last Updated**: 2026-01-13 (v4.11.0 - CC 2.1.6 Native Agent Skills)

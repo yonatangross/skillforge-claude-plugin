@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin"><img src="https://img.shields.io/github/stars/yonatangross/skillforge-claude-plugin?style=flat-square" alt="GitHub Stars"></a>
-  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.9.0-green?style=flat-square" alt="Version"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.11.0-green?style=flat-square" alt="Version"></a>
   <img src="https://img.shields.io/badge/CC-≥2.1.6-blue?style=flat-square" alt="Claude Code 2.1.6+">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml"><img src="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
@@ -19,19 +19,22 @@
 </p>
 
 <p align="center">
-  92 skills | 10 categories | 20 agents | 95 hooks | 4 tiers
+  92 skills | 10 categories | 20 agents | 93 hooks (23 registered) | 4 tiers
 </p>
 
 ---
 
 > **Transform Claude Code into a full-stack AI development powerhouse.** From RAG pipelines to React 19 patterns, from database schemas to security audits - everything you need to build production-grade applications with AI assistance.
 
-## What's New in v4.9.0 (CC 2.1.6 Integration)
+## What's New in v4.11.0 (Hook Consolidation)
 
-- **Nested Skills Structure**: 92 skills organized into 10 category-based directories using CC 2.1.6's `.claude/skills/` auto-discovery pattern
-- **Context Window HUD**: Real-time context usage monitoring with statusline integration
-- **Enhanced Security**: Line continuation bypass fix and improved bash validation
-- **Category Portability**: Copy any skill category to your project and CC auto-discovers it
+- **Hook Consolidation**: Reduced from 44 to 23 registered hooks using dispatcher pattern (48% reduction)
+- **MCP Updates**: Added mem0 (cloud semantic memory) alongside Anthropic memory
+- **Fixed Paths**: All hook references now correctly point to existing files
+- **New Dispatchers**: agent-dispatcher, skill-dispatcher, session-end-dispatcher
+- **Cleaned Dead Code**: Removed 9 unused hook files
+
+### Previous (v4.10.0 - CC 2.1.6 Integration)
 
 ```
 skills/
@@ -42,7 +45,7 @@ skills/
 ├── testing/.claude/skills/      # 9 skills: Unit, integration, E2E, mocking
 ├── security/.claude/skills/     # 5 skills: OWASP, auth, validation
 ├── devops/.claude/skills/       # 4 skills: CI/CD, observability
-├── workflows/.claude/skills/    # 12 skills: Git, PR, implementation
+├── workflows/.claude/skills/    # 13 skills: Git, PR, implementation
 ├── quality/.claude/skills/      # 8 skills: Quality gates, reviews
 └── context/.claude/skills/      # 6 skills: Compression, brainstorming
 ```
@@ -100,10 +103,10 @@ Config stored in: `~/.claude/plugins/skillforge/config.json`
 
 | Tier | Skills | Agents | Commands | Hooks | Use Case |
 |------|--------|--------|----------|-------|----------|
-| **complete** | 91 | 20 | 12 | 96 | Full AI-assisted development (default) |
-| standard | 91 | 0 | 12 | 96 | All skills, spawn agents manually |
-| lite | 10 | 0 | 5 | 96 | Essential skills, minimal context |
-| hooks-only | 0 | 0 | 0 | 96 | Safety guardrails only |
+| **complete** | 91 | 20 | 12 | 93 | Full AI-assisted development (default) |
+| standard | 91 | 0 | 12 | 93 | All skills, spawn agents manually |
+| lite | 10 | 0 | 5 | 93 | Essential skills, minimal context |
+| hooks-only | 0 | 0 | 0 | 93 | Safety guardrails only |
 
 After installation, skills load automatically based on task context.
 
@@ -211,7 +214,7 @@ After installation, skills load automatically based on task context.
 | `github-cli` | GitHub CLI workflows, PR automation, issue management |
 | `run-tests` | Test execution and reporting |
 
-### Workflows (`workflows/` - 12 skills)
+### Workflows (`workflows/` - 13 skills)
 
 | Skill | Description |
 |-------|-------------|
@@ -378,7 +381,8 @@ SkillForge commands work **without MCPs**, but these optional integrations enhan
 |------------|----------|---------|
 | `context7` | /implement, /verify, /review-pr | Up-to-date library documentation |
 | `sequential-thinking` | /brainstorm, /implement | Structured reasoning for complex problems |
-| `memory` | /brainstorm, /explore, /fix-issue | Cross-session knowledge persistence |
+| `mem0` | Session continuity, decisions | Cloud semantic memory (AI-powered recall) |
+| `memory` | Quick notes, preferences | Local file-based key-value storage |
 | `playwright` | /verify, browser-content-capture | Browser automation for E2E testing |
 
 ### Installing MCPs
@@ -418,7 +422,7 @@ mcp__context7__query-docs(
 
 ### Hook Auditing
 
-All 95 hooks have been security-audited and follow these standards:
+All 93 hooks (23 registered via dispatcher pattern) have been security-audited and follow these standards:
 
 - **Strict mode enabled**: `set -euo pipefail` in all bash hooks
 - **Input validation**: All hook inputs are validated via JSON schema
@@ -444,7 +448,7 @@ All 95 hooks have been security-audited and follow these standards:
 .claude/
 +-- agents/                    # 20 specialized agents
 +-- commands/                  # 12 slash commands
-+-- hooks/                     # 96 lifecycle hooks
++-- hooks/                     # 93 hooks (23 registered)
 +-- schemas/                   # JSON schemas
 +-- scripts/                   # Utility scripts
 
