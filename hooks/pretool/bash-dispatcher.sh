@@ -73,7 +73,11 @@ fi
 
 # 1. Dangerous command check (patterns loaded from external file or inline)
 # Uses COMMAND_FOR_CHECK (normalized) to prevent bypass via line continuation
-source "$SCRIPT_DIR/bash/dangerous-patterns.sh" 2>/dev/null || {
+# Note: Use explicit if check instead of `source || fallback` for macOS Bash 3.2 compatibility
+# (Bash 3.2 with set -e exits on source failure before || can execute)
+if [[ -f "$SCRIPT_DIR/bash/dangerous-patterns.sh" ]]; then
+  source "$SCRIPT_DIR/bash/dangerous-patterns.sh"
+else
   # Fallback: define patterns inline if file doesn't exist
   DANGEROUS_PATTERNS=(
     "rm -rf /"
@@ -82,7 +86,7 @@ source "$SCRIPT_DIR/bash/dangerous-patterns.sh" 2>/dev/null || {
     "mkfs."
     "chmod -R 777 /"
   )
-}
+fi
 
 for pattern in "${DANGEROUS_PATTERNS[@]}"; do
   if [[ "$COMMAND_FOR_CHECK" == *"$pattern"* ]]; then

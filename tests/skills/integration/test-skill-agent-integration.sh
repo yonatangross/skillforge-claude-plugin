@@ -20,6 +20,12 @@ source "$PROJECT_ROOT/tests/fixtures/test-helpers.sh"
 # Configuration - use directories directly
 SKILLS_DIR="$PROJECT_ROOT/skills"
 AGENTS_DIR="$PROJECT_ROOT/agents"
+# CC 2.1.6: Find skill directory by name across all category subdirectories
+find_skill_dir() {
+    local skill_id="$1"
+    find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill_id" 2>/dev/null | head -1
+}
+
 
 # Token budget: Based on Tier 1 (capabilities.json ~100 tokens each)
 MAX_TIER1_TOKEN_BUDGET=20000
@@ -39,7 +45,8 @@ vlog() {
 
 # Get all skill IDs from directory structure
 get_all_skill_ids() {
-    find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; 2>/dev/null | sort -u
+    # CC 2.1.6: Skills are in nested structure skills/<category>/.claude/skills/<skill-name>
+    find "$SKILLS_DIR" -type d -path "*/.claude/skills/*" -prune -exec basename {} \; 2>/dev/null | sort -u
 }
 
 # Get all agent IDs from directory structure
@@ -59,7 +66,9 @@ get_agent_skills_from_md() {
 # Get integrates_with from capabilities.json
 get_skill_integrates_with() {
     local skill_id="$1"
-    local caps_file="$SKILLS_DIR/$skill_id/capabilities.json"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_id")
+    local caps_file="$skill_dir/capabilities.json"
     if [[ -f "$caps_file" ]]; then
         jq -r '.integrates_with[]?' "$caps_file" 2>/dev/null | sort -u
     fi
@@ -68,20 +77,25 @@ get_skill_integrates_with() {
 # Check if a skill exists
 skill_exists() {
     local skill_id="$1"
-    [[ -d "$SKILLS_DIR/$skill_id" ]]
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_id")
+    [[ -n "$skill_dir" && -d "$skill_dir" ]]
 }
 
 # Check if capabilities.json exists
 skill_has_capabilities() {
     local skill_id="$1"
-    [[ -f "$SKILLS_DIR/$skill_id/capabilities.json" ]]
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_id")
+    [[ -n "$skill_dir" && -f "$skill_dir/capabilities.json" ]]
 }
 
 # Estimate tokens for Tier 1 only
 estimate_tier1_tokens() {
     local skill_id="$1"
-    local skill_dir="$SKILLS_DIR/$skill_id"
-    if [[ -f "$skill_dir/capabilities.json" ]]; then
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_id")
+    if [[ -n "$skill_dir" && -f "$skill_dir/capabilities.json" ]]; then
         estimate_tokens "$skill_dir/capabilities.json"
     else
         echo 0
@@ -251,7 +265,7 @@ test_capabilities_validity() {
     local invalid_caps=""
 
     while IFS= read -r skill_id; do
-        local caps_file="$SKILLS_DIR/$skill_id/capabilities.json"
+        local caps_file="$(find_skill_dir "$skill_id")/capabilities.json"
         if [[ -f "$caps_file" ]]; then
             vlog "Validating capabilities.json for: $skill_id"
             if ! jq empty "$caps_file" 2>/dev/null; then

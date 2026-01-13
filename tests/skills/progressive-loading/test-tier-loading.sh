@@ -203,7 +203,7 @@ get_char_count() {
 # Get list of all skills
 get_all_skills() {
     local skills=()
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             skills+=("$(basename "$skill_dir")")
         fi
@@ -214,7 +214,8 @@ get_all_skills() {
 # Check if skill has all 4 tiers
 has_all_tiers() {
     local skill="$1"
-    local skill_dir="$SKILLS_DIR/$skill"
+    local skill_dir
+    skill_dir=$(find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill" 2>/dev/null | head -1)
 
     # Tier 1: capabilities.json
     [[ -f "$skill_dir/capabilities.json" ]] || return 1
@@ -251,7 +252,7 @@ test_tier1_existence() {
     local oversized=0
     local oversized_list=()
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -315,7 +316,7 @@ test_tier1_required_fields() {
     local valid=0
     local invalid=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -361,7 +362,7 @@ test_tier2_existence() {
     local undersized=0
     local oversized=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -415,7 +416,7 @@ test_tier2_structure() {
     local valid=0
     local invalid=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -456,7 +457,7 @@ test_tier3_files() {
     local total_refs=0
     local oversized_refs=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -529,7 +530,7 @@ test_tier4_files() {
     local total_templates=0
     local oversized_templates=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -602,7 +603,8 @@ test_loading_order() {
 
     # Test with deep test skills
     for skill in "${DEEP_TEST_SKILLS[@]}"; do
-        local skill_dir="$SKILLS_DIR/$skill"
+        local skill_dir
+    skill_dir=$(find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill" 2>/dev/null | head -1)
 
         if [[ ! -d "$skill_dir" ]]; then
             skip "Skill not found for loading order test: $skill"
@@ -674,7 +676,8 @@ test_sequential_loading() {
 
     # Simulate loading a skill progressively and tracking cumulative tokens
     for skill in "${DEEP_TEST_SKILLS[@]}"; do
-        local skill_dir="$SKILLS_DIR/$skill"
+        local skill_dir
+    skill_dir=$(find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill" 2>/dev/null | head -1)
 
         if [[ ! -d "$skill_dir" ]]; then
             continue
@@ -747,7 +750,7 @@ test_completeness_stats() {
     local tier3_only=0
     local complete_skills=()
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             local skill_name
             skill_name=$(basename "$skill_dir")
@@ -821,7 +824,7 @@ test_token_budget() {
     local total_t3=0 count_t3=0
     local total_t4=0 count_t4=0
 
-    for skill_dir in "$SKILLS_DIR"/*; do
+    for skill_dir in "$SKILLS_DIR"/*/.claude/skills/*; do
         if [[ -d "$skill_dir" ]]; then
             if [[ -f "$skill_dir/capabilities.json" ]]; then
                 local t1
@@ -904,7 +907,8 @@ test_deep_skill_validation() {
     section "Deep Skill Validation (--deep mode)"
 
     for skill in "${DEEP_TEST_SKILLS[@]}"; do
-        local skill_dir="$SKILLS_DIR/$skill"
+        local skill_dir
+    skill_dir=$(find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill" 2>/dev/null | head -1)
 
         if [[ ! -d "$skill_dir" ]]; then
             skip "Deep test skill not found: $skill"
