@@ -1,6 +1,6 @@
 {
-  "$comment": "Local development settings - hooks use relative paths that work when developing in this repo",
-  "$note": "For plugin distribution, hooks are defined in plugin.json with ${CLAUDE_PLUGIN_ROOT} paths",
+  "$comment": "Local development settings - hooks use relative paths. For distribution, see hooks/hooks.json",
+  "$note": "Consolidated to 20 hooks using dispatcher pattern (down from 44)",
   "hooks": {
     "PreToolUse": [
       {
@@ -69,18 +69,15 @@
     "SessionEnd": [
       {
         "hooks": [
-          {"type": "command", "command": "./hooks/lifecycle/coordination-cleanup.sh"},
-          {"type": "command", "command": "./hooks/lifecycle/session-cleanup.sh"}
+          {"type": "command", "command": "./hooks/lifecycle/session-end-dispatcher.sh"}
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {"type": "command", "command": "./hooks/stop/mem0-pre-compaction-sync.sh"},
           {"type": "command", "command": "./hooks/stop/stop-dispatcher.sh"},
-          {"type": "command", "command": "./hooks/stop/full-test-suite.sh", "timeout": 600},
-          {"type": "command", "command": "./hooks/stop/security-scan-aggregator.sh", "timeout": 600}
+          {"type": "command", "command": "./hooks/skill/skill-dispatcher.sh"}
         ]
       }
     ],
@@ -94,6 +91,7 @@
     "SubagentStop": [
       {
         "hooks": [
+          {"type": "command", "command": "./hooks/agent/agent-dispatcher.sh"},
           {"type": "command", "command": "./hooks/subagent-stop/subagent-completion-tracker.sh"},
           {"type": "command", "command": "./hooks/subagent-stop/subagent-quality-gate.sh"}
         ]

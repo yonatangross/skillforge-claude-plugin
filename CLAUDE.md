@@ -9,7 +9,7 @@ This document provides essential context for Claude Code when working with the S
 - **92 skills**: Reusable knowledge modules in 10 category-based directories (CC 2.1.6 nested structure)
 - **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
 - **12 commands**: Pre-configured workflows for common development tasks
-- **95 hooks**: Lifecycle automation for sessions, tools, permissions, and quality gates
+- **93 hooks (20 registered, using dispatcher pattern)**: Lifecycle automation for sessions, tools, permissions, and quality gates
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
