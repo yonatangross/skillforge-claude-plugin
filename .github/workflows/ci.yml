@@ -167,7 +167,7 @@ jobs:
       - name: Run CC 2.1.6 compliance tests
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
-          bash tests/compliance/test-cc-212-compliance.sh
+          bash tests/compliance/test-cc-216-compliance.sh
 
   # ============================================================================
   # STAGE 7: Coverage Report (NEW)
