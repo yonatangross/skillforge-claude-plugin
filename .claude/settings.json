@@ -87,7 +87,6 @@
     "SubagentStart": [
       {
         "hooks": [
-          {"type": "command", "command": "./hooks/subagent-start/subagent-resource-allocator.sh"},
           {"type": "command", "command": "./hooks/subagent-start/subagent-context-stager.sh"}
         ]
       }
