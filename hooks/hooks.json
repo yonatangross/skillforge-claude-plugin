@@ -1,5 +1,5 @@
 {
-  "description": "SkillForge Complete plugin hooks - 24 consolidated lifecycle hooks using dispatcher pattern for safety, auditing, auto-approval, and quality gates",
+  "description": "SkillForge Complete plugin hooks - 24 consolidated lifecycle hooks using dispatcher pattern",
   "hooks": {
     "PreToolUse": [
       {
@@ -111,6 +111,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/startup-dispatcher.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/mem0-context-retrieval.sh"
           }
         ]
       }

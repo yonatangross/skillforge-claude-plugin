@@ -4,7 +4,7 @@
   "engines": {
     "claude-code": ">=2.1.6"
   },
-  "description": "Comprehensive AI-assisted development toolkit with 92 skills, 20 agents, 23 consolidated hooks (dispatcher pattern), progressive loading, and production-ready patterns for modern full-stack development",
+  "description": "Comprehensive AI-assisted development toolkit with 92 skills, 20 agents, 24 consolidated hooks (dispatcher pattern), progressive loading, and production-ready patterns for modern full-stack development",
   "author": {
     "name": "Yonatan Gross",
     "email": "yonatan2gross@gmail.com",
@@ -142,6 +142,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/startup-dispatcher.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/mem0-context-retrieval.sh"
           }
         ]
       }
