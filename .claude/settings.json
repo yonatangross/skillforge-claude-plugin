@@ -264,6 +264,10 @@
           },
           {
             "type": "command",
+            "command": "./hooks/agent/multi-claude-verifier.sh"
+          },
+          {
+            "type": "command",
             "command": "./hooks/agent/context-publisher.sh"
           },
           {

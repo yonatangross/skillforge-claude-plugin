@@ -15,9 +15,13 @@ RED=$'\033[31m'
 YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
+# Coordination DB path
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
+
 TOOL_NAME=$(echo "$_HOOK_INPUT" | jq -r '.tool_name // "unknown"')
 TOOL_RESULT=$(echo "$_HOOK_INPUT" | jq -r '.tool_result // ""')
 FILE_PATH=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.file_path // ""')
+COMMAND=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.command // ""')
 
 WARNINGS=()
 
@@ -47,7 +51,9 @@ run_check() {
 
 # Run core checks (always)
 run_check "Audit" "$SCRIPT_DIR/audit-logger.sh"
+run_check "ErrorCollector" "$SCRIPT_DIR/error-collector.sh"
 run_check "Metrics" "$SCRIPT_DIR/session-metrics.sh"
+run_check "ContextBudget" "$SCRIPT_DIR/context-budget-monitor.sh"
 
 # Tool-specific checks
 case "$TOOL_NAME" in
@@ -63,10 +69,30 @@ case "$TOOL_NAME" in
     run_check "Cross-test" "$SKILL_DIR/cross-instance-test-validator.sh"
     run_check "Merge" "$SKILL_DIR/merge-conflict-predictor.sh"
     run_check "Migration" "$SKILL_DIR/migration-validator.sh"
+
+    # Coverage predictor for source files
+    case "$FILE_PATH" in
+      *.py|*.ts|*.tsx|*.js|*.jsx)
+        run_check "Coverage" "$SCRIPT_DIR/Write/coverage-predictor.sh"
+        ;;
+    esac
+
+    # Test runner for test files
+    case "$FILE_PATH" in
+      *test*.py|*test*.ts|*test*.tsx|*spec*.ts|*spec*.tsx|*_test.py|*_test.ts)
+        run_check "TestRunner" "$SKILL_DIR/test-runner.sh"
+        ;;
+    esac
     ;;
   Bash)
     run_check "Errors" "$SCRIPT_DIR/error-tracker.sh"
     run_check "Secrets" "$SKILL_DIR/redact-secrets.sh"
+
+    # Release locks on successful git commit
+    if [[ "$COMMAND" =~ git\ commit ]] && [[ "$TOOL_RESULT" != *"error"* ]] && [[ -f "$COORDINATION_DB" ]]; then
+      run_check "ReleaseLocks" "$SCRIPT_DIR/Write/release-lock-on-commit.sh"
+    fi
+
     # Check if command failed
     if [[ "$TOOL_RESULT" == *"error"* ]] || [[ "$TOOL_RESULT" == *"Error"* ]]; then
       WARNINGS+=("Command may have errors")

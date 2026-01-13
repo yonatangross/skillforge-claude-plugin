@@ -50,9 +50,21 @@ run_hook() {
 }
 
 # Run startup hooks in order
+
+# 1. Multi-instance init (first, if SQLite available)
+if command -v sqlite3 >/dev/null 2>&1; then
+  run_hook "MultiInstanceInit" "$SCRIPT_DIR/multi-instance-init.sh"
+fi
+
 run_hook "Coordination" "$SCRIPT_DIR/coordination-init.sh"
 run_hook "Context" "$SCRIPT_DIR/session-context-loader.sh"
 run_hook "Environment" "$SCRIPT_DIR/session-env-setup.sh"
+
+# 5. Instance heartbeat (only if coordination DB exists)
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
+if [[ -f "$COORDINATION_DB" ]]; then
+  run_hook "Heartbeat" "$SCRIPT_DIR/instance-heartbeat.sh"
+fi
 
 # Build output message based on agent type
 OUTPUT_MSG=""

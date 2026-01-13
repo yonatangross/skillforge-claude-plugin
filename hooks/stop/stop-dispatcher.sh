@@ -1,7 +1,7 @@
 #!/bin/bash
 # Stop Dispatcher - Runs all stop hooks and outputs combined status
 # CC 2.1.2 Compliant: silent on success, visible on failure
-# Consolidates: task-completion-check, auto-save-context
+# Consolidates: multi-instance cleanup, task-completion-check, auto-save-context, context-compressor
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,6 +10,9 @@ WARNINGS=()
 # ANSI colors
 YELLOW=$'\033[33m'
 RESET=$'\033[0m'
+
+# Coordination DB path
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
 
 # Helper to run a hook
 run_hook() {
@@ -35,8 +38,21 @@ run_hook() {
 }
 
 # Run stop hooks in order
+
+# 1. Multi-instance cleanup (first, releases locks before other cleanup)
+if [[ -f "$COORDINATION_DB" ]]; then
+  run_hook "MultiCleanup" "$SCRIPT_DIR/multi-instance-cleanup.sh"
+  run_hook "InstanceCleanup" "$SCRIPT_DIR/cleanup-instance.sh"
+fi
+
+# 2. Task completion check
 run_hook "Tasks" "$SCRIPT_DIR/task-completion-check.sh"
+
+# 3. Auto-save context
 run_hook "Context" "$SCRIPT_DIR/auto-save-context.sh"
+
+# 4. Context compressor (last)
+run_hook "Compressor" "$SCRIPT_DIR/context-compressor.sh"
 
 # Output: silent on success, show warnings if any
 if [[ ${#WARNINGS[@]} -gt 0 ]]; then

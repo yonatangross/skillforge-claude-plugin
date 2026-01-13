@@ -1,5 +1,5 @@
 #!/bin/bash
-# Write/Edit PreToolUse Dispatcher - Combines path, headers, guard, and lock checks
+# Write/Edit PreToolUse Dispatcher - Combines path, headers, guard, lock, and validation checks
 # CC 2.1.2 Compliant: silent on success, visible on failure
 set -euo pipefail
 
@@ -12,6 +12,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RED=$'\033[31m'
 YELLOW=$'\033[33m'
 RESET=$'\033[0m'
+
+# Coordination DB path
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
 
 FILE_PATH=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.file_path // ""')
 CONTENT=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.content // ""')
@@ -28,6 +31,34 @@ block() {
     '{systemMessage: $msg, continue: false, hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
   exit 0
 }
+
+# Helper to run a sub-hook (passes hook input via environment)
+run_hook() {
+  local name="$1"
+  local script="$2"
+
+  if [[ ! -f "$script" ]]; then
+    return 0
+  fi
+
+  local output
+  local exit_code
+  output=$(_HOOK_INPUT="$_HOOK_INPUT" bash "$script" 2>&1) && exit_code=0 || exit_code=$?
+
+  if [[ $exit_code -ne 0 ]]; then
+    WARNINGS+=("$name: failed")
+  elif [[ "$output" == *"warning"* ]] || [[ "$output" == *"Warning"* ]]; then
+    local warn_msg=$(echo "$output" | grep -i "warning" | head -1 | sed 's/.*warning[: ]*//')
+    [[ -n "$warn_msg" ]] && WARNINGS+=("$name: $warn_msg")
+  fi
+
+  return 0
+}
+
+# 0. Write headers for new files (first - modifies content)
+if [[ ! -f "$FILE_PATH" ]]; then
+  run_hook "Headers" "$SCRIPT_DIR/input-mod/write-headers.sh"
+fi
 
 # 1. Path normalization
 ORIGINAL_PATH="$FILE_PATH"
@@ -81,7 +112,19 @@ for p in "${PROTECTED_FILES[@]}"; do
   fi
 done
 
-# 3. Test file location check (skip for .claude/ skill/hook files)
+# 3. Architecture change detector (for significant files)
+case "$FILE_PATH" in
+  **/api/**|**/services/**|**/db/**|**/models/**|**/workflows/**)
+    run_hook "ArchDetect" "$SCRIPT_DIR/Write/architecture-change-detector.sh"
+    ;;
+esac
+
+# 4. Multi-instance lock (if coordination enabled)
+if [[ -f "$COORDINATION_DB" ]]; then
+  run_hook "MultiLock" "$SCRIPT_DIR/write-edit/multi-instance-lock.sh"
+fi
+
+# 5. Test file location check (skip for .claude/ skill/hook files)
 if [[ "$FILE_PATH" == *"test"* ]] || [[ "$FILE_PATH" == *"spec"* ]]; then
   # Skip check for .claude/ directory (skills, hooks, etc. may have "test" in name)
   if [[ "$FILE_PATH" != *"/.claude/"* ]]; then
@@ -91,6 +134,13 @@ if [[ "$FILE_PATH" == *"test"* ]] || [[ "$FILE_PATH" == *"spec"* ]]; then
     fi
   fi
 fi
+
+# 6. Security pattern validator (last, for code files)
+case "$FILE_PATH" in
+  *.py|*.ts|*.tsx|*.js|*.jsx)
+    run_hook "Security" "$SCRIPT_DIR/Write/security-pattern-validator.sh"
+    ;;
+esac
 
 # Output: silent on success, show warnings if any
 if [[ ${#WARNINGS[@]} -gt 0 ]]; then

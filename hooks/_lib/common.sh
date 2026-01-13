@@ -511,3 +511,106 @@ xargs_grep_word() {
 
 # Export safe grep functions
 export -f escape_grep_pattern grep_literal grep_escaped grep_word_literal xargs_grep_literal xargs_grep_word
+
+# -----------------------------------------------------------------------------
+# Multi-Instance Detection Helpers
+# -----------------------------------------------------------------------------
+
+# Path to the coordination database
+COORDINATION_DB_PATH="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
+
+# Get the coordination database path
+get_coordination_db() {
+  echo "$COORDINATION_DB_PATH"
+}
+
+# Check if multi-instance coordination is enabled and available
+is_multi_instance_enabled() {
+  if ! command -v sqlite3 >/dev/null 2>&1; then
+    return 1
+  fi
+  if [[ ! -f "$COORDINATION_DB_PATH" ]]; then
+    return 1
+  fi
+  return 0
+}
+
+# Get current instance ID
+get_instance_id() {
+  if [[ -n "${CLAUDE_SESSION_ID:-}" ]]; then
+    echo "$CLAUDE_SESSION_ID"
+  else
+    echo "instance-$$-$(date +%s)"
+  fi
+}
+
+# Initialize coordination database if it doesn't exist
+init_coordination_db() {
+  if ! command -v sqlite3 >/dev/null 2>&1; then
+    log_hook "WARN: sqlite3 not available"
+    return 1
+  fi
+  local db_dir
+  db_dir=$(dirname "$COORDINATION_DB_PATH")
+  mkdir -p "$db_dir" 2>/dev/null
+  sqlite3 "$COORDINATION_DB_PATH" 'CREATE TABLE IF NOT EXISTS instances (id TEXT PRIMARY KEY, started_at TEXT NOT NULL, last_heartbeat TEXT, status TEXT DEFAULT "active"); CREATE TABLE IF NOT EXISTS file_locks (file_path TEXT PRIMARY KEY, instance_id TEXT NOT NULL, acquired_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS decisions (id INTEGER PRIMARY KEY AUTOINCREMENT, instance_id TEXT NOT NULL, decision_type TEXT NOT NULL, decision_data TEXT, created_at TEXT NOT NULL);'
+  return 0
+}
+
+# Check if a file is locked by another instance
+is_file_locked_by_other() {
+  local file_path="$1"
+  local my_instance
+  my_instance=$(get_instance_id)
+  if ! is_multi_instance_enabled; then
+    return 1
+  fi
+  local lock_holder
+  lock_holder=$(sqlite3 "$COORDINATION_DB_PATH" "SELECT instance_id FROM file_locks WHERE file_path = '$file_path';" 2>/dev/null)
+  if [[ -z "$lock_holder" || "$lock_holder" == "$my_instance" ]]; then
+    return 1
+  fi
+  return 0
+}
+
+# Acquire a file lock
+acquire_file_lock() {
+  local file_path="$1"
+  local my_instance
+  my_instance=$(get_instance_id)
+  if ! is_multi_instance_enabled; then
+    return 0
+  fi
+  if is_file_locked_by_other "$file_path"; then
+    return 1
+  fi
+  sqlite3 "$COORDINATION_DB_PATH" "INSERT OR REPLACE INTO file_locks (file_path, instance_id, acquired_at) VALUES ('$file_path', '$my_instance', datetime('now'));" 2>/dev/null
+  return 0
+}
+
+# Release a file lock
+release_file_lock() {
+  local file_path="$1"
+  local my_instance
+  my_instance=$(get_instance_id)
+  if ! is_multi_instance_enabled; then
+    return 0
+  fi
+  sqlite3 "$COORDINATION_DB_PATH" "DELETE FROM file_locks WHERE file_path = '$file_path' AND instance_id = '$my_instance';" 2>/dev/null
+  return 0
+}
+
+# Release all locks held by current instance
+release_all_locks() {
+  local my_instance
+  my_instance=$(get_instance_id)
+  if ! is_multi_instance_enabled; then
+    return 0
+  fi
+  sqlite3 "$COORDINATION_DB_PATH" "DELETE FROM file_locks WHERE instance_id = '$my_instance';" 2>/dev/null
+  return 0
+}
+
+# Export multi-instance functions
+export -f get_coordination_db is_multi_instance_enabled get_instance_id init_coordination_db
+export -f is_file_locked_by_other acquire_file_lock release_file_lock release_all_locks

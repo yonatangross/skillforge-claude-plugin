@@ -13,6 +13,9 @@ RED=$'\033[31m'
 YELLOW=$'\033[33m'
 RESET=$'\033[0m'
 
+# Coordination DB path
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
+
 # Extract command for analysis
 COMMAND=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.command // ""')
 TIMEOUT=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.timeout // "null"')
@@ -30,17 +33,46 @@ block() {
   exit 0
 }
 
-# 1. Dangerous command check
-DANGEROUS_PATTERNS=(
-  "rm -rf /"
-  "rm -rf ~"
-  "rm -rf \$HOME"
-  "> /dev/sda"
-  "dd if=/dev/zero"
-  "mkfs\."
-  ":(){ :\|:& };:"
-  "chmod -R 777 /"
-)
+# Helper to run a sub-hook (passes hook input via environment)
+run_hook() {
+  local name="$1"
+  local script="$2"
+
+  if [[ ! -f "$script" ]]; then
+    return 0
+  fi
+
+  local output
+  local exit_code
+  output=$(_HOOK_INPUT="$_HOOK_INPUT" bash "$script" 2>&1) && exit_code=0 || exit_code=$?
+
+  if [[ $exit_code -ne 0 ]]; then
+    WARNINGS+=("$name: failed")
+  elif [[ "$output" == *"warning"* ]] || [[ "$output" == *"Warning"* ]] || [[ "$output" == *"REMINDER"* ]]; then
+    local warn_msg=$(echo "$output" | grep -iE "(warning|reminder)" | head -1 | sed 's/.*[wW]arning[: ]*//')
+    [[ -n "$warn_msg" ]] && WARNINGS+=("$name: $warn_msg")
+  fi
+
+  return 0
+}
+
+# 0. Error pattern warning (first - informational)
+RULES_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/rules/error_rules.json"
+if [[ -f "$RULES_FILE" ]]; then
+  run_hook "ErrorPatterns" "$SCRIPT_DIR/bash/error-pattern-warner.sh"
+fi
+
+# 1. Dangerous command check (patterns loaded from external file or inline)
+source "$SCRIPT_DIR/bash/dangerous-patterns.sh" 2>/dev/null || {
+  # Fallback: define patterns inline if file doesn't exist
+  DANGEROUS_PATTERNS=(
+    "rm -rf /"
+    "rm -rf ~"
+    "> /dev/sda"
+    "mkfs."
+    "chmod -R 777 /"
+  )
+}
 
 for pattern in "${DANGEROUS_PATTERNS[@]}"; do
   if [[ "$COMMAND" == *"$pattern"* ]]; then
@@ -60,7 +92,22 @@ if [[ "$COMMAND" =~ ^git\ push.*--force ]] || [[ "$COMMAND" =~ ^git\ push.*-f ]]
   done
 fi
 
-# 3. Add default timeout if not specified
+# 3. CI simulation reminder (only for git commit)
+if [[ "$COMMAND" =~ git\ commit ]]; then
+  run_hook "CIReminder" "$SCRIPT_DIR/bash/ci-simulation.sh"
+fi
+
+# 4. Issue docs requirement (for issue branches)
+if [[ "$COMMAND" =~ git\ checkout\ -b\ issue/ ]]; then
+  run_hook "IssueDocs" "$SCRIPT_DIR/bash/issue-docs-requirement.sh"
+fi
+
+# 5. Multi-instance quality gate (last, only for commits + multi-instance)
+if [[ "$COMMAND" =~ git\ commit ]] && [[ -f "$COORDINATION_DB" ]]; then
+  run_hook "QualityGate" "$SCRIPT_DIR/bash/multi-instance-quality-gate.sh"
+fi
+
+# 6. Add default timeout if not specified
 if [[ "$TIMEOUT" == "null" ]]; then
   TIMEOUT=120000
 fi
