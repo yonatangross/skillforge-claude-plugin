@@ -3,7 +3,7 @@ name: Webapp Testing
 description: Use when testing web applications with AI-assisted Playwright. Features autonomous test agents for planning, generating, and self-healing tests automatically.
 context: fork
 agent: test-generator
-version: 1.1.0
+version: 1.2.0
 author: SkillForge AI Agent Hub
 tags: [playwright, testing, e2e, automation, agents, 2026]
 hooks:
@@ -33,16 +33,28 @@ Autonomous end-to-end testing with Playwright's three specialized agents for pla
 2. **Generator** - Writes Playwright tests with best practices
 3. **Healer** - Fixes failing tests automatically
 
-## Quick Setup
+## Quick Setup (CC 2.1.6)
 
 ```bash
 # 1. Install Playwright
 npm install --save-dev @playwright/test
+npx playwright install
+```
 
-# 2. Add MCP server
-claude mcp add playwright npx '@playwright/mcp@latest'
+```json
+// 2. Create/update .mcp.json in project root
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    }
+  }
+}
+```
 
-# 3. Initialize agents
+```bash
+# 3. Initialize agents (after restarting Claude Code session)
 npx playwright init-agents --loop=claude
 
 # 4. Create tests/seed.spec.ts (required for Planner)
@@ -53,15 +65,15 @@ npx playwright init-agents --loop=claude
 ## Agent Workflow
 
 ```
-1. PLANNER   ──▶ Explores app ──▶ Creates specs/checkout.md
+1. PLANNER   --> Explores app --> Creates specs/checkout.md
                  (uses seed.spec.ts)
-                      │
-                      ▼
-2. GENERATOR ──▶ Reads spec ──▶ Tests live app ──▶ Outputs tests/checkout.spec.ts
+                      |
+                      v
+2. GENERATOR --> Reads spec --> Tests live app --> Outputs tests/checkout.spec.ts
                  (verifies selectors actually work)
-                      │
-                      ▼
-3. HEALER    ──▶ Runs tests ──▶ Fixes failures ──▶ Updates selectors/waits
+                      |
+                      v
+3. HEALER    --> Runs tests --> Fixes failures --> Updates selectors/waits
                  (self-healing)
 ```
 
@@ -69,10 +81,11 @@ npx playwright init-agents --loop=claude
 
 ```
 your-project/
-├── specs/              ← Planner outputs (Markdown plans)
-├── tests/              ← Generator outputs (Playwright tests)
-│   └── seed.spec.ts    ← Required: Planner learns from this
-└── playwright.config.ts
+├── specs/              <- Planner outputs (Markdown plans)
+├── tests/              <- Generator outputs (Playwright tests)
+│   └── seed.spec.ts    <- Required: Planner learns from this
+├── playwright.config.ts
+└── .mcp.json           <- MCP server config (CC 2.1.6)
 ```
 
 ## Key Concepts
@@ -87,6 +100,7 @@ your-project/
 **Healer auto-fixes** - When UI changes break tests, Healer replays, finds new selectors, patches tests.
 
 See `references/` for detailed agent patterns and commands.
+
 ## Capability Details
 
 ### playwright-setup
@@ -126,7 +140,7 @@ See `references/` for detailed agent patterns and commands.
 **Solves:**
 - How do the three Playwright agents work together?
 - Complete testing workflow with agents
-- Planner → Generator → Healer pipeline
+- Planner -> Generator -> Healer pipeline
 - Autonomous test creation and maintenance
 
 ### visual-regression

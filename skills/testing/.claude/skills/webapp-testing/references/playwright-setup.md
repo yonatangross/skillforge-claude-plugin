@@ -13,24 +13,24 @@ npm install --save-dev @playwright/test
 npx playwright install  # Install browsers (Chromium, Firefox, WebKit)
 ```
 
-## Step 2: Add Playwright MCP Server
+## Step 2: Add Playwright MCP Server (CC 2.1.6)
 
-```bash
-# Add Playwright MCP for Claude Code integration
-claude mcp add playwright npx '@playwright/mcp@latest'
-```
+Create or update `.mcp.json` in your project root:
 
-This creates/updates `.mcp.json`:
 ```json
 {
   "mcpServers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "args": ["-y", "@playwright/mcp@latest"]
     }
   }
 }
 ```
+
+Restart your Claude Code session to pick up the MCP configuration.
+
+> **Note:** The `claude mcp add` command is deprecated in CC 2.1.6. Configure MCPs directly via `.mcp.json`.
 
 ## Step 3: Initialize Test Agents
 
@@ -81,11 +81,11 @@ test('seed test - app is accessible', async ({ page }) => {
 
 ```
 your-project/
-├── specs/              ← Planner outputs test plans here (Markdown)
-├── tests/              ← Generator outputs test code here (.spec.ts)
-│   └── seed.spec.ts    ← Your initialization test (REQUIRED)
+├── specs/              <- Planner outputs test plans here (Markdown)
+├── tests/              <- Generator outputs test code here (.spec.ts)
+│   └── seed.spec.ts    <- Your initialization test (REQUIRED)
 ├── playwright.config.ts
-└── .mcp.json           ← MCP server config
+└── .mcp.json           <- MCP server config
 ```
 
 ## Basic Configuration
@@ -121,20 +121,22 @@ npx playwright test --debug         # Debug mode
 npx playwright test --headed        # See browser
 ```
 
-## Verification
+## MCP Tools Available
 
-```bash
-# Check MCP server is running
-claude mcp list
+Once configured, Playwright MCP provides these tools:
 
-# Verify agents initialized
-ls .playwright/agents  # Should see planner.md, generator.md, healer.md
-```
+| Tool | Description |
+|------|-------------|
+| `mcp__playwright__browser_navigate` | Navigate to URL |
+| `mcp__playwright__browser_click` | Click element |
+| `mcp__playwright__browser_fill` | Fill form input |
+| `mcp__playwright__browser_screenshot` | Capture screenshot |
+| `mcp__playwright__browser_evaluate` | Execute JavaScript |
 
 ## Next Steps
 
-1. **Planner**: "Generate test plan for checkout flow" → creates `specs/checkout.md`
-2. **Generator**: "Generate tests from checkout spec" → creates `tests/checkout.spec.ts`
+1. **Planner**: "Generate test plan for checkout flow" -> creates `specs/checkout.md`
+2. **Generator**: "Generate tests from checkout spec" -> creates `tests/checkout.spec.ts`
 3. **Healer**: Automatically fixes tests when selectors break
 
 See `references/planner-agent.md` for detailed workflow.
