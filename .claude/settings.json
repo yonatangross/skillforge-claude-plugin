@@ -1,107 +1,33 @@
 {
+  "$comment": "Local development settings - hooks use relative paths that work when developing in this repo",
+  "$note": "For plugin distribution, hooks are defined in plugin.json with ${CLAUDE_PLUGIN_ROOT} paths",
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/bash-dispatcher.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/pretool/bash/git-branch-protection.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Read|Glob|Grep",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/input-mod/path-normalizer.sh"
-          }
+          {"type": "command", "command": "./hooks/pretool/bash-dispatcher.sh"}
         ]
       },
       {
         "matcher": "Write|Edit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/write-dispatcher.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/backend-file-naming.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/structure-location-validator.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/test-location-validator.sh"
-          }
+          {"type": "command", "command": "./hooks/pretool/write-dispatcher.sh"}
         ]
       },
       {
         "matcher": "Task",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/task/context-gate.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/pretool/task/subagent-validator.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Skill",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/skill/skill-tracker.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__context7__*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/mcp/context7-tracker.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__memory__*|mcp__mem0__*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/mcp/memory-validator.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "mcp__playwright__*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/pretool/mcp/playwright-safety.sh"
-          }
+          {"type": "command", "command": "./hooks/pretool/task/context-gate.sh"},
+          {"type": "command", "command": "./hooks/pretool/task/subagent-validator.sh"}
         ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "*",
+        "matcher": ".*",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/posttool/dispatcher.sh"
-          }
+          {"type": "command", "command": "./hooks/posttool/dispatcher.sh"}
         ]
       }
     ],
@@ -109,209 +35,76 @@
       {
         "matcher": "Read|Glob|Grep",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/permission/auto-approve-readonly.sh"
-          }
+          {"type": "command", "command": "./hooks/permission/auto-approve-readonly.sh"}
         ]
       },
       {
         "matcher": "Bash",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/permission/auto-approve-safe-bash.sh"
-          }
+          {"type": "command", "command": "./hooks/permission/auto-approve-safe-bash.sh"}
         ]
       },
       {
         "matcher": "Write|Edit",
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/permission/auto-approve-project-writes.sh"
-          }
+          {"type": "command", "command": "./hooks/permission/auto-approve-project-writes.sh"}
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/prompt/prompt-dispatcher.sh"
-          }
+          {"type": "command", "command": "./hooks/prompt/prompt-dispatcher.sh"}
         ]
       }
     ],
     "SessionStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/lifecycle/startup-dispatcher.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/lifecycle/mem0-context-retrieval.sh"
-          }
+          {"type": "command", "command": "./hooks/lifecycle/startup-dispatcher.sh"},
+          {"type": "command", "command": "./hooks/lifecycle/mem0-context-retrieval.sh"}
         ]
       }
     ],
     "SessionEnd": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/lifecycle/coordination-cleanup.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/lifecycle/session-metrics-summary.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/lifecycle/session-cleanup.sh"
-          }
+          {"type": "command", "command": "./hooks/lifecycle/coordination-cleanup.sh"},
+          {"type": "command", "command": "./hooks/lifecycle/session-cleanup.sh"}
         ]
       }
     ],
     "Stop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/stop/mem0-pre-compaction-sync.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/stop/stop-dispatcher.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/coverage-check.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/design-decision-saver.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/evidence-collector.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/review-summary-generator.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/security-summary.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/eval-metrics-collector.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/mem0-decision-saver.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/stop/full-test-suite.sh",
-            "timeout": 600000
-          },
-          {
-            "type": "command",
-            "command": "./hooks/stop/security-scan-aggregator.sh",
-            "timeout": 600000
-          },
-          {
-            "type": "command",
-            "command": "./hooks/stop/llm-code-review.sh",
-            "timeout": 600000
-          }
+          {"type": "command", "command": "./hooks/stop/mem0-pre-compaction-sync.sh"},
+          {"type": "command", "command": "./hooks/stop/stop-dispatcher.sh"},
+          {"type": "command", "command": "./hooks/stop/full-test-suite.sh", "timeout": 600},
+          {"type": "command", "command": "./hooks/stop/security-scan-aggregator.sh", "timeout": 600}
         ]
       }
     ],
     "SubagentStart": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/subagent-start/model-enforcer.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/subagent-start/subagent-resource-allocator.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/subagent-start/subagent-context-stager.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/subagent-start/agent-context-loader.sh"
-          }
+          {"type": "command", "command": "./hooks/subagent-start/subagent-resource-allocator.sh"},
+          {"type": "command", "command": "./hooks/subagent-start/subagent-context-stager.sh"}
         ]
       }
     ],
     "SubagentStop": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/agent/output-validator.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/agent/multi-claude-verifier.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/agent/context-publisher.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/agent/handoff-preparer.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/agent/feedback-loop.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/agent/auto-spawn-quality.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/subagent-stop/subagent-completion-tracker.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/subagent-stop/subagent-quality-gate.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/coverage-threshold-gate.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/skill/merge-readiness-checker.sh"
-          }
+          {"type": "command", "command": "./hooks/subagent-stop/subagent-completion-tracker.sh"},
+          {"type": "command", "command": "./hooks/subagent-stop/subagent-quality-gate.sh"}
         ]
       }
     ],
     "Notification": [
       {
         "hooks": [
-          {
-            "type": "command",
-            "command": "./hooks/notification/desktop.sh"
-          },
-          {
-            "type": "command",
-            "command": "./hooks/notification/sound.sh"
-          }
+          {"type": "command", "command": "./hooks/notification/desktop.sh"},
+          {"type": "command", "command": "./hooks/notification/sound.sh"}
         ]
       }
     ]

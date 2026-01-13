@@ -1,10 +1,11 @@
 #!/bin/bash
 # Stop Dispatcher - Runs all stop hooks and outputs combined status
-# CC 2.1.2 Compliant: silent on success, visible on failure
-# Consolidates: multi-instance cleanup, task-completion-check, auto-save-context, context-compressor
+# CC 2.1.4 Compliant: silent on success, visible on failure
+# Consolidates: multi-instance cleanup, task-completion, auto-save, context-compressor, skill hooks
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILL_DIR="$SCRIPT_DIR/../skill"
 WARNINGS=()
 
 # ANSI colors
@@ -51,7 +52,13 @@ run_hook "Tasks" "$SCRIPT_DIR/task-completion-check.sh"
 # 3. Auto-save context
 run_hook "Context" "$SCRIPT_DIR/auto-save-context.sh"
 
-# 4. Context compressor (last)
+# 4. Skill hooks (consolidated from direct registrations)
+run_hook "Coverage" "$SKILL_DIR/coverage-check.sh"
+run_hook "Decisions" "$SKILL_DIR/design-decision-saver.sh"
+run_hook "Evidence" "$SKILL_DIR/evidence-collector.sh"
+run_hook "Mem0Decisions" "$SKILL_DIR/mem0-decision-saver.sh"
+
+# 5. Context compressor (last)
 run_hook "Compressor" "$SCRIPT_DIR/context-compressor.sh"
 
 # Output: silent on success, show warnings if any
@@ -60,7 +67,7 @@ if [[ ${#WARNINGS[@]} -gt 0 ]]; then
   echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARN_MSG}${RESET}\", \"continue\": true}"
 else
   # Silent success - no systemMessage
-  echo "{\"continue\": true}"
+  echo "{\"continue\": true, \"suppressOutput\": true}"
 fi
 
 exit 0

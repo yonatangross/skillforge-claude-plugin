@@ -64,24 +64,23 @@ read_hook_input() {
 # ONLY pass STATIC filter strings - never pass user-controlled input!
 #
 # Safe:   get_field '.tool_input.file_path'
-# Safe:   get_field '.session_id'
+# Safe:   get_field '.tool_output // .output // ""'
 # UNSAFE: get_field "$USER_INPUT"  # NEVER DO THIS - jq filter injection risk
 #
 get_field() {
   local filter="$1"
-  # SEC-006 fix: Validate filter contains only safe jq characters
-  # Allow: . a-z A-Z 0-9 _ (covers 99% of legitimate jq filters)
-  # Note: This is intentionally restrictive. If brackets are needed,
-  # use a different approach or extend the pattern carefully.
+  # SEC-006 fix: Block shell-dangerous characters only
+  # Allow jq operators: // | [] {} () spaces - these are safe for jq
+  # Block: backticks, $(), semicolons - these could cause shell injection
   case "$filter" in
-    *[!.a-zA-Z0-9_]*)
-      log_hook "ERROR: Invalid jq filter pattern rejected: $filter"
+    *'\`'*|*'$('*|*';'*)
+      log_hook "ERROR: Potentially unsafe jq filter rejected: $filter"
       echo ""
       return 1
       ;;
   esac
   local input=$(read_hook_input)
-  echo "$input" | jq -r "$filter // \"\"" 2>/dev/null
+  echo "$input" | jq -r "$filter" 2>/dev/null || echo ""
 }
 
 # Get tool name
