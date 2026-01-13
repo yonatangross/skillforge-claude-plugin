@@ -2,7 +2,7 @@
 # ============================================================================
 # Pretool Hooks Comprehensive Tests
 # ============================================================================
-# Tests all pretool hook categories for CC 2.1.2 compliance
+# Tests all pretool hook categories for CC 2.1.6 compliance
 # ============================================================================
 
 set -euo pipefail
@@ -10,7 +10,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-HOOKS_DIR="$PROJECT_ROOT/.claude/hooks"
+HOOKS_DIR="$PROJECT_ROOT/hooks"
 PRETOOL_INPUT='{"tool_name":"Bash","tool_input":{"command":"echo test"}}'
 
 # ============================================================================

@@ -1,0 +1,55 @@
+{
+  "$schema": "../schemas/hook-config.schema.json",
+  "version": "1.0.0",
+  "description": "Optional hook group configuration for SkillForge",
+  "groups": {
+    "multi_instance": {
+      "enabled": false,
+      "description": "Enable multi-instance coordination features for parallel Claude sessions",
+      "hooks": [
+        "multi-instance-init.sh",
+        "instance-heartbeat.sh",
+        "multi-instance-cleanup.sh",
+        "cleanup-instance.sh",
+        "multi-instance-lock.sh",
+        "multi-instance-quality-gate.sh",
+        "release-lock-on-commit.sh",
+        "multi-claude-verifier.sh"
+      ]
+    },
+    "context_management": {
+      "enabled": true,
+      "description": "Context budget monitoring and compression",
+      "hooks": [
+        "context-budget-monitor.sh",
+        "context-compressor.sh"
+      ]
+    },
+    "ci_helpers": {
+      "enabled": true,
+      "description": "CI simulation and error pattern warnings",
+      "hooks": [
+        "ci-simulation.sh",
+        "error-pattern-warner.sh",
+        "issue-docs-requirement.sh"
+      ]
+    },
+    "code_quality": {
+      "enabled": true,
+      "description": "Architecture and security validators",
+      "hooks": [
+        "architecture-change-detector.sh",
+        "security-pattern-validator.sh",
+        "coverage-predictor.sh",
+        "write-headers.sh"
+      ]
+    },
+    "auto_test_runner": {
+      "enabled": false,
+      "description": "Automatically run tests after writing test files",
+      "hooks": [
+        "test-runner.sh"
+      ]
+    }
+  }
+}

@@ -50,7 +50,7 @@ Skills follow a 4-tier progressive loading structure.
 ### 1. Create Skill Directory
 
 ```bash
-mkdir -p .claude/skills/your-skill-name/references
+mkdir -p skills/your-skill-name/references
 ```
 
 ### 2. Create capabilities.json (Tier 1 - Required)
@@ -127,7 +127,7 @@ Add to the `skills` array in `plugin.json`:
 
 ```json
 {
-  "path": ".claude/skills/your-skill-name",
+  "path": "skills/your-skill-name",
   "tags": ["keyword1", "keyword2"],
   "description": "Brief description"
 }
@@ -136,7 +136,7 @@ Add to the `skills` array in `plugin.json`:
 ### 7. Validate
 
 ```bash
-./bin/validate-skill.sh .claude/skills/your-skill-name
+./bin/validate-skill.sh skills/your-skill-name
 ./tests/schemas/validate-all.sh
 ```
 
@@ -146,7 +146,7 @@ Agents are specialized AI personas defined in markdown.
 
 ### Create Agent File
 
-Create `.claude/agents/your-agent.md`:
+Create `agents/your-agent.md`:
 
 ```markdown
 # Your Agent Name
@@ -188,7 +188,7 @@ Hooks provide lifecycle automation for Claude Code.
    set -euo pipefail
    ```
 
-2. **CC 2.1.4+ JSON output** (for pretool hooks):
+2. **CC 2.1.6 JSON output** (for pretool hooks):
    ```bash
    echo '{"continue": true, "suppressOutput": true}'
    exit 0
@@ -217,7 +217,7 @@ Add to `.claude/settings.json` under appropriate matcher.
 
 ```bash
 # Syntax check
-bash -n .claude/hooks/your-hook.sh
+bash -n hooks/your-hook.sh
 
 # Full test suite
 ./tests/unit/test-shell-syntax.sh

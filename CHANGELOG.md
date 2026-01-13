@@ -6,6 +6,66 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+
+## [4.11.0] - 2026-01-13
+
+### Changed
+
+**Hook Consolidation**
+- Reduced from 44 to 24 registered hooks using dispatcher pattern (48% reduction)
+- Created 3 new dispatchers: agent-dispatcher.sh, skill-dispatcher.sh, session-end-dispatcher.sh
+- Fixed all 44 broken hook paths in hooks.json
+- Synced plugin.json and hooks.json (both now have 24 registered hooks)
+
+**MCP Updates**
+- Added mem0 (cloud semantic memory) alongside Anthropic memory MCP
+- Both can be enabled simultaneously for different use cases
+- Updated MCP documentation in configure skill references
+
+### Removed
+- 9 unused hook files:
+  - `pretool/mcp/*.sh` (3 files - MCP tracking not implemented)
+  - `pretool/input-mod/bash-defaults.sh` (duplicate of bash-dispatcher)
+  - `pretool/input-mod/path-normalizer.sh` (unused)
+  - `lifecycle/context-loader.sh` (replaced by session-context-loader.sh)
+  - `stop/llm-code-review.sh` (unused)
+  - `pretool/Write/file-lock-check.sh` (duplicate)
+  - `pretool/Edit/file-lock-check.sh` (duplicate)
+
+---
+
+## [4.8.0] - 2026-01-12
+
+### Changed
+
+**Plugin Architecture Standardization**
+- Moved `skills/`, `agents/`, `hooks/` from `.claude/` to root level (official Anthropic standard)
+- Removed root-level symlinks - directories are now actual content, not symlinks
+- Updated all hook paths in `settings.json` from `/.claude/hooks/` to `/hooks/`
+- SkillForge extensions (`context/`, `coordination/`, `settings.json`) remain in `.claude/`
+
+**Path Updates**
+- Updated 5 bin/ scripts to use root-level paths
+- Updated all test files with new path structure
+- Updated documentation (CLAUDE.md, README.md, CONTRIBUTING.md)
+
+### New Structure
+
+```
+skillforge-claude-plugin/
+├── skills/                  # 90 skills (moved from .claude/skills/)
+├── agents/                  # 20 agents (moved from .claude/agents/)
+├── hooks/                   # 96 hooks (moved from .claude/hooks/)
+├── .claude/
+│   ├── settings.json        # Hook configuration
+│   ├── context/             # Context Protocol 2.0
+│   └── coordination/        # Multi-worktree system
+└── ...
+```
+
+---
+
+
 ## [4.7.4] - 2026-01-12
 ### Fixed
 

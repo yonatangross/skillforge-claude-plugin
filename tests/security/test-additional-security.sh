@@ -435,7 +435,7 @@ test_shellcheck_compliance() {
 
   if [[ $failures -gt 0 ]]; then
     echo "INFO: $failures hooks have ShellCheck errors (severity: error)"
-    echo "Run: shellcheck -S error .claude/hooks/**/*.sh"
+    echo "Run: shellcheck -S error hooks/**/*.sh"
   fi
 
   return 0

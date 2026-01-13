@@ -12,7 +12,13 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-SKILLS_DIR="$PROJECT_ROOT/.claude/skills"
+SKILLS_DIR="$PROJECT_ROOT/skills"
+# CC 2.1.6: Find skill directory by name across all category subdirectories
+find_skill_dir() {
+    local skill_name="$1"
+    find "$SKILLS_DIR" -type d -path "*/.claude/skills/$skill_name" 2>/dev/null | head -1
+}
+
 
 # Source test helpers
 source "$PROJECT_ROOT/tests/fixtures/test-helpers.sh"
@@ -28,7 +34,9 @@ VERBOSE="${1:-}"
 # Check if skill uses slim array format (capabilities as string array)
 is_slim_format() {
     local skill_name="$1"
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
     
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -43,7 +51,9 @@ is_slim_format() {
 match_high_confidence() {
     local query="$1"
     local skill_name="$2"
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
 
     if [[ ! -f "$caps_file" ]]; then
         echo "Capabilities file not found: $caps_file" >&2
@@ -81,7 +91,9 @@ match_high_confidence() {
 match_medium_confidence() {
     local query="$1"
     local skill_name="$2"
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -113,8 +125,10 @@ match_medium_confidence() {
 match_keywords() {
     local query="$1"
     local skill_name="$2"
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
-    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
+    local skill_md="$skill_dir/SKILL.md"
     local min_matches="${3:-2}"  # Minimum keyword matches required
 
     if [[ ! -f "$caps_file" ]]; then
@@ -165,8 +179,10 @@ match_keywords() {
 match_solves() {
     local query="$1"
     local skill_name="$2"
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
-    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
+    local skill_md="$skill_dir/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -224,8 +240,10 @@ match_solves() {
 check_category_keywords() {
     local skill_name="$1"
     shift
-    local caps_file="$SKILLS_DIR/$skill_name/capabilities.json"
-    local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
+    local skill_dir
+    skill_dir=$(find_skill_dir "$skill_name")
+    local caps_file="$skill_dir/capabilities.json"
+    local skill_md="$skill_dir/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -1115,7 +1133,7 @@ test_all_skills_have_capabilities_json() {
     local missing=0
     local skill_dirs
 
-    skill_dirs=$(find "$SKILLS_DIR" -maxdepth 1 -mindepth 1 -type d | sort)
+    skill_dirs=$(find "$SKILLS_DIR" -type d -path "*/.claude/skills/*" -prune | sort)
 
     while IFS= read -r skill_dir; do
         local skill_name
@@ -1195,7 +1213,7 @@ test_capabilities_keywords_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
-        local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
+        local skill_md="$skill_dir/SKILL.md"
 
         local keyword_count=0
         
@@ -1232,7 +1250,7 @@ test_capabilities_solves_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
-        local skill_md="$SKILLS_DIR/$skill_name/SKILL.md"
+        local skill_md="$skill_dir/SKILL.md"
 
         local solves_count=0
         
@@ -1485,7 +1503,7 @@ echo "  Skill Semantic Matching Discovery Tests"
 echo "=========================================="
 echo ""
 echo "Skills Directory: $SKILLS_DIR"
-echo "Total Skills: $(find "$SKILLS_DIR" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ')"
+echo "Total Skills: $(find "$SKILLS_DIR" -type d -path "*/.claude/skills/*" -prune | wc -l | tr -d ' ')"
 echo ""
 
 run_tests

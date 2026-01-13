@@ -2,7 +2,7 @@
 # ============================================================================
 # Pretool Task Hooks Unit Tests
 # ============================================================================
-# Tests Task-related pretool hooks for CC 2.1.2 compliance
+# Tests Task-related pretool hooks for CC 2.1.6 compliance
 # ============================================================================
 
 set -euo pipefail
@@ -10,7 +10,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-HOOKS_DIR="$PROJECT_ROOT/.claude/hooks/pretool/task"
+HOOKS_DIR="$PROJECT_ROOT/hooks/pretool/task"
 
 # ============================================================================
 # CONTEXT GATE

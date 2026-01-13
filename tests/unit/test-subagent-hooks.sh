@@ -13,7 +13,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-HOOKS_DIR="$PROJECT_ROOT/.claude/hooks"
+HOOKS_DIR="$PROJECT_ROOT/hooks"
 
 # ============================================================================
 # SUBAGENT-START HOOKS
@@ -33,7 +33,7 @@ test_agent_context_loader_outputs_valid_json() {
 
     if [[ -n "$output" ]]; then
         assert_valid_json "$output"
-        # Should have continue field for CC 2.1.2
+        # Should have continue field for CC 2.1.6
         if echo "$output" | jq -e 'has("continue")' >/dev/null 2>&1; then
             return 0
         fi

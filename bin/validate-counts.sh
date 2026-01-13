@@ -22,9 +22,9 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # =============================================================================
 # ACTUAL COUNTS (filesystem = source of truth)
 # =============================================================================
-ACTUAL_SKILLS=$(find "$PROJECT_ROOT/.claude/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' ')
-ACTUAL_AGENTS=$(find "$PROJECT_ROOT/.claude/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-ACTUAL_HOOKS=$(find "$PROJECT_ROOT/.claude/hooks" -name "*.sh" -type f ! -path "*/_lib/*" 2>/dev/null | wc -l | tr -d ' ')
+ACTUAL_SKILLS=$(find "$PROJECT_ROOT/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' ')
+ACTUAL_AGENTS=$(find "$PROJECT_ROOT/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+ACTUAL_HOOKS=$(find "$PROJECT_ROOT/hooks" -name "*.sh" -type f ! -path "*/_lib/*" 2>/dev/null | wc -l | tr -d ' ')
 
 # =============================================================================
 # DECLARED COUNTS (from plugin.json description string)
@@ -45,7 +45,7 @@ DECLARED_SKILLS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ skills' | grep -oE '[0-
 # Agents: "N agents"
 DECLARED_AGENTS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ agents' | grep -oE '[0-9]+' || echo "0")
 # Hooks: "N hooks"
-DECLARED_HOOKS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ hooks' | grep -oE '[0-9]+' || echo "0")
+DECLARED_HOOKS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+[^0-9]*hooks' | grep -oE '[0-9]+' || echo "0")
 
 # =============================================================================
 # VALIDATION

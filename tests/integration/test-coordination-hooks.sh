@@ -2,7 +2,7 @@
 # Integration tests for coordination hooks
 # Tests that hooks work correctly with the coordination system
 #
-# CC 2.1.2 Requirement: All hooks must output valid JSON
+# CC 2.1.6 Requirement: All hooks must output valid JSON
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
@@ -48,7 +48,7 @@ test_coordination_init() {
     export SESSION_ID="test-session-$$"
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/lifecycle/coordination-init.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/lifecycle/coordination-init.sh" 2>/dev/null) || output=""
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
@@ -91,7 +91,7 @@ test_coordination_cleanup() {
     echo "CLAUDE_INSTANCE_ID=test-$$" > "${PROJECT_ROOT}/.claude/.instance_env"
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/lifecycle/coordination-cleanup.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/lifecycle/coordination-cleanup.sh" 2>/dev/null) || output=""
 
     # Cleanup
     rm -f "${PROJECT_ROOT}/.claude/.instance_env" 2>/dev/null || true
@@ -126,7 +126,7 @@ test_file_lock_check() {
     export TOOL_INPUT='{"file_path": "/tmp/test-lock-file.txt", "content": "test"}'
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
@@ -159,7 +159,7 @@ test_file_lock_release() {
     export TOOL_ERROR=""
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/posttool/write-edit/file-lock-release.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/posttool/write-edit/file-lock-release.sh" 2>/dev/null) || output=""
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
@@ -190,7 +190,7 @@ test_coordination_heartbeat() {
     export TOOL_NAME="Read"
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/posttool/coordination-heartbeat.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/posttool/coordination-heartbeat.sh" 2>/dev/null) || output=""
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
@@ -222,10 +222,10 @@ test_hooks_without_coordination() {
 
     # Test each hook
     local hooks=(
-        ".claude/hooks/lifecycle/coordination-init.sh"
-        ".claude/hooks/lifecycle/coordination-cleanup.sh"
-        ".claude/hooks/posttool/coordination-heartbeat.sh"
-        ".claude/hooks/pretool/write-edit/file-lock-check.sh"
+        "hooks/lifecycle/coordination-init.sh"
+        "hooks/lifecycle/coordination-cleanup.sh"
+        "hooks/posttool/coordination-heartbeat.sh"
+        "hooks/pretool/write-edit/file-lock-check.sh"
     )
 
     for hook in "${hooks[@]}"; do
@@ -258,7 +258,7 @@ test_hooks_malformed_input() {
     export TOOL_INPUT='not-valid-json'
 
     local output=""
-    output=$(bash "${PROJECT_ROOT}/.claude/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
+    output=$(bash "${PROJECT_ROOT}/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output with malformed input"

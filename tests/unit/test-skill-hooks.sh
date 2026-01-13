@@ -2,7 +2,7 @@
 # ============================================================================
 # Skill Hooks Comprehensive Unit Tests
 # ============================================================================
-# Tests all 22 skill hooks for CC 2.1.2 compliance
+# Tests all 22 skill hooks for CC 2.1.6 compliance
 # ============================================================================
 
 set -euo pipefail
@@ -10,7 +10,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-HOOKS_DIR="$PROJECT_ROOT/.claude/hooks/skill"
+HOOKS_DIR="$PROJECT_ROOT/hooks/skill"
 
 # ============================================================================
 # SKILL VALIDATION HOOKS
@@ -248,7 +248,7 @@ test_merge_readiness_checker_validates() {
     fi
 
     # This skill hook outputs human-readable reports, not JSON
-    # It's designed for interactive use, not CC 2.1.2 compliance
+    # It's designed for interactive use, not CC 2.1.6 compliance
     local input='{"branch":"feature/api","checks":["tests","lint","coverage"]}'
     local exit_code
     
