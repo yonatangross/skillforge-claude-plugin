@@ -9,7 +9,7 @@ This document provides essential context for Claude Code when working with the S
 - **92 skills**: Reusable knowledge modules in 10 category-based directories (CC 2.1.6 nested structure)
 - **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
 - **12 commands**: Pre-configured workflows for common development tasks
-- **93 hooks (20 registered, using dispatcher pattern)**: Lifecycle automation for sessions, tools, permissions, and quality gates
+- **90 hooks (32 registered via CC 2.1.7 native parallel execution)**: Lifecycle automation for sessions, tools, permissions, and quality gates
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -78,7 +78,7 @@ bin/                     # CLI utilities and scripts
 
 ### Core Plugin Technology
 - **Language**: Bash (hooks), JSON (schemas, config), Markdown (skills, agents)
-- **Claude Code**: >= 2.1.6 (CC 2.1.6 nested skills, native agent skills, context HUD, security fixes)
+- **Claude Code**: >= 2.1.7 (CC 2.1.7 native parallel hooks, native agent skills, context HUD, security fixes)
 - **MCP Integration**: Optional - Context7, Sequential Thinking, Memory, Playwright (configure via /skf:configure)
 
 ### Expected Application Stack (Skills Support)
@@ -245,13 +245,19 @@ Read skills/backend/.claude/skills/api-design-framework/references/rest-paginati
 Read skills/backend/.claude/skills/api-design-framework/templates/endpoint-template.py
 ```
 
-### 2. Hook Dispatcher Pattern
-All hooks use consolidated dispatchers that output colored ANSI:
-- `pretool/bash-dispatcher.sh` → calls individual bash hooks
-- `pretool/write-dispatcher.sh` → calls write/edit hooks
-- `posttool/dispatcher.sh` → calls audit, error tracking, metrics
+### 2. Hook Architecture (CC 2.1.7)
+Lifecycle hooks use CC 2.1.7 native parallel execution with output aggregation:
+- **SessionStart**: 8 hooks registered directly (context, env, mem0, patterns, coordination)
+- **UserPromptSubmit**: 4 hooks registered directly (context injection, memory search)
+- **SessionEnd**: 4 hooks registered directly (cleanup, metrics, sync)
+- **Stop**: 10 hooks registered directly (auto-save, compaction, cleanup)
 
-**Never bypass dispatchers** - they provide proper sequencing and error handling.
+Tool-based hooks still use dispatchers for routing:
+- `pretool/bash-dispatcher.sh` → routes to branch-protection, etc.
+- `pretool/write-dispatcher.sh` → routes to file-guard, lock-check
+- `posttool/dispatcher.sh` → routes by file-type to validators
+
+**All hooks output CC 2.1.7 compliant JSON**: `{"continue":true,"suppressOutput":true}`
 
 ### 3. Coordination Protocol (Multi-Worktree)
 When multiple Claude Code instances run concurrently:
@@ -601,6 +607,7 @@ ls agents/
 - **Claude Code Requirement**: >= 2.1.7
 - **Skills Structure**: CC 2.1.6 nested (.claude/skills/ pattern)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
+- **Hook Architecture**: CC 2.1.7 native parallel execution (32 direct, routing dispatchers for PreToolUse/PostToolUse)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
@@ -640,4 +647,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-14 (v4.12.0 - CC 2.1.7 Compatibility)
+**Last Updated**: 2026-01-14 (v4.12.0 - CC 2.1.7 Hook Refactoring)
