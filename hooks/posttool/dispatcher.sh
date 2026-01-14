@@ -99,6 +99,7 @@ case "$TOOL_NAME" in
     fi
     ;;
   Task)
+    run_check "AgentMemory" "$SCRIPT_DIR/task/agent-memory-store.sh"
     run_check "Heartbeat" "$SCRIPT_DIR/coordination-heartbeat.sh"
     ;;
 esac
