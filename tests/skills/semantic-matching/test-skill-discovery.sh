@@ -128,7 +128,8 @@ match_keywords() {
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_name")
     local caps_file="$skill_dir/capabilities.json"
-    local skill_md="$skill_dir/SKILL.md"
+    local skill_dir=$(dirname "$caps_file")
+        skill_md="$skill_dir/SKILL.md"
     local min_matches="${3:-2}"  # Minimum keyword matches required
 
     if [[ ! -f "$caps_file" ]]; then
@@ -182,7 +183,8 @@ match_solves() {
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_name")
     local caps_file="$skill_dir/capabilities.json"
-    local skill_md="$skill_dir/SKILL.md"
+    local skill_dir=$(dirname "$caps_file")
+        skill_md="$skill_dir/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -243,7 +245,8 @@ check_category_keywords() {
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_name")
     local caps_file="$skill_dir/capabilities.json"
-    local skill_md="$skill_dir/SKILL.md"
+    local skill_dir=$(dirname "$caps_file")
+        skill_md="$skill_dir/SKILL.md"
 
     if [[ ! -f "$caps_file" ]]; then
         return 1
@@ -1213,7 +1216,8 @@ test_capabilities_keywords_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
-        local skill_md="$skill_dir/SKILL.md"
+        local skill_dir=$(dirname "$caps_file")
+        skill_md="$skill_dir/SKILL.md"
 
         local keyword_count=0
         
@@ -1250,7 +1254,8 @@ test_capabilities_solves_not_empty() {
     while IFS= read -r caps_file; do
         local skill_name
         skill_name=$(basename "$(dirname "$caps_file")")
-        local skill_md="$skill_dir/SKILL.md"
+        local skill_dir=$(dirname "$caps_file")
+        skill_md="$skill_dir/SKILL.md"
 
         local solves_count=0
         

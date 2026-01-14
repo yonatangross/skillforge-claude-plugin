@@ -9,6 +9,15 @@ tags: [statusline, hud, context, monitoring, cc216]
 
 # Claude HUD - Status Line Configuration
 
+## When to Use
+
+Use this skill when you need to:
+- Monitor context window usage in real-time
+- Configure statusline display for Claude Code
+- Set up visual thresholds for context management
+- Track session costs and duration
+
+
 Configure Claude Code's statusline to display real-time context window usage and session information using CC 2.1.6 fields.
 
 ## Quick Setup

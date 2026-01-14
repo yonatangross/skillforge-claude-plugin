@@ -18,7 +18,7 @@ if [[ ! "$COMMAND" =~ ^git ]]; then
 fi
 
 # Get the current branch
-CURRENT_BRANCH=$(cd "$CLAUDE_PROJECT_DIR" && git branch --show-current 2>/dev/null)
+CURRENT_BRANCH=$(cd "${CLAUDE_PROJECT_DIR:-$(pwd)}" && git branch --show-current 2>/dev/null)
 
 # Check if on a protected branch
 if [[ "$CURRENT_BRANCH" == "dev" || "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "master" ]]; then

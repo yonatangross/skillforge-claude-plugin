@@ -19,9 +19,9 @@ log_hook "Session starting - loading context (Protocol 2.0)"
 AGENT_TYPE="${AGENT_TYPE:-}"
 
 # Context Protocol 2.0 paths
-SESSION_STATE="$CLAUDE_PROJECT_DIR/.claude/context/session/state.json"
-IDENTITY_FILE="$CLAUDE_PROJECT_DIR/.claude/context/identity.json"
-KNOWLEDGE_INDEX="$CLAUDE_PROJECT_DIR/.claude/context/knowledge/index.json"
+SESSION_STATE="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/context/session/state.json"
+IDENTITY_FILE="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/context/identity.json"
+KNOWLEDGE_INDEX="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/context/knowledge/index.json"
 
 CONTEXT_LOADED=0
 
@@ -50,7 +50,7 @@ if [[ -f "$KNOWLEDGE_INDEX" ]]; then
 fi
 
 # Load current status docs if they exist
-STATUS_FILE="$CLAUDE_PROJECT_DIR/docs/CURRENT_STATUS.md"
+STATUS_FILE="${CLAUDE_PROJECT_DIR:-$(pwd)}/docs/CURRENT_STATUS.md"
 if [[ -f "$STATUS_FILE" ]]; then
   log_hook "Current status document exists"
 fi
@@ -62,7 +62,7 @@ if [[ -n "$AGENT_TYPE" ]]; then
   log_hook "Agent-type aware initialization: $AGENT_TYPE"
 
   # Check if there's agent-specific configuration
-  AGENT_CONFIG="$CLAUDE_PROJECT_DIR/.claude/agents/${AGENT_TYPE}.md"
+  AGENT_CONFIG="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/agents/${AGENT_TYPE}.md"
   if [[ -f "$AGENT_CONFIG" ]]; then
     log_hook "Agent configuration found: $AGENT_CONFIG"
     CONTEXT_LOADED=$((CONTEXT_LOADED + 1))

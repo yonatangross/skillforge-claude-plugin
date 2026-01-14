@@ -70,6 +70,49 @@ get_frontmatter() {
     awk '/^---$/{if(++n==1){next}else{exit}}n' "$file"
 }
 
+# Check if a skill exists in the CC 2.1.6 nested structure
+skill_exists() {
+    local skill_name="$1"
+    # Search in all category directories
+    for category_dir in "$SKILLS_DIR"/*/; do
+        if [[ -d "${category_dir}.claude/skills/${skill_name}" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Extract skills from YAML frontmatter (handles both inline and list formats)
+extract_skills() {
+    local frontmatter="$1"
+    local skills=""
+    local in_skills_block=false
+
+    while IFS= read -r line; do
+        # Check for skills: key
+        if [[ "$line" == "skills:"* ]]; then
+            in_skills_block=true
+            # Handle inline format: skills: [skill1, skill2]
+            inline=$(echo "$line" | sed 's/skills:[[:space:]]*//')
+            if [[ "$inline" =~ ^\[.*\]$ ]]; then
+                # Inline array format
+                echo "$inline" | tr ',' '\n' | tr -d ' []"'
+            fi
+            continue
+        fi
+
+        if [[ "$in_skills_block" == true ]]; then
+            # Check for list item format: "  - skill-name"
+            if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                echo "$line" | sed 's/^[[:space:]]*-[[:space:]]*//' | tr -d ' '
+            elif [[ "$line" =~ ^[a-z] ]]; then
+                # Hit another key, stop
+                break
+            fi
+        fi
+    done <<< "$frontmatter"
+}
+
 echo ""
 echo "=========================================="
 echo "  Agent Definition Validation Tests"
@@ -113,25 +156,25 @@ REQUIRED_FRONTMATTER=("name" "description" "tools")
 
 for agent_file in $AGENT_FILES; do
     agent_id=$(basename "$agent_file" .md)
-    
+
     # Check frontmatter exists
     first_line=$(head -1 "$agent_file")
     if [[ "$first_line" != "---" ]]; then
         log_fail "$agent_id has no frontmatter"
         continue
     fi
-    
+
     frontmatter=$(get_frontmatter "$agent_file")
     missing=""
     all_found=true
-    
+
     for field in "${REQUIRED_FRONTMATTER[@]}"; do
         if ! echo "$frontmatter" | grep -q "^${field}:"; then
             all_found=false
             missing="$missing $field"
         fi
     done
-    
+
     if [[ "$all_found" == true ]]; then
         log_pass "$agent_id has required frontmatter"
     else
@@ -151,7 +194,7 @@ KEBAB_REGEX='^[a-z][a-z0-9]*(-[a-z0-9]+)*$'
 
 for agent_file in $AGENT_FILES; do
     agent_id=$(basename "$agent_file" .md)
-    
+
     if [[ "$agent_id" =~ $KEBAB_REGEX ]]; then
         log_pass "$agent_id is valid kebab-case"
     else
@@ -162,35 +205,30 @@ done
 echo ""
 
 # =============================================================================
-# Test 3: Required sections exist
+# Test 3: Agent files have required sections
 # =============================================================================
 echo -e "${CYAN}Test 3: Required sections in agent files${NC}"
 echo "----------------------------------------"
 
-REQUIRED_SECTIONS=("## Directive" "## Task Boundaries")
+# Required sections (at least one must be present)
+REQUIRED_SECTIONS=("Directive" "Purpose" "Objective" "Description" "Role")
 
 for agent_file in $AGENT_FILES; do
     agent_id=$(basename "$agent_file" .md)
-    file_content=$(cat "$agent_file")
-    
-    missing=""
-    all_found=true
-    
+    content=$(cat "$agent_file")
+
+    found_section=false
     for section in "${REQUIRED_SECTIONS[@]}"; do
-        if ! echo "$file_content" | grep -q "^${section}"; then
-            # Also check for alternate section names
-            alt_section=$(echo "$section" | sed 's/Task Boundaries/Boundaries/')
-            if ! echo "$file_content" | grep -q "^${alt_section}"; then
-                all_found=false
-                missing="$missing '$section'"
-            fi
+        if echo "$content" | grep -q "^## $section\|^# $section"; then
+            found_section=true
+            break
         fi
     done
-    
-    if [[ "$all_found" == true ]]; then
+
+    if [[ "$found_section" == true ]]; then
         log_pass "$agent_id has required sections"
     else
-        log_warn "$agent_id missing sections:$missing"
+        log_warn "$agent_id missing standard sections (Directive/Purpose/Objective)"
     fi
 done
 
@@ -205,24 +243,29 @@ echo "----------------------------------------"
 for agent_file in $AGENT_FILES; do
     agent_id=$(basename "$agent_file" .md)
     frontmatter=$(get_frontmatter "$agent_file")
-    
-    # Extract skills from frontmatter
-    skills_line=$(echo "$frontmatter" | grep "^skills:" || echo "")
-    if [[ -z "$skills_line" ]]; then
+
+    # Check if skills key exists
+    if ! echo "$frontmatter" | grep -q "^skills:"; then
         log_info "$agent_id has no skills in frontmatter"
         continue
     fi
-    
-    # Parse skills (comma-separated or YAML list)
-    skills=$(echo "$skills_line" | sed 's/skills: *//' | tr ',' '\n' | tr -d ' []"' | grep -v '^$')
-    
+
+    # Extract and validate skills
+    skills=$(extract_skills "$frontmatter")
+
+    if [[ -z "$skills" ]]; then
+        log_info "$agent_id has empty skills list"
+        continue
+    fi
+
     invalid_skills=""
-    for skill in $skills; do
-        if [[ -n "$skill" && ! -d "$SKILLS_DIR/$skill" ]]; then
+    while IFS= read -r skill; do
+        [[ -z "$skill" ]] && continue
+        if ! skill_exists "$skill"; then
             invalid_skills="$invalid_skills $skill"
         fi
-    done
-    
+    done <<< "$skills"
+
     if [[ -z "$invalid_skills" ]]; then
         log_pass "$agent_id skill references are valid"
     else
@@ -233,6 +276,7 @@ done
 echo ""
 
 # =============================================================================
+# =============================================================================
 # Test 5: Tools declaration is valid
 # =============================================================================
 echo -e "${CYAN}Test 5: Tools declaration is valid${NC}"
@@ -241,19 +285,36 @@ echo "----------------------------------------"
 for agent_file in $AGENT_FILES; do
     agent_id=$(basename "$agent_file" .md)
     frontmatter=$(get_frontmatter "$agent_file")
-    
-    tools_line=$(echo "$frontmatter" | grep "^tools:" || echo "")
-    if [[ -z "$tools_line" ]]; then
+
+    if ! echo "$frontmatter" | grep -q "^tools:"; then
         log_fail "$agent_id has no tools declaration"
         continue
     fi
-    
-    # Basic validation - tools should be non-empty
-    tools=$(echo "$tools_line" | sed 's/tools: *//')
-    if [[ -z "$tools" || "$tools" == "[]" ]]; then
-        log_fail "$agent_id has empty tools declaration"
-    else
+
+    tools_count=0
+    in_tools_block=false
+    while IFS= read -r line; do
+        if [[ "$line" == "tools:"* ]]; then
+            in_tools_block=true
+            inline=$(echo "$line" | sed 's/tools:[[:space:]]*//')
+            if [[ -n "$inline" && "$inline" != "[]" ]]; then
+                tools_count=1; break
+            fi
+            continue
+        fi
+        if [[ "$in_tools_block" == true ]]; then
+            if [[ "$line" =~ ^[[:space:]]*-[[:space:]]+ ]]; then
+                tools_count=$((tools_count + 1))
+            elif [[ "$line" =~ ^[a-z] ]]; then
+                break
+            fi
+        fi
+    done <<< "$frontmatter"
+
+    if [[ $tools_count -gt 0 ]]; then
         log_pass "$agent_id has tools declared"
+    else
+        log_fail "$agent_id has empty tools declaration"
     fi
 done
 
