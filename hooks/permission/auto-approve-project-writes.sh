@@ -20,7 +20,7 @@ if [[ "$FILE_PATH" != /* ]]; then
 fi
 
 # Check if file is within project directory
-if [[ "$FILE_PATH" == "$CLAUDE_PROJECT_DIR"* ]]; then
+if [[ "$FILE_PATH" == "${CLAUDE_PROJECT_DIR:-$(pwd)}"* ]]; then
   # Additional check: not in node_modules, .git, etc.
   EXCLUDED_DIRS=(
     'node_modules'

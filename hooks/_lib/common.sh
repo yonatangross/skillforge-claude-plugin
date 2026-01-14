@@ -266,7 +266,7 @@ command_matches() {
 
 # Get current git branch
 get_current_branch() {
-  cd "$CLAUDE_PROJECT_DIR" && git branch --show-current 2>/dev/null
+  cd "${CLAUDE_PROJECT_DIR:-$(pwd)}" && git branch --show-current 2>/dev/null
 }
 
 # Check if on protected branch

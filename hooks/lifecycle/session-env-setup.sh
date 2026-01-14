@@ -18,7 +18,7 @@ source "$(dirname "$0")/../_lib/common.sh"
 log_hook "Setting up session environment"
 
 # Create logs directory if needed
-mkdir -p "$CLAUDE_PROJECT_DIR/.claude/logs" 2>/dev/null
+mkdir -p "${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/logs" 2>/dev/null
 
 # Initialize session metrics
 SESSION_ID=$(get_session_id)
@@ -45,7 +45,7 @@ EOF
 fi
 
 # Update session state with agent_type (CC 2.1.6 feature)
-SESSION_STATE="$CLAUDE_PROJECT_DIR/.claude/context/session/state.json"
+SESSION_STATE="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/context/session/state.json"
 if [[ -f "$SESSION_STATE" ]] && [[ -n "$AGENT_TYPE" ]]; then
   # Update session state with agent_type using jq
   if command -v jq >/dev/null 2>&1; then
