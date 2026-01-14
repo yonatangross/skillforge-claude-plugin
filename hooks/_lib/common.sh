@@ -364,7 +364,7 @@ output_error() {
 # Usage: output_block "Reason"
 output_block() {
   local reason="$1"
-  jq -n --arg r "$reason" '{continue: false, stopReason: $r}'
+  jq -n --arg r "$reason" '{continue:false,stopReason:$r,hookSpecificOutput:{permissionDecision:"deny",permissionDecisionReason:$r}}'
 }
 
 # Export output helpers
@@ -649,7 +649,7 @@ output_silent_allow_with_feedback() {
 output_deny_with_feedback() {
   local reason="${1:-policy-violation}"
   log_permission_feedback "deny" "$reason"
-  jq -n --arg r "$reason" '{decision:{behavior:"deny"}, continue: false, stopReason: $r}'
+  jq -n --arg r "$reason" '{decision:{behavior:"deny"},continue:false,stopReason:$r,hookSpecificOutput:{permissionDecision:"deny",permissionDecisionReason:$r}}'
 }
 
 # Export CC 2.1.7 permission feedback functions

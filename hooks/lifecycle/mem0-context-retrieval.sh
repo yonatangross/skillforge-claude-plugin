@@ -1,7 +1,7 @@
 #!/bin/bash
 # Mem0 Context Retrieval - Loads relevant memories at session start
 # Hook: SessionStart
-# CC 2.1.6 Compliant - Works across any repository
+# CC 2.1.7 Compliant - Works across any repository
 #
 # This hook checks for pending memory sync from previous sessions and
 # provides guidance on using Mem0 for context retrieval.
@@ -138,38 +138,30 @@ elif has_valid_pending_sync "$PENDING_SYNC_GLOBAL"; then
 fi
 
 # -----------------------------------------------------------------------------
-# Output CC 2.1.6 Compliant JSON
+# Output CC 2.1.7 Compliant JSON with hookSpecificOutput.additionalContext
 # -----------------------------------------------------------------------------
 
 if [[ -n "$PENDING_FILE" ]]; then
-    # Pending sync exists - prompt Claude to sync
-    SYSTEM_MSG=$(build_pending_sync_message "$PENDING_FILE")
+    # Pending sync exists - inject context for Claude to sync
+    CTX_MSG=$(build_pending_sync_message "$PENDING_FILE")
 
     # Archive the file after reading (move to .processed)
     archive_pending_sync "$PENDING_FILE"
 
-    log_hook "Outputting pending sync prompt"
-    jq -n \
-        --arg msg "$SYSTEM_MSG" \
-        '{
-            continue: true,
-            systemMessage: $msg
-        }'
+    log_hook "Outputting pending sync context"
+    jq -nc --arg ctx "$CTX_MSG" \
+        '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx},continue:true,suppressOutput:true}'
 else
     # No pending sync - check if Mem0 is available and provide tip
     if is_mem0_available; then
         TIP_MSG=$(build_search_tip_message)
-        log_hook "Mem0 available, outputting search tip"
-        jq -n \
-            --arg msg "$TIP_MSG" \
-            '{
-                continue: true,
-                systemMessage: $msg
-            }'
+        log_hook "Mem0 available, outputting search tip as context"
+        jq -nc --arg ctx "$TIP_MSG" \
+            '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx},continue:true,suppressOutput:true}'
     else
         # Mem0 not configured - silent success
         log_hook "Mem0 not configured, silent success"
-        echo '{"continue": true, "suppressOutput": true}'
+        echo '{"continue":true,"suppressOutput":true}'
     fi
 fi
 

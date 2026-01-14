@@ -266,7 +266,7 @@ if [[ "$ERRORS_FOUND" == "true" ]]; then
     echo "" >&2
     echo "Fix the errors above and try again" >&2
     echo "" >&2
-    echo '{"systemMessage":"Quality gate failed","continue":false}'
+    jq -nc '{systemMessage:"Quality gate failed",continue:false,hookSpecificOutput:{hookEventName:"PreToolUse",permissionDecision:"deny",permissionDecisionReason:"Quality gate failed"}}'
     exit 1
 fi
 

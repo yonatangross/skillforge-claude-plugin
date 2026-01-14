@@ -1,6 +1,6 @@
 #!/bin/bash
 # Decision Sync Push - SessionEnd Hook
-# CC 2.1.6 Compliant: outputs JSON with continue field
+# CC 2.1.7 Compliant: outputs JSON with correct field names
 # Pushes pending decisions to mem0 on session end
 #
 # Part of mem0 Semantic Memory Integration (#47)
@@ -16,7 +16,7 @@ if [[ ! -f "$DECISION_SYNC" ]]; then
     DECISION_SYNC="${CLAUDE_PLUGIN_ROOT:-}/.claude/scripts/decision-sync.sh"
     if [[ ! -f "$DECISION_SYNC" ]]; then
         # Script not available - silent pass
-        echo '{"continue": true}'
+        echo '{"continue":true,"suppressOutput":true}'
         exit 0
     fi
 fi
@@ -42,7 +42,7 @@ fi
 
 if [[ -z "$pending_count" ]] || [[ "$pending_count" == "0" ]]; then
     log_hook "No pending decisions to sync"
-    echo '{"continue": true}'
+    echo '{"continue":true,"suppressOutput":true}'
     exit 0
 fi
 
@@ -54,16 +54,12 @@ sync_output=$("$DECISION_SYNC" sync 2>/dev/null || echo "")
 if [[ -n "$sync_output" ]]; then
     log_hook "Outputting sync instructions for $pending_count decisions"
 
-    # Output as JSON with message for Claude
-    cat << EOF
-{
-    "continue": true,
-    "message": "Session ending with $pending_count pending decisions. To sync to mem0, run: decision-sync.sh sync"
-}
-EOF
+    # Output as JSON with systemMessage (not message) for Claude
+    jq -nc --arg msg "Session ending with $pending_count pending decisions. To sync to mem0, run: decision-sync.sh sync" \
+        '{continue:true,systemMessage:$msg}'
 else
     log_hook "No sync output generated"
-    echo '{"continue": true}'
+    echo '{"continue":true,"suppressOutput":true}'
 fi
 
 exit 0

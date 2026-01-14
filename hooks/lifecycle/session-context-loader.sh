@@ -2,7 +2,7 @@
 set -euo pipefail
 # Session Context Loader - Loads session context at session start
 # Hook: SessionStart
-# CC 2.1.6 Compliant - Context Protocol 2.0
+# CC 2.1.7 Compliant - Context Protocol 2.0
 # Supports agent_type for context-aware initialization
 
 # Check for HOOK_INPUT from parent dispatcher (CC 2.1.6 format)
@@ -69,13 +69,14 @@ if [[ -n "$AGENT_TYPE" ]]; then
   fi
 fi
 
-# Output CC 2.1.6 compliant response
+# Output CC 2.1.7 compliant response with hookSpecificOutput.additionalContext
 if [[ $CONTEXT_LOADED -gt 0 ]]; then
-  MSG="Session context loaded (Protocol 2.0)"
+  CTX="Session context loaded (Protocol 2.0)"
   if [[ -n "$AGENT_TYPE" ]]; then
-    MSG="$MSG - Agent: $AGENT_TYPE"
+    CTX="$CTX - Agent: $AGENT_TYPE"
   fi
-  echo "{\"systemMessage\":\"$MSG\",\"continue\":true}"
+  jq -nc --arg ctx "$CTX" \
+    '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx},continue:true,suppressOutput:true}'
 else
   echo '{"continue":true,"suppressOutput":true}'
 fi

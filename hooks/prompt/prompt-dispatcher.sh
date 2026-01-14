@@ -1,6 +1,6 @@
 #!/bin/bash
 # UserPromptSubmit Dispatcher - Runs all prompt hooks and outputs combined status
-# CC 2.1.6 Compliant: silent on success, visible on failure
+# CC 2.1.7 Compliant: silent on success, visible on failure
 # Consolidates: context-injector, todo-enforcer, memory-context, satisfaction-detector
 #
 # Performance optimization (2026-01-14):
@@ -94,11 +94,12 @@ wait
 WARNINGS_MSG=$(collect_warnings)
 
 # Output: silent on success, show warnings if any
+# CC 2.1.7: Don't use suppressOutput: false (redundant), just omit it
 if [[ -n "$WARNINGS_MSG" ]]; then
-  echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARNINGS_MSG}${RESET}\", \"continue\": true, \"suppressOutput\": false}"
+  jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS_MSG}${RESET}" '{systemMessage:$msg,continue:true}'
 else
-  # Silent success - no systemMessage
-  echo "{\"continue\": true, \"suppressOutput\": true}"
+  # Silent success
+  echo '{"continue":true,"suppressOutput":true}'
 fi
 
 exit 0
