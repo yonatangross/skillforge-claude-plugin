@@ -4,11 +4,13 @@ set -euo pipefail
 # Synchronizes decision-log.json with mem0 cloud storage
 #
 # Usage:
-#   decision-sync.sh export  - Export local decisions to mem0 format
 #   decision-sync.sh status  - Show sync status
-#   decision-sync.sh pending - Show decisions pending sync
+#   decision-sync.sh pending - List decisions pending sync
+#   decision-sync.sh export  - Export pending decisions in mem0 format
+#   decision-sync.sh sync    - Output JSON payloads for Claude to call mcp__mem0__add_memory
+#   decision-sync.sh pull    - Instructions for retrieving decisions from mem0
 #
-# Version: 1.0.0
+# Version: 1.1.0
 # Part of mem0 Semantic Memory Integration (#40, #47)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -80,7 +82,7 @@ get_pending_decisions() {
     synced_ids=$(get_synced_ids)
 
     echo "$decisions" | jq --argjson synced "$synced_ids" '
-        [.[] | select(.id as $id | $synced | index($id) | not)]
+        [.[] | select(.decision_id as $id | $synced | index($id) | not)]
     '
 }
 
@@ -109,13 +111,20 @@ format_for_mem0() {
 
     # Extract key fields and format as memory content
     echo "$decision" | jq -r '
-        "Decision: " + .id + " (" + .date + ")\n" +
+        "Decision: " + .decision_id + " (" + .timestamp + ")\n" +
         "Status: " + .status + "\n" +
-        "Impact: " + (.impact // "unknown") + "\n\n" +
-        .summary + "\n\n" +
-        "Rationale: " + (.rationale // "Not specified") + "\n" +
-        (if .alternatives then "Alternatives considered: " + (.alternatives | join(", ")) else "" end)
+        "Category: " + (.category // "unknown") + "\n" +
+        "Impact: " + (.impact.scope // "unknown") + "\n\n" +
+        "Title: " + .title + "\n" +
+        "Description: " + (.description // "Not specified") + "\n" +
+        (if .made_by.instance_id then "Instance: " + .made_by.instance_id else "" end)
     '
+}
+
+# Generate content hash for deduplication
+generate_hash() {
+    local content="$1"
+    echo -n "$content" | md5 2>/dev/null || echo -n "$content" | md5sum | cut -d' ' -f1
 }
 
 # -----------------------------------------------------------------------------
@@ -171,7 +180,7 @@ cmd_pending() {
     echo "=========================="
     echo ""
 
-    echo "$pending" | jq -r '.[] | "- " + .id + " (" + .date + "): " + (.summary | .[0:60]) + "..."'
+    echo "$pending" | jq -r '.[] | "- " + .decision_id + " (" + .timestamp + "): " + (.title | .[0:60]) + "..."'
 }
 
 cmd_export() {
@@ -198,11 +207,87 @@ cmd_export() {
 
     echo "$pending" | jq -c '.[]' | while read -r decision; do
         local id
-        id=$(echo "$decision" | jq -r '.id')
+        id=$(echo "$decision" | jq -r '.decision_id')
         echo "--- Decision: $id ---"
         format_for_mem0 "$decision"
         echo ""
     done
+}
+
+cmd_sync() {
+    local pending
+    pending=$(get_pending_decisions)
+    local count
+    count=$(echo "$pending" | jq 'length')
+
+    if [[ "$count" == "0" ]]; then
+        echo "No pending decisions to sync."
+        return
+    fi
+
+    local project_id
+    project_id=$(get_project_id)
+    local user_id="${project_id}-decisions"
+
+    echo "To sync decisions to mem0, use mcp__mem0__add_memory for each:"
+    echo ""
+
+    echo "$pending" | jq -c '.[]' | while read -r decision; do
+        local decision_id
+        local text_content
+        local content_hash
+
+        decision_id=$(echo "$decision" | jq -r '.decision_id')
+        text_content=$(format_for_mem0 "$decision")
+        content_hash=$(generate_hash "$text_content")
+
+        echo "Decision: $decision_id"
+        echo "user_id: \"$user_id\""
+        echo "text: \"$(echo "$text_content" | tr '\n' ' ' | sed 's/"/\\"/g')\""
+        echo "metadata: {\"category\": \"decision\", \"id\": \"$decision_id\", \"hash\": \"$content_hash\"}"
+        echo ""
+    done
+
+    echo "After successful mem0 storage, mark decisions as synced by running:"
+    echo "  decision-sync.sh mark-synced <decision_id>"
+}
+
+cmd_pull() {
+    local project_id
+    project_id=$(get_project_id)
+    local user_id="${project_id}-decisions"
+
+    echo "Retrieving Decisions from mem0"
+    echo "==============================="
+    echo ""
+    echo "To retrieve past decisions from mem0, use:"
+    echo ""
+    echo "  mcp__mem0__search_memory"
+    echo "    user_id: \"$user_id\""
+    echo "    query: \"<search terms or decision topic>\""
+    echo ""
+    echo "Or use the /recall command:"
+    echo "  /recall decisions about <topic>"
+    echo ""
+    echo "Example queries:"
+    echo "  - \"architecture decisions\""
+    echo "  - \"API design choices\""
+    echo "  - \"database schema decisions\""
+    echo ""
+    echo "The search will return relevant decisions stored in mem0,"
+    echo "which can inform current development choices."
+}
+
+cmd_mark_synced() {
+    local decision_id="${1:-}"
+
+    if [[ -z "$decision_id" ]]; then
+        echo "Usage: decision-sync.sh mark-synced <decision_id>"
+        exit 1
+    fi
+
+    mark_synced "$decision_id"
+    echo "Marked $decision_id as synced."
 }
 
 cmd_help() {
@@ -211,10 +296,13 @@ cmd_help() {
     echo "Usage: decision-sync.sh <command>"
     echo ""
     echo "Commands:"
-    echo "  status   Show sync status"
-    echo "  pending  List decisions pending sync"
-    echo "  export   Export pending decisions in mem0 format"
-    echo "  help     Show this help"
+    echo "  status       Show sync status"
+    echo "  pending      List decisions pending sync"
+    echo "  export       Export pending decisions in mem0 format"
+    echo "  sync         Output JSON payloads for mcp__mem0__add_memory calls"
+    echo "  pull         Instructions for retrieving decisions from mem0"
+    echo "  mark-synced  Mark a decision as synced (after mem0 storage)"
+    echo "  help         Show this help"
     echo ""
     echo "Files:"
     echo "  Decision log: .claude/coordination/decision-log.json"
@@ -236,6 +324,15 @@ case "$COMMAND" in
         ;;
     export)
         cmd_export
+        ;;
+    sync)
+        cmd_sync
+        ;;
+    pull)
+        cmd_pull
+        ;;
+    mark-synced)
+        cmd_mark_synced "${2:-}"
         ;;
     help|--help|-h)
         cmd_help
