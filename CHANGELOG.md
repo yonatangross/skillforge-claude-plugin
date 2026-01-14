@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.11.1] - 2026-01-14
+
+### Fixed
+
+**Startup Hook Errors**
+- Fixed CLAUDE_PROJECT_DIR unbound variable errors in 5 hooks by adding fallback to `$(pwd)`
+- Affected hooks: `session-context-loader.sh`, `session-env-setup.sh`, `common.sh`, `auto-approve-project-writes.sh`, `git-branch-protection.sh`
+
+**Test Suite Fixes**
+- Fixed `test-skill-discovery.sh` unbound `skill_dir` variable
+- Updated `test-agent-definitions.sh` to support CC 2.1.6 nested skills structure and YAML list parsing
+- Updated `test-plugin-installation.sh` for CC 2.1.6 structure (directories instead of symlinks)
+
+**Context & Skills**
+- Added `$schema` field to `.claude/context/session/state.json`
+- Fixed `claude-hud` skill: added "When to Use" section, converted capabilities to slim format (under 350 token budget)
+- Synced version to 4.11.1 across all manifests
+
+### Changed
+- Test results improved from 7 failing to 0 failing (26 tests pass)
+
+---
+
 ## [4.11.0] - 2026-01-13
 
 ### Changed
