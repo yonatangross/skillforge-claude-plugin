@@ -2,9 +2,9 @@
 name: feedback
 description: Manage the SkillForge feedback system that learns from your usage
 context: inherit
-version: 1.1.0
+version: 1.2.0
 author: SkillForge
-tags: [feedback, learning, patterns, metrics, privacy, analytics]
+tags: [feedback, learning, patterns, metrics, privacy, analytics, consent]
 ---
 
 # Feedback - Manage Learning System
@@ -18,7 +18,8 @@ View and manage the SkillForge feedback system that learns from your usage.
 - Resetting learned patterns
 - Exporting feedback data
 - Managing privacy settings
-- Exporting anonymous analytics for review
+- Enabling/disabling anonymous analytics sharing
+- Viewing privacy policy
 
 ## Usage
 
@@ -32,6 +33,7 @@ View and manage the SkillForge feedback system that learns from your usage.
 /feedback settings           # Show/edit settings
 /feedback opt-in             # Enable anonymous sharing
 /feedback opt-out            # Disable anonymous sharing
+/feedback privacy            # View privacy policy
 /feedback export-analytics   # Export anonymous analytics for review
 ```
 
@@ -172,11 +174,16 @@ Example:
   /feedback settings retentionDays 30
 ```
 
-### opt-in / opt-out
+### opt-in
 
-Enable or disable anonymous analytics sharing.
+Enable anonymous analytics sharing. Records GDPR-compliant consent.
 
-**opt-in Output:**
+**Action:**
+1. Record consent in consent-log.json with timestamp and policy version
+2. Set shareAnonymized = true in preferences
+3. Confirm to user
+
+**Output:**
 ```
 Anonymous analytics sharing enabled.
 
@@ -194,7 +201,16 @@ What we NEVER share:
 Disable anytime: /feedback opt-out
 ```
 
-**opt-out Output:**
+### opt-out
+
+Disable anonymous analytics sharing. Revokes consent.
+
+**Action:**
+1. Record revocation in consent-log.json with timestamp
+2. Set shareAnonymized = false in preferences
+3. Confirm to user
+
+**Output:**
 ```
 Anonymous analytics sharing disabled.
 
@@ -202,6 +218,57 @@ Your feedback data stays completely local.
 No usage data is shared.
 
 Re-enable anytime: /feedback opt-in
+```
+
+### privacy
+
+Display the full privacy policy for anonymous analytics.
+
+**Action:**
+1. Display comprehensive privacy documentation
+2. Show what's collected, what's never collected
+3. Explain data protection measures
+
+**Output:**
+```
+═══════════════════════════════════════════════════════════════════
+              SKILLFORGE ANONYMOUS ANALYTICS PRIVACY POLICY
+═══════════════════════════════════════════════════════════════════
+
+WHAT WE COLLECT (only with your consent)
+────────────────────────────────────────────────────────────────────
+
+  ✓ Skill usage counts        - e.g., "api-design used 45 times"
+  ✓ Skill success rates       - e.g., "92% success rate"
+  ✓ Agent spawn counts        - e.g., "backend-architect spawned 8 times"
+  ✓ Agent success rates       - e.g., "88% tasks completed successfully"
+  ✓ Hook trigger counts       - e.g., "bash-dispatcher triggered 120 times"
+  ✓ Hook block counts         - e.g., "blocked 5 potentially unsafe commands"
+  ✓ Plugin version            - e.g., "4.12.0"
+  ✓ Report date               - e.g., "2026-01-14" (date only, no time)
+
+
+WHAT WE NEVER COLLECT
+────────────────────────────────────────────────────────────────────
+
+  ✗ Your code or file contents
+  ✗ Project names, paths, or directory structure
+  ✗ User names, emails, or any personal information
+  ✗ IP addresses (stripped at network layer)
+  ✗ mem0 memory data or conversation history
+  ✗ Architecture decisions or design documents
+  ✗ API keys, tokens, or credentials
+  ✗ Git history or commit messages
+  ✗ Any data that could identify you or your projects
+
+
+YOUR RIGHTS
+────────────────────────────────────────────────────────────────────
+
+  • Opt-out anytime:     /feedback opt-out
+  • View your data:      /feedback export-analytics
+  • Check status:        /feedback status
+  • View this policy:    /feedback privacy
 ```
 
 ### export-analytics
@@ -285,6 +352,15 @@ The following are **blocked by design** and never included in analytics:
 - URLs, IP addresses, or hostnames
 - Any strings that could identify the project or user
 
+## Consent Management
+
+Consent is managed per GDPR requirements:
+
+1. **Explicit opt-in required** - No data shared until you actively consent
+2. **Audit trail** - All consent actions logged in `consent-log.json`
+3. **Easy revocation** - Opt-out is as easy as opt-in
+4. **Version tracking** - Consent version tracked for policy changes
+
 ## Security Note
 
 The following commands are NEVER auto-approved regardless of learning:
@@ -296,12 +372,17 @@ The following commands are NEVER auto-approved regardless of learning:
 
 See `references/file-locations.md` for storage details.
 
-### Analytics Files
+### Analytics & Consent Files
 
 ```
 .claude/feedback/
 ├── preferences.json           # User preferences including shareAnonymized
+├── consent-log.json          # GDPR consent audit trail (opt-in/opt-out history)
 ├── metrics.json              # Source data for analytics
 └── analytics-exports/        # Exported analytics for review
     └── analytics-export-*.json
 ```
+
+### Privacy Policy
+
+See `references/privacy-policy.md` for full privacy documentation.

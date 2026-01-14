@@ -1,6 +1,6 @@
 #!/bin/bash
 # SessionStart Unified Dispatcher - Single entry point for all startup hooks
-# CC 2.1.7 Compliant: silent on success, visible on failure
+# CC 2.1.7 Compliant: uses hookSpecificOutput.additionalContext for context injection
 #
 # Performance optimizations (2026-01-14):
 # - Single dispatcher (was 2 separate hooks)
@@ -37,6 +37,7 @@ run_hook_parallel() {
   local output_file="$TEMP_DIR/$name.out"
   local status_file="$TEMP_DIR/$name.status"
   local msg_file="$TEMP_DIR/$name.msg"
+  local ctx_file="$TEMP_DIR/$name.ctx"
 
   if [[ ! -f "$script" ]]; then
     echo "0" > "$status_file"
@@ -52,6 +53,11 @@ run_hook_parallel() {
     if echo "$output" | jq -e '.systemMessage' >/dev/null 2>&1; then
       echo "$output" | jq -r '.systemMessage // ""' > "$msg_file"
     fi
+
+    # Extract additionalContext if present (CC 2.1.7)
+    if echo "$output" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1; then
+      echo "$output" | jq -r '.hookSpecificOutput.additionalContext // ""' > "$ctx_file"
+    fi
   ) &
 }
 
@@ -59,11 +65,13 @@ run_hook_parallel() {
 collect_results() {
   local warnings=""
   local messages=""
+  local contexts=""
 
-  for name in Context Environment Mem0 PatternSync; do
+  for name in Context Environment Mem0 PatternSync Analytics; do
     local status_file="$TEMP_DIR/$name.status"
     local output_file="$TEMP_DIR/$name.out"
     local msg_file="$TEMP_DIR/$name.msg"
+    local ctx_file="$TEMP_DIR/$name.ctx"
 
     if [[ -f "$status_file" ]]; then
       local exit_code
@@ -77,7 +85,7 @@ collect_results() {
         fi
       fi
 
-      # Collect systemMessages
+      # Collect systemMessages (user-visible)
       if [[ -f "$msg_file" ]]; then
         local msg
         msg=$(cat "$msg_file")
@@ -89,12 +97,26 @@ collect_results() {
           fi
         fi
       fi
+
+      # Collect additionalContext (for Claude's context)
+      if [[ -f "$ctx_file" ]]; then
+        local ctx
+        ctx=$(cat "$ctx_file")
+        if [[ -n "$ctx" && "$ctx" != "null" ]]; then
+          if [[ -n "$contexts" ]]; then
+            contexts="$contexts"$'\n'"$ctx"
+          else
+            contexts="$ctx"
+          fi
+        fi
+      fi
     fi
   done
 
   # Write to temp files for reliable multiline handling
   echo -n "$warnings" > "$TEMP_DIR/_warnings.txt"
   echo -n "$messages" > "$TEMP_DIR/_messages.txt"
+  echo -n "$contexts" > "$TEMP_DIR/_contexts.txt"
 }
 
 # ============================================================================
@@ -105,6 +127,7 @@ run_hook_parallel "Context" "$SCRIPT_DIR/session-context-loader.sh"
 run_hook_parallel "Environment" "$SCRIPT_DIR/session-env-setup.sh"
 run_hook_parallel "Mem0" "$SCRIPT_DIR/mem0-context-retrieval.sh"
 run_hook_parallel "PatternSync" "$SCRIPT_DIR/pattern-sync-pull.sh"
+run_hook_parallel "Analytics" "$SCRIPT_DIR/analytics-consent-check.sh"
 
 # Wait for all parallel hooks
 wait
@@ -133,26 +156,33 @@ fi
 collect_results
 WARNINGS=$(cat "$TEMP_DIR/_warnings.txt" 2>/dev/null || echo "")
 MESSAGES=$(cat "$TEMP_DIR/_messages.txt" 2>/dev/null || echo "")
+CONTEXTS=$(cat "$TEMP_DIR/_contexts.txt" 2>/dev/null || echo "")
 
 # Log agent type if present
 if [[ -n "$AGENT_TYPE" ]]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [startup-dispatcher] Agent type: $AGENT_TYPE" >> "${CLAUDE_PROJECT_DIR:-.}/.claude/logs/hooks.log" 2>/dev/null || true
 fi
 
-# Build output JSON (use jq to properly escape strings with newlines/special chars)
+# Build output JSON with hookSpecificOutput.additionalContext for SessionStart
+# CC 2.1.7: additionalContext injects into Claude's context, systemMessage shows to user
 if [[ -n "$WARNINGS" ]]; then
-  # Has warnings
-  if [[ -n "$MESSAGES" ]]; then
-    jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}"$'\n'"${MESSAGES}" '{systemMessage: $msg, continue: true}'
+  # Has warnings - show to user and inject context
+  if [[ -n "$CONTEXTS" ]]; then
+    jq -nc --arg ctx "$CONTEXTS" --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}" \
+      '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx},systemMessage:$msg,continue:true}'
   else
-    jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}" '{systemMessage: $msg, continue: true}'
+    jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}" '{systemMessage:$msg,continue:true}'
   fi
+elif [[ -n "$CONTEXTS" ]]; then
+  # Has context - inject silently (CC 2.1.7 SessionStart format)
+  jq -nc --arg ctx "$CONTEXTS" \
+    '{hookSpecificOutput:{hookEventName:"SessionStart",additionalContext:$ctx},continue:true,suppressOutput:true}'
 elif [[ -n "$MESSAGES" ]]; then
-  # Has messages but no warnings
-  jq -nc --arg msg "$MESSAGES" '{systemMessage: $msg, continue: true}'
+  # Has user messages only - show as systemMessage
+  jq -nc --arg msg "$MESSAGES" '{systemMessage:$msg,continue:true}'
 else
   # Silent success
-  echo '{"continue": true, "suppressOutput": true}'
+  echo '{"continue":true,"suppressOutput":true}'
 fi
 
 exit 0
