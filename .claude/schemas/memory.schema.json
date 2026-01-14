@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/yonatangross/skillforge-claude-plugin/schemas/memory.schema.json",
+  "title": "SkillForge Memory Schema",
+  "description": "Schema for mem0 semantic memory integration",
+  "type": "object",
+  "definitions": {
+    "userIdPatterns": {
+      "description": "Standard user_id patterns for mem0 organization",
+      "type": "object",
+      "properties": {
+        "projectDecisions": {
+          "type": "string",
+          "pattern": "^skillforge-[a-z0-9-]+-decisions$",
+          "description": "Pattern: skillforge-{project-name}-decisions"
+        },
+        "projectContinuity": {
+          "type": "string",
+          "pattern": "^skillforge-[a-z0-9-]+-continuity$",
+          "description": "Pattern: skillforge-{project-name}-continuity"
+        },
+        "agentMemory": {
+          "type": "string",
+          "pattern": "^skf:[a-z0-9-]+$",
+          "description": "Pattern: skf:{agent-name}"
+        }
+      }
+    },
+    "memoryCategories": {
+      "type": "string",
+      "enum": [
+        "decision",
+        "architecture",
+        "pattern",
+        "blocker",
+        "preference",
+        "constraint"
+      ],
+      "description": "Categories for organizing memories"
+    },
+    "memoryEntry": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "The memory content"
+        },
+        "category": { "$ref": "#/definitions/memoryCategories" },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "timestamp": { "type": "string", "format": "date-time" },
+            "session_id": { "type": "string" },
+            "source": { "type": "string", "enum": ["user", "agent", "hook", "auto"] },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+            "project": { "type": "string" }
+          }
+        }
+      },
+      "required": ["text"]
+    },
+    "searchFilters": {
+      "type": "object",
+      "properties": {
+        "user_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "app_id": { "type": "string" },
+        "category": { "$ref": "#/definitions/memoryCategories" },
+        "created_after": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}
