@@ -668,6 +668,221 @@ log_agent_performance() {
 }
 
 # =============================================================================
+# AGENT PERFORMANCE TRACKING (Issue #55)
+# =============================================================================
+
+# Log an edit pattern for an agent
+# Tracks common edit types to identify patterns for improvement suggestions
+log_agent_edit_pattern() {
+    local agent_id="$1"
+    local edit_type="$2"  # add_types, remove_comments, add_error_handling, etc.
+
+    if ! is_feedback_enabled; then
+        return
+    fi
+
+    init_feedback
+
+    local now
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    local tmp_file
+    tmp_file=$(mktemp)
+
+    jq --arg agent "$agent_id" --arg edit_type "$edit_type" --arg now "$now" '
+        .updated = $now |
+        .agents[$agent] = (
+            .agents[$agent] // { "spawns": 0, "successes": 0, "totalDuration": 0, "avgDuration": 0, "editPatterns": {}, "recentResults": [] }
+        ) |
+        .agents[$agent].editPatterns = (
+            .agents[$agent].editPatterns // {}
+        ) |
+        .agents[$agent].editPatterns[$edit_type] = (
+            (.agents[$agent].editPatterns[$edit_type] // 0) + 1
+        )
+    ' "$METRICS_FILE" > "$tmp_file" && mv "$tmp_file" "$METRICS_FILE"
+}
+
+# Calculate trend for an agent (improving/declining/stable)
+# Compares recent success rate (last 10 spawns) to overall success rate
+calculate_agent_trend() {
+    local agent_id="$1"
+
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        echo "stable"
+        return
+    fi
+
+    local result
+    result=$(jq -r --arg agent "$agent_id" '
+        .agents[$agent] as $a |
+        if $a == null or ($a.spawns // 0) < 5 then
+            "stable"
+        else
+            (($a.successes // 0) / $a.spawns) as $overall_rate |
+            ($a.recentResults // []) as $recent |
+            if ($recent | length) < 5 then
+                "stable"
+            else
+                ([$recent[-10:][] | select(. == true)] | length) as $recent_successes |
+                ([$recent[-10:][]] | length) as $recent_total |
+                if $recent_total == 0 then
+                    "stable"
+                else
+                    ($recent_successes / $recent_total) as $recent_rate |
+                    if ($recent_rate - $overall_rate) > 0.1 then
+                        "improving"
+                    elif ($overall_rate - $recent_rate) > 0.1 then
+                        "declining"
+                    else
+                        "stable"
+                    end
+                end
+            end
+        end
+    ' "$METRICS_FILE" 2>/dev/null || echo "stable")
+
+    echo "$result"
+}
+
+# Get agent performance report
+# Returns formatted JSON with all agent metrics, trends, and suggestions
+get_agent_performance_report() {
+    init_feedback
+
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        echo "{\"agents\": {}, \"generated\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}"
+        return
+    fi
+
+    local now
+    now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+    jq --arg now "$now" '
+        {
+            "generated": $now,
+            "agents": (
+                .agents | to_entries | map({
+                    key: .key,
+                    value: {
+                        "spawns": (.value.spawns // 0),
+                        "successes": (.value.successes // 0),
+                        "successRate": (if (.value.spawns // 0) > 0 then ((.value.successes // 0) / .value.spawns) else 0 end),
+                        "avgDuration": (.value.avgDuration // 0),
+                        "editPatterns": (.value.editPatterns // {}),
+                        "recentSuccessRate": (.value.recentSuccessRate // null),
+                        "trend": (.value.trend // "stable"),
+                        "suggestions": (
+                            (.value.editPatterns // {}) as $patterns |
+                            (.value.spawns // 0) as $spawns |
+                            if $spawns < 3 then []
+                            else
+                                [$patterns | to_entries[] |
+                                    select((.value / $spawns) > 0.7) |
+                                    "Consider including \(.key | gsub("_"; " ")) in agent template - occurs in \((.value / $spawns * 100) | floor)% of spawns"
+                                ]
+                            end
+                        )
+                    }
+                }) | from_entries
+            ),
+            "summary": {
+                "totalAgents": (.agents | length),
+                "totalSpawns": ([.agents[].spawns // 0] | add // 0),
+                "overallSuccessRate": (
+                    ([.agents[].spawns // 0] | add // 0) as $total_spawns |
+                    ([.agents[].successes // 0] | add // 0) as $total_successes |
+                    if $total_spawns > 0 then ($total_successes / $total_spawns) else 0 end
+                )
+            }
+        }
+    ' "$METRICS_FILE"
+}
+
+# Generate improvement suggestions based on edit patterns
+# If >70% of spawns have same edit pattern, suggest including it in the agent
+generate_agent_suggestions() {
+    local agent_id="$1"
+
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        echo "[]"
+        return
+    fi
+
+    jq -r --arg agent "$agent_id" '
+        .agents[$agent] as $a |
+        if $a == null then
+            []
+        else
+            ($a.spawns // 0) as $spawns |
+            ($a.editPatterns // {}) as $patterns |
+            if $spawns < 3 then
+                []
+            else
+                [
+                    ($patterns | to_entries[] |
+                        select((.value / $spawns) > 0.7) |
+                        {
+                            "pattern": .key,
+                            "frequency": (.value / $spawns),
+                            "occurrences": .value,
+                            "suggestion": "Consider including \(.key | gsub("_"; " ")) in agent template"
+                        }
+                    )
+                ]
+            end
+        end
+    ' "$METRICS_FILE"
+}
+
+# Update agent with recent results for trend calculation
+# This helper tracks the last 20 success/failure results
+_update_agent_recent_results() {
+    local agent_id="$1"
+    local success="$2"
+
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        return
+    fi
+
+    local tmp_file
+    tmp_file=$(mktemp)
+
+    jq --arg agent "$agent_id" --argjson success "$success" '
+        .agents[$agent].recentResults = (
+            (.agents[$agent].recentResults // []) + [$success] | .[-20:]
+        ) |
+        .agents[$agent].recentSuccessRate = (
+            (.agents[$agent].recentResults // []) as $recent |
+            if ($recent | length) == 0 then null
+            else
+                ([$recent[-10:][] | select(. == true)] | length) as $successes |
+                ([$recent[-10:][]] | length) as $total |
+                if $total == 0 then null else ($successes / $total) end
+            end
+        ) |
+        .agents[$agent].trend = (
+            (.agents[$agent].spawns // 0) as $spawns |
+            ((.agents[$agent].successes // 0) / (if $spawns > 0 then $spawns else 1 end)) as $overall |
+            (.agents[$agent].recentResults // []) as $recent |
+            if ($recent | length) < 5 then "stable"
+            else
+                ([$recent[-10:][] | select(. == true)] | length) as $recent_successes |
+                ([$recent[-10:][]] | length) as $recent_total |
+                if $recent_total == 0 then "stable"
+                else
+                    ($recent_successes / $recent_total) as $recent_rate |
+                    if ($recent_rate - $overall) > 0.1 then "improving"
+                    elif ($overall - $recent_rate) > 0.1 then "declining"
+                    else "stable"
+                    end
+                end
+            end
+        )
+    ' "$METRICS_FILE" > "$tmp_file" && mv "$tmp_file" "$METRICS_FILE"
+}
+
+# =============================================================================
 # REPORTING
 # =============================================================================
 
@@ -737,3 +952,8 @@ export -f log_satisfaction
 export -f get_session_satisfaction
 export -f get_satisfaction_summary
 export -f _contains_word
+export -f log_agent_edit_pattern
+export -f calculate_agent_trend
+export -f get_agent_performance_report
+export -f generate_agent_suggestions
+export -f _update_agent_recent_results

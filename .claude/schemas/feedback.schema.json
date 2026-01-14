@@ -83,6 +83,33 @@
               "avgDuration": {
                 "type": "number",
                 "minimum": 0
+              },
+              "editPatterns": {
+                "type": "object",
+                "description": "Edit patterns tracked for this agent (e.g., add_types, remove_comments)",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "trend": {
+                "type": "string",
+                "enum": ["improving", "declining", "stable"],
+                "description": "Performance trend based on recent vs overall success rate"
+              },
+              "recentSuccessRate": {
+                "type": ["number", "null"],
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Success rate for the last 10 spawns"
+              },
+              "recentResults": {
+                "type": "array",
+                "description": "Last 20 success/failure results for trend calculation",
+                "items": {
+                  "type": "boolean"
+                },
+                "maxItems": 20
               }
             },
             "required": [
