@@ -118,6 +118,10 @@ Only use Task agents for:
 - Security review of sensitive changes
 - Architecture review for large refactors
 
+
+## Related Skills
+- commit: Create commits before PRs
+- review-pr: Review PRs after creation
 ## References
 
 - [PR Template](references/pr-template.md)

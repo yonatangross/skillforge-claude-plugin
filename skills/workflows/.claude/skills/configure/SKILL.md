@@ -159,6 +159,9 @@ Save to: `~/.claude/plugins/skillforge/config.json`
 }
 ```
 
+
+## Related Skills
+- doctor: Diagnose configuration issues
 ## References
 
 - [Presets](references/presets.md)

@@ -27,6 +27,14 @@ Activates for: bug, error, exception, crash, failure, debug, investigate, root c
 - `mcp__sequential-thinking__sequentialthinking` - For complex multi-step reasoning
 - `mcp__memory__*` - For persisting investigation context across sessions
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Reproduce the bug with minimal steps
 2. Isolate the failure point via bisection/elimination

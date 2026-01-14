@@ -70,6 +70,99 @@ fi
 # Silent on success - only log to file, no stderr output
 log_hook "Spawning $SUBAGENT_TYPE agent: $DESCRIPTION"
 
+# === SKILL VALIDATION: Check referenced skills exist ===
+# Only validate if agent file exists (skip for builtin types)
+validate_agent_skills() {
+  local agent_type="$1"
+  local agent_file=""
+
+  # Find agent markdown file
+  if [[ -f "${CLAUDE_PROJECT_DIR:-.}/agents/${agent_type}.md" ]]; then
+    agent_file="${CLAUDE_PROJECT_DIR:-.}/agents/${agent_type}.md"
+  elif [[ -f "${CLAUDE_PROJECT_DIR:-.}/.claude/agents/${agent_type}.md" ]]; then
+    agent_file="${CLAUDE_PROJECT_DIR:-.}/.claude/agents/${agent_type}.md"
+  fi
+
+  # Skip if no agent file found (builtin type)
+  if [[ -z "$agent_file" ]] || [[ ! -f "$agent_file" ]]; then
+    return 0
+  fi
+
+  # Extract skills array from YAML frontmatter
+  # Frontmatter is between first two "---" lines
+  local in_frontmatter=0
+  local in_skills=0
+  local skills=()
+
+  while IFS= read -r line; do
+    # Detect frontmatter boundaries
+    if [[ "$line" == "---" ]]; then
+      if [[ $in_frontmatter -eq 0 ]]; then
+        in_frontmatter=1
+        continue
+      else
+        break  # End of frontmatter
+      fi
+    fi
+
+    # Skip if not in frontmatter
+    [[ $in_frontmatter -eq 0 ]] && continue
+
+    # Detect skills array start
+    if [[ "$line" =~ ^skills: ]]; then
+      in_skills=1
+      continue
+    fi
+
+    # If we hit another top-level key, stop reading skills
+    if [[ $in_skills -eq 1 ]] && [[ "$line" =~ ^[a-zA-Z] ]] && [[ ! "$line" =~ ^[[:space:]] ]]; then
+      in_skills=0
+      continue
+    fi
+
+    # Extract skill names (lines starting with "  - ")
+    if [[ $in_skills -eq 1 ]] && [[ "$line" =~ ^[[:space:]]*-[[:space:]]*(.+)$ ]]; then
+      local skill_name="${BASH_REMATCH[1]}"
+      # Trim whitespace
+      skill_name="${skill_name## }"
+      skill_name="${skill_name%% }"
+      skills+=("$skill_name")
+    fi
+  done < "$agent_file"
+
+  # Validate each skill exists
+  local missing_skills=()
+  local skills_dir="${CLAUDE_PROJECT_DIR:-.}/skills"
+
+  for skill in "${skills[@]}"; do
+    local found=0
+
+    # Search in all category directories: skills/*/.claude/skills/{skill-name}/capabilities.json
+    for caps_file in "$skills_dir"/*/.claude/skills/"$skill"/capabilities.json; do
+      if [[ -f "$caps_file" ]]; then
+        found=1
+        break
+      fi
+    done
+
+    if [[ $found -eq 0 ]]; then
+      missing_skills+=("$skill")
+    fi
+  done
+
+  # Warn about missing skills (don't block)
+  if [[ ${#missing_skills[@]} -gt 0 ]]; then
+    local missing_list
+    missing_list=$(IFS=', '; echo "${missing_skills[*]}")
+    log_hook "WARNING: Agent '$agent_type' references missing skills: $missing_list"
+    # Output warning to stderr (visible to user but non-blocking)
+    echo "Warning: Agent '$agent_type' references ${#missing_skills[@]} missing skill(s): $missing_list" >&2
+  fi
+}
+
+# Run skill validation (fast - uses glob pattern matching)
+validate_agent_skills "$AGENT_TYPE_ONLY"
+
 # CC 2.1.6 Compliant: JSON output without ANSI colors
 # (Colors in JSON break JSON parsing)
 echo '{"continue": true, "suppressOutput": true}'

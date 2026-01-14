@@ -30,6 +30,14 @@ Activates for: market research, competitor analysis, TAM, SAM, SOM, market size,
 - `mcp__memory__*` - Persist market intelligence across sessions
 - `mcp__context7__*` - Industry frameworks and methodologies
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Map competitive landscape (direct, indirect, potential competitors)
 2. Size market opportunity (TAM/SAM/SOM with methodology)

@@ -28,6 +28,14 @@ Activates for: requirements, PRD, product requirements, user stories, acceptance
 - `mcp__memory__*` - Track requirements decisions and rationale
 - `mcp__context7__*` - Requirements engineering best practices
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Write clear PRDs with problem/solution/scope
 2. Create user stories following INVEST criteria

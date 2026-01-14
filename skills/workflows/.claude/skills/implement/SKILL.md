@@ -183,6 +183,10 @@ mcp__mem0__add-memory(content="Implementation decisions...", userId="project-dec
 - CC 2.1.6 auto-loads skills from agent frontmatter
 - Evidence-based completion
 
+
+## Related Skills
+- explore: Explore codebase before implementing
+- verify: Verify implementations work correctly
 ## References
 
 - [Agent Phases](references/agent-phases.md)

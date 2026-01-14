@@ -111,6 +111,11 @@ git add . && git commit -m "fix(#123): Fix typo in error message
 Co-Authored-By: Claude <noreply@anthropic.com>"
 ```
 
+
+## Related Skills
+- create-pr: Create pull requests from commits
+- review-pr: Review changes before committing
+- fix-issue: Fix issues and commit the fixes
 ## References
 
 - [Conventional Commits](references/conventional-commits.md)

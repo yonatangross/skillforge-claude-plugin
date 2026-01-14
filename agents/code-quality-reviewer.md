@@ -34,6 +34,14 @@ Activates for: test, review, quality, bug, lint, security, coverage, audit, vali
 - `mcp__playwright__*` - Visual regression testing verification
 - `mcp__sequential-thinking__*` - Complex security vulnerability analysis
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Execute automated linting and formatting checks (ruff, eslint, prettier)
 2. Run type checking with strict mode (mypy, tsc --noEmit)

@@ -368,6 +368,9 @@ The following commands are NEVER auto-approved regardless of learning:
 - Commands with `--force` or `--no-verify`
 - Commands involving passwords, secrets, or credentials
 
+
+## Related Skills
+- skill-evolution: Evolve skills based on feedback
 ## File Locations
 
 See `references/file-locations.md` for storage details.

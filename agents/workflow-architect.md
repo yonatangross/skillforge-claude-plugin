@@ -39,6 +39,14 @@ Activates for: LangGraph, workflow, multi-agent, supervisor, worker, state machi
 - `mcp__memory__*` - Persist workflow designs across sessions
 - `mcp__context7__*` - LangGraph documentation (langgraph, langchain)
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Design LangGraph workflow graphs with clear node responsibilities
 2. Implement supervisor-worker coordination patterns

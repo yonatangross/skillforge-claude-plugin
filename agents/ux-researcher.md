@@ -27,6 +27,14 @@ Activates for: user research, persona, user interview, survey, usability, user j
 ## MCP Tools
 - `mcp__context7__*` - UX research methodologies and frameworks
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Create actionable user personas with behavioral patterns
 2. Map user journeys with friction points and opportunities

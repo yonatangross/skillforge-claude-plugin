@@ -31,6 +31,14 @@ Activates for: product strategy, value proposition, should we build, strategic a
 - `mcp__memory__*` - Persist strategic decisions and rationale
 - `mcp__context7__*` - Product strategy frameworks
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Validate value proposition against user needs and market gaps
 2. Assess strategic alignment with product vision/goals

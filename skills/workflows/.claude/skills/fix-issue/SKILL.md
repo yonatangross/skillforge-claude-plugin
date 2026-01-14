@@ -128,6 +128,11 @@ gh pr create --base dev --title "fix(#$ARGUMENTS): [Brief description]"
 6. Validate
 7. PR with issue reference
 
+
+## Related Skills
+- commit: Commit issue fixes
+- debug-investigator: Debug complex issues
+- errors: Handle error patterns
 ## References
 
 - [Commit Template](references/commit-template.md)

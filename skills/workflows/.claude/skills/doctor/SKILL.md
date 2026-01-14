@@ -193,6 +193,9 @@ This skill works with:
 - `quality-gates` - For CI/CD integration
 - `security-scanning` - For comprehensive audits
 
+
+## Related Skills
+- configure: Configure plugin settings
 ## References
 
 - [Permission Rules](references/permission-rules.md)

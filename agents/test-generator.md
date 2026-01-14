@@ -35,6 +35,14 @@ Activates for: test, coverage, unit test, integration test, pytest, vitest, mock
 - `mcp__playwright__*` - For E2E test generation and browser automation
 - `mcp__context7__*` - For testing framework documentation (pytest, vitest)
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Identify untested code paths via coverage analysis
 2. Generate unit tests for pure functions

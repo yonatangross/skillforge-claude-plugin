@@ -38,6 +38,14 @@ Activates for: component, UI, React, frontend, optimistic, concurrent, TypeScrip
 - `mcp__playwright__*` - Component visual testing, E2E test generation
 - `mcp__sequential-thinking__*` - Complex state management decisions
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Build React 19 components with hooks and concurrent features
 2. Implement optimistic UI updates with useOptimistic hook

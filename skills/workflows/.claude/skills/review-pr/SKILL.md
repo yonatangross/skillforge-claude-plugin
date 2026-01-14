@@ -150,6 +150,10 @@ Use these prefixes for comments:
 - `issue:` - Must fix
 - `question:` - Needs clarification
 
+
+## Related Skills
+- commit: Create commits after review
+- create-pr: Create PRs for review
 ## References
 
 - [Review Template](references/review-template.md)

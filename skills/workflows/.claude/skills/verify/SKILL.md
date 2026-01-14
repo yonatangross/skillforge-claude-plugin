@@ -116,6 +116,10 @@ mcp__playwright__browser_snapshot()
 mcp__playwright__browser_take_screenshot(filename="verification.png")
 ```
 
+
+## Related Skills
+- implement: Verify implementations
+- code-review-playbook: Code review patterns for verification
 ## References
 
 - [Verification Checklist](references/verification-checklist.md)

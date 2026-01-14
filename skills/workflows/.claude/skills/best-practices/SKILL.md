@@ -169,6 +169,12 @@ Claude warn you before repeating past mistakes.
 
 See `references/proactive-warnings.md` for automatic anti-pattern detection.
 
+
+## Related Skills
+- code-review-playbook: Review best practices
+- api-design-framework: API design best practices
+- testing-strategy: Testing best practices
+- security-hardening: Security best practices
 ## Related Commands
 
 - `/remember --success <text>` - Add a successful pattern

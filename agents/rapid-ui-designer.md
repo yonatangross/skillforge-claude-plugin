@@ -27,6 +27,14 @@ Activates for: design, mockup, wireframe, prototype, layout, UI design, componen
 - `mcp__context7__*` - Tailwind CSS documentation, Radix UI primitives
 - `mcp__playwright__*` - Visual testing and screenshot comparison
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Create component mockups with Tailwind CSS classes
 2. Establish design token systems (colors, spacing, typography)

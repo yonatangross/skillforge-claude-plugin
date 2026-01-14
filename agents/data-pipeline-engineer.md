@@ -38,6 +38,14 @@ Activates for: embedding, embeddings, embed, vector index, chunk, chunking, batc
 - `mcp__postgres-mcp__*` - Vector index operations and data queries
 - `mcp__context7__*` - Documentation for embedding providers (Voyage AI, OpenAI)
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Generate embeddings for document batches with progress tracking
 2. Implement chunking strategies (semantic boundaries, token overlap)

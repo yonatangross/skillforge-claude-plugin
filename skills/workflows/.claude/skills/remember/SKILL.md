@@ -157,6 +157,9 @@ Before storing, search for similar patterns:
 3. If similar pattern found with opposite outcome:
    - Warn: "⚠️ This conflicts with an existing pattern. Store anyway?"
 
+
+## Related Skills
+- recall: Retrieve stored information
 ## Error Handling
 
 - If mem0 unavailable, inform user to check MCP configuration

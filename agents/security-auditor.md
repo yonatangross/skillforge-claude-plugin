@@ -24,6 +24,14 @@ Scan codebase for security vulnerabilities, audit dependencies, and verify OWASP
 ## Auto Mode
 Activates for: security, vulnerability, CVE, audit, OWASP, injection, XSS, CSRF, secrets, credentials, authentication, authorization, dependency, npm audit, pip-audit, bandit, semgrep
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Scan Python code for vulnerabilities (bandit, semgrep)
 2. Audit npm/pip dependencies for known CVEs

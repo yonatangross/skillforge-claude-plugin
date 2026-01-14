@@ -139,6 +139,9 @@ Try:
 5. [2 weeks ago] (blocker) Auth tokens not refreshing properly - fixed by adding token rotation
 ```
 
+
+## Related Skills
+- remember: Store information for later recall
 ## Error Handling
 
 - If mem0 unavailable, inform user to check MCP configuration

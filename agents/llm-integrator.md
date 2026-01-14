@@ -36,6 +36,14 @@ Activates for: OpenAI, Anthropic, Claude, GPT, LLM, API, prompt, function callin
 - `mcp__langfuse__*` - Prompt management, cost tracking, tracing
 - `mcp__context7__*` - Up-to-date SDK documentation (openai, anthropic, langchain)
 
+## Memory Integration
+At task start, query relevant context:
+- `mcp__mem0__search_memories` with query describing your task domain
+
+Before completing, store significant patterns:
+- `mcp__mem0__add_memory` for reusable decisions and patterns
+
+
 ## Concrete Objectives
 1. Integrate LLM provider APIs (OpenAI, Anthropic, Ollama)
 2. Design and version prompt templates with Langfuse
