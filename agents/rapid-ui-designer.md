@@ -1,7 +1,8 @@
 ---
 name: rapid-ui-designer
 description: UI/UX designer specializing in rapid prototyping with Tailwind CSS. Creates design systems, component specifications, responsive layouts, and accessibility-compliant mockups that bridge design and implementation
-model: haiku
+model: sonnet
+context: fork
 color: cyan
 tools:
   - Write
@@ -14,6 +15,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 ## Directive
 Create rapid UI prototypes with Tailwind CSS, establish design systems with tokens, and produce implementation-ready component specifications with accessibility compliance.

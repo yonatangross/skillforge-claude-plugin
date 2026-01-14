@@ -170,7 +170,57 @@ jobs:
           bash tests/compliance/test-cc-216-compliance.sh
 
   # ============================================================================
-  # STAGE 7: Coverage Report (NEW)
+  # STAGE 7: Agent & Skill Validation
+  # ============================================================================
+  agent-skill-tests:
+    name: Validate Agents & Skills
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Test Agent Model Selection
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/agents/test-agent-model-selection.sh
+
+      - name: Test Agent Context Modes
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/agents/test-agent-context-modes.sh
+
+      - name: Test Agent Required Hooks
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/agents/test-agent-required-hooks.sh
+
+      - name: Test Agent Frontmatter
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/agents/test-agent-frontmatter.sh
+
+      - name: Test Skill Structure
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/skills/test-skill-structure.sh
+
+      - name: Test Skill Context Modes
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/skills/test-skill-context-modes.sh
+
+      - name: Test Skill References
+        run: |
+          export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
+          bash tests/skills/test-skill-references.sh
+
+  # ============================================================================
+  # STAGE 8: Coverage Report
   # ============================================================================
   coverage-report:
     name: Hook Coverage
@@ -203,7 +253,7 @@ jobs:
   # ============================================================================
   summary:
     name: CI Summary
-    needs: [lint, unit-tests, security-tests, integration-tests, performance-tests, compliance-tests, coverage-report]
+    needs: [lint, unit-tests, security-tests, integration-tests, performance-tests, compliance-tests, agent-skill-tests, coverage-report]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -217,13 +267,15 @@ jobs:
           echo "Performance Tests: ${{ needs.performance-tests.result }}"
           echo "Compliance Tests: ${{ needs.compliance-tests.result }}"
           echo "Coverage Report: ${{ needs.coverage-report.result }}"
+          echo "Agent & Skill Tests: ${{ needs.agent-skill-tests.result }}"
 
           if [[ "${{ needs.lint.result }}" != "success" ]] || \
              [[ "${{ needs.unit-tests.result }}" != "success" ]] || \
              [[ "${{ needs.security-tests.result }}" != "success" ]] || \
              [[ "${{ needs.integration-tests.result }}" != "success" ]] || \
              [[ "${{ needs.performance-tests.result }}" != "success" ]] || \
-             [[ "${{ needs.compliance-tests.result }}" != "success" ]]; then
+             [[ "${{ needs.compliance-tests.result }}" != "success" ]] || \
+             [[ "${{ needs.agent-skill-tests.result }}" != "success" ]]; then
             echo "::error::One or more CI stages failed"
             exit 1
           fi

@@ -2,6 +2,7 @@
 name: system-design-reviewer
 description: System design reviewer who evaluates implementation plans against scale, data, security, UX, and coherence criteria before code is written
 model: opus
+context: fork
 color: cyan
 tools:
   - Read
@@ -17,6 +18,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 # System Design Reviewer Agent
 

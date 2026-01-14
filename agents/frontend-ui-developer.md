@@ -2,6 +2,7 @@
 name: frontend-ui-developer
 description: Frontend developer who builds React 19/TypeScript components with optimistic updates, concurrent features, Zod-validated APIs, exhaustive type safety, and modern 2025 patterns
 model: sonnet
+context: fork
 color: purple
 tools:
   - Read

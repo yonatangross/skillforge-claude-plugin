@@ -126,6 +126,17 @@ ls ~/.claude/plugins/skillforge/skills/*/.claude/skills/
 
 # Validate nested skills structure
 ./tests/skills/structure/test-capabilities-json.sh
+
+# Agent validation tests (added in v4.11.1)
+./tests/agents/test-agent-model-selection.sh
+./tests/agents/test-agent-context-modes.sh
+./tests/agents/test-agent-required-hooks.sh
+./tests/agents/test-agent-frontmatter.sh
+
+# Skill validation tests (added in v4.11.1)
+./tests/skills/test-skill-structure.sh
+./tests/skills/test-skill-context-modes.sh
+./tests/skills/test-skill-references.sh
 ```
 
 ### Hook Management

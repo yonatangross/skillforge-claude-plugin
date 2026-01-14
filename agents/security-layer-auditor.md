@@ -1,7 +1,8 @@
 ---
 name: security-layer-auditor
 description: Security layer auditor who verifies defense-in-depth implementation across 8 security layers, from edge to storage, ensuring comprehensive protection
-model: haiku
+model: sonnet
+context: fork
 color: red
 tools:
   - Bash
@@ -17,6 +18,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 # Security Layer Auditor Agent
 

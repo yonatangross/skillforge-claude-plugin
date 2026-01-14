@@ -2,6 +2,7 @@
 name: metrics-architect
 description: Metrics specialist who designs OKRs, KPIs, success criteria, and instrumentation plans to measure product outcomes and validate hypotheses
 model: sonnet
+context: fork
 color: orchid
 tools:
   - Read
@@ -15,6 +16,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 ## Directive
 Design measurable success criteria, define OKRs and KPIs, and create instrumentation plans to validate product hypotheses and track outcomes.

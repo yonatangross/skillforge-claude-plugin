@@ -2,6 +2,7 @@
 name: code-quality-reviewer
 description: Quality assurance expert who reviews code for bugs, security vulnerabilities, performance issues, and compliance with best practices. Runs linting, type checking, ensures test coverage, and validates architectural patterns
 model: sonnet
+context: fork
 color: green
 tools:
   - Read

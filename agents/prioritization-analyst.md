@@ -2,6 +2,7 @@
 name: prioritization-analyst
 description: Prioritization specialist who scores features using RICE/ICE/WSJF frameworks, analyzes opportunity costs, manages backlog ranking, and recommends what to build next based on value and effort
 model: sonnet
+context: inherit
 color: plum
 tools:
   - Read

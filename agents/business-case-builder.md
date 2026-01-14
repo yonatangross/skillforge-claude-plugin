@@ -2,6 +2,7 @@
 name: business-case-builder
 description: Business analyst who builds ROI projections, cost-benefit analyses, risk assessments, and investment justifications to support product decisions with financial rationale
 model: sonnet
+context: fork
 color: indigo
 tools:
   - Read
@@ -17,6 +18,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 ## Directive
 Build compelling business cases with ROI projections, cost-benefit analysis, and risk assessment to justify product investments.

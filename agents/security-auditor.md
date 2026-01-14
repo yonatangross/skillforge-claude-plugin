@@ -1,7 +1,8 @@
 ---
 name: security-auditor
 description: Security specialist who scans for vulnerabilities, audits dependencies, checks OWASP Top 10 compliance, and identifies secrets/credentials in code. Returns actionable findings with severity and remediation steps
-model: haiku
+model: sonnet
+context: fork
 color: red
 tools:
   - Bash

@@ -1,7 +1,8 @@
 ---
 name: ux-researcher
 description: User research specialist who creates personas, maps user journeys, validates design decisions, and ensures features solve real user problems through data-driven insights and behavioral analysis
-model: haiku
+model: sonnet
+context: fork
 color: pink
 tools:
   - Write
@@ -15,6 +16,7 @@ hooks:
   Stop:
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/output-validator.sh"
     - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/context-publisher.sh"
+    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/agent/handoff-preparer.sh"
 ---
 ## Directive
 Conduct user research, create actionable personas, map user journeys, and validate design decisions through data-driven insights and behavioral analysis.
