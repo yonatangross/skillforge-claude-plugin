@@ -1,0 +1,266 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/yonatangross/skillforge-claude-plugin/schemas/skill-evolution.schema.json",
+  "title": "SkillForge Skill Evolution Schema",
+  "description": "Schema for tracking skill evolution, versioning, and improvement suggestions",
+  "type": "object",
+  "definitions": {
+    "skillEvolution": {
+      "type": "object",
+      "description": "Evolution tracking for a single skill",
+      "properties": {
+        "skillId": {
+          "type": "string",
+          "description": "Unique identifier for the skill"
+        },
+        "currentVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Current semantic version (e.g., 1.0.0)"
+        },
+        "versions": {
+          "type": "array",
+          "description": "Version history with performance metrics",
+          "items": {
+            "$ref": "#/definitions/skillVersion"
+          }
+        },
+        "suggestions": {
+          "type": "array",
+          "description": "Improvement suggestions based on usage patterns",
+          "items": {
+            "$ref": "#/definitions/evolutionSuggestion"
+          }
+        },
+        "editPatterns": {
+          "type": "object",
+          "description": "Common edit patterns observed after skill usage",
+          "additionalProperties": {
+            "$ref": "#/definitions/editPattern"
+          }
+        },
+        "lastAnalyzed": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last evolution analysis"
+        }
+      },
+      "required": ["skillId", "currentVersion"]
+    },
+    "skillVersion": {
+      "type": "object",
+      "description": "A specific version of a skill with its metrics",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version number"
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date this version was created"
+        },
+        "successRate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Success rate (0.0 to 1.0) for this version"
+        },
+        "uses": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of times this version was used"
+        },
+        "avgEdits": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average number of edits made after using this version"
+        },
+        "snapshot": {
+          "type": "object",
+          "description": "Optional snapshot of capabilities at this version",
+          "properties": {
+            "capabilities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "triggers": {
+              "type": "object"
+            }
+          }
+        },
+        "changelog": {
+          "type": "string",
+          "description": "Description of changes in this version"
+        }
+      },
+      "required": ["version", "date"]
+    },
+    "evolutionSuggestion": {
+      "type": "object",
+      "description": "A suggested improvement for the skill",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for this suggestion"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["add", "remove", "modify", "merge", "split"],
+          "description": "Type of suggested change"
+        },
+        "target": {
+          "type": "string",
+          "enum": ["capability", "trigger", "reference", "template", "integration"],
+          "description": "What part of the skill to modify"
+        },
+        "pattern": {
+          "type": "string",
+          "description": "The pattern or content to add/modify/remove"
+        },
+        "frequency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "How often this pattern occurs (0.0 to 1.0)"
+        },
+        "occurrences": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of times this pattern was observed"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence in this suggestion (based on sample size and frequency)"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "accepted", "rejected", "implemented"],
+          "description": "Current status of the suggestion"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Explanation for why this suggestion was generated"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "resolvedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["type", "target", "pattern", "frequency", "status"]
+    },
+    "editPattern": {
+      "type": "object",
+      "description": "A recurring edit pattern observed after skill usage",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of times this pattern was observed"
+        },
+        "frequency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Frequency relative to total skill uses"
+        },
+        "examples": {
+          "type": "array",
+          "description": "Example edits matching this pattern",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 5
+        },
+        "lastSeen": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["count", "frequency"]
+    },
+    "evolutionRegistry": {
+      "type": "object",
+      "description": "Registry of all skill evolution data",
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+$",
+          "description": "Schema version"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "skills": {
+          "type": "object",
+          "description": "Map of skill IDs to their evolution data",
+          "additionalProperties": {
+            "$ref": "#/definitions/skillEvolution"
+          }
+        },
+        "config": {
+          "type": "object",
+          "description": "Evolution system configuration",
+          "properties": {
+            "minSamplesForSuggestion": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 5,
+              "description": "Minimum usage samples before generating suggestions"
+            },
+            "minFrequencyForSuggestion": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.7,
+              "description": "Minimum pattern frequency to trigger a suggestion"
+            },
+            "autoVersionOnImprovement": {
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically create version when suggestion is implemented"
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "description": "Summary statistics across all skills",
+          "properties": {
+            "totalSkillsTracked": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "totalVersionsCreated": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "totalSuggestionsPending": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "totalSuggestionsImplemented": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "averageSuccessRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      },
+      "required": ["version", "skills"]
+    }
+  }
+}

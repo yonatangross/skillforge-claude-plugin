@@ -107,6 +107,9 @@ case "$TOOL_NAME" in
     # File lock release (sequential - needs to run)
     run_check_parallel "Lock" "$SCRIPT_DIR/write-edit/file-lock-release.sh"
 
+    # Skill evolution: track edit patterns after skill usage (#58)
+    run_check_parallel "SkillEdit" "$SCRIPT_DIR/skill-edit-tracker.sh"
+
     # All skill validators can run in PARALLEL (independent checks)
     run_check_parallel "Layers" "$SKILL_DIR/backend-layer-validator.sh"
     run_check_parallel "Imports" "$SKILL_DIR/import-direction-enforcer.sh"

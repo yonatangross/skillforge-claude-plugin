@@ -1,0 +1,25 @@
+#!/bin/bash
+# Launch Claude Code with plugin development environment
+#
+# Usage:
+#   ./bin/claude-dev              # Start Claude in plugin dev mode
+#   ./bin/claude-dev --resume     # Resume previous session
+#   ./bin/claude-dev -p "prompt"  # Start with a prompt
+#
+# This script sets CLAUDE_PLUGIN_ROOT so hooks work correctly
+# when developing the plugin itself (vs using it in another repo).
+#
+# Note: --dangerously-skip-permissions is enabled by default for dev workflow.
+
+set -euo pipefail
+
+# Resolve plugin root (parent of bin directory)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export CLAUDE_PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# Optional: Show dev mode indicator
+if [[ "${CLAUDE_DEV_QUIET:-0}" != "1" ]]; then
+    echo "🔧 Plugin dev mode: CLAUDE_PLUGIN_ROOT=$CLAUDE_PLUGIN_ROOT"
+fi
+
+exec claude --dangerously-skip-permissions "$@"

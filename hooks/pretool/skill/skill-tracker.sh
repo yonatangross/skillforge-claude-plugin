@@ -43,6 +43,13 @@ if type log_skill_usage &>/dev/null; then
     log_hook "Skill usage logged to feedback system"
 fi
 
+# Track for skill evolution system (#58)
+# This enables edit pattern correlation with skill usage
+if type track_skill_for_evolution &>/dev/null; then
+    track_skill_for_evolution "$SKILL_NAME"
+    log_hook "Skill tracked for evolution analysis"
+fi
+
 # Log to JSONL for detailed analytics
 SKILL_ANALYTICS="${CLAUDE_PROJECT_DIR:-.}/.claude/logs/skill-analytics.jsonl"
 jq -n \

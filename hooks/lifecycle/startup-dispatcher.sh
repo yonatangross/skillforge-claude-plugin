@@ -55,7 +55,7 @@ run_hook_parallel() {
   ) &
 }
 
-# Collect results from parallel hooks
+# Collect results from parallel hooks (writes to temp files for reliable multiline handling)
 collect_results() {
   local warnings=""
   local messages=""
@@ -92,8 +92,9 @@ collect_results() {
     fi
   done
 
-  echo "WARNINGS:$warnings"
-  echo "MESSAGES:$messages"
+  # Write to temp files for reliable multiline handling
+  echo -n "$warnings" > "$TEMP_DIR/_warnings.txt"
+  echo -n "$messages" > "$TEMP_DIR/_messages.txt"
 }
 
 # ============================================================================
@@ -129,29 +130,29 @@ fi
 # PHASE 3: Collect results and output
 # ============================================================================
 
-RESULTS=$(collect_results)
-WARNINGS=$(echo "$RESULTS" | grep "^WARNINGS:" | sed 's/^WARNINGS://')
-MESSAGES=$(echo "$RESULTS" | grep "^MESSAGES:" | sed 's/^MESSAGES://')
+collect_results
+WARNINGS=$(cat "$TEMP_DIR/_warnings.txt" 2>/dev/null || echo "")
+MESSAGES=$(cat "$TEMP_DIR/_messages.txt" 2>/dev/null || echo "")
 
 # Log agent type if present
 if [[ -n "$AGENT_TYPE" ]]; then
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] [startup-dispatcher] Agent type: $AGENT_TYPE" >> "${CLAUDE_PROJECT_DIR:-.}/.claude/logs/hooks.log" 2>/dev/null || true
 fi
 
-# Build output JSON
+# Build output JSON (use jq to properly escape strings with newlines/special chars)
 if [[ -n "$WARNINGS" ]]; then
   # Has warnings
   if [[ -n "$MESSAGES" ]]; then
-    echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARNINGS}${RESET}\n${MESSAGES}\", \"continue\": true}"
+    jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}"$'\n'"${MESSAGES}" '{systemMessage: $msg, continue: true}'
   else
-    echo "{\"systemMessage\": \"${YELLOW}⚠ ${WARNINGS}${RESET}\", \"continue\": true}"
+    jq -nc --arg msg "${YELLOW}⚠ ${WARNINGS}${RESET}" '{systemMessage: $msg, continue: true}'
   fi
 elif [[ -n "$MESSAGES" ]]; then
   # Has messages but no warnings
-  echo "{\"systemMessage\": \"${MESSAGES}\", \"continue\": true}"
+  jq -nc --arg msg "$MESSAGES" '{systemMessage: $msg, continue: true}'
 else
   # Silent success
-  echo "{\"continue\": true, \"suppressOutput\": true}"
+  echo '{"continue": true, "suppressOutput": true}'
 fi
 
 exit 0

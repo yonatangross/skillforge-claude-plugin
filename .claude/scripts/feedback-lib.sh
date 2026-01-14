@@ -957,3 +957,140 @@ export -f calculate_agent_trend
 export -f get_agent_performance_report
 export -f generate_agent_suggestions
 export -f _update_agent_recent_results
+# =============================================================================
+# SKILL EVOLUTION HELPERS (#58)
+# =============================================================================
+
+# Get recent skill usage for edit tracking
+get_recent_skill_from_session() {
+    local session_file="${FEEDBACK_DIR}/../session/state.json"
+    
+    if [[ ! -f "$session_file" ]]; then
+        echo ""
+        return
+    fi
+    
+    local now
+    now=$(date +%s)
+    local cutoff=$((now - 300))  # 5 minutes
+    
+    jq -r --argjson cutoff "$cutoff" '
+        .recentSkills // [] |
+        map(select(.timestamp > $cutoff)) |
+        sort_by(-.timestamp) |
+        .[0].skillId // ""
+    ' "$session_file" 2>/dev/null || echo ""
+}
+
+# Track skill usage for evolution system
+track_skill_for_evolution() {
+    local skill_id="$1"
+    local session_file="${FEEDBACK_DIR}/../session/state.json"
+    
+    init_feedback
+    
+    mkdir -p "$(dirname "$session_file")"
+    
+    # Initialize if needed
+    if [[ ! -f "$session_file" ]]; then
+        echo '{"recentSkills": []}' > "$session_file"
+    fi
+    
+    local now
+    now=$(date +%s)
+    
+    local tmp_file
+    tmp_file=$(mktemp)
+    
+    jq --arg skill "$skill_id" --argjson ts "$now" '
+        .recentSkills = (
+            [.recentSkills // [] | .[] | select(.timestamp > ($ts - 300))] +
+            [{"skillId": $skill, "timestamp": $ts}]
+        )
+    ' "$session_file" > "$tmp_file" && mv "$tmp_file" "$session_file"
+}
+
+# Get skill evolution suggestions
+get_skill_evolution_suggestions() {
+    local skill_id="${1:-}"
+    local evolution_script="${FEEDBACK_DIR}/../scripts/evolution-engine.sh"
+    
+    if [[ ! -x "$evolution_script" ]]; then
+        echo "[]"
+        return
+    fi
+    
+    if [[ -n "$skill_id" ]]; then
+        "$evolution_script" suggest "$skill_id" 2>/dev/null || echo "[]"
+    else
+        echo "[]"
+    fi
+}
+
+# Check skill health (for rollback triggers)
+check_skill_health() {
+    local skill_id="$1"
+    local threshold="${2:-0.20}"  # 20% drop triggers warning
+    
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        echo "healthy"
+        return
+    fi
+    
+    # Get current success rate from recent usage
+    local metrics
+    metrics=$(jq -r --arg skill "$skill_id" '.skills[$skill] // {}' "$METRICS_FILE" 2>/dev/null)
+    
+    local uses successes
+    uses=$(echo "$metrics" | jq -r '.uses // 0')
+    successes=$(echo "$metrics" | jq -r '.successes // 0')
+    
+    if [[ "$uses" -lt 5 ]]; then
+        echo "insufficient_data"
+        return
+    fi
+    
+    local current_rate
+    current_rate=$(echo "scale=2; $successes / $uses" | bc)
+    
+    # Get baseline from evolution registry or manifest
+    local evolution_registry="${FEEDBACK_DIR}/evolution-registry.json"
+    local baseline_rate="0.80"  # Default baseline
+    
+    if [[ -f "$evolution_registry" ]]; then
+        local stored_baseline
+        stored_baseline=$(jq -r --arg skill "$skill_id" '
+            .skills[$skill].versions[-1].successRate // 0.80
+        ' "$evolution_registry" 2>/dev/null || echo "0.80")
+        baseline_rate="$stored_baseline"
+    fi
+    
+    # Compare
+    local diff
+    diff=$(echo "scale=2; $baseline_rate - $current_rate" | bc)
+    
+    if (( $(echo "$diff > $threshold" | bc -l) )); then
+        echo "declining:$current_rate:$baseline_rate"
+    else
+        echo "healthy"
+    fi
+}
+
+# Get skill metrics for evolution
+get_skill_evolution_metrics() {
+    local skill_id="$1"
+    
+    if [[ ! -f "$METRICS_FILE" ]]; then
+        echo '{"uses": 0, "successes": 0, "avgEdits": 0}'
+        return
+    fi
+    
+    jq -r --arg skill "$skill_id" '.skills[$skill] // {"uses": 0, "successes": 0, "avgEdits": 0}' "$METRICS_FILE" 2>/dev/null || echo '{"uses": 0, "successes": 0, "avgEdits": 0}'
+}
+
+# Skill Evolution exports (#58)
+export -f get_recent_skill_from_session
+export -f track_skill_for_evolution
+export -f get_skill_evolution_suggestions
+export -f check_skill_health
+export -f get_skill_evolution_metrics
