@@ -92,6 +92,89 @@
         "pausedUntil": { "type": ["string", "null"], "format": "date-time" }
       },
       "required": ["version", "enabled"]
+    },
+    "satisfaction": {
+      "type": "object",
+      "description": "User satisfaction tracking data",
+      "properties": {
+        "version": { "type": "string", "pattern": "^\\d+\\.\\d+$" },
+        "updated": { "type": "string", "format": "date-time" },
+        "sessions": {
+          "type": "object",
+          "description": "Satisfaction data per session",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "positive": { "type": "integer", "minimum": 0, "description": "Count of positive signals" },
+              "negative": { "type": "integer", "minimum": 0, "description": "Count of negative signals" },
+              "neutral": { "type": "integer", "minimum": 0, "description": "Count of neutral signals" },
+              "signals": {
+                "type": "array",
+                "description": "Individual satisfaction signals",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "type": "string", "enum": ["positive", "negative", "neutral"] },
+                    "context": { "type": "string", "description": "Truncated prompt context" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  },
+                  "required": ["type", "timestamp"]
+                }
+              },
+              "started": { "type": "string", "format": "date-time" },
+              "lastSignal": { "type": "string", "format": "date-time" }
+            },
+            "required": ["positive", "negative", "neutral"]
+          }
+        },
+        "aggregate": {
+          "type": "object",
+          "description": "Aggregate satisfaction metrics",
+          "properties": {
+            "totalPositive": { "type": "integer", "minimum": 0 },
+            "totalNegative": { "type": "integer", "minimum": 0 },
+            "totalNeutral": { "type": "integer", "minimum": 0 },
+            "averageScore": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "0.0 = all negative, 1.0 = all positive"
+            }
+          },
+          "required": ["totalPositive", "totalNegative", "totalNeutral", "averageScore"]
+        }
+      },
+      "required": ["version", "sessions", "aggregate"]
+    },
+    "satisfactionSignal": {
+      "type": "object",
+      "description": "A single satisfaction signal detection result",
+      "properties": {
+        "sentiment": {
+          "type": "string",
+          "enum": ["positive", "negative", "neutral"],
+          "description": "Overall sentiment classification"
+        },
+        "score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence score (positive / total signals)"
+        },
+        "positiveCount": { "type": "integer", "minimum": 0 },
+        "negativeCount": { "type": "integer", "minimum": 0 },
+        "positiveMatches": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Words/phrases that matched positive patterns"
+        },
+        "negativeMatches": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Words/phrases that matched negative patterns"
+        }
+      },
+      "required": ["sentiment", "score", "positiveCount", "negativeCount"]
     }
   }
 }
