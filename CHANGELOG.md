@@ -25,11 +25,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `claude-hud` skill: added "When to Use" section, converted capabilities to slim format (under 350 token budget)
 - Synced version to 4.11.1 across all manifests
 
+**Agent Configuration Issues (#39)**
+- Changed `model: haiku` → `model: sonnet` for 4 agents requiring deeper reasoning:
+  - `security-layer-auditor` (8-layer defense audit)
+  - `security-auditor` (CVE analysis, OWASP validation)
+  - `ux-researcher` (personas, journey mapping)
+  - `rapid-ui-designer` (WCAG analysis, design specs)
+- Added explicit `context:` mode to all 20 agents (was defaulting silently):
+  - 17 agents: `context: fork` (complex operations)
+  - 3 agents: `context: inherit` (lightweight utilities: requirements-translator, prioritization-analyst, market-intelligence)
+- Added missing `handoff-preparer.sh` hook to 10 agents
+
+### Added
+
+**Agent & Skill CI Tests**
+- New test suite: `tests/agents/`
+  - `test-agent-model-selection.sh` - Validates appropriate model for task complexity
+  - `test-agent-context-modes.sh` - Ensures explicit context declaration
+  - `test-agent-required-hooks.sh` - Validates required Stop hooks
+  - `test-agent-frontmatter.sh` - CC 2.1.6 compliance check
+- New test suite: `tests/skills/`
+  - `test-skill-structure.sh` - Validates Tier 1-4 files exist
+  - `test-skill-context-modes.sh` - Validates appropriate context modes
+  - `test-skill-references.sh` - Validates agent skill references
+- Added `agent-skill-tests` job to CI workflow
+- Updated CLAUDE.md with new test commands
+
 ### Changed
 - Test results improved from 7 failing to 0 failing (26 tests pass)
 
 ---
-
 ## [4.11.0] - 2026-01-13
 
 ### Changed

@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin"><img src="https://img.shields.io/github/stars/yonatangross/skillforge-claude-plugin?style=flat-square" alt="GitHub Stars"></a>
-  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.11.0-green?style=flat-square" alt="Version"></a>
+  <a href="https://github.com/yonatangross/skillforge-claude-plugin/releases"><img src="https://img.shields.io/badge/version-4.11.1-green?style=flat-square" alt="Version"></a>
   <img src="https://img.shields.io/badge/CC-≥2.1.6-blue?style=flat-square" alt="Claude Code 2.1.6+">
   <a href="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml"><img src="https://github.com/yonatangross/skillforge-claude-plugin/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/license-MIT-purple?style=flat-square" alt="License"></a>
@@ -48,13 +48,18 @@ SkillForge transforms Claude Code into a comprehensive AI development platform b
 | Single-threaded | Parallel agent execution (fan-out/fan-in) |
 | Context overload | Token-efficient (~70% savings) |
 
-## What's New in v4.11.0 (Hook Consolidation)
+## What's New in v4.11.1 (Agent Fixes)
 
-- **Hook Consolidation**: Reduced from 44 to 23 registered hooks using dispatcher pattern (48% reduction)
-- **MCP Updates**: Added mem0 (cloud semantic memory) alongside Anthropic memory
-- **Fixed Paths**: All hook references now correctly point to existing files
-- **New Dispatchers**: agent-dispatcher, skill-dispatcher, session-end-dispatcher
-- **Cleaned Dead Code**: Removed 9 unused hook files
+- **Agent Model Fixes**: Changed 4 agents from haiku→sonnet for deeper reasoning
+- **Context Modes**: Added explicit `context:` declaration to all 20 agents
+- **Hook Completeness**: Added missing `handoff-preparer.sh` to 10 agents
+- **CI Tests**: 7 new tests to validate agent/skill configurations
+
+### Previous (v4.11.0 - Hook Consolidation)
+
+- Hook Consolidation: Reduced from 44 to 23 registered hooks using dispatcher pattern
+- MCP Updates: Added mem0 (cloud semantic memory) alongside Anthropic memory
+- New Dispatchers: agent-dispatcher, skill-dispatcher, session-end-dispatcher
 
 ### Previous (v4.10.0 - CC 2.1.6 Integration)
 
