@@ -1,30 +1,23 @@
 #!/usr/bin/env bash
-# Security Pattern Validator - LLM-powered validation hook
-# Detects security anti-patterns before write
-# CC 2.1.4+ Compliant: includes continue field in all outputs
-
+# Security Pattern Validator - Detects security anti-patterns before write
+# CC 2.1.7 Compliant: Self-contained hook with stdin reading and self-guard
 set -euo pipefail
 
-# Get the file content from environment or stdin
-FILE_PATH="${TOOL_INPUT_FILE_PATH:-}"
-CONTENT="${TOOL_INPUT_CONTENT:-}"
+# Read stdin BEFORE sourcing common.sh
+_HOOK_INPUT=$(cat)
+export _HOOK_INPUT
 
-if [[ -z "$FILE_PATH" ]]; then
-    echo '{"continue": true, "suppressOutput": true}'
-    exit 0
-fi
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../../_lib/common.sh"
 
-# Only analyze code files
-case "$FILE_PATH" in
-    *.py|*.ts|*.tsx|*.js|*.jsx)
-        # Code files - analyze
-        ;;
-    *)
-        # Non-code files - skip
-        echo '{"continue": true, "suppressOutput": true}'
-        exit 0
-        ;;
-esac
+# Self-guard: Only run for code files
+guard_code_files || exit 0
+
+# Get file path and content
+FILE_PATH=$(get_field '.tool_input.file_path')
+CONTENT=$(get_field '.tool_input.content')
+
+[[ -z "$FILE_PATH" ]] && { output_silent_success; exit 0; }
 
 # Security patterns to check (regex-based quick scan)
 SECURITY_ISSUES=()
@@ -51,26 +44,21 @@ fi
 
 # Log results
 LOG_DIR="${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/logs"
-mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR" 2>/dev/null || true
 
 if [[ ${#SECURITY_ISSUES[@]} -gt 0 ]]; then
-    echo "[$(date -Iseconds)] SECURITY_WARN: $FILE_PATH" >> "$LOG_DIR/security-validator.log"
+    echo "[$(date -Iseconds)] SECURITY_WARN: $FILE_PATH" >> "$LOG_DIR/security-validator.log" 2>/dev/null || true
     for issue in "${SECURITY_ISSUES[@]}"; do
-        echo "  - $issue" >> "$LOG_DIR/security-validator.log"
+        echo "  - $issue" >> "$LOG_DIR/security-validator.log" 2>/dev/null || true
     done
 
-    # Build warning message for output
-    WARNING_MSG="Security warnings for $FILE_PATH: "
-    for issue in "${SECURITY_ISSUES[@]}"; do
-        WARNING_MSG+="$issue; "
-    done
-
-    # Output with warning in systemMessage
-    jq -n --arg msg "$WARNING_MSG" '{continue: true, suppressOutput: false, systemMessage: $msg}'
+    # Build warning message
+    WARNING_MSG="Security warnings for $(basename "$FILE_PATH"): ${SECURITY_ISSUES[*]}"
+    output_warning "$WARNING_MSG"
     exit 0
 else
-    echo "[$(date -Iseconds)] SECURITY_OK: $FILE_PATH" >> "$LOG_DIR/security-validator.log"
+    echo "[$(date -Iseconds)] SECURITY_OK: $FILE_PATH" >> "$LOG_DIR/security-validator.log" 2>/dev/null || true
 fi
 
-echo '{"continue": true, "suppressOutput": true}'
+output_silent_success
 exit 0

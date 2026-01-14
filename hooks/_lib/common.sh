@@ -689,3 +689,93 @@ strip_ansi() {
 
 # Export CC 2.1.7 helpers
 export -f output_warning output_posttool_feedback strip_ansi
+
+# -----------------------------------------------------------------------------
+# CC 2.1.7 Self-Guard Helpers
+# -----------------------------------------------------------------------------
+
+# Guard: Only run for specific file extensions
+guard_file_extension() {
+  local file_path
+  file_path=$(get_field '.tool_input.file_path // ""')
+  [[ -z "$file_path" ]] && { output_silent_success; return 1; }
+  local ext="${file_path##*.}"
+  for allowed_ext in "$@"; do
+    [[ "${ext,,}" == "${allowed_ext,,}" ]] && return 0
+  done
+  output_silent_success
+  return 1
+}
+
+# Guard: Only run for code files
+guard_code_files() {
+  guard_file_extension "py" "ts" "tsx" "js" "jsx" "go" "rs" "java"
+}
+
+# Guard: Only run for Python files
+guard_python_files() { guard_file_extension "py"; }
+
+# Guard: Only run for TypeScript/JavaScript files
+guard_typescript_files() { guard_file_extension "ts" "tsx" "js" "jsx"; }
+
+# Guard: Only run for test files
+guard_test_files() {
+  local file_path
+  file_path=$(get_field '.tool_input.file_path // ""')
+  [[ -z "$file_path" ]] && { output_silent_success; return 1; }
+  case "$file_path" in *test*|*spec*|*Test*|*Spec*) return 0 ;; esac
+  output_silent_success
+  return 1
+}
+
+# Guard: Only run for files matching path pattern
+guard_path_pattern() {
+  local file_path
+  file_path=$(get_field '.tool_input.file_path // ""')
+  [[ -z "$file_path" ]] && { output_silent_success; return 1; }
+  for pattern in "$@"; do [[ "$file_path" == $pattern ]] && return 0; done
+  output_silent_success
+  return 1
+}
+
+# Guard: Skip internal/generated files
+guard_skip_internal() {
+  local fp=$(get_field '.tool_input.file_path // ""')
+  [[ -z "$fp" ]] && return 0
+  case "$fp" in */.claude/*|*/node_modules/*|*/.git/*|*/dist/*|*.lock)
+    output_silent_success; return 1 ;; esac
+  return 0
+}
+
+# Guard: Only run for non-trivial bash commands
+guard_nontrivial_bash() {
+  local cmd=$(get_field '.tool_input.command // ""')
+  case "$cmd" in echo\ *|ls\ *|ls|pwd|cat\ *|head\ *|tail\ *|wc\ *|date|whoami)
+    output_silent_success; return 1 ;; esac
+  return 0
+}
+
+# Guard: Only run if multi-instance coordination is enabled
+guard_multi_instance() {
+  is_multi_instance_enabled && return 0
+  output_silent_success; return 1
+}
+
+export -f guard_file_extension guard_code_files guard_python_files
+export -f guard_typescript_files guard_test_files guard_path_pattern
+export -f guard_skip_internal guard_nontrivial_bash guard_multi_instance
+
+# Guard: Only run for specific tool names
+# Usage: guard_tool "Write" "Edit" || exit 0
+guard_tool() {
+  local tool_name
+  tool_name=$(get_field '.tool_name // ""')
+  [[ -z "$tool_name" ]] && { output_silent_success; return 1; }
+  for allowed_tool in "$@"; do
+    [[ "$tool_name" == "$allowed_tool" ]] && return 0
+  done
+  output_silent_success
+  return 1
+}
+
+export -f guard_tool
