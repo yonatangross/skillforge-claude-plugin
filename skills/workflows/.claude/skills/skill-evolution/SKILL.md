@@ -11,6 +11,14 @@ tags: [skill-management, evolution, versioning, analytics]
 
 Enables skills to automatically improve based on usage patterns, user edits, and success rates. Provides version control with safe rollback capability.
 
+## When to Use
+
+- Reviewing how skills are performing across sessions
+- Identifying patterns in user edits to skill outputs
+- Applying learned improvements to skill templates
+- Rolling back problematic skill changes
+- Tracking skill version history and success rates
+
 ## Quick Reference
 
 | Command | Description |

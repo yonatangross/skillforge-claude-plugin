@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/yonatangross/skillforge-claude-plugin/schemas/memory.schema.json",
   "title": "SkillForge Memory Schema",
-  "description": "Schema for mem0 semantic memory integration",
+  "description": "Schema for mem0 semantic memory integration with graph memory and agent scoping (v1.1.0)",
   "type": "object",
   "definitions": {
     "userIdPatterns": {
@@ -11,20 +11,45 @@
       "properties": {
         "projectDecisions": {
           "type": "string",
-          "pattern": "^skillforge-[a-z0-9-]+-decisions$",
-          "description": "Pattern: skillforge-{project-name}-decisions"
+          "pattern": "^[a-z0-9-]+-decisions$",
+          "description": "Pattern: {project-name}-decisions"
+        },
+        "projectPatterns": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+-patterns$",
+          "description": "Pattern: {project-name}-patterns"
         },
         "projectContinuity": {
           "type": "string",
-          "pattern": "^skillforge-[a-z0-9-]+-continuity$",
-          "description": "Pattern: skillforge-{project-name}-continuity"
+          "pattern": "^[a-z0-9-]+-continuity$",
+          "description": "Pattern: {project-name}-continuity"
         },
-        "agentMemory": {
+        "projectAgents": {
           "type": "string",
-          "pattern": "^skf:[a-z0-9-]+$",
-          "description": "Pattern: skf:{agent-name}"
+          "pattern": "^[a-z0-9-]+-agents$",
+          "description": "Pattern: {project-name}-agents"
+        },
+        "projectBestPractices": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+-best-practices$",
+          "description": "Pattern: {project-name}-best-practices"
+        },
+        "globalBestPractices": {
+          "type": "string",
+          "pattern": "^skillforge-global-best-practices$",
+          "description": "Cross-project best practices storage"
+        },
+        "globalDecisions": {
+          "type": "string",
+          "pattern": "^skillforge-global-decisions$",
+          "description": "Cross-project decisions storage"
         }
       }
+    },
+    "agentIdPattern": {
+      "type": "string",
+      "pattern": "^skf:[a-z0-9-]+$",
+      "description": "Pattern: skf:{agent-name} (e.g., skf:database-engineer)"
     },
     "memoryCategories": {
       "type": "string",
@@ -34,9 +59,20 @@
         "pattern",
         "blocker",
         "preference",
-        "constraint"
+        "constraint",
+        "pagination",
+        "database",
+        "authentication",
+        "api",
+        "frontend",
+        "performance"
       ],
       "description": "Categories for organizing memories"
+    },
+    "memoryOutcome": {
+      "type": "string",
+      "enum": ["success", "failed", "neutral"],
+      "description": "Outcome tracking for best practices"
     },
     "memoryEntry": {
       "type": "object",
@@ -47,15 +83,33 @@
           "maxLength": 2000,
           "description": "The memory content"
         },
+        "user_id": {
+          "type": "string",
+          "description": "Scoped user ID for memory organization"
+        },
+        "agent_id": {
+          "$ref": "#/definitions/agentIdPattern",
+          "description": "Optional agent ID for agent-scoped memories"
+        },
+        "enable_graph": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable graph memory for relationship extraction"
+        },
         "category": { "$ref": "#/definitions/memoryCategories" },
         "metadata": {
           "type": "object",
           "properties": {
             "timestamp": { "type": "string", "format": "date-time" },
+            "stored_at": { "type": "string", "format": "date-time" },
             "session_id": { "type": "string" },
-            "source": { "type": "string", "enum": ["user", "agent", "hook", "auto"] },
+            "source": { "type": "string", "enum": ["user", "agent", "hook", "auto", "skillforge-plugin"] },
             "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
-            "project": { "type": "string" }
+            "project": { "type": "string" },
+            "scope": { "type": "string" },
+            "category": { "$ref": "#/definitions/memoryCategories" },
+            "outcome": { "$ref": "#/definitions/memoryOutcome" },
+            "lesson": { "type": "string", "description": "Lesson learned (for anti-patterns)" }
           }
         }
       },
@@ -64,12 +118,74 @@
     "searchFilters": {
       "type": "object",
       "properties": {
+        "AND": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "description": "Array of filter conditions to AND together"
+        },
+        "OR": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "description": "Array of filter conditions to OR together"
+        },
         "user_id": { "type": "string" },
-        "agent_id": { "type": "string" },
+        "agent_id": { "$ref": "#/definitions/agentIdPattern" },
         "app_id": { "type": "string" },
         "category": { "$ref": "#/definitions/memoryCategories" },
+        "metadata.category": { "$ref": "#/definitions/memoryCategories" },
+        "metadata.outcome": { "$ref": "#/definitions/memoryOutcome" },
         "created_after": { "type": "string", "format": "date-time" }
       }
+    },
+    "searchRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Semantic search query"
+        },
+        "filters": { "$ref": "#/definitions/searchFilters" },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "enable_graph": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable graph search for relationship queries"
+        }
+      },
+      "required": ["query"]
+    },
+    "graphEntity": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Entity name" },
+        "entityType": { "type": "string", "description": "Entity type (e.g., agent, tool, pattern)" },
+        "observations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Observations about this entity"
+        }
+      },
+      "required": ["name", "entityType", "observations"]
+    },
+    "graphRelation": {
+      "type": "object",
+      "properties": {
+        "from": { "type": "string", "description": "Source entity name" },
+        "to": { "type": "string", "description": "Target entity name" },
+        "relationType": { "type": "string", "description": "Type of relationship (e.g., recommends, uses, requires)" }
+      },
+      "required": ["from", "to", "relationType"]
     }
   }
 }

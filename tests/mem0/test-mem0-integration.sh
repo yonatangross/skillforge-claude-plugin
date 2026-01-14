@@ -3,7 +3,12 @@
 # Part of SkillForge Claude Plugin comprehensive test suite
 # CC 2.1.7 Compliant
 #
-# Tests:
+# Tests v1.1.0 features:
+# - Agent memory chain propagation (pretool→posttool agent_id)
+# - Cross-project best practices (global user_id pattern)
+# - Graph memory relationships (enable_graph flow)
+# - remember/recall user_id alignment
+# - Category filter in search
 # - Session start context retrieval hook
 # - Agent memory injection (PreToolUse Task)
 # - Agent memory storage (PostToolUse Task)
@@ -131,7 +136,7 @@ test_agent_memory_inject_detects_agent_type() {
 
     local input='{"subagent_type":"database-engineer","prompt":"Design a schema"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Should output system message with agent info
     local msg
@@ -151,7 +156,7 @@ test_agent_memory_inject_unknown_agent() {
 
     local input='{"subagent_type":"unknown-agent-type","prompt":"Do something"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue' 2>/dev/null || echo "false")
@@ -170,7 +175,7 @@ test_agent_memory_inject_no_agent_type() {
 
     local input='{"prompt":"Just a prompt without agent"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue' 2>/dev/null || echo "false")
@@ -198,7 +203,7 @@ test_agent_memory_store_extracts_patterns() {
     }'
 
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/posttool/task/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue' 2>/dev/null || echo "false")
@@ -221,7 +226,7 @@ test_agent_memory_store_no_patterns_short_output() {
     }'
 
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/posttool/task/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Should not have pattern extraction message for short output
     local msg
@@ -347,7 +352,7 @@ test_full_session_lifecycle() {
     # Step 2: Simulate agent work (PreTool)
     local agent_input='{"subagent_type":"backend-system-architect"}'
     local pretool_output
-    pretool_output=$(echo "$agent_input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    pretool_output=$(echo "$agent_input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     local pretool_ok
     pretool_ok=$(echo "$pretool_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -372,12 +377,388 @@ test_full_session_lifecycle() {
 }
 
 # =============================================================================
+# NEW v1.1.0 TESTS: Agent Memory Chain Propagation
+# =============================================================================
+
+test_agent_memory_chain_propagation() {
+    test_start "pretool→posttool agent_id chain propagation"
+
+    export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
+
+    # Clean tracking file
+    local tracking_file="$PROJECT_ROOT/.claude/session/current-agent-id"
+    rm -f "$tracking_file" 2>/dev/null || true
+
+    # Step 1: PreTool sets agent_id in tracking file
+    local pretool_input='{"subagent_type":"database-engineer","prompt":"Design schema"}'
+    echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" >/dev/null 2>&1 || true
+
+    # Check tracking file was created
+    if [[ ! -f "$tracking_file" ]]; then
+        test_fail "Tracking file not created by pretool hook"
+        return
+    fi
+
+    local stored_agent_id
+    stored_agent_id=$(cat "$tracking_file" 2>/dev/null || echo "")
+
+    if [[ "$stored_agent_id" != "skf:database-engineer" ]]; then
+        test_fail "Expected 'skf:database-engineer', got '$stored_agent_id'"
+        return
+    fi
+
+    # Step 2: PostTool reads agent_id from tracking file
+    local posttool_input='{
+        "tool_input": {"subagent_type": "database-engineer"},
+        "tool_result": "Schema designed with pgvector extension"
+    }'
+
+    local output
+    output=$(echo "$posttool_input" | bash "$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
+
+    # Cleanup
+    rm -f "$tracking_file" 2>/dev/null || true
+
+    # Verify posttool succeeded
+    local has_continue
+    has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
+
+    if [[ "$has_continue" == "true" ]]; then
+        test_pass
+    else
+        test_fail "PostTool hook failed to process chained agent_id"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Cross-Project Best Practices
+# =============================================================================
+
+test_cross_project_best_practices() {
+    test_start "global user_id pattern for best practices"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test global user_id generation
+    local global_user_id
+    global_user_id=$(mem0_global_user_id "best-practices")
+
+    if [[ "$global_user_id" != "skillforge-global-best-practices" ]]; then
+        test_fail "Expected 'skillforge-global-best-practices', got '$global_user_id'"
+        return
+    fi
+
+    # Test build_best_practice_json with global flag
+    local json_output
+    json_output=$(build_best_practice_json "success" "api" "REST pagination works well" "Always use cursor-based pagination" "false" "" "true")
+
+    # Check it's valid JSON
+    if ! echo "$json_output" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid JSON output"
+        return
+    fi
+
+    # Check user_id is global
+    local user_id
+    user_id=$(echo "$json_output" | jq -r '.user_id')
+
+    if [[ "$user_id" == "skillforge-global-best-practices" ]]; then
+        test_pass
+    else
+        test_fail "Expected global user_id, got '$user_id'"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Graph Memory Relationships
+# =============================================================================
+
+test_graph_memory_relationships() {
+    test_start "enable_graph flow for relationship extraction"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test mem0_add_memory_json with enable_graph=true
+    local json_output
+    json_output=$(mem0_add_memory_json "agents" "database-engineer recommends pgvector for RAG" '{"category":"recommendation"}' "true" "skf:database-engineer" "false")
+
+    # Validate JSON
+    if ! echo "$json_output" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid JSON output"
+        return
+    fi
+
+    # Check enable_graph field is present and true
+    local enable_graph
+    enable_graph=$(echo "$json_output" | jq -r '.enable_graph // "missing"')
+
+    if [[ "$enable_graph" != "true" ]]; then
+        test_fail "Expected enable_graph=true, got '$enable_graph'"
+        return
+    fi
+
+    # Check agent_id is present
+    local agent_id
+    agent_id=$(echo "$json_output" | jq -r '.agent_id // "missing"')
+
+    if [[ "$agent_id" == "skf:database-engineer" ]]; then
+        test_pass
+    else
+        test_fail "Expected agent_id='skf:database-engineer', got '$agent_id'"
+    fi
+}
+
+test_graph_memory_entity_builder() {
+    test_start "graph entity builder functions"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test entity building
+    local entity
+    entity=$(mem0_build_graph_entity "database-engineer" "agent" "Recommends pgvector" "Specializes in PostgreSQL")
+
+    # Validate JSON
+    if ! echo "$entity" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid entity JSON"
+        return
+    fi
+
+    # Check fields
+    local name type obs_count
+    name=$(echo "$entity" | jq -r '.name')
+    type=$(echo "$entity" | jq -r '.entityType')
+    obs_count=$(echo "$entity" | jq -r '.observations | length')
+
+    if [[ "$name" == "database-engineer" && "$type" == "agent" && "$obs_count" == "2" ]]; then
+        test_pass
+    else
+        test_fail "Entity fields incorrect: name=$name, type=$type, obs_count=$obs_count"
+    fi
+}
+
+test_graph_memory_relation_builder() {
+    test_start "graph relation builder functions"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test relation building
+    local relation
+    relation=$(mem0_build_graph_relation "database-engineer" "pgvector" "recommends")
+
+    # Validate JSON
+    if ! echo "$relation" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid relation JSON"
+        return
+    fi
+
+    # Check fields
+    local from to relation_type
+    from=$(echo "$relation" | jq -r '.from')
+    to=$(echo "$relation" | jq -r '.to')
+    relation_type=$(echo "$relation" | jq -r '.relationType')
+
+    if [[ "$from" == "database-engineer" && "$to" == "pgvector" && "$relation_type" == "recommends" ]]; then
+        test_pass
+    else
+        test_fail "Relation fields incorrect: from=$from, to=$to, type=$relation_type"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Remember/Recall User ID Alignment
+# =============================================================================
+
+test_remember_recall_user_id_alignment() {
+    test_start "remember and recall use same user_id pattern"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    export CLAUDE_PROJECT_DIR="/Users/test/my-project"
+
+    # Test remember (add) generates correct user_id
+    local add_json
+    add_json=$(mem0_add_memory_json "decisions" "We decided to use FastAPI" '{}' "false" "" "false")
+
+    local add_user_id
+    add_user_id=$(echo "$add_json" | jq -r '.user_id')
+
+    # Test recall (search) generates same user_id
+    local search_json
+    search_json=$(mem0_search_memory_json "decisions" "FastAPI decision" "10" "false" "" "" "false")
+
+    local search_filters
+    search_filters=$(echo "$search_json" | jq -r '.filters.AND[0].user_id')
+
+    if [[ "$add_user_id" == "$search_filters" && "$add_user_id" == "my-project-decisions" ]]; then
+        test_pass
+    else
+        test_fail "User ID mismatch: add='$add_user_id', search='$search_filters'"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Category Filter in Search
+# =============================================================================
+
+test_category_filter_in_search() {
+    test_start "metadata.category filter works in search"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    export CLAUDE_PROJECT_DIR="/Users/test/my-project"
+
+    # Test search with category filter
+    local search_json
+    search_json=$(mem0_search_memory_json "best-practices" "pagination pattern" "5" "false" "" "pagination" "false")
+
+    # Validate JSON
+    if ! echo "$search_json" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid search JSON"
+        return
+    fi
+
+    # Check filters contain category
+    local category_filter
+    category_filter=$(echo "$search_json" | jq -r '.filters.AND[] | select(."metadata.category") | ."metadata.category"' 2>/dev/null || echo "")
+
+    if [[ "$category_filter" == "pagination" ]]; then
+        test_pass
+    else
+        test_fail "Category filter missing or incorrect: '$category_filter'"
+    fi
+}
+
+test_category_filter_with_agent_id() {
+    test_start "category filter works alongside agent_id filter"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    export CLAUDE_PROJECT_DIR="/Users/test/my-project"
+
+    # Test search with both category and agent_id filters
+    local search_json
+    search_json=$(mem0_search_memory_json "patterns" "database optimization" "5" "false" "database-engineer" "performance" "false")
+
+    # Validate JSON
+    if ! echo "$search_json" | jq -e '.' >/dev/null 2>&1; then
+        test_fail "Invalid search JSON"
+        return
+    fi
+
+    # Check filters array length (should have user_id + category + agent_id = 3)
+    local filter_count
+    filter_count=$(echo "$search_json" | jq '.filters.AND | length')
+
+    # Check category filter exists
+    local has_category
+    has_category=$(echo "$search_json" | jq -r '.filters.AND[] | select(."metadata.category") | ."metadata.category"' 2>/dev/null || echo "")
+
+    # Check agent_id filter exists
+    local has_agent
+    has_agent=$(echo "$search_json" | jq -r '.filters.AND[] | select(.agent_id) | .agent_id' 2>/dev/null || echo "")
+
+    if [[ "$filter_count" == "3" && "$has_category" == "performance" && "$has_agent" == "skf:database-engineer" ]]; then
+        test_pass
+    else
+        test_fail "Filters incorrect: count=$filter_count, category='$has_category', agent='$has_agent'"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Agent ID Format Validation
+# =============================================================================
+
+test_agent_id_format_validation() {
+    test_start "agent_id formatting with skf: prefix"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test formatting adds skf: prefix
+    local formatted1
+    formatted1=$(mem0_format_agent_id "database-engineer")
+
+    if [[ "$formatted1" != "skf:database-engineer" ]]; then
+        test_fail "Expected 'skf:database-engineer', got '$formatted1'"
+        return
+    fi
+
+    # Test formatting is idempotent (doesn't double-prefix)
+    local formatted2
+    formatted2=$(mem0_format_agent_id "skf:database-engineer")
+
+    if [[ "$formatted2" == "skf:database-engineer" ]]; then
+        test_pass
+    else
+        test_fail "Expected idempotent result 'skf:database-engineer', got '$formatted2'"
+    fi
+}
+
+test_agent_id_validation_known_agents() {
+    test_start "validate_agent_id accepts known agents"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test known agent
+    if validate_agent_id "database-engineer" 2>/dev/null; then
+        test_pass
+    else
+        test_fail "Should validate known agent"
+    fi
+}
+
+test_agent_id_validation_custom_pattern() {
+    test_start "validate_agent_id accepts custom pattern"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test custom agent following pattern
+    if validate_agent_id "my-custom-agent-123" 2>/dev/null; then
+        test_pass
+    else
+        test_fail "Should validate custom agent matching pattern"
+    fi
+}
+
+# =============================================================================
+# NEW v1.1.0 TESTS: Best Practice Category Detection
+# =============================================================================
+
+test_best_practice_category_detection() {
+    test_start "detect_best_practice_category identifies categories"
+
+    # Source mem0 library
+    source "$PROJECT_ROOT/hooks/_lib/mem0.sh"
+
+    # Test various category detections
+    local cat1 cat2 cat3
+    cat1=$(detect_best_practice_category "The pagination cursor was efficient")
+    cat2=$(detect_best_practice_category "JWT authentication worked well")
+    cat3=$(detect_best_practice_category "Query performance improved with index")
+
+    if [[ "$cat1" == "pagination" && "$cat2" == "authentication" && "$cat3" == "performance" ]]; then
+        test_pass
+    else
+        test_fail "Categories incorrect: cat1='$cat1', cat2='$cat2', cat3='$cat3'"
+    fi
+}
+
+# =============================================================================
 # Run All Tests
 # =============================================================================
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  Mem0 Integration Tests"
+echo "  Mem0 Integration Tests (v1.1.0)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -420,6 +801,46 @@ echo ""
 echo "▶ Full Workflow"
 echo "────────────────────────────────────────"
 test_full_session_lifecycle
+
+echo ""
+echo "▶ v1.1.0: Agent Memory Chain Propagation"
+echo "────────────────────────────────────────"
+test_agent_memory_chain_propagation
+
+echo ""
+echo "▶ v1.1.0: Cross-Project Best Practices"
+echo "────────────────────────────────────────"
+test_cross_project_best_practices
+
+echo ""
+echo "▶ v1.1.0: Graph Memory Relationships"
+echo "────────────────────────────────────────"
+test_graph_memory_relationships
+test_graph_memory_entity_builder
+test_graph_memory_relation_builder
+
+echo ""
+echo "▶ v1.1.0: Remember/Recall User ID Alignment"
+echo "────────────────────────────────────────"
+test_remember_recall_user_id_alignment
+
+echo ""
+echo "▶ v1.1.0: Category Filter in Search"
+echo "────────────────────────────────────────"
+test_category_filter_in_search
+test_category_filter_with_agent_id
+
+echo ""
+echo "▶ v1.1.0: Agent ID Format and Validation"
+echo "────────────────────────────────────────"
+test_agent_id_format_validation
+test_agent_id_validation_known_agents
+test_agent_id_validation_custom_pattern
+
+echo ""
+echo "▶ v1.1.0: Best Practice Category Detection"
+echo "────────────────────────────────────────"
+test_best_practice_category_detection
 
 echo ""
 echo "════════════════════════════════════════════════════════════════════════════════"

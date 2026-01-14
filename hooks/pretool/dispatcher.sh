@@ -12,9 +12,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../_lib/common.sh"
 
 # ANSI colors
-RED=$'\033[31m'
-YELLOW=$'\033[33m'
-RESET=$'\033[0m'
 
 TOOL_NAME=$(get_tool_name)
 WARNINGS=()

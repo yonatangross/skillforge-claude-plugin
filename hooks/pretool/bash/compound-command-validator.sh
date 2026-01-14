@@ -1,7 +1,18 @@
 #!/bin/bash
-# CC 2.1.7: Compound Command Validator
+set -euo pipefail
+# CC 2.1.7: Compound Command Validator (Standalone Hook)
 # Validates multi-command sequences for security
-# Called by bash-dispatcher.sh
+# Detects dangerous patterns in compound commands (&&, ||, |, ;)
+
+# Read hook input from stdin once at the start
+INPUT=$(cat)
+
+# Extract the bash command
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // ""')
+
+# Normalize command: remove line continuations (backslash + newline)
+# This prevents bypass attempts using line breaks
+NORMALIZED_COMMAND=$(echo "$COMMAND" | tr -d '\\\n' | tr -s ' ')
 
 # Function to validate a single segment of a compound command
 validate_compound_segment() {
@@ -30,11 +41,6 @@ validate_compound_segment() {
       ;;
   esac
 
-  # Check for pipe-to-shell patterns (curl/wget to sh/bash)
-  if [[ "$segment" =~ curl.*\|.*(sh|bash) ]] || [[ "$segment" =~ wget.*\|.*(sh|bash) ]]; then
-    return 1
-  fi
-
   return 0
 }
 
@@ -43,6 +49,13 @@ validate_compound_segment() {
 validate_compound_command() {
   local cmd="$1"
   COMPOUND_BLOCK_REASON=""
+
+  # Check for pipe-to-shell patterns BEFORE splitting (pipe is a delimiter)
+  # These patterns span across the pipe operator
+  if [[ "$cmd" =~ curl.*\|.*(sh|bash) ]] || [[ "$cmd" =~ wget.*\|.*(sh|bash) ]]; then
+    COMPOUND_BLOCK_REASON="pipe-to-shell execution (curl/wget piped to sh/bash)"
+    return 1
+  fi
 
   # Check if command contains compound operators
   if [[ "$cmd" != *"&&"* ]] && [[ "$cmd" != *"||"* ]] && \
@@ -61,9 +74,36 @@ validate_compound_command() {
 
   return 0
 }
-# CC 2.1.7 Compliance: Output when run directly (not sourced)
-# This allows the file to pass compliance tests while still being sourceable
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    # Run directly - output success
-    echo '{"continue": true}'
+
+# Run validation on the normalized command
+if ! validate_compound_command "$NORMALIZED_COMMAND"; then
+  ERROR_MSG="BLOCKED: Dangerous compound command detected.
+
+Blocked segment: $COMPOUND_BLOCK_REASON
+
+The command contains a potentially destructive operation that could cause
+irreversible damage to the system.
+
+Dangerous patterns detected include:
+- Recursive deletion of root or home directories
+- Disk formatting commands (mkfs, dd to devices)
+- Unsafe permission changes (chmod 777 /)
+- Pipe-to-shell execution (curl/wget | bash)
+
+Please review and modify your command to remove the dangerous operation."
+
+  jq -n --arg msg "$ERROR_MSG" '{
+    systemMessage: $msg,
+    continue: false,
+    hookSpecificOutput: {
+      hookEventName: "PreToolUse",
+      permissionDecision: "deny",
+      permissionDecisionReason: "Dangerous compound command detected"
+    }
+  }'
+  exit 0
 fi
+
+# Safe compound command - allow execution
+echo '{"continue": true, "suppressOutput": true}'
+exit 0

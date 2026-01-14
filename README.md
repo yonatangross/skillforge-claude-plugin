@@ -10,7 +10,7 @@
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.7-7C3AED?style=flat-square&logo=anthropic)](https://claude.ai/claude-code)
 [![Skills](https://img.shields.io/badge/Skills-92-blue?style=flat-square)](./skills)
 [![Agents](https://img.shields.io/badge/Agents-20-green?style=flat-square)](./agents)
-[![Hooks](https://img.shields.io/badge/Hooks-32_registered-orange?style=flat-square)](./hooks)
+[![Hooks](https://img.shields.io/badge/Hooks-56_registered-orange?style=flat-square)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
 [Features](#features) • [Quick Start](#quick-start) • [Skills](#skill-system) • [Agents](#agents) • [Hooks](#hooks) • [Commands](#commands)
@@ -25,7 +25,7 @@ SkillForge Complete is a production-ready plugin for Claude Code that provides:
 
 - **92 Skills** across 10 categories with progressive loading (saves ~70% context tokens)
 - **20 Specialized Agents** with native CC 2.1.6+ skill injection
-- **32 Registered Hooks** for lifecycle automation, security gates, and quality enforcement
+- **56 Registered Hooks** for lifecycle automation, security gates, and quality enforcement
 - **Context Window HUD** with real-time usage monitoring
 - **Multi-Instance Coordination** for parallel Claude Code sessions
 
@@ -33,7 +33,7 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 
 ---
 
-## What's New in v4.12.0 (CC 2.1.7 Compatibility)
+## What's New in v4.13.0 (CC 2.1.7 Compatibility)
 
 - **Hook Refactoring**: Removed lifecycle dispatchers, now uses CC 2.1.7 native parallel execution
 - **32 Direct Hooks**: SessionStart (8), UserPromptSubmit (4), SessionEnd (4), Stop (10) registered individually
@@ -54,7 +54,7 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 
 - Hook Consolidation: Reduced from 44 to 23 registered hooks using dispatcher pattern
 - MCP Updates: Added mem0 (cloud semantic memory) alongside Anthropic memory
-- Note: Dispatchers for lifecycle hooks removed in v4.12.0 (CC 2.1.7 native parallel)
+- Note: Dispatchers for lifecycle hooks removed in v4.13.0 (CC 2.1.7 native parallel)
 
 ### Previous (v4.10.0 - CC 2.1.6 Integration)
 

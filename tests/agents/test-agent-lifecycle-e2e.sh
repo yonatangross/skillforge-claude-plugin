@@ -56,7 +56,7 @@ test_pretool_context_gate() {
 
     local input='{"subagent_type":"test-agent","prompt":"Do something"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -76,7 +76,7 @@ test_pretool_subagent_validator() {
     # Test with valid agent
     local input='{"subagent_type":"backend-system-architect","prompt":"Design API"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -96,7 +96,7 @@ test_pretool_subagent_validator_invalid() {
     # Test with invalid agent
     local input='{"subagent_type":"nonexistent-agent-xyz","prompt":"Do something"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Should still continue (warn but not block)
     if echo "$output" | jq -e '.' >/dev/null 2>&1; then
@@ -116,7 +116,7 @@ test_pretool_chain_order() {
     # Run all three hooks in order
     local gate_output validator_output memory_output
 
-    gate_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    gate_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local gate_ok
     gate_ok=$(echo "$gate_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -126,7 +126,7 @@ test_pretool_chain_order() {
         return
     fi
 
-    validator_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    validator_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local validator_ok
     validator_ok=$(echo "$validator_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -136,7 +136,7 @@ test_pretool_chain_order() {
         return
     fi
 
-    memory_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    memory_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     local memory_ok
     memory_ok=$(echo "$memory_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -221,7 +221,7 @@ test_agent_dispatcher() {
 
     local input='{"agent_type":"backend-system-architect","output":"API designed"}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/agent/agent-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-stop/output-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -250,13 +250,13 @@ test_full_agent_lifecycle() {
     local pretool_input='{"subagent_type":"'$agent_type'","prompt":"Design REST API"}'
 
     local gate_result
-    gate_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/pretool/task/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    gate_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local validator_result
-    validator_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    validator_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local memory_inject_result
-    memory_inject_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    memory_inject_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Phase 2: SubagentStart
     echo "    [2/4] SubagentStart..."
@@ -273,7 +273,7 @@ test_full_agent_lifecycle() {
     local stop_input='{"agent_type":"'$agent_type'","output":"'$agent_output'","success":true,"duration_ms":10000}'
 
     local dispatcher_result
-    dispatcher_result=$(echo "$stop_input" | bash "$PROJECT_ROOT/hooks/agent/agent-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    dispatcher_result=$(echo "$stop_input" | bash "$PROJECT_ROOT/hooks/subagent-stop/output-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local tracker_result
     tracker_result=$(echo "$stop_input" | bash "$PROJECT_ROOT/hooks/subagent-stop/subagent-completion-tracker.sh" 2>/dev/null || echo '{"continue":true}')
@@ -284,7 +284,7 @@ test_full_agent_lifecycle() {
     # Phase 5: PostToolUse
     local posttool_input='{"tool_name":"Task","tool_input":{"subagent_type":"'$agent_type'"},"tool_result":"'$agent_output'"}'
     local memory_store_result
-    memory_store_result=$(echo "$posttool_input" | bash "$PROJECT_ROOT/hooks/posttool/task/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
+    memory_store_result=$(echo "$posttool_input" | bash "$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Check all phases passed
     local all_passed=true
@@ -342,7 +342,7 @@ test_all_agents_spawn() {
     for agent in "${agents[@]}"; do
         local input='{"subagent_type":"'$agent'","prompt":"Test task"}'
         local output
-        output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+        output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
         local ok
         ok=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -412,12 +412,12 @@ test_agent_handoff_workflow() {
     # Step 1: workflow-architect completes
     local workflow_stop='{"agent_type":"workflow-architect","output":"Workflow designed with 5 nodes","success":true}'
     local workflow_result
-    workflow_result=$(echo "$workflow_stop" | bash "$PROJECT_ROOT/hooks/agent/agent-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    workflow_result=$(echo "$workflow_stop" | bash "$PROJECT_ROOT/hooks/subagent-stop/output-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Step 2: llm-integrator spawns
     local llm_spawn='{"subagent_type":"llm-integrator","prompt":"Implement LLM calls for nodes"}'
     local llm_result
-    llm_result=$(echo "$llm_spawn" | bash "$PROJECT_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    llm_result=$(echo "$llm_spawn" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local workflow_ok llm_ok
     workflow_ok=$(echo "$workflow_result" | jq -r '.continue // "false"' 2>/dev/null || echo "false")

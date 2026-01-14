@@ -24,7 +24,7 @@
     ]
   },
   "integrates_with": [
-    "mem0",
+    "mem0-memory",
     "remember",
     "recall"
   ],

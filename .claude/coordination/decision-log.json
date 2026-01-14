@@ -1177,6 +1177,118 @@
         "scope": "local"
       },
       "status": "accepted"
+    },
+    {
+      "decision_id": "DEC-20260114-2839",
+      "timestamp": "2026-01-14T16:09:21Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-61194",
+        "agent_type": "backend-system-architect"
+      },
+      "category": "architecture",
+      "title": "Agent backend-system-architect completed",
+      "description": "API designed",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "frontend-ui-developer",
+          "database-engineer"
+        ]
+      },
+      "status": "completed"
+    },
+    {
+      "decision_id": "DEC-20260114-2942",
+      "timestamp": "2026-01-14T16:09:22Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-61687",
+        "agent_type": "backend-system-architect"
+      },
+      "category": "architecture",
+      "title": "Agent backend-system-architect completed",
+      "description": "I decided to use FastAPI with proper REST conventions. The approach is modular with versioned endpoints.",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "frontend-ui-developer",
+          "database-engineer"
+        ]
+      },
+      "status": "completed"
+    },
+    {
+      "decision_id": "DEC-20260114-2720",
+      "timestamp": "2026-01-14T16:09:23Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-62970",
+        "agent_type": "workflow-architect"
+      },
+      "category": "ai-integration",
+      "title": "Agent workflow-architect completed",
+      "description": "Workflow designed with 5 nodes",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "llm-integrator"
+        ]
+      },
+      "status": "completed"
+    },
+    {
+      "decision_id": "DEC-20260114-9881",
+      "timestamp": "2026-01-14T16:33:24Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-63293",
+        "agent_type": "backend-system-architect"
+      },
+      "category": "architecture",
+      "title": "Agent backend-system-architect completed",
+      "description": "API designed",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "frontend-ui-developer",
+          "database-engineer"
+        ]
+      },
+      "status": "completed"
+    },
+    {
+      "decision_id": "DEC-20260114-5377",
+      "timestamp": "2026-01-14T16:33:25Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-63828",
+        "agent_type": "backend-system-architect"
+      },
+      "category": "architecture",
+      "title": "Agent backend-system-architect completed",
+      "description": "I decided to use FastAPI with proper REST conventions. The approach is modular with versioned endpoints.",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "frontend-ui-developer",
+          "database-engineer"
+        ]
+      },
+      "status": "completed"
+    },
+    {
+      "decision_id": "DEC-20260114-3297",
+      "timestamp": "2026-01-14T16:33:26Z",
+      "made_by": {
+        "instance_id": "Yonatans-MacBook-Pro.local-65112",
+        "agent_type": "workflow-architect"
+      },
+      "category": "ai-integration",
+      "title": "Agent workflow-architect completed",
+      "description": "Workflow designed with 5 nodes",
+      "impact": {
+        "scope": "agent-pipeline",
+        "downstream_agents": [
+          "llm-integrator"
+        ]
+      },
+      "status": "completed"
     }
   ]
 }

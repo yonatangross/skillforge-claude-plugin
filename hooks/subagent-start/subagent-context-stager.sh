@@ -13,7 +13,7 @@ set -euo pipefail
 _HOOK_INPUT=$(cat)
 export _HOOK_INPUT
 
-source "$(dirname "$0")/../_lib/common.sh"
+source "$(dirname "$0")/_lib/common.sh"
 
 SUBAGENT_TYPE=$(get_field '.subagent_type')
 TASK_DESCRIPTION=$(get_field '.task_description')

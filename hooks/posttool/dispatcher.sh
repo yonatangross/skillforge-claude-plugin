@@ -22,8 +22,6 @@ TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
 # ANSI colors
-YELLOW=$'\033[33m'
-RESET=$'\033[0m'
 
 # Coordination DB path
 COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
@@ -175,6 +173,9 @@ case "$TOOL_NAME" in
     run_check_parallel "Lock" "$SCRIPT_DIR/write-edit/file-lock-release.sh"
 
     # Skill evolution: track edit patterns after skill usage (#58)
+
+    # Auto-lint: run ruff+ty (Python) or biome (JS/TS) - 2026 linter stack
+    run_check_parallel "AutoLint" "$SCRIPT_DIR/auto-lint.sh"
     run_check_parallel "SkillEdit" "$SCRIPT_DIR/skill-edit-tracker.sh"
 
     # Skip validators for internal files (optimization)
@@ -271,7 +272,7 @@ fi
 
 # Output: silent on success, show warnings if any
 if [[ -n "$WARNINGS_MSG" ]]; then
-  jq -n --arg msg "⚠ $WARNINGS_MSG" '{continue:true,systemMessage:$msg}'
+  jq -n --arg r "⚠ $WARNINGS_MSG" '{decision:"block",reason:$r,continue:true}'
 else
   echo "{\"continue\": true, \"suppressOutput\": true}"
 fi

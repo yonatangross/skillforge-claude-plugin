@@ -2,9 +2,9 @@
 name: remember
 description: Store decisions and patterns in semantic memory with success/failure tracking
 context: inherit
-version: 1.0.0
+version: 1.1.0
 author: SkillForge
-tags: [memory, decisions, patterns, best-practices, mem0]
+tags: [memory, decisions, patterns, best-practices, mem0, graph-memory]
 ---
 
 # Remember - Store Decisions and Patterns
@@ -17,6 +17,7 @@ Store important decisions, patterns, or context in mem0 for future sessions. Sup
 - Storing successful patterns
 - Recording anti-patterns (things that failed)
 - Saving project-specific context
+- Building cross-project best practices library
 
 ## Usage
 
@@ -26,7 +27,19 @@ Store important decisions, patterns, or context in mem0 for future sessions. Sup
 /remember --success <text>     # Mark as successful pattern
 /remember --failed <text>      # Mark as anti-pattern
 /remember --success --category <category> <text>
+
+# Advanced options (v1.1.0+)
+/remember --graph <text>                    # Enable graph memory for relationships
+/remember --agent <agent-id> <text>         # Store in agent-specific scope
+/remember --global <text>                   # Store as cross-project best practice
+/remember --global --success --graph <text> # Combine flags
 ```
+
+## Advanced Flags
+
+- `--graph` - Enable graph memory to extract entities and relationships (useful for "X uses Y" patterns)
+- `--agent <agent-id>` - Scope memory to a specific agent (e.g., `database-engineer`, `backend-system-architect`)
+- `--global` - Store as cross-project best practice (user_id: `skillforge-global-best-practices`)
 
 ## Categories
 
@@ -58,6 +71,9 @@ If neither flag is provided, the memory is stored as neutral (informational).
 Check for --success flag → outcome: success
 Check for --failed flag → outcome: failed
 Check for --category <category> flag
+Check for --graph flag → enable_graph: true
+Check for --agent <agent-id> flag → agent_id: "skf:{agent-id}"
+Check for --global flag → use global user_id
 Extract the text to remember
 If no category specified, auto-detect from content
 ```
@@ -90,8 +106,10 @@ Use `mcp__mem0__add_memory` with:
 
 ```json
 {
-  "user_id": "skillforge-{project-name}-best-practices",
+  "user_id": "skillforge-{project-name}-decisions",
   "text": "The user's text",
+  "agent_id": "skf:{agent-id}",
+  "enable_graph": true,
   "metadata": {
     "category": "detected_category",
     "outcome": "success|failed|neutral",
@@ -103,12 +121,24 @@ Use `mcp__mem0__add_memory` with:
 }
 ```
 
+**User ID Selection:**
+- Default: `skillforge-{project-name}-decisions`
+- With `--global`: `skillforge-global-best-practices`
+- With `--agent`: Include `agent_id` field for agent-scoped retrieval
+
+**Optional Parameters (include when flags set):**
+- `enable_graph`: true (when `--graph` flag used)
+- `agent_id`: "skf:{agent-id}" (when `--agent` flag used)
+
 ### 5. Confirm Storage
 
 **For success:**
 ```
 ✅ Remembered SUCCESS (category): "summary of text"
    → Added to your Best Practice Library
+   📊 Graph: enabled (if --graph used)
+   🤖 Agent: {agent-id} (if --agent used)
+   🌐 Scope: global (if --global used)
 ```
 
 **For failed:**
@@ -147,6 +177,37 @@ Use `mcp__mem0__add_memory` with:
    💡 Lesson: Use cursor-based pagination for large datasets
 ```
 
+### Graph Memory (New)
+
+**Input:** `/remember --graph --success database-engineer uses pgvector for RAG applications`
+
+**Output:**
+```
+✅ Remembered SUCCESS (database): "database-engineer uses pgvector for RAG applications"
+   → Added to your Best Practice Library
+   📊 Graph: enabled - extracted entities: database-engineer, pgvector, RAG
+```
+
+### Agent-Scoped Memory (New)
+
+**Input:** `/remember --agent backend-system-architect Use connection pooling with min=5, max=20`
+
+**Output:**
+```
+✓ Remembered (database): "Use connection pooling with min=5, max=20"
+   → Scoped to agent: backend-system-architect
+```
+
+### Global Best Practice (New)
+
+**Input:** `/remember --global --success Always validate user input at API boundaries`
+
+**Output:**
+```
+✅ Remembered SUCCESS (api): "Always validate user input at API boundaries"
+   → Added to GLOBAL Best Practice Library (available in all projects)
+```
+
 ## Duplicate Detection
 
 Before storing, search for similar patterns:
@@ -160,9 +221,11 @@ Before storing, search for similar patterns:
 
 ## Related Skills
 - recall: Retrieve stored information
+
 ## Error Handling
 
 - If mem0 unavailable, inform user to check MCP configuration
 - If text is empty, ask user to provide something to remember
 - If text >2000 chars, truncate with notice
 - If both --success and --failed provided, ask user to clarify
+- If --agent used without agent-id, prompt for agent selection

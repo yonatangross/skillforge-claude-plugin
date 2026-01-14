@@ -2,7 +2,7 @@
 # Mem0 Memory Operations Library for SkillForge Plugin
 # Provides helper functions for interacting with Mem0 MCP server
 #
-# Version: 1.0.0
+# Version: 1.1.0 - Added graph memory, agent_id, and global scope support
 # Part of SkillForge Plugin - Works across ANY repository
 #
 # Usage: source "${CLAUDE_PLUGIN_ROOT}/hooks/_lib/mem0.sh"
@@ -12,6 +12,8 @@
 # - Graceful degradation: Works even if project has no .claude/context structure
 # - Scoped memory: Uses {project-name}-{scope} format for user_id
 # - MCP-compatible: Outputs JSON suitable for mcp__mem0__* tool calls
+# - Graph-aware: Supports enable_graph for relationship extraction
+# - Agent-aware: Supports agent_id for agent-scoped memories
 
 set -euo pipefail
 
@@ -20,14 +22,17 @@ set -euo pipefail
 # -----------------------------------------------------------------------------
 
 # Memory scopes for organizing different types of context
-readonly MEM0_SCOPE_DECISIONS="decisions"    # Architecture/design decisions
-readonly MEM0_SCOPE_PATTERNS="patterns"      # Code patterns and conventions
-readonly MEM0_SCOPE_CONTINUITY="continuity"  # Session continuity/handoff
-readonly MEM0_SCOPE_AGENTS="agents"              # Agent-specific context
-readonly MEM0_SCOPE_BEST_PRACTICES="best-practices"  # Success/failure patterns (#49)
+[[ -z "${MEM0_SCOPE_DECISIONS:-}" ]] && readonly MEM0_SCOPE_DECISIONS="decisions"    # Architecture/design decisions
+[[ -z "${MEM0_SCOPE_PATTERNS:-}" ]] && readonly MEM0_SCOPE_PATTERNS="patterns"      # Code patterns and conventions
+[[ -z "${MEM0_SCOPE_CONTINUITY:-}" ]] && readonly MEM0_SCOPE_CONTINUITY="continuity"  # Session continuity/handoff
+[[ -z "${MEM0_SCOPE_AGENTS:-}" ]] && readonly MEM0_SCOPE_AGENTS="agents"          # Agent-specific context
+[[ -z "${MEM0_SCOPE_BEST_PRACTICES:-}" ]] && readonly MEM0_SCOPE_BEST_PRACTICES="best-practices"  # Success/failure patterns (#49)
+
+# Global scope prefix for cross-project memories
+[[ -z "${MEM0_GLOBAL_PREFIX:-}" ]] && readonly MEM0_GLOBAL_PREFIX="skillforge-global"
 
 # Valid scopes array for validation
-readonly MEM0_VALID_SCOPES=("$MEM0_SCOPE_DECISIONS" "$MEM0_SCOPE_PATTERNS" "$MEM0_SCOPE_CONTINUITY" "$MEM0_SCOPE_AGENTS" "$MEM0_SCOPE_BEST_PRACTICES")
+[[ -z "${MEM0_VALID_SCOPES:-}" ]] && readonly MEM0_VALID_SCOPES=("$MEM0_SCOPE_DECISIONS" "$MEM0_SCOPE_PATTERNS" "$MEM0_SCOPE_CONTINUITY" "$MEM0_SCOPE_AGENTS" "$MEM0_SCOPE_BEST_PRACTICES")
 
 # -----------------------------------------------------------------------------
 # Project Identification Functions
@@ -62,9 +67,6 @@ mem0_get_project_id() {
 # Generate scoped user_id for Mem0
 # Usage: mem0_user_id "decisions"
 # Output: myproject-decisions
-# Generate scoped user_id for Mem0
-# Usage: mem0_user_id "decisions"
-# Output: myproject-decisions
 mem0_user_id() {
     local scope="${1:-continuity}"
     local project_id
@@ -86,6 +88,24 @@ mem0_user_id() {
     fi
 
     echo "${project_id}-${scope}"
+}
+
+# Generate global user_id for cross-project memories
+# Usage: mem0_global_user_id "best-practices"
+# Output: skillforge-global-best-practices
+mem0_global_user_id() {
+    local scope="${1:-best-practices}"
+    echo "${MEM0_GLOBAL_PREFIX}-${scope}"
+}
+
+# Format agent_id with skf: prefix
+# Usage: mem0_format_agent_id "database-engineer"
+# Output: skf:database-engineer
+mem0_format_agent_id() {
+    local agent_id="$1"
+    # Remove skf: prefix if already present, then add it
+    agent_id="${agent_id#skf:}"
+    echo "skf:${agent_id}"
 }
 
 # -----------------------------------------------------------------------------
@@ -210,18 +230,27 @@ extract_recent_tasks() {
 }
 
 # -----------------------------------------------------------------------------
-# Mem0 MCP Tool JSON Generators
+# Mem0 MCP Tool JSON Generators (Enhanced with graph/agent support)
 # -----------------------------------------------------------------------------
 
 # Output JSON for MCP tool call to add memory
-# Usage: mem0_add_memory_json "scope" "content" ["metadata_json"]
+# Usage: mem0_add_memory_json "scope" "content" ["metadata_json"] ["enable_graph"] ["agent_id"] ["global"]
 # Output: JSON suitable for mcp__mem0__add_memory arguments
 mem0_add_memory_json() {
     local scope="$1"
     local content="$2"
     local metadata="${3:-{\}}"
+    local enable_graph="${4:-false}"
+    local agent_id="${5:-}"
+    local global="${6:-false}"
+
     local user_id
-    user_id=$(mem0_user_id "$scope")
+    if [[ "$global" == "true" ]]; then
+        user_id=$(mem0_global_user_id "$scope")
+    else
+        user_id=$(mem0_user_id "$scope")
+    fi
+
     local project_id
     project_id=$(mem0_get_project_id)
     local timestamp
@@ -245,46 +274,101 @@ mem0_add_memory_json() {
             source: "skillforge-plugin"
         }')
 
-    # Output the tool call arguments
-    jq -n \
-        --arg content "$content" \
+    # Build base JSON
+    local result
+    result=$(jq -n \
+        --arg text "$content" \
         --arg user_id "$user_id" \
         --argjson metadata "$full_metadata" \
         '{
-            content: $content,
+            text: $text,
             user_id: $user_id,
             metadata: $metadata
-        }'
+        }')
+
+    # Add enable_graph if true
+    if [[ "$enable_graph" == "true" ]]; then
+        result=$(echo "$result" | jq '. + {enable_graph: true}')
+    fi
+
+    # Add agent_id if provided
+    if [[ -n "$agent_id" ]]; then
+        local formatted_agent_id
+        formatted_agent_id=$(mem0_format_agent_id "$agent_id")
+        result=$(echo "$result" | jq --arg agent_id "$formatted_agent_id" '. + {agent_id: $agent_id}')
+    fi
+
+    echo "$result"
 }
 
 # Output JSON for MCP tool call to search memory
-# Usage: mem0_search_memory_json "scope" "query" ["limit"]
-# Output: JSON suitable for mcp__mem0__search_memory arguments
+# Usage: mem0_search_memory_json "scope" "query" ["limit"] ["enable_graph"] ["agent_id"] ["category"] ["global"]
+# Output: JSON suitable for mcp__mem0__search_memories arguments
 mem0_search_memory_json() {
     local scope="$1"
     local query="$2"
     local limit="${3:-10}"
-    local user_id
-    user_id=$(mem0_user_id "$scope")
+    local enable_graph="${4:-false}"
+    local agent_id="${5:-}"
+    local category="${6:-}"
+    local global="${7:-false}"
 
-    jq -n \
+    local user_id
+    if [[ "$global" == "true" ]]; then
+        user_id=$(mem0_global_user_id "$scope")
+    else
+        user_id=$(mem0_user_id "$scope")
+    fi
+
+    # Build filters array
+    local filters_json
+    filters_json='{"AND": [{"user_id": "'"$user_id"'"}]}'
+
+    # Add category filter if specified
+    if [[ -n "$category" ]]; then
+        filters_json=$(echo "$filters_json" | jq --arg cat "$category" '.AND += [{"metadata.category": $cat}]')
+    fi
+
+    # Add agent_id filter if specified
+    if [[ -n "$agent_id" ]]; then
+        local formatted_agent_id
+        formatted_agent_id=$(mem0_format_agent_id "$agent_id")
+        filters_json=$(echo "$filters_json" | jq --arg aid "$formatted_agent_id" '.AND += [{"agent_id": $aid}]')
+    fi
+
+    # Build base result
+    local result
+    result=$(jq -n \
         --arg query "$query" \
-        --arg user_id "$user_id" \
+        --argjson filters "$filters_json" \
         --argjson limit "$limit" \
         '{
             query: $query,
-            user_id: $user_id,
+            filters: $filters,
             limit: $limit
-        }'
+        }')
+
+    # Add enable_graph if true
+    if [[ "$enable_graph" == "true" ]]; then
+        result=$(echo "$result" | jq '. + {enable_graph: true}')
+    fi
+
+    echo "$result"
 }
 
 # Output JSON for MCP tool call to get all memories for a scope
-# Usage: mem0_get_all_json "scope"
+# Usage: mem0_get_all_json "scope" ["global"]
 # Output: JSON suitable for mcp__mem0__get_all_memories arguments
 mem0_get_all_json() {
     local scope="$1"
+    local global="${2:-false}"
+
     local user_id
-    user_id=$(mem0_user_id "$scope")
+    if [[ "$global" == "true" ]]; then
+        user_id=$(mem0_global_user_id "$scope")
+    else
+        user_id=$(mem0_user_id "$scope")
+    fi
 
     jq -n \
         --arg user_id "$user_id" \
@@ -303,6 +387,106 @@ mem0_delete_memory_json() {
         --arg memory_id "$memory_id" \
         '{
             memory_id: $memory_id
+        }'
+}
+
+# -----------------------------------------------------------------------------
+# Graph Memory Helper Functions (NEW in v1.1.0)
+# -----------------------------------------------------------------------------
+
+# Build graph entity JSON for mcp__memory__create_entities
+# Usage: mem0_build_graph_entity "name" "type" "observation1" "observation2" ...
+# Output: JSON entity object
+mem0_build_graph_entity() {
+    local name="$1"
+    local entity_type="$2"
+    shift 2
+    local observations=("$@")
+
+    # Build observations array
+    local obs_json='[]'
+    for obs in "${observations[@]}"; do
+        obs_json=$(echo "$obs_json" | jq --arg o "$obs" '. += [$o]')
+    done
+
+    jq -n \
+        --arg name "$name" \
+        --arg entityType "$entity_type" \
+        --argjson observations "$obs_json" \
+        '{
+            name: $name,
+            entityType: $entityType,
+            observations: $observations
+        }'
+}
+
+# Build graph relation JSON for mcp__memory__create_relations
+# Usage: mem0_build_graph_relation "from_entity" "to_entity" "relation_type"
+# Output: JSON relation object
+mem0_build_graph_relation() {
+    local from="$1"
+    local to="$2"
+    local relation_type="$3"
+
+    jq -n \
+        --arg from "$from" \
+        --arg to "$to" \
+        --arg relationType "$relation_type" \
+        '{
+            from: $from,
+            to: $to,
+            relationType: $relationType
+        }'
+}
+
+# Build entities array for batch creation
+# Usage: mem0_build_entities_array entity1_json entity2_json ...
+# Output: JSON array of entities
+mem0_build_entities_array() {
+    local result='[]'
+    for entity in "$@"; do
+        result=$(echo "$result" | jq --argjson e "$entity" '. += [$e]')
+    done
+    echo "$result"
+}
+
+# Build relations array for batch creation
+# Usage: mem0_build_relations_array relation1_json relation2_json ...
+# Output: JSON array of relations
+mem0_build_relations_array() {
+    local result='[]'
+    for relation in "$@"; do
+        result=$(echo "$result" | jq --argjson r "$relation" '. += [$r]')
+    done
+    echo "$result"
+}
+
+# Extract entities from text for graph memory
+# Usage: mem0_extract_entities_hint "database-engineer uses pgvector for RAG"
+# Output: Suggested entities and relations (hint for Claude)
+mem0_extract_entities_hint() {
+    local text="$1"
+    local text_lower
+    text_lower=$(echo "$text" | tr '[:upper:]' '[:lower:]')
+
+    # Known agent patterns
+    local agents=("database-engineer" "backend-system-architect" "frontend-ui-developer" "security-auditor" "test-generator" "workflow-architect" "llm-integrator" "data-pipeline-engineer")
+
+    local found_agents=()
+    for agent in "${agents[@]}"; do
+        if [[ "$text_lower" == *"$agent"* ]]; then
+            found_agents+=("$agent")
+        fi
+    done
+
+    # Build hint JSON
+    jq -n \
+        --arg text "$text" \
+        --argjson agents "$(printf '%s\n' "${found_agents[@]}" | jq -R . | jq -s .)" \
+        '{
+            original_text: $text,
+            detected_agents: $agents,
+            hint: "Consider creating entities for agents and their recommendations/patterns"
         }'
 }
 
@@ -409,12 +593,41 @@ validate_memory_content() {
     return 0
 }
 
+# Validate agent_id format
+# Usage: validate_agent_id "database-engineer"
+# Returns 0 if valid, 1 if invalid
+validate_agent_id() {
+    local agent_id="$1"
+
+    # Remove skf: prefix if present for validation
+    agent_id="${agent_id#skf:}"
+
+    # Known valid agents
+    local valid_agents=("database-engineer" "backend-system-architect" "frontend-ui-developer" "security-auditor" "test-generator" "workflow-architect" "llm-integrator" "data-pipeline-engineer" "system-design-reviewer" "metrics-architect" "debug-investigator" "security-layer-auditor" "ux-researcher" "product-strategist" "code-quality-reviewer" "requirements-translator" "prioritization-analyst" "rapid-ui-designer" "market-intelligence" "business-case-builder")
+
+    for valid in "${valid_agents[@]}"; do
+        if [[ "$agent_id" == "$valid" ]]; then
+            return 0
+        fi
+    done
+
+    # Also allow custom agent IDs that match pattern
+    if [[ "$agent_id" =~ ^[a-z0-9-]+$ ]]; then
+        return 0
+    fi
+
+    echo "Warning: Unknown agent_id '$agent_id'" >&2
+    return 1
+}
+
 # -----------------------------------------------------------------------------
 # Export Functions
 # -----------------------------------------------------------------------------
 
 export -f mem0_get_project_id
 export -f mem0_user_id
+export -f mem0_global_user_id
+export -f mem0_format_agent_id
 export -f has_context_dir
 export -f get_context_dir
 export -f extract_session_decisions
@@ -424,10 +637,16 @@ export -f mem0_add_memory_json
 export -f mem0_search_memory_json
 export -f mem0_get_all_json
 export -f mem0_delete_memory_json
+export -f mem0_build_graph_entity
+export -f mem0_build_graph_relation
+export -f mem0_build_entities_array
+export -f mem0_build_relations_array
+export -f mem0_extract_entities_hint
 export -f build_continuity_content
 export -f build_decisions_content
 export -f is_mem0_available
 export -f validate_memory_content
+export -f validate_agent_id
 
 # Export scope constants
 export MEM0_SCOPE_DECISIONS
@@ -435,21 +654,31 @@ export MEM0_SCOPE_PATTERNS
 export MEM0_SCOPE_CONTINUITY
 export MEM0_SCOPE_AGENTS
 export MEM0_SCOPE_BEST_PRACTICES
+export MEM0_GLOBAL_PREFIX
 
 # -----------------------------------------------------------------------------
 # Best Practices Library Functions (#49)
 # -----------------------------------------------------------------------------
 
 # Build best practice memory content with outcome metadata
-# Usage: build_best_practice_json "success|failed|neutral" "category" "text" ["lesson"]
+# Usage: build_best_practice_json "success|failed|neutral" "category" "text" ["lesson"] ["enable_graph"] ["agent_id"] ["global"]
 # Output: JSON suitable for storing in mem0
 build_best_practice_json() {
     local outcome="$1"
     local category="$2"
     local text="$3"
     local lesson="${4:-}"
+    local enable_graph="${5:-false}"
+    local agent_id="${6:-}"
+    local global="${7:-false}"
+
     local user_id
-    user_id=$(mem0_user_id "$MEM0_SCOPE_BEST_PRACTICES")
+    if [[ "$global" == "true" ]]; then
+        user_id=$(mem0_global_user_id "$MEM0_SCOPE_BEST_PRACTICES")
+    else
+        user_id=$(mem0_user_id "$MEM0_SCOPE_BEST_PRACTICES")
+    fi
+
     local project_id
     project_id=$(mem0_get_project_id)
     local timestamp
@@ -487,16 +716,31 @@ build_best_practice_json() {
             }')
     fi
 
-    # Output the tool call arguments
-    jq -n \
-        --arg content "$text" \
+    # Build base result
+    local result
+    result=$(jq -n \
+        --arg text "$text" \
         --arg user_id "$user_id" \
         --argjson metadata "$metadata" \
         '{
-            content: $content,
+            text: $text,
             user_id: $user_id,
             metadata: $metadata
-        }'
+        }')
+
+    # Add enable_graph if true
+    if [[ "$enable_graph" == "true" ]]; then
+        result=$(echo "$result" | jq '. + {enable_graph: true}')
+    fi
+
+    # Add agent_id if provided
+    if [[ -n "$agent_id" ]]; then
+        local formatted_agent_id
+        formatted_agent_id=$(mem0_format_agent_id "$agent_id")
+        result=$(echo "$result" | jq --arg agent_id "$formatted_agent_id" '. + {agent_id: $agent_id}')
+    fi
+
+    echo "$result"
 }
 
 # Auto-detect category from text content
@@ -561,7 +805,7 @@ check_for_antipattern_query() {
         }'
 }
 
-# Export new functions
+# Export best practices functions
 export -f build_best_practice_json
 export -f detect_best_practice_category
 export -f check_for_antipattern_query

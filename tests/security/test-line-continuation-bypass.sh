@@ -94,7 +94,7 @@ test_sed_normalization() {
 test_dispatcher_integration() {
   log_info "Testing dispatcher normalization integration..."
 
-  local dispatcher="$PROJECT_ROOT/hooks/pretool/bash-dispatcher.sh"
+  local dispatcher="$PROJECT_ROOT/hooks/pretool/bash/dangerous-command-blocker.sh"
 
   if [[ -f "$dispatcher" ]]; then
     # Check that the dispatcher includes normalization

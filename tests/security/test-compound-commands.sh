@@ -41,7 +41,7 @@ run_dispatcher() {
   local cmd="$1"
   local input
   input=$(jq -n --arg cmd "$cmd" '{"tool_name":"Bash","tool_input":{"command":$cmd}}')
-  echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/bash-dispatcher.sh" 2>/dev/null || true
+  echo "$input" | bash "$PROJECT_ROOT/hooks/pretool/bash/dangerous-command-blocker.sh" 2>/dev/null || true
 }
 
 # ============================================================================
@@ -175,7 +175,7 @@ test_safe_compound_commands
 
 log_section "Test 8: Dispatcher has compound validation"
 test_dispatcher_has_validation() {
-  local dispatcher="$PROJECT_ROOT/hooks/pretool/bash-dispatcher.sh"
+  local dispatcher="$PROJECT_ROOT/hooks/pretool/bash/dangerous-command-blocker.sh"
 
   if [[ -f "$dispatcher" ]]; then
     if grep -q "compound-command-validator\|validate_compound_command\|CC 2.1.7" "$dispatcher"; then

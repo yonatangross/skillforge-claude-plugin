@@ -2,8 +2,8 @@
 # ============================================================================
 # Agent Memory Hooks Unit Tests
 # ============================================================================
-# Tests for hooks/pretool/task/agent-memory-inject.sh
-# Tests for hooks/posttool/task/agent-memory-store.sh
+# Tests for hooks/subagent-start/agent-memory-inject.sh
+# Tests for hooks/subagent-stop/agent-memory-store.sh
 # Part of Phase 2 mem0 integration (#44, #45)
 # ============================================================================
 
@@ -12,8 +12,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-PRE_AGENT_HOOK="$PROJECT_ROOT/hooks/pretool/task/agent-memory-inject.sh"
-POST_AGENT_HOOK="$PROJECT_ROOT/hooks/posttool/task/agent-memory-store.sh"
+PRE_AGENT_HOOK="$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh"
+POST_AGENT_HOOK="$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh"
 
 # ============================================================================
 # PRE-AGENT HOOK TESTS

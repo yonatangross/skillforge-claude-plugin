@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Agent Memory Store - Post-Tool Hook for Task
-# CC 2.1.6 Compliant: includes continue field in all outputs
+# CC 2.1.7 Compliant: includes continue field in all outputs
 # Extracts and stores successful patterns after agent completion
 #
 # Strategy:
@@ -9,8 +9,10 @@ set -euo pipefail
 # - Extract key architectural choices
 # - Store in mem0 with agent_id scope for future retrieval
 # - Track agent performance metrics
+# - Detect categories for proper organization
+# - Support enable_graph for relationship extraction
 #
-# Version: 1.0.0
+# Version: 1.1.0
 # Part of mem0 Semantic Memory Integration (#40, #45)
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
@@ -18,11 +20,11 @@ _HOOK_INPUT=$(cat)
 export _HOOK_INPUT
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR/../../_lib/common.sh"
-source "$SCRIPT_DIR/../../_lib/mem0.sh"
+source "$SCRIPT_DIR/../_lib/common.sh"
+source "$SCRIPT_DIR/../_lib/mem0.sh"
 
 # Source feedback lib for agent performance tracking
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../../.." && pwd)}"
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 FEEDBACK_LIB="${PLUGIN_ROOT}/.claude/scripts/feedback-lib.sh"
 if [[ -f "$FEEDBACK_LIB" ]]; then
     source "$FEEDBACK_LIB"
@@ -45,10 +47,15 @@ DECISION_PATTERNS=(
     "pattern:"
     "approach:"
     "architecture:"
+    "recommends"
+    "best practice"
+    "anti-pattern"
+    "learned that"
 )
 
 # Output patterns log
 PATTERNS_LOG="${CLAUDE_PROJECT_DIR:-.}/.claude/logs/agent-patterns.jsonl"
+AGENT_TRACKING_DIR="${CLAUDE_PROJECT_DIR:-.}/.claude/session"
 mkdir -p "$(dirname "$PATTERNS_LOG")" 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
@@ -56,12 +63,13 @@ mkdir -p "$(dirname "$PATTERNS_LOG")" 2>/dev/null || true
 # -----------------------------------------------------------------------------
 
 AGENT_TYPE=""
+AGENT_ID=""
 AGENT_OUTPUT=""
 SUCCESS="true"
 DURATION="0"
 
 if [[ -n "$_HOOK_INPUT" ]]; then
-    # CC 2.1.6 PostToolUse format
+    # CC 2.1.7 PostToolUse format
     AGENT_TYPE=$(echo "$_HOOK_INPUT" | jq -r '.tool_input.subagent_type // .tool_input.type // ""' 2>/dev/null || echo "")
     AGENT_OUTPUT=$(echo "$_HOOK_INPUT" | jq -r '.tool_result // ""' 2>/dev/null || echo "")
 
@@ -74,6 +82,11 @@ if [[ -n "$_HOOK_INPUT" ]]; then
     DURATION=$(echo "$_HOOK_INPUT" | jq -r '.duration_ms // 0' 2>/dev/null || echo "0")
 fi
 
+# Try to get agent_id from tracking file (set by pretool hook)
+if [[ -f "$AGENT_TRACKING_DIR/current-agent-id" ]]; then
+    AGENT_ID=$(cat "$AGENT_TRACKING_DIR/current-agent-id" 2>/dev/null || echo "")
+fi
+
 # If no agent type, silent success
 if [[ -z "$AGENT_TYPE" ]]; then
     log_hook "No agent type in input, skipping"
@@ -81,7 +94,12 @@ if [[ -z "$AGENT_TYPE" ]]; then
     exit 0
 fi
 
-log_hook "Processing completion for agent: $AGENT_TYPE (success: $SUCCESS)"
+# Build agent_id if not set
+if [[ -z "$AGENT_ID" ]]; then
+    AGENT_ID="skf:$AGENT_TYPE"
+fi
+
+log_hook "Processing completion for agent: $AGENT_TYPE (agent_id: $AGENT_ID, success: $SUCCESS)"
 
 # -----------------------------------------------------------------------------
 # Track Agent Performance (Feedback System)
@@ -91,6 +109,37 @@ if type log_agent_performance &>/dev/null; then
     log_agent_performance "$AGENT_TYPE" "$SUCCESS" "$DURATION"
     log_hook "Logged agent performance: $AGENT_TYPE"
 fi
+
+# -----------------------------------------------------------------------------
+# Category Detection
+# -----------------------------------------------------------------------------
+
+detect_pattern_category() {
+    local text="$1"
+    local text_lower
+    text_lower=$(echo "$text" | tr '[:upper:]' '[:lower:]')
+
+    # Check for category keywords
+    if [[ "$text_lower" == *"pagination"* || "$text_lower" == *"cursor"* || "$text_lower" == *"offset"* ]]; then
+        echo "pagination"
+    elif [[ "$text_lower" == *"database"* || "$text_lower" == *"sql"* || "$text_lower" == *"postgres"* || "$text_lower" == *"schema"* ]]; then
+        echo "database"
+    elif [[ "$text_lower" == *"api"* || "$text_lower" == *"endpoint"* || "$text_lower" == *"rest"* || "$text_lower" == *"graphql"* ]]; then
+        echo "api"
+    elif [[ "$text_lower" == *"auth"* || "$text_lower" == *"login"* || "$text_lower" == *"jwt"* || "$text_lower" == *"oauth"* ]]; then
+        echo "authentication"
+    elif [[ "$text_lower" == *"react"* || "$text_lower" == *"component"* || "$text_lower" == *"frontend"* || "$text_lower" == *"ui"* ]]; then
+        echo "frontend"
+    elif [[ "$text_lower" == *"performance"* || "$text_lower" == *"optimization"* || "$text_lower" == *"cache"* || "$text_lower" == *"index"* ]]; then
+        echo "performance"
+    elif [[ "$text_lower" == *"architecture"* || "$text_lower" == *"design"* || "$text_lower" == *"structure"* ]]; then
+        echo "architecture"
+    elif [[ "$text_lower" == *"decided"* || "$text_lower" == *"chose"* || "$text_lower" == *"selected"* ]]; then
+        echo "decision"
+    else
+        echo "pattern"
+    fi
+}
 
 # -----------------------------------------------------------------------------
 # Extract Patterns from Output
@@ -135,35 +184,44 @@ if [[ -n "$EXTRACTED_PATTERNS" ]]; then
     PROJECT_ID=$(mem0_get_project_id)
     TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
     AGENT_USER_ID=$(mem0_user_id "$MEM0_SCOPE_AGENTS")
+    DECISIONS_USER_ID=$(mem0_user_id "$MEM0_SCOPE_DECISIONS")
 
-    # Log each pattern
+    # Log each pattern with category detection
     while IFS= read -r pattern; do
         if [[ -n "$pattern" ]]; then
-            # Log to patterns file
+            # Detect category for this pattern
+            CATEGORY=$(detect_pattern_category "$pattern")
+
+            # Log to patterns file with full metadata
             jq -n \
                 --arg agent "$AGENT_TYPE" \
+                --arg agent_id "$AGENT_ID" \
                 --arg pattern "$pattern" \
                 --arg project "$PROJECT_ID" \
                 --arg timestamp "$TIMESTAMP" \
-                --arg user_id "$AGENT_USER_ID" \
+                --arg user_id "$DECISIONS_USER_ID" \
+                --arg category "$CATEGORY" \
                 '{
                     agent: $agent,
+                    agent_id: $agent_id,
                     pattern: $pattern,
                     project: $project,
                     timestamp: $timestamp,
                     suggested_user_id: $user_id,
+                    category: $category,
+                    enable_graph: true,
                     pending_sync: true
                 }' >> "$PATTERNS_LOG"
 
-            log_hook "Extracted pattern: ${pattern:0:50}..."
+            log_hook "Extracted pattern ($CATEGORY): ${pattern:0:50}..."
         fi
     done <<< "$EXTRACTED_PATTERNS"
 
     PATTERN_COUNT=$(echo "$EXTRACTED_PATTERNS" | grep -c . || echo "0")
     log_hook "Extracted $PATTERN_COUNT patterns from $AGENT_TYPE output"
 
-    # Build suggestion for Claude to store memories
-    SYSTEM_MSG="[Pattern Extraction] $PATTERN_COUNT patterns extracted from $AGENT_TYPE. Use mcp__mem0__add_memory with user_id='$AGENT_USER_ID' to persist for future sessions."
+    # Build suggestion for Claude to store memories with graph support
+    SYSTEM_MSG="[Pattern Extraction] $PATTERN_COUNT patterns extracted from $AGENT_TYPE. Use mcp__mem0__add_memory with user_id='$DECISIONS_USER_ID', agent_id='$AGENT_ID', enable_graph=true to persist with relationships."
 
     jq -n \
         --arg msg "$SYSTEM_MSG" \
@@ -175,5 +233,8 @@ else
     log_hook "No patterns extracted from $AGENT_TYPE output"
     echo '{"continue": true}'
 fi
+
+# Clean up tracking file
+rm -f "$AGENT_TRACKING_DIR/current-agent-id" 2>/dev/null || true
 
 exit 0

@@ -17,7 +17,7 @@ set -euo pipefail
 _HOOK_INPUT=$(cat)
 export _HOOK_INPUT
 
-source "$(dirname "$0")/../../_lib/common.sh"
+source "$(dirname "$0")/../_lib/common.sh"
 
 # Configuration - Tuned based on context overflow analysis
 MAX_CONCURRENT_BACKGROUND=4       # Max background agents at once

@@ -14,6 +14,13 @@ export _HOOK_INPUT
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../../_lib/common.sh"
 
+# Self-guard: Only run if coordination database exists
+COORDINATION_DB="${CLAUDE_PROJECT_DIR:-.}/.claude/coordination/.claude.db"
+if [[ ! -f "$COORDINATION_DB" ]]; then
+    echo '{"continue": true, "suppressOutput": true}'
+    exit 0
+fi
+
 # Get inputs
 TOOL_NAME=$(get_tool_name)
 COMMAND=$(get_field '.tool_input.command')

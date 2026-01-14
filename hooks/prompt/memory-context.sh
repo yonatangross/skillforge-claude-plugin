@@ -8,8 +8,11 @@ set -euo pipefail
 # - Extract key terms from user prompt
 # - Search mem0 for relevant decisions/patterns
 # - Inject search suggestions into context
+# - Support @global prefix for cross-project search
+# - Include agent context if CLAUDE_AGENT_ID is set
+# - Suggest enable_graph for relationship queries
 #
-# Version: 1.1.0
+# Version: 1.2.0
 # Part of mem0 Semantic Memory Integration (#40, #46)
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
@@ -49,6 +52,22 @@ MEMORY_TRIGGER_KEYWORDS=(
     "last time"
     "before"
     "earlier"
+    "pattern"
+    "decision"
+    "how did we"
+    "what did we"
+)
+
+# Keywords that suggest graph search would be valuable
+GRAPH_TRIGGER_KEYWORDS=(
+    "relationship"
+    "related"
+    "connected"
+    "depends"
+    "uses"
+    "recommends"
+    "what does.*recommend"
+    "how does.*work with"
 )
 
 # Minimum prompt length to trigger memory search (avoid short queries)
@@ -68,6 +87,42 @@ if [[ ${#USER_PROMPT} -lt $MIN_PROMPT_LENGTH ]]; then
     log_hook "Prompt too short (${#USER_PROMPT} chars), skipping memory search"
     echo '{"continue":true,"suppressOutput":true}'
     exit 0
+fi
+
+# -----------------------------------------------------------------------------
+# Detect Special Prefixes
+# -----------------------------------------------------------------------------
+
+USE_GLOBAL=false
+USE_GRAPH=false
+AGENT_CONTEXT=""
+
+# Check for @global prefix
+if [[ "$USER_PROMPT" == @global* || "$USER_PROMPT" == *"cross-project"* || "$USER_PROMPT" == *"all projects"* ]]; then
+    USE_GLOBAL=true
+    log_hook "Detected @global prefix - will suggest cross-project search"
+fi
+
+# Check for graph-related queries
+prompt_lower=$(echo "$USER_PROMPT" | tr '[:upper:]' '[:lower:]')
+for keyword in "${GRAPH_TRIGGER_KEYWORDS[@]}"; do
+    if [[ "$prompt_lower" =~ $keyword ]]; then
+        USE_GRAPH=true
+        log_hook "Detected graph-related query"
+        break
+    fi
+done
+
+# Check for agent context from environment
+if [[ -n "${CLAUDE_AGENT_ID:-}" ]]; then
+    AGENT_CONTEXT="$CLAUDE_AGENT_ID"
+    log_hook "Agent context detected: $AGENT_CONTEXT"
+fi
+
+# Also check for agent tracking file
+AGENT_TRACKING_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/session/current-agent-id"
+if [[ -z "$AGENT_CONTEXT" && -f "$AGENT_TRACKING_FILE" ]]; then
+    AGENT_CONTEXT=$(cat "$AGENT_TRACKING_FILE" 2>/dev/null || echo "")
 fi
 
 # -----------------------------------------------------------------------------
@@ -112,6 +167,7 @@ fi
 PROJECT_ID=$(mem0_get_project_id)
 USER_ID_DECISIONS=$(mem0_user_id "$MEM0_SCOPE_DECISIONS")
 USER_ID_PATTERNS=$(mem0_user_id "$MEM0_SCOPE_PATTERNS")
+GLOBAL_USER_ID=$(mem0_global_user_id "best-practices")
 
 # Extract key terms for search (first 5 words, skip common words)
 extract_search_terms() {
@@ -124,7 +180,7 @@ extract_search_terms() {
         awk '{
             for(i=1; i<=NF && i<=10; i++) {
                 # Skip common words
-                if ($i !~ /^(the|a|an|to|for|in|on|at|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|could|should|can|may|might|must|shall|i|you|we|they|it|this|that|these|those|my|your|our|their|its|and|or|but|if|then|else|when|where|how|what|which|who|whom|with|from|into|onto|about|after|before)$/)
+                if ($i !~ /^(the|a|an|to|for|in|on|at|is|are|was|were|be|been|being|have|has|had|do|does|did|will|would|could|should|can|may|might|must|shall|i|you|we|they|it|this|that|these|those|my|your|our|their|its|and|or|but|if|then|else|when|where|how|what|which|who|whom|with|from|into|onto|about|after|before|global)$/)
                     print $i
             }
         }' | \
@@ -143,8 +199,36 @@ fi
 
 log_hook "Search terms: $SEARCH_TERMS"
 
-# Build context suggestion message
-SYSTEM_MSG="[Memory Context] For relevant past decisions, use mcp__mem0__search_memories with query=\"$SEARCH_TERMS\" and user_id=\"$USER_ID_DECISIONS\""
+# -----------------------------------------------------------------------------
+# Build Context Suggestion Message
+# -----------------------------------------------------------------------------
+
+# Build filter JSON based on context
+if [[ "$USE_GLOBAL" == "true" ]]; then
+    PRIMARY_USER_ID="$GLOBAL_USER_ID"
+    SCOPE_DESC="cross-project"
+else
+    PRIMARY_USER_ID="$USER_ID_DECISIONS"
+    SCOPE_DESC="project"
+fi
+
+# Build main suggestion
+SYSTEM_MSG="[Memory Context] For relevant past $SCOPE_DESC decisions, use mcp__mem0__search_memories with query=\"$SEARCH_TERMS\" and user_id=\"$PRIMARY_USER_ID\""
+
+# Add graph suggestion if relevant
+if [[ "$USE_GRAPH" == "true" ]]; then
+    SYSTEM_MSG="$SYSTEM_MSG, enable_graph=true"
+fi
+
+# Add agent filter hint if in agent context
+if [[ -n "$AGENT_CONTEXT" ]]; then
+    SYSTEM_MSG="$SYSTEM_MSG | Agent context: $AGENT_CONTEXT - add agent_id filter for agent-specific memories"
+fi
+
+# Add global search hint if not already global
+if [[ "$USE_GLOBAL" != "true" ]]; then
+    SYSTEM_MSG="$SYSTEM_MSG | For cross-project patterns: user_id=\"$GLOBAL_USER_ID\""
+fi
 
 log_hook "Outputting memory search suggestion for: $SEARCH_TERMS"
 

@@ -14,8 +14,9 @@ source "$(dirname "$0")/../../_lib/common.sh"
 
 RULES_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/rules/error_rules.json"
 
-# Skip if no rules file
+# Self-guard: Only run if error_rules.json exists
 if [[ ! -f "$RULES_FILE" ]]; then
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 
@@ -24,6 +25,7 @@ COMMAND=$(get_field '.tool_input.command')
 
 # Skip if empty
 if [[ -z "$COMMAND" ]]; then
+  echo '{"continue": true, "suppressOutput": true}'
   exit 0
 fi
 

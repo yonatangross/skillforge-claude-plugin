@@ -331,7 +331,7 @@ test_security_hooks_external() {
     # Test dangerous command is blocked
     local input='{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}'
     local output
-    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/bash-dispatcher.sh" 2>/dev/null || echo '{"continue":false}')
+    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/bash/dangerous-command-blocker.sh" 2>/dev/null || echo '{"continue":false}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "true"' 2>/dev/null || echo "true")
@@ -361,7 +361,7 @@ test_git_protection_external() {
 
     # The hook should output JSON (pass or fail, but valid JSON)
     local output
-    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/bash-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/bash/dangerous-command-blocker.sh" 2>/dev/null || echo '{"continue":true}')
 
     if echo "$output" | jq -e '.' >/dev/null 2>&1; then
         test_pass
@@ -384,7 +384,7 @@ test_agent_spawn_external() {
     # Test agent validation
     local input='{"subagent_type":"backend-system-architect","prompt":"Design an API"}'
     local output
-    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/task/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
