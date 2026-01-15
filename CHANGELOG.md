@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.15.3] - 2026-01-15
+
+### Fixed
+
+**CI/CD Test Compatibility**
+- Fixed bash arithmetic `((VAR++))` exit issue with `set -e` across 30+ test files
+- Added `|| true` to arithmetic operations that return 0 on first call
+- Fixed coordination.sh paths in 4 hooks (missing `.claude/` prefix)
+- Added cross-platform timeout wrapper for macOS compatibility (timeout/gtimeout/direct)
+- Fixed file-lock-release.sh double JSON output (trap + exit race condition)
+
+**Hook JSON Output**
+- Added clean_exit helper pattern to prevent trap/output duplication
+- Ensured all coordination hooks properly clear trap before normal exits
+
+### Changed
+- Updated test-hook-json-output.sh with run_with_timeout helper function
+
+---
+
 ## [4.15.1] - 2026-01-15
 
 ### Added
