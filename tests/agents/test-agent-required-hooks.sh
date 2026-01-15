@@ -90,7 +90,7 @@ for agent_file in "$AGENTS_DIR"/*.md; do
 
     if [[ $agent_errors -eq 0 ]]; then
         # Count hooks for this agent
-        hook_count=$(grep -c "command:" "$agent_file" 2>/dev/null || echo "0")
+        hook_count=$(grep -c "command:" "$agent_file" 2>/dev/null | tr -d "\n" || echo "0")
         if [[ $hook_count -gt 0 ]]; then
             echo "PASS: $agent_name ($hook_count hooks validated)"
         else
