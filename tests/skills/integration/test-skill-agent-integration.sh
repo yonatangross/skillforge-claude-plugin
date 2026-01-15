@@ -18,7 +18,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$PROJECT_ROOT/tests/fixtures/test-helpers.sh"
 
 # Configuration - use directories directly
-SKILLS_DIR="$PROJECT_ROOT/skills"
+SKILLS_DIR="$PROJECT_ROOT/.claude/skills"
 AGENTS_DIR="$PROJECT_ROOT/agents"
 # Find skill directory (flat structure) by name across all category subdirectories
 find_skill_dir() {

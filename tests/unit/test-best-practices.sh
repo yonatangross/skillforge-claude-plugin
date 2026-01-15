@@ -19,10 +19,10 @@ source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 MEM0_LIB="$PROJECT_ROOT/hooks/_lib/mem0.sh"
 
 # Skill paths (CC 2.1.6 nested structure)
-REMEMBER_SKILL="$PROJECT_ROOT/skills/workflows/remember"
-RECALL_SKILL="$PROJECT_ROOT/skills/workflows/recall"
-BEST_PRACTICES_SKILL="$PROJECT_ROOT/skills/workflows/best-practices"
-FEEDBACK_SKILL="$PROJECT_ROOT/skills/workflows/feedback"
+REMEMBER_SKILL="$PROJECT_ROOT/.claude/skills/workflows/remember"
+RECALL_SKILL="$PROJECT_ROOT/.claude/skills/workflows/recall"
+BEST_PRACTICES_SKILL="$PROJECT_ROOT/.claude/skills/workflows/best-practices"
+FEEDBACK_SKILL="$PROJECT_ROOT/.claude/skills/workflows/feedback"
 
 # Helper to source mem0 with clean environment
 source_mem0_clean() {

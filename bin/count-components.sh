@@ -3,7 +3,7 @@
 # Usage: count-components.sh [--json]
 #
 # Counts:
-# - Skills: directories with capabilities.json
+# - Skills: directories with SKILL.md in .claude/skills/
 # - Agents: .md files in agents/
 # - Commands: .md files in commands/
 # - Hooks: .sh files in hooks/ (excluding _lib/)
@@ -14,9 +14,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Count skills (directories with capabilities.json)
+# Count skills (directories with SKILL.md in .claude/skills/)
 count_skills() {
-    find "$PROJECT_ROOT/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' '
+    find "$PROJECT_ROOT/.claude/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' '
 }
 
 # Count agents (markdown files in agents dir)

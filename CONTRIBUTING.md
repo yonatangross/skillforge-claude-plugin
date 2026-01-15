@@ -31,57 +31,38 @@ Welcome to the SkillForge plugin for Claude Code! We're excited that you're inte
 ## Project Structure
 
 ```
-skills/                   # 92 skills in 10 categories
-└── <category>/<skill-name>/
-    ├── capabilities.json   # Tier 1: Discovery metadata
-    ├── SKILL.md           # Tier 2: Patterns and best practices
-    ├── references/        # Tier 3: Specific implementations
-    └── templates/         # Tier 4: Code generation
-agents/                   # 20 specialized AI personas
-hooks/                    # 56 registered lifecycle hooks
 .claude/
+├── skills/               # 97 skills in flat CC 2.1.7 structure
+│   └── <skill-name>/
+│       ├── SKILL.md           # Required: Patterns and best practices
+│       ├── references/        # Optional: Specific implementations
+│       └── templates/         # Optional: Code generation
+├── agents/               # 20 specialized AI personas
 └── context/              # Session and knowledge management
+hooks/                    # Lifecycle hooks
 ```
 
-## Adding New Skills
+## Adding New Skills (CC 2.1.7)
 
-Skills follow a 4-tier progressive loading structure.
+Skills use the CC 2.1.7 native flat structure with SKILL.md as the only required file.
 
 ### 1. Create Skill Directory
 
 ```bash
-mkdir -p skills/backend/your-skill-name/references
+mkdir -p .claude/skills/your-skill-name/references
 ```
 
-### 2. Create capabilities.json (Tier 1 - Required)
+### 2. Create SKILL.md (Required)
 
-```json
-{
-  "id": "your-skill-name",
-  "name": "Your Skill Name",
-  "version": "1.0.0",
-  "description": "Brief description for skill discovery",
-  "category": "backend",
-  "tags": ["keyword1", "keyword2", "keyword3"],
-  "triggers": {
-    "keywords": ["trigger1", "trigger2"],
-    "file_patterns": ["*.py", "*.ts"],
-    "context_signals": ["when user asks about X"]
-  },
-  "token_budget": {
-    "tier1_discovery": 100,
-    "tier2_overview": 500,
-    "tier3_specific": 300,
-    "tier4_templates": 200
-  }
-}
-```
-
-**Categories**: `ai-llm`, `langgraph`, `backend`, `frontend`, `testing`, `security`, `devops`, `workflows`, `quality`, `context`
-
-### 3. Create SKILL.md (Tier 2 - Required)
+Create `.claude/skills/your-skill-name/SKILL.md`:
 
 ```markdown
+---
+name: your-skill-name
+description: Brief description for skill discovery
+tags: [keyword1, keyword2, keyword3]
+---
+
 # Your Skill Name
 
 Brief description of what this skill provides.
@@ -109,35 +90,22 @@ Explanation and code example.
 - What NOT to do
 ```
 
-### 4. Add References (Tier 3 - Optional)
+### 3. Add References (Optional)
 
 Create specific implementation guides in `references/`:
 - `implementation-guide.md`
 - `advanced-patterns.md`
 
-### 5. Add Templates (Tier 4 - Optional)
+### 4. Add Templates (Optional)
 
 Create code templates in `templates/`:
 - `component-template.py`
 - `test-template.py`
 
-### 6. Register in plugin.json
-
-Add to the `skills` array in `plugin.json`:
-
-```json
-{
-  "path": "skills/backend/your-skill-name",
-  "tags": ["keyword1", "keyword2"],
-  "description": "Brief description"
-}
-```
-
-### 7. Validate
+### 5. Validate
 
 ```bash
-./bin/validate-skill.sh skills/backend/your-skill-name
-./tests/schemas/validate-all.sh
+./tests/skills/structure/test-skill-md.sh
 ```
 
 ## Adding New Agents
@@ -265,7 +233,7 @@ bash -n hooks/your-hook.sh
 
 ### Before Submitting
 
-- [ ] New skills have `capabilities.json` and `SKILL.md`
+- [ ] New skills have `SKILL.md` with valid frontmatter
 - [ ] All tests pass locally
 - [ ] Hook scripts output valid JSON
 - [ ] No security violations

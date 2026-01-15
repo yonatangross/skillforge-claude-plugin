@@ -8,7 +8,7 @@
 *Transform Claude Code into a full-stack development powerhouse*
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.7-7C3AED?style=flat-square&logo=anthropic)](https://claude.ai/claude-code)
-[![Skills](https://img.shields.io/badge/Skills-92-blue?style=flat-square)](./skills)
+[![Skills](https://img.shields.io/badge/Skills-97-blue?style=flat-square)](./.claude/skills)
 [![Agents](https://img.shields.io/badge/Agents-20-green?style=flat-square)](./agents)
 [![Hooks](https://img.shields.io/badge/Hooks-56_registered-orange?style=flat-square)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
@@ -23,7 +23,7 @@
 
 SkillForge Complete is a production-ready plugin for Claude Code that provides:
 
-- **92 Skills** across 10 categories with progressive loading (saves ~70% context tokens)
+- **97 Skills** across 10 categories with progressive loading (saves ~70% context tokens)
 - **20 Specialized Agents** with native CC 2.1.6+ skill injection
 - **56 Registered Hooks** for lifecycle automation, security gates, and quality enforcement
 - **Context Window HUD** with real-time usage monitoring
@@ -33,7 +33,14 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 
 ---
 
-## What's New in v4.13.0 (CC 2.1.7 Compatibility)
+## What's New in v4.15.0 (CC 2.1.7 Skills Migration)
+
+- **Skills Structure**: Migrated from category-based to CC 2.1.7 native flat structure
+- **Removed capabilities.json**: Skills now use SKILL.md frontmatter for discovery
+- **97 Skills**: All skills at `.claude/skills/<skill-name>/`
+- **Documentation**: Updated all docs and tests for new structure
+
+### Previous (v4.13.0 - CC 2.1.7 Compatibility)
 
 - **Hook Refactoring**: Removed lifecycle dispatchers, now uses CC 2.1.7 native parallel execution
 - **32 Direct Hooks**: SessionStart (8), UserPromptSubmit (4), SessionEnd (4), Stop (10) registered individually
@@ -59,17 +66,12 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 ### Previous (v4.10.0 - CC 2.1.6 Integration)
 
 ```
-skills/
-├── ai-llm/       # 19 skills: RAG, embeddings, agents, caching
-├── langgraph/    # 7 skills: State, routing, parallel, checkpoints
-├── backend/      # 15 skills: FastAPI, architecture, databases
-├── frontend/     # 6 skills: React 19, design systems
-├── testing/      # 9 skills: Unit, integration, E2E, mocking
-├── security/     # 5 skills: OWASP, auth, validation
-├── devops/       # 4 skills: CI/CD, observability
-├── workflows/    # 13 skills: Git, PR, implementation
-├── quality/      # 8 skills: Quality gates, reviews
-└── context/      # 6 skills: Compression, brainstorming
+.claude/skills/     # 97 skills in flat CC 2.1.7 structure
+├── api-design-framework/
+├── auth-patterns/
+├── database-schema-designer/
+├── react-server-components/
+├── ... (97 skills total)
 ```
 
 ## Quick Start
@@ -107,7 +109,7 @@ Try these to explore:
 
 ### Skill System
 
-**92 skills** organized in CC 2.1.6 nested structure with 4-tier progressive loading:
+**97 skills** organized in CC 2.1.6 nested structure with 4-tier progressive loading:
 
 | Tier | Content | Tokens | When Loaded |
 |------|---------|--------|-------------|
@@ -179,12 +181,11 @@ skillforge-claude-plugin/
 │   ├── pretool/          # PreToolUse dispatchers (tool-based routing)
 │   ├── posttool/         # PostToolUse dispatcher (file-type routing)
 │   └── permission/       # Auto-approval hooks
-├── skills/               # 92 skills in 10 categories
-│   └── <category>/<skill>/
-│       ├── capabilities.json   # Tier 1
-│       ├── SKILL.md           # Tier 2
-│       ├── references/        # Tier 3
-│       └── templates/         # Tier 4
+├── .claude/skills/       # 97 skills in flat structure
+│   └── <skill-name>/
+│       ├── SKILL.md           # Required
+│       ├── references/        # Optional
+│       └── templates/         # Optional
 └── tests/                # Comprehensive test suite
 ```
 
@@ -234,11 +235,12 @@ CLAUDE_MULTI_INSTANCE   # "1" when multi-instance mode active
 ### Adding a Skill
 
 ```bash
-# Generate from template
-./bin/generate-skill.sh --name "My Skill" --category backend
+# Create skill directory
+mkdir -p .claude/skills/my-skill
 
-# Validate
-./bin/validate-skill.sh skills/backend/my-skill
+# Create SKILL.md with frontmatter
+# Then validate
+./tests/skills/structure/test-skill-md.sh
 ```
 
 ### Hook Development

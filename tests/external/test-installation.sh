@@ -123,9 +123,9 @@ test_empty_repo_hooks_run() {
 test_empty_repo_skills_discoverable() {
     test_start "skills discoverable from plugin root"
 
-    # Check skills exist in plugin
+    # Check skills exist in plugin (CC 2.1.7 flat structure)
     local skill_count
-    skill_count=$(find "$PLUGIN_ROOT/skills" -name "capabilities.json" 2>/dev/null | wc -l | tr -d ' ')
+    skill_count=$(find "$PLUGIN_ROOT/.claude/skills" -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 
     if [[ "$skill_count" -gt 90 ]]; then
         test_pass

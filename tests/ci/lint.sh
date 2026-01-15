@@ -5,7 +5,7 @@
 # Runs all static analysis checks:
 # - JSON validity and schema validation
 # - Shell script linting (shellcheck)
-# - Structure validation (CC 2.1.6 nested skills)
+# - Structure validation (CC 2.1.7 flat skills)
 # - Cross-reference validation (agent → skill refs via frontmatter)
 # ============================================================================
 
@@ -31,7 +31,7 @@ warn() { echo -e "  ${YELLOW}⚠${NC} $1"; ((WARN_COUNT++)) || true; }
 info() { echo -e "  ${BLUE}ℹ${NC} $1"; }
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  Static Analysis Suite (CC 2.1.6)"
+echo "  Static Analysis Suite (CC 2.1.7)"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
@@ -105,80 +105,39 @@ fi
 echo ""
 
 # ============================================================================
-# 3. Schema Validation
+# 3. Skill Structure Validation (CC 2.1.7 Flat)
 # ============================================================================
-echo "▶ Schema Validation"
-echo "────────────────────────────────────────"
-
-# Check all capabilities.json have $schema
-caps_with_schema=0
-caps_without_schema=0
-
-while IFS= read -r -d '' file; do
-    if jq -e '."$schema"' "$file" >/dev/null 2>&1; then
-        ((caps_with_schema++)) || true
-    else
-        fail "Missing \$schema: $file"
-        ((caps_without_schema++)) || true
-    fi
-done < <(find "$PROJECT_ROOT/skills" -name "capabilities.json" -print0 2>/dev/null)
-
-if [ "$caps_without_schema" -eq 0 ]; then
-    pass "All $caps_with_schema capabilities.json files have \$schema"
-else
-    fail "$caps_without_schema capabilities.json files missing \$schema"
-fi
-
-echo ""
-
-# ============================================================================
-# 4. Structure Validation (CC 2.1.6 Nested Skills)
-# ============================================================================
-echo "▶ Skill Structure Validation (CC 2.1.6 Nested)"
+echo "▶ Skill Structure Validation (CC 2.1.7 Flat)"
 echo "────────────────────────────────────────"
 
 incomplete_skills=0
 complete_skills=0
 
-# Simplified structure: skills/<category>/<skill-name>/
-for category_dir in "$PROJECT_ROOT/skills"/*; do
-    if [ -d "$category_dir" ]; then
-        for skill_dir in "$category_dir"/*; do
-            if [ -d "$skill_dir" ]; then
-                skill_name=$(basename "$skill_dir")
-                has_tier1=false
-                has_tier2=false
+# CC 2.1.7 flat structure: .claude/skills/<skill-name>/SKILL.md
+for skill_dir in "$PROJECT_ROOT/.claude/skills"/*; do
+    if [ -d "$skill_dir" ]; then
+        skill_name=$(basename "$skill_dir")
 
-                # Tier 1: capabilities.json (required)
-                [ -f "$skill_dir/capabilities.json" ] && has_tier1=true
-
-                # Tier 2: SKILL.md (required)
-                [ -f "$skill_dir/SKILL.md" ] && has_tier2=true
-
-                if $has_tier1 && $has_tier2; then
-                    ((complete_skills++)) || true
-                else
-                    missing=""
-                    $has_tier1 || missing+="capabilities.json "
-                    $has_tier2 || missing+="SKILL.md "
-                    fail "$skill_name missing: $missing"
-                    ((incomplete_skills++)) || true
-                fi
-            fi
-        done
+        # CC 2.1.7 only requires SKILL.md
+        if [ -f "$skill_dir/SKILL.md" ]; then
+            ((complete_skills++)) || true
+        else
+            fail "$skill_name missing: SKILL.md"
+            ((incomplete_skills++)) || true
+        fi
     fi
 done
 
 if [ "$incomplete_skills" -eq 0 ]; then
-    pass "All $complete_skills skills have required Tier 1-2 files"
+    pass "All $complete_skills skills have SKILL.md (CC 2.1.7 compliant)"
 else
-    fail "$incomplete_skills skills have incomplete structure"
+    fail "$incomplete_skills skills missing SKILL.md"
 fi
 
 echo ""
 
 # ============================================================================
-# 5. Agent Frontmatter Validation (CC 2.1.6)
+# 4. Agent Frontmatter Validation (CC 2.1.6)
 # ============================================================================
 echo "▶ Agent Frontmatter Validation (CC 2.1.6)"
 echo "────────────────────────────────────────"

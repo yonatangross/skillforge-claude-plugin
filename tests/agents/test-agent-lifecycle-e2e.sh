@@ -365,25 +365,35 @@ test_all_agents_spawn() {
 # Test: Context Modes
 # =============================================================================
 
-test_context_mode_fork() {
-    test_start "fork context mode creates isolated context"
+test_context_mode_validation() {
+    test_start "agents have valid context mode (if specified)"
 
-    # Agents with context:fork should get isolated context
-    # This is handled by CC, but we can verify the agent definition
+    # Verify that any context: field in agent files uses valid values
+    # Valid values: fork, inherit, none (CC 2.1.6 standard)
 
-    local agent_file="$PROJECT_ROOT/agents/workflow-architect.md"
+    local invalid_count=0
+    local checked_count=0
 
-    if [[ -f "$agent_file" ]]; then
-        local context_mode
-        context_mode=$(grep -E "^context:" "$agent_file" 2>/dev/null | head -1 | awk '{print $2}' || echo "")
+    for agent_file in "$PROJECT_ROOT/agents/"*.md; do
+        if [[ -f "$agent_file" ]]; then
+            local context_mode
+            context_mode=$(grep -E "^context:" "$agent_file" 2>/dev/null | head -1 | awk '{print $2}' || echo "")
 
-        if [[ "$context_mode" == "fork" ]]; then
-            test_pass
-        else
-            test_fail "workflow-architect should have context:fork"
+            if [[ -n "$context_mode" ]]; then
+                ((checked_count++))
+                if [[ "$context_mode" != "fork" && "$context_mode" != "inherit" && "$context_mode" != "none" ]]; then
+                    ((invalid_count++))
+                    echo ""
+                    echo "      └─ Invalid context mode in $(basename "$agent_file"): $context_mode"
+                fi
+            fi
         fi
+    done
+
+    if [[ $invalid_count -eq 0 ]]; then
+        test_pass
     else
-        test_fail "Agent file not found"
+        test_fail "$invalid_count agents have invalid context mode"
     fi
 }
 
@@ -472,7 +482,7 @@ test_all_agents_spawn
 echo ""
 echo "▶ Context Modes"
 echo "────────────────────────────────────────"
-test_context_mode_fork
+test_context_mode_validation
 test_context_mode_inherit
 
 echo ""

@@ -1,7 +1,7 @@
 #!/bin/bash
 # Plugin Installation Validation Tests
 # Ensures SkillForge plugin structure is correct for Claude Code plugin system
-# Updated for CC 2.1.6 nested skills structure
+# Updated for CC 2.1.7 flat skills structure
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,10 +39,11 @@ echo ""
 # =============================================================================
 echo "--- Test 1: Core directories exist ---"
 
-if [[ -d "$PLUGIN_ROOT/skills" ]]; then
-  pass "skills directory exists"
+# CC 2.1.7: skills are in .claude/skills/ (flat structure)
+if [[ -d "$PLUGIN_ROOT/.claude/skills" ]]; then
+  pass ".claude/skills directory exists"
 else
-  fail "skills directory missing"
+  fail ".claude/skills directory missing"
 fi
 
 if [[ -d "$PLUGIN_ROOT/hooks" ]]; then
@@ -126,27 +127,22 @@ fi
 echo ""
 
 # =============================================================================
-# Test 4: Skills are discoverable (CC 2.1.6 nested structure)
+# Test 4: Skills are discoverable (CC 2.1.7 flat structure)
 # =============================================================================
-echo "--- Test 4: Skill discovery (CC 2.1.6 structure) ---"
+echo "--- Test 4: Skill discovery (CC 2.1.7 flat structure) ---"
 
-# Simplified structure: skills/<category>/<skill-name>/SKILL.md
-SKILL_COUNT=$(find -L "$PLUGIN_ROOT/skills" -path "*/*/SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
+# CC 2.1.7 flat structure: .claude/skills/<skill-name>/SKILL.md
+SKILL_COUNT=$(find -L "$PLUGIN_ROOT/.claude/skills" -maxdepth 2 -name "SKILL.md" 2>/dev/null | wc -l | tr -d ' ')
 if [[ "$SKILL_COUNT" -gt 0 ]]; then
-  pass "Found $SKILL_COUNT skills with SKILL.md (CC 2.1.6 structure)"
+  pass "Found $SKILL_COUNT skills with SKILL.md (CC 2.1.7 flat structure)"
 else
-  fail "No skills found with SKILL.md in CC 2.1.6 structure"
+  fail "No skills found with SKILL.md in CC 2.1.7 structure"
 fi
 
-# Check a few key skills in nested structure
+# Check a few key skills exist in flat structure
 skill_exists() {
   local skill_name="$1"
-  for category_dir in "$PLUGIN_ROOT/skills"/*/; do
-    if [[ -f "${category_dir}${skill_name}/SKILL.md" ]]; then
-      return 0
-    fi
-  done
-  return 1
+  [[ -f "$PLUGIN_ROOT/.claude/skills/${skill_name}/SKILL.md" ]]
 }
 
 for skill in commit configure explore implement verify; do

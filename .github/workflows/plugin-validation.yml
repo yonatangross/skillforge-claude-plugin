@@ -196,7 +196,7 @@ jobs:
           errors=0
           skill_count=0
 
-          for category_dir in skills/*/; do
+          for category_dir in .claude/skills/; do
             [[ -d "$category_dir" ]] || continue
             category=$(basename "$category_dir")
 

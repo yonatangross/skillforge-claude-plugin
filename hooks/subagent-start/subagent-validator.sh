@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Subagent Validator - Source of truth for subagent tracking
-# CC 2.1.6 Compliant: includes continue field in all outputs
+# CC 2.1.7 Compliant: includes continue field in all outputs
 # Hook: PreToolUse (Task)
 #
 # This is the ONLY place we track subagent usage because:
@@ -132,20 +132,11 @@ validate_agent_skills() {
 
   # Validate each skill exists
   local missing_skills=()
-  local skills_dir="${CLAUDE_PROJECT_DIR:-.}/skills"
+  local skills_dir="${CLAUDE_PROJECT_DIR:-.}/.claude/skills"
 
   for skill in "${skills[@]}"; do
-    local found=0
-
-    # Search in all category directories: skills/*/{skill-name}/capabilities.json
-    for caps_file in "$skills_dir"/*/"$skill"/capabilities.json; do
-      if [[ -f "$caps_file" ]]; then
-        found=1
-        break
-      fi
-    done
-
-    if [[ $found -eq 0 ]]; then
+    # Check if skill directory exists with SKILL.md (CC 2.1.7 flat structure)
+    if [[ ! -f "$skills_dir/$skill/SKILL.md" ]]; then
       missing_skills+=("$skill")
     fi
   done
@@ -160,10 +151,10 @@ validate_agent_skills() {
   fi
 }
 
-# Run skill validation (fast - uses glob pattern matching)
+# Run skill validation (fast - uses direct path check)
 validate_agent_skills "$AGENT_TYPE_ONLY"
 
-# CC 2.1.6 Compliant: JSON output without ANSI colors
+# CC 2.1.7 Compliant: JSON output without ANSI colors
 # (Colors in JSON break JSON parsing)
 echo '{"continue": true, "suppressOutput": true}'
 exit 0
