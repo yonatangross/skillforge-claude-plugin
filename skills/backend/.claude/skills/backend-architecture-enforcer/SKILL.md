@@ -1,24 +1,11 @@
 ---
 name: backend-architecture-enforcer
-description: Enforce FastAPI Clean Architecture - layer separation, dependency injection, async patterns, no business logic in routers. Blocks violations. Use when building or reviewing backend code.
+description: Enforces FastAPI Clean Architecture with blocking validation. Use when implementing router-service-repository patterns, enforcing layer separation, or validating dependency injection in backend code.
 context: fork
 agent: backend-system-architect
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [backend, fastapi, architecture, enforcement, blocking, clean-architecture, di]
-hooks:
-  PreToolUse:
-    - matcher: Write
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/backend-file-naming.sh"
-  PostToolUse:
-    - matcher: Write|Edit
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/backend-layer-validator.sh"
-    - matcher: Write|Edit
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/di-pattern-enforcer.sh"
----
-
-# Backend Architecture Enforcer
-
 Enforce FastAPI Clean Architecture with **BLOCKING** validation.
 
 ## When to Use

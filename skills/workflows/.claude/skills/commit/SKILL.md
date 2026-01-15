@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Smart git commit with validation, conventional format, and branch protection
+description: Creates git commits with conventional format, branch protection, and pre-commit validation. Use when committing changes, staging files, generating commit messages, saving changes, or pushing changes.
 context: inherit
 version: 1.0.0
 author: SkillForge

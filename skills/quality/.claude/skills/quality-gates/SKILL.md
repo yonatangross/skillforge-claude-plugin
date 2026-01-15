@@ -6,22 +6,6 @@ agent: code-quality-reviewer
 version: 1.1.0
 author: SkillForge AI Agent Hub
 tags: [quality, complexity, planning, escalation, blocking]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
----
-
-# Quality Gates Skill
-
-**Version:** 1.0.0
-**Type:** Quality Assurance & Risk Management
-**Auto-activate:** Task planning, complexity assessment, requirement gathering, before task execution
-
-## Overview
-
 This skill teaches agents how to assess task complexity, enforce quality gates, and prevent wasted work on incomplete or poorly-defined tasks. Inspired by production-grade development practices, quality gates ensure agents have sufficient context before proceeding and automatically escalate when stuck or blocked.
 
 **Key Principle:** Stop and clarify before proceeding with incomplete information. Better to ask questions than to waste cycles on the wrong solution.

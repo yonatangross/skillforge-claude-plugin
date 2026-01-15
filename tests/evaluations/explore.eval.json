@@ -1,0 +1,62 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "explore",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "codebase-structure",
+      "query": "what is the structure of this codebase?",
+      "expected_behavior": [
+        "Read project root directory",
+        "Identify key directories and their purposes",
+        "Find configuration files",
+        "Provide structured overview"
+      ],
+      "should_not": [
+        "Make modifications to any files",
+        "Skip important directories"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "find-implementation",
+      "query": "where is user authentication implemented?",
+      "expected_behavior": [
+        "Search for auth-related files",
+        "Use grep for auth keywords",
+        "Read relevant files",
+        "Explain the authentication flow"
+      ],
+      "should_not": [
+        "Guess without searching",
+        "Modify any code"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "understand-pattern",
+      "query": "how do API endpoints work in this project?",
+      "expected_behavior": [
+        "Find API route definitions",
+        "Trace request handling flow",
+        "Identify middleware usage",
+        "Explain the pattern with examples"
+      ],
+      "success_criteria": [
+        "Clear explanation of the pattern",
+        "Specific file references provided"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "dependency-analysis",
+      "query": "what dependencies does this project use?",
+      "expected_behavior": [
+        "Read package.json or equivalent",
+        "Identify major dependencies",
+        "Note any notable patterns"
+      ],
+      "tags": ["happy-path"]
+    }
+  ]
+}

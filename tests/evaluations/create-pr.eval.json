@@ -1,0 +1,63 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "create-pr",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "basic-pr-creation",
+      "query": "create a pull request for my changes",
+      "context": {
+        "git_state": "clean"
+      },
+      "expected_behavior": [
+        "Run git status to check state",
+        "Run git diff against base branch",
+        "Review all commits in the branch",
+        "Push branch to remote if needed",
+        "Create PR with summary and test plan",
+        "Return PR URL"
+      ],
+      "should_not": [
+        "Create PR without reviewing changes",
+        "Skip the test plan section",
+        "Create PR to wrong base branch"
+      ],
+      "success_criteria": [
+        "PR title is descriptive",
+        "PR body has Summary section",
+        "PR body has Test Plan section",
+        "PR URL is returned"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "pr-with-title",
+      "query": "create PR titled 'Add user dashboard feature'",
+      "expected_behavior": [
+        "Use the exact title provided",
+        "Generate appropriate body",
+        "Create the PR"
+      ],
+      "should_not": [
+        "Change the provided title"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "uncommitted-changes",
+      "query": "create a PR",
+      "context": {
+        "git_state": "dirty"
+      },
+      "expected_behavior": [
+        "Detect uncommitted changes",
+        "Warn user about uncommitted work",
+        "Ask if they want to commit first"
+      ],
+      "should_not": [
+        "Create PR ignoring uncommitted changes"
+      ],
+      "tags": ["edge-case"]
+    }
+  ]
+}

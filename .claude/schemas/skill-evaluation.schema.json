@@ -1,0 +1,85 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "skill-evaluation.schema.json",
+  "title": "Skill Evaluation Schema",
+  "description": "Schema for skill evaluation test cases per CC 2.1.7 best practices. Each evaluation defines expected behavior for a given query.",
+  "type": "object",
+  "required": ["skill", "version", "evaluations"],
+  "properties": {
+    "skill": {
+      "type": "string",
+      "description": "The skill name this evaluation covers"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Evaluation version (semver)"
+    },
+    "evaluations": {
+      "type": "array",
+      "minItems": 1,
+      "description": "List of evaluation test cases",
+      "items": {
+        "type": "object",
+        "required": ["id", "query", "expected_behavior"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "Unique evaluation ID (kebab-case)"
+          },
+          "query": {
+            "type": "string",
+            "minLength": 10,
+            "description": "The user query that should trigger this skill"
+          },
+          "context": {
+            "type": "object",
+            "description": "Optional context setup for the evaluation",
+            "properties": {
+              "files": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Files that should exist in the test environment"
+              },
+              "git_state": {
+                "type": "string",
+                "enum": ["clean", "dirty", "untracked", "staged"],
+                "description": "Expected git state"
+              },
+              "environment": {
+                "type": "object",
+                "additionalProperties": {"type": "string"},
+                "description": "Environment variables to set"
+              }
+            }
+          },
+          "expected_behavior": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"},
+            "description": "List of expected behaviors/actions the skill should perform"
+          },
+          "should_not": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Actions the skill should NOT perform"
+          },
+          "success_criteria": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Specific success criteria to validate"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["happy-path", "edge-case", "error-handling", "security", "performance"]
+            },
+            "description": "Tags for categorizing evaluations"
+          }
+        }
+      }
+    }
+  }
+}

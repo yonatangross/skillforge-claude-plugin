@@ -6,24 +6,6 @@ author: AI Agent Hub
 tags: [architecture, documentation, decision-making, backend]
 context: fork
 agent: backend-system-architect
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
-        echo "  2. Update status to 'Accepted' after approval"
-        echo "  3. Link ADR in implementation PR"
-        echo "  4. Update status to 'Implemented' after deployment"
-        echo ""
-        echo "Store ADRs in: /docs/adr/ or /architecture/decisions/"
-        echo "::endgroup::"
----
-
-# Architecture Decision Record
-
-## Overview
-
 Architecture Decision Records (ADRs) are lightweight documents that capture important architectural decisions along with their context and consequences. This skill provides templates, examples, and best practices for creating and maintaining ADRs in your projects.
 
 **When to use this skill:**

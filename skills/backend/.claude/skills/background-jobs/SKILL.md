@@ -1,6 +1,6 @@
 ---
 name: background-jobs
-description: Async task processing with Celery, ARQ, and Redis for Python backends. Use when offloading long-running tasks, scheduling jobs, or building worker pipelines.
+description: Async task processing with Celery, ARQ, and Redis for Python backends. Use when implementing background tasks, job queues, workers, scheduled jobs, or periodic task processing.
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0

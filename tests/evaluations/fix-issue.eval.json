@@ -1,0 +1,57 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "fix-issue",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "fix-github-issue",
+      "query": "fix issue #42",
+      "expected_behavior": [
+        "Fetch issue details from GitHub",
+        "Understand the problem description",
+        "Create feature branch for the fix",
+        "Implement the fix",
+        "Write or update tests",
+        "Commit with issue reference"
+      ],
+      "should_not": [
+        "Close issue without fixing",
+        "Fix on main branch directly"
+      ],
+      "success_criteria": [
+        "Issue is addressed",
+        "Tests pass",
+        "Commit references issue number"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "fix-with-description",
+      "query": "fix the bug where users can't login with email containing plus sign",
+      "expected_behavior": [
+        "Understand the bug description",
+        "Search for relevant code",
+        "Identify root cause",
+        "Implement fix",
+        "Add regression test"
+      ],
+      "success_criteria": [
+        "Bug is fixed",
+        "Regression test added"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "fix-with-investigation",
+      "query": "fix the performance issue in the dashboard",
+      "expected_behavior": [
+        "Investigate performance bottlenecks",
+        "Profile if necessary",
+        "Identify specific issues",
+        "Implement optimizations",
+        "Verify improvement"
+      ],
+      "tags": ["happy-path"]
+    }
+  ]
+}

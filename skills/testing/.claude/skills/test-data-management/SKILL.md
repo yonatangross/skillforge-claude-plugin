@@ -3,12 +3,6 @@ name: test-data-management
 description: Test data management with fixtures and factories. Use when creating test data strategies, implementing data factories, managing fixtures, or seeding test databases.
 context: fork
 agent: test-generator
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 version: 1.0.0
 author: SkillForge
 ---

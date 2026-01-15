@@ -1,17 +1,11 @@
 ---
 name: pgvector-search
-description: Use when implementing vector search with PostgreSQL. Covers PGVector hybrid search with BM25, metadata filtering, and performance optimization for semantic retrieval.
+description: Production hybrid search combining PGVector HNSW with BM25 using Reciprocal Rank Fusion. Use when implementing hybrid search, semantic + keyword retrieval, vector search optimization, metadata filtering, or choosing between HNSW and IVFFlat indexes.
 context: fork
 agent: database-engineer
 version: 1.2.0
 author: SkillForge AI Agent Hub
 tags: [pgvector-0.8, hybrid-search, bm25, rrf, semantic-search, retrieval, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/migration-validator.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/migration-validator.sh"
 ---
 
 # PGVector Hybrid Search
@@ -19,8 +13,6 @@ hooks:
 **Production-grade semantic + keyword search using PostgreSQL**
 
 ## Overview
-
-Hybrid search combines **semantic similarity** (vector embeddings) with **keyword matching** (BM25) to achieve better retrieval than either alone.
 
 **Architecture:**
 ```

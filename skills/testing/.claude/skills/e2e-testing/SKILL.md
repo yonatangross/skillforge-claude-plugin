@@ -5,15 +5,6 @@ version: 2.0.0
 tags: [playwright, e2e, testing, ai-agents, 2026]
 context: fork
 agent: test-generator
-hooks:
-  PostToolUse:
-    - matcher: Write
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: |
-        echo "::group::E2E Test Summary"
-        echo "Playwright tests generated - run with: npx playwright test"
-        echo "::endgroup::"
 author: SkillForge
 ---
 

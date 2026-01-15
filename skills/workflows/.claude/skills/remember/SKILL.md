@@ -1,6 +1,6 @@
 ---
 name: remember
-description: Store decisions and patterns in semantic memory with success/failure tracking
+description: Store decisions and patterns in semantic memory with success/failure tracking. Use when saving patterns, storing decisions, remembering approaches that worked.
 context: inherit
 version: 1.1.0
 author: SkillForge

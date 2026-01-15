@@ -1,24 +1,16 @@
 ---
 name: streaming-api-patterns
-description: Use when building real-time features with SSE, WebSockets, or streaming APIs. Covers backpressure handling, reconnection strategies, and LLM token streaming patterns.
+description: Real-time data streaming with SSE, WebSockets, and ReadableStream. Use when implementing streaming responses, real-time data updates, Server-Sent Events, WebSocket setup, live notifications, push updates, or chat server backends.
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
 author: AI Agent Hub
 tags: [streaming, sse, websocket, real-time, api, 2025]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
 ---
 
 # Streaming API Patterns
 
 ## Overview
-
-Modern applications require real-time data delivery. This skill covers Server-Sent Events (SSE) for server-to-client streaming, WebSockets for bidirectional communication, and the Streams API for handling backpressure and efficient data flow.
 
 **When to use this skill:**
 - Streaming LLM responses (ChatGPT-style interfaces)

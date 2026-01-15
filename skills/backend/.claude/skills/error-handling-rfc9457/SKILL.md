@@ -1,6 +1,6 @@
 ---
 name: error-handling-rfc9457
-description: Structured error responses using RFC 9457 Problem Details for HTTP APIs. Use when standardizing error responses, implementing error registries, or improving API error handling.
+description: RFC 9457 Problem Details for standardized HTTP API error responses. Use when implementing problem details format, structured API errors, error registries, or migrating from RFC 7807.
 context: fork
 agent: backend-system-architect
 version: 1.0.0

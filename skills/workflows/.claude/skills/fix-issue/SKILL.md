@@ -1,6 +1,6 @@
 ---
 name: fix-issue
-description: Fix GitHub issue with parallel analysis and implementation
+description: Fix GitHub issue with parallel analysis and implementation. Use when fixing issues, resolving bugs, closing GitHub issues.
 context: fork
 version: 1.0.0
 author: SkillForge

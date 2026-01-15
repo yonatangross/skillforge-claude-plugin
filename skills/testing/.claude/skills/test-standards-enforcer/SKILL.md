@@ -6,19 +6,6 @@ agent: test-generator
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [testing, quality, enforcement, blocking, aaa-pattern, coverage]
-hooks:
-  PreToolUse:
-    - matcher: Write
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-location-validator.sh"
-  PostToolUse:
-    - matcher: Write|Edit
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-pattern-validator.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-threshold-gate.sh"
----
-
-# Test Standards Enforcer
-
 Enforce 2026 testing best practices with **BLOCKING** validation.
 
 ## When to Use

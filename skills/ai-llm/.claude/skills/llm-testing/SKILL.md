@@ -5,12 +5,6 @@ context: fork
 agent: test-generator
 version: 2.0.0
 tags: [testing, llm, ai, deepeval, ragas, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/eval-metrics-collector.sh"
 author: SkillForge
 ---
 

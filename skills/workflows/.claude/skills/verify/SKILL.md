@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Comprehensive feature verification with parallel analysis agents
+description: Comprehensive feature verification with parallel analysis agents. Use when verifying implementations, testing changes, validating features, or checking correctness.
 context: fork
 version: 1.1.0
 author: SkillForge
@@ -87,18 +87,18 @@ cd e2e && npx playwright test
 ## Feature: [Name]
 
 ## Test Results
-- Unit Tests: ✅ X/Y passed
-- Integration Tests: ✅ X/Y passed
-- E2E Tests: ✅ X/Y passed
+- Unit Tests: X/Y passed
+- Integration Tests: X/Y passed
+- E2E Tests: X/Y passed
 - Coverage: X%
 
 ## Quality Gates
 | Gate | Status |
 |------|--------|
-| Type Safety | ✅/❌ |
-| Security Scan | ✅/❌ |
-| Linting | ✅/❌ |
-| Coverage >= 70% | ✅/❌ |
+| Type Safety | / |
+| Security Scan | / |
+| Linting | / |
+| Coverage >= 70% | / |
 
 ## Evidence
 - Test output attached

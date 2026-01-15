@@ -1,0 +1,63 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "api-design-framework",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "design-rest-endpoint",
+      "query": "design a REST API for user management",
+      "expected_behavior": [
+        "Define resource naming (plural nouns)",
+        "Specify HTTP methods for CRUD",
+        "Define status codes for responses",
+        "Include pagination for list endpoints",
+        "Define error response format"
+      ],
+      "should_not": [
+        "Use verbs in URL paths",
+        "Use inconsistent naming conventions"
+      ],
+      "success_criteria": [
+        "Follows REST conventions",
+        "Includes all CRUD operations",
+        "Error handling defined"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "add-pagination",
+      "query": "add pagination to the users endpoint",
+      "expected_behavior": [
+        "Recommend cursor-based pagination",
+        "Define query parameters",
+        "Define response structure with pagination metadata"
+      ],
+      "success_criteria": [
+        "Pagination pattern is clear",
+        "Response format documented"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "api-versioning",
+      "query": "how should I version my API?",
+      "expected_behavior": [
+        "Explain versioning strategies",
+        "Recommend URI versioning for public APIs",
+        "Provide migration guidance"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "graphql-schema",
+      "query": "design a GraphQL schema for posts and comments",
+      "expected_behavior": [
+        "Define types with proper nullability",
+        "Use Connection pattern for lists",
+        "Define input types for mutations",
+        "Include error handling in payloads"
+      ],
+      "tags": ["happy-path"]
+    }
+  ]
+}

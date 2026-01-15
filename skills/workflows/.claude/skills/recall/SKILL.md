@@ -1,6 +1,6 @@
 ---
 name: recall
-description: Search and retrieve decisions and patterns from semantic memory
+description: Search and retrieve decisions and patterns from semantic memory. Use when recalling patterns, retrieving memories, finding past decisions.
 context: inherit
 version: 1.1.0
 author: SkillForge

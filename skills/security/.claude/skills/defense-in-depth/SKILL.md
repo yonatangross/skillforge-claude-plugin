@@ -8,12 +8,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 author: SkillForge
 ---
 

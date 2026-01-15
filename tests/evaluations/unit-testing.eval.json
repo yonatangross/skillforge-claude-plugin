@@ -1,0 +1,62 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "unit-testing",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "write-unit-tests",
+      "query": "write unit tests for the UserService class",
+      "expected_behavior": [
+        "Read the target file first",
+        "Identify public methods to test",
+        "Write tests for happy paths",
+        "Write tests for edge cases",
+        "Mock dependencies appropriately"
+      ],
+      "should_not": [
+        "Test private methods directly",
+        "Write tests without reading source first",
+        "Skip error handling tests"
+      ],
+      "success_criteria": [
+        "All public methods covered",
+        "Tests are isolated",
+        "Assertions are meaningful"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "test-single-function",
+      "query": "write tests for the calculateDiscount function",
+      "expected_behavior": [
+        "Read the function implementation",
+        "Test boundary values",
+        "Test typical cases",
+        "Test error conditions"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "fix-failing-test",
+      "query": "fix the failing test in user.test.ts",
+      "expected_behavior": [
+        "Read the failing test",
+        "Read the implementation being tested",
+        "Identify the discrepancy",
+        "Fix test or implementation as appropriate"
+      ],
+      "tags": ["edge-case"]
+    },
+    {
+      "id": "increase-coverage",
+      "query": "increase test coverage for the auth module",
+      "expected_behavior": [
+        "Analyze current coverage",
+        "Identify uncovered code paths",
+        "Write tests for missing coverage",
+        "Verify coverage improvement"
+      ],
+      "tags": ["happy-path"]
+    }
+  ]
+}

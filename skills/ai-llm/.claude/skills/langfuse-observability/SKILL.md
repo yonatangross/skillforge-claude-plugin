@@ -1,6 +1,6 @@
 ---
 name: langfuse-observability
-description: Use when adding observability to LLM applications with Langfuse. Covers tracing, evaluation, prompt management, and cost tracking for self-hosted deployments.
+description: LLM observability platform for tracing, evaluation, prompt management, and cost tracking. Use when setting up Langfuse, monitoring LLM costs, tracking token usage, or implementing prompt versioning.
 context: fork
 agent: metrics-architect
 version: 1.0.0

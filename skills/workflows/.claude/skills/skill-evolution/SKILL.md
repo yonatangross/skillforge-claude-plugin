@@ -1,6 +1,6 @@
 ---
 name: skill-evolution
-description: Analyze, evolve, and rollback skills based on usage patterns
+description: Analyze, evolve, and rollback skills based on usage patterns. Use when evolving skills, improving skill definitions, updating skill content.
 context: inherit
 version: 1.0.0
 author: SkillForge

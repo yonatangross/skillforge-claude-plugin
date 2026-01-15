@@ -1,6 +1,6 @@
 ---
 name: review-pr
-description: Comprehensive PR review with 6-7 parallel specialized agents
+description: Comprehensive PR review with 6-7 parallel specialized agents. Use when reviewing pull requests, checking PRs, code review.
 context: fork
 version: 1.1.0
 author: SkillForge
@@ -113,16 +113,16 @@ Combine all agent feedback into structured report:
 ## Code Quality
 | Area | Status | Notes |
 |------|--------|-------|
-| Readability | ✅/⚠️/❌ | [notes] |
-| Type Safety | ✅/⚠️/❌ | [notes] |
-| Test Coverage | ✅/⚠️/❌ | [X%] |
+| Readability | // | [notes] |
+| Type Safety | // | [notes] |
+| Test Coverage | // | [X%] |
 
 ## Security
 | Check | Status |
 |-------|--------|
-| Secrets | ✅/❌ |
-| Input Validation | ✅/❌ |
-| Dependencies | ✅/❌ |
+| Secrets | / |
+| Input Validation | / |
+| Dependencies | / |
 
 ## Blockers (Must Fix)
 - [if any]

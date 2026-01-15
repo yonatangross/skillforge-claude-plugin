@@ -1,0 +1,48 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "review-pr",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "review-by-number",
+      "query": "review PR #123",
+      "expected_behavior": [
+        "Fetch PR details with gh pr view",
+        "Get PR diff with gh pr diff",
+        "Analyze changes for issues",
+        "Check for security concerns",
+        "Provide structured feedback"
+      ],
+      "should_not": [
+        "Approve without thorough review",
+        "Make changes to the PR directly"
+      ],
+      "success_criteria": [
+        "Review covers all changed files",
+        "Security implications noted",
+        "Constructive feedback provided"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "review-with-url",
+      "query": "review https://github.com/org/repo/pull/456",
+      "expected_behavior": [
+        "Parse PR URL correctly",
+        "Fetch and review the PR",
+        "Provide structured feedback"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "review-current-pr",
+      "query": "review this PR",
+      "expected_behavior": [
+        "Detect current branch",
+        "Find associated PR",
+        "Review the changes"
+      ],
+      "tags": ["edge-case"]
+    }
+  ]
+}

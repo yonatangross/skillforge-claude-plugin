@@ -6,18 +6,6 @@ agent: test-generator
 version: 1.2.0
 author: SkillForge AI Agent Hub
 tags: [playwright, testing, e2e, automation, agents, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
----
-
-# Webapp Testing Skill
-
-## Overview
-
 Autonomous end-to-end testing with Playwright's three specialized agents for planning, generating, and self-healing tests automatically.
 
 ## When to Use

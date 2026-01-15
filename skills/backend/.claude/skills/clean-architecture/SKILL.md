@@ -1,16 +1,10 @@
 ---
 name: clean-architecture
-description: SOLID principles, hexagonal architecture, ports & adapters, and DDD tactical patterns for maintainable Python/FastAPI backends. Use when designing service layers, domain models, or refactoring legacy code.
+description: SOLID principles, hexagonal architecture, ports and adapters, and DDD tactical patterns for maintainable backends. Use when implementing clean architecture, decoupling services, separating domain logic, or creating testable architecture.
 context: fork
 agent: code-quality-reviewer
 version: 1.0.0
 tags: [architecture, solid, hexagonal, ddd, python, fastapi, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/design-decision-saver.sh"
 author: SkillForge
 ---
 

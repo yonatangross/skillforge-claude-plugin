@@ -1,30 +1,11 @@
 ---
 name: database-schema-designer
-description: Use this skill when designing database schemas for relational (SQL) or document (NoSQL) databases. Provides normalization guidelines, indexing strategies, migration patterns, and performance optimization techniques. Ensures scalable, maintainable, and performant data models.
+description: SQL and NoSQL schema design with normalization, indexing, and migration patterns. Use when designing database schemas, creating tables, optimizing slow queries, or planning database migrations.
 version: 2.0.0
 author: AI Agent Hub
 tags: [database, schema-design, sql, nosql, performance, migrations]
 context: fork
 agent: database-engineer
-hooks:
-  PostToolUse:
-    - matcher: Write
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/migration-validator.sh"
-  Stop:
-    - command: |
-        echo "::group::Database Schema Design Complete"
-        echo "Review generated schema for:"
-        echo "  - Normalization (1NF, 2NF, 3NF)"
-        echo "  - Index coverage for query patterns"
-        echo "  - Foreign key constraints"
-        echo "  - Migration reversibility"
-        echo "::endgroup::"
----
-
-# Database Schema Designer
-
-## Overview
-
 This skill provides comprehensive guidance for designing robust, scalable database schemas for both SQL and NoSQL databases. Whether building from scratch or evolving existing schemas, this framework ensures data integrity, performance, and maintainability.
 
 **When to use this skill:**

@@ -6,19 +6,6 @@ author: AI Agent Hub
 tags: [code-review, quality, collaboration, best-practices]
 context: fork
 agent: code-quality-reviewer
-hooks:
-  PreToolUse:
-    - matcher: Edit
-      command: |
-        echo "::warning::Code review skill should not modify code - report only"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/review-summary-generator.sh"
----
-
-# Code Review Playbook
-
-## Overview
-
 This skill provides a comprehensive framework for effective code reviews that improve code quality, share knowledge, and foster collaboration. Whether you're a reviewer giving feedback or an author preparing code for review, this playbook ensures reviews are thorough, consistent, and constructive.
 
 **When to use this skill:**

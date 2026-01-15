@@ -8,12 +8,6 @@ allowed-tools:
   - Grep
   - Glob
   - Bash  # For running security scanners only
-hooks:
-  PostToolUse:
-    - matcher: Bash
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/redact-secrets.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 version: 1.0.0
 author: SkillForge
 ---

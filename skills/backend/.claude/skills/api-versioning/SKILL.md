@@ -1,6 +1,6 @@
 ---
 name: api-versioning
-description: API versioning strategies including URL path, header, and content negotiation. Use when designing version evolution, deprecation policies, or multi-version support.
+description: API versioning strategies including URL path, header, and content negotiation. Use when migrating v1 to v2, handling breaking changes, implementing deprecation or sunset policies, or managing backward compatibility.
 context: fork
 agent: backend-system-architect
 version: 1.0.0

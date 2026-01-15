@@ -1,6 +1,6 @@
 ---
 name: caching-strategies
-description: Backend caching patterns with Redis including write-through, write-behind, cache-aside, and invalidation strategies. Use when optimizing read performance or reducing database load.
+description: Backend caching patterns with Redis including write-through, write-behind, cache-aside, and invalidation strategies. Use when implementing Redis cache, managing TTL/expiration, preventing cache stampede, or optimizing cache hit rates.
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0

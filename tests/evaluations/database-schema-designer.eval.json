@@ -1,0 +1,64 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "database-schema-designer",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "design-schema",
+      "query": "design a database schema for an e-commerce platform",
+      "expected_behavior": [
+        "Identify core entities (users, products, orders)",
+        "Define relationships and foreign keys",
+        "Add appropriate indexes",
+        "Consider normalization",
+        "Include timestamps and audit fields"
+      ],
+      "should_not": [
+        "Over-normalize for simple use cases",
+        "Skip index recommendations"
+      ],
+      "success_criteria": [
+        "Schema is normalized appropriately",
+        "Relationships are clear",
+        "Indexes support common queries"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "create-migration",
+      "query": "create a migration to add a comments table",
+      "expected_behavior": [
+        "Generate Alembic migration file",
+        "Include upgrade and downgrade functions",
+        "Add appropriate constraints",
+        "Add indexes for foreign keys"
+      ],
+      "success_criteria": [
+        "Migration is reversible",
+        "Constraints are defined"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "add-vector-column",
+      "query": "add pgvector support for semantic search on documents",
+      "expected_behavior": [
+        "Add vector column with appropriate dimensions",
+        "Create HNSW or IVFFlat index",
+        "Provide usage example"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "optimize-query",
+      "query": "optimize this slow query",
+      "expected_behavior": [
+        "Analyze the query",
+        "Check for missing indexes",
+        "Suggest query rewrites",
+        "Recommend index additions"
+      ],
+      "tags": ["performance"]
+    }
+  ]
+}

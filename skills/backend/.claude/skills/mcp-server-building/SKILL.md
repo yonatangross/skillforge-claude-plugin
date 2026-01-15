@@ -1,6 +1,6 @@
 ---
 name: mcp-server-building
-description: Building MCP (Model Context Protocol) servers for Claude extensibility. Use when creating custom tools, integrating external services, or extending Claude's capabilities.
+description: Building MCP (Model Context Protocol) servers for Claude extensibility. Use when creating MCP servers, building custom Claude tools, extending Claude with external integrations, or developing tool packages for Claude Desktop.
 context: fork
 agent: backend-system-architect
 version: 1.0.0
@@ -20,10 +20,10 @@ Build custom MCP servers to extend Claude with tools, resources, and prompts.
 
 ### MCP Architecture
 ```
-┌─────────────┐     JSON-RPC      ┌─────────────┐
-│   Claude    │◄──────────────────►│ MCP Server  │
-│   (Host)    │   stdio/SSE/WS    │  (Tools)    │
-└─────────────┘                    └─────────────┘
++-------------+     JSON-RPC      +-------------+
+|   Claude    |<----------------->| MCP Server  |
+|   (Host)    |   stdio/SSE/WS    |  (Tools)    |
++-------------+                   +-------------+
 ```
 
 **Three Primitives**:

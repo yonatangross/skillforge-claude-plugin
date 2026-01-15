@@ -1,16 +1,10 @@
 ---
 name: rate-limiting
-description: API rate limiting with token bucket, sliding window, and Redis distributed patterns. Use when protecting APIs from abuse, implementing tiered limits, or scaling rate limiting across instances.
+description: API rate limiting with token bucket, sliding window, and Redis distributed patterns. Use when implementing rate limits, throttling requests, handling 429 Too Many Requests, protecting against API abuse, or configuring SlowAPI with Redis.
 context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [rate-limiting, redis, token-bucket, fastapi, security, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/security-summary.sh"
 author: SkillForge
 ---
 

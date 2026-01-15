@@ -3,12 +3,6 @@ name: performance-testing
 description: Performance and load testing with k6 and Locust. Use when validating system performance under load, stress testing, identifying bottlenecks, or establishing performance baselines.
 context: fork
 agent: metrics-architect
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 version: 1.0.0
 author: SkillForge
 ---

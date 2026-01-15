@@ -1,6 +1,6 @@
 ---
 name: feedback
-description: Manage the SkillForge feedback system that learns from your usage
+description: Manage the SkillForge feedback system that learns from your usage. Use when providing feedback, reporting issues, suggesting improvements.
 context: inherit
 version: 1.2.0
 author: SkillForge

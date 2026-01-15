@@ -1,6 +1,6 @@
 ---
 name: resilience-patterns
-description: Use when building fault-tolerant systems with circuit breakers, bulkheads, or retry logic. Provides resilience patterns for LLM integrations, distributed workflows, and cascade failure protection.
+description: Production-grade fault tolerance for distributed systems. Use when implementing circuit breakers, retry with exponential backoff, bulkhead isolation patterns, or building resilience into LLM API integrations.
 context: fork
 agent: backend-system-architect
 version: 1.0.0
@@ -27,27 +27,27 @@ Production-grade resilience patterns for distributed systems and LLM-based workf
 Prevents cascade failures by "tripping" when a service exceeds failure thresholds.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Circuit Breaker States                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│    ┌──────────┐     failures >= threshold    ┌──────────┐       │
-│    │  CLOSED  │ ─────────────────────────▶  │   OPEN   │       │
-│    │ (normal) │                              │ (reject) │       │
-│    └────┬─────┘                              └────┬─────┘       │
-│         │                                         │              │
-│         │ success                    timeout      │              │
-│         │                            expires      │              │
-│         │         ┌────────────┐                 │              │
-│         │         │ HALF_OPEN  │◀────────────────┘              │
-│         └─────────│  (probe)   │                                │
-│                   └────────────┘                                │
-│                                                                  │
-│   CLOSED:    Allow requests, count failures                     │
-│   OPEN:      Reject immediately, return fallback                │
-│   HALF_OPEN: Allow probe request to test recovery               │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                    Circuit Breaker States                         |
++-------------------------------------------------------------------+
+|                                                                   |
+|    +----------+     failures >= threshold    +----------+         |
+|    |  CLOSED  | ----------------------------> |   OPEN   |        |
+|    | (normal) |                              | (reject) |         |
+|    +----+-----+                              +----+-----+         |
+|         |                                         |               |
+|         | success                    timeout      |               |
+|         |                            expires      |               |
+|         |         +------------+                  |               |
+|         |         | HALF_OPEN  |<-----------------+               |
+|         +---------+  (probe)   |                                  |
+|                   +------------+                                  |
+|                                                                   |
+|   CLOSED:    Allow requests, count failures                       |
+|   OPEN:      Reject immediately, return fallback                  |
+|   HALF_OPEN: Allow probe request to test recovery                 |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 **Key Configuration:**
@@ -60,32 +60,32 @@ Prevents cascade failures by "tripping" when a service exceeds failure threshold
 Isolates failures by partitioning resources into independent pools.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Bulkhead Isolation                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   ┌──────────────────┐  ┌──────────────────┐                    │
-│   │ TIER 1: Critical │  │ TIER 2: Standard │                    │
-│   │  (5 workers)     │  │  (3 workers)     │                    │
-│   │  ┌─┐ ┌─┐ ┌─┐     │  │  ┌─┐ ┌─┐ ┌─┐    │                    │
-│   │  │█│ │█│ │░│     │  │  │█│ │░│ │░│    │                    │
-│   │  └─┘ └─┘ └─┘     │  │  └─┘ └─┘ └─┘    │                    │
-│   │  ┌─┐ ┌─┐         │  │                  │                    │
-│   │  │░│ │░│         │  │  Queue: 2        │                    │
-│   │  └─┘ └─┘         │  │                  │                    │
-│   │  Queue: 0        │  └──────────────────┘                    │
-│   └──────────────────┘                                          │
-│                                                                  │
-│   ┌──────────────────┐                                          │
-│   │ TIER 3: Optional │   █ = Active request                     │
-│   │  (2 workers)     │   ░ = Available slot                     │
-│   │  ┌─┐ ┌─┐         │                                          │
-│   │  │█│ │█│ FULL!   │   Tier 1: synthesis, quality_gate        │
-│   │  └─┘ └─┘         │   Tier 2: analysis agents                │
-│   │  Queue: 5        │   Tier 3: enrichment, optional features  │
-│   └──────────────────┘                                          │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                      Bulkhead Isolation                           |
++-------------------------------------------------------------------+
+|                                                                   |
+|   +------------------+  +------------------+                      |
+|   | TIER 1: Critical |  | TIER 2: Standard |                      |
+|   |  (5 workers)     |  |  (3 workers)     |                      |
+|   |  +-+ +-+ +-+     |  |  +-+ +-+ +-+     |                      |
+|   |  |#| |#| | |     |  |  |#| | | | |     |                      |
+|   |  +-+ +-+ +-+     |  |  +-+ +-+ +-+     |                      |
+|   |  +-+ +-+         |  |                  |                      |
+|   |  | | | |         |  |  Queue: 2        |                      |
+|   |  +-+ +-+         |  |                  |                      |
+|   |  Queue: 0        |  +------------------+                      |
+|   +------------------+                                            |
+|                                                                   |
+|   +------------------+                                            |
+|   | TIER 3: Optional |   # = Active request                       |
+|   |  (2 workers)     |     = Available slot                       |
+|   |  +-+ +-+         |                                            |
+|   |  |#| |#| FULL!   |   Tier 1: synthesis, quality_gate          |
+|   |  +-+ +-+         |   Tier 2: analysis agents                  |
+|   |  Queue: 5        |   Tier 3: enrichment, optional features    |
+|   +------------------+                                            |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 **Tier Configuration (SkillForge):**
@@ -100,25 +100,25 @@ Isolates failures by partitioning resources into independent pools.
 Intelligent retry logic with exponential backoff and jitter.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                   Exponential Backoff + Jitter                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   Attempt 1:  ──▶ X (fail)                                      │
-│               wait: 1s ± 0.5s                                   │
-│                                                                  │
-│   Attempt 2:  ──▶ X (fail)                                      │
-│               wait: 2s ± 1s                                     │
-│                                                                  │
-│   Attempt 3:  ──▶ X (fail)                                      │
-│               wait: 4s ± 2s                                     │
-│                                                                  │
-│   Attempt 4:  ──▶ ✓ (success)                                   │
-│                                                                  │
-│   Formula: delay = min(base * 2^attempt, max_delay) * jitter    │
-│   Jitter:  random(0.5, 1.5) to prevent thundering herd          │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                   Exponential Backoff + Jitter                    |
++-------------------------------------------------------------------+
+|                                                                   |
+|   Attempt 1:  --> X (fail)                                        |
+|               wait: 1s +/- 0.5s                                   |
+|                                                                   |
+|   Attempt 2:  --> X (fail)                                        |
+|               wait: 2s +/- 1s                                     |
+|                                                                   |
+|   Attempt 3:  --> X (fail)                                        |
+|               wait: 4s +/- 2s                                     |
+|                                                                   |
+|   Attempt 4:  --> OK (success)                                    |
+|                                                                   |
+|   Formula: delay = min(base * 2^attempt, max_delay) * jitter      |
+|   Jitter:  random(0.5, 1.5) to prevent thundering herd            |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 **Error Classification for Retries:**
@@ -147,54 +147,54 @@ NON_RETRYABLE_ERRORS = {
 Patterns specific to LLM API integrations.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    LLM Fallback Chain                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   Request ──▶ [Primary Model] ──success──▶ Response             │
-│                     │                                            │
-│                   fail                                           │
-│                     ▼                                            │
-│               [Fallback Model] ──success──▶ Response            │
-│                     │                                            │
-│                   fail                                           │
-│                     ▼                                            │
-│               [Cached Response] ──hit──▶ Response               │
-│                     │                                            │
-│                   miss                                           │
-│                     ▼                                            │
-│               [Default Response] ──▶ Graceful Degradation       │
-│                                                                  │
-│   Example Chain:                                                 │
-│   1. claude-sonnet-4-20250514 (primary)                  │
-│   2. gpt-4o-mini (fallback)                                     │
-│   3. Semantic cache lookup                                      │
-│   4. "Analysis unavailable" + partial results                   │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                    LLM Fallback Chain                             |
++-------------------------------------------------------------------+
+|                                                                   |
+|   Request --> [Primary Model] --success--> Response               |
+|                     |                                             |
+|                   fail                                            |
+|                     v                                             |
+|               [Fallback Model] --success--> Response              |
+|                     |                                             |
+|                   fail                                            |
+|                     v                                             |
+|               [Cached Response] --hit--> Response                 |
+|                     |                                             |
+|                   miss                                            |
+|                     v                                             |
+|               [Default Response] --> Graceful Degradation         |
+|                                                                   |
+|   Example Chain:                                                  |
+|   1. claude-sonnet-4-20250514 (primary)                           |
+|   2. gpt-4o-mini (fallback)                                       |
+|   3. Semantic cache lookup                                        |
+|   4. "Analysis unavailable" + partial results                     |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 **Token Budget Management:**
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     Token Budget Guard                           │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│   Input: 8,000 tokens                                           │
-│   ┌─────────────────────────────────────────────────┐           │
-│   │████████████████████████████░░░░░░░░░░░░░░░░░░░░│           │
-│   └─────────────────────────────────────────────────┘           │
-│                                          ▲                       │
-│                                          │                       │
-│                                    Context Limit (16K)           │
-│                                                                  │
-│   Strategy when approaching limit:                              │
-│   1. Summarize earlier context (compress 4:1)                   │
-│   2. Drop low-priority content (optional fields)                │
-│   3. Split into multiple requests                               │
-│   4. Fail fast with "content too large" error                   │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
++-------------------------------------------------------------------+
+|                     Token Budget Guard                            |
++-------------------------------------------------------------------+
+|                                                                   |
+|   Input: 8,000 tokens                                             |
+|   +---------------------------------------------+                 |
+|   |#################################            |                 |
+|   +---------------------------------------------+                 |
+|                                          ^                        |
+|                                          |                        |
+|                                    Context Limit (16K)            |
+|                                                                   |
+|   Strategy when approaching limit:                                |
+|   1. Summarize earlier context (compress 4:1)                     |
+|   2. Drop low-priority content (optional fields)                  |
+|   3. Split into multiple requests                                 |
+|   4. Fail fast with "content too large" error                     |
+|                                                                   |
++-------------------------------------------------------------------+
 ```
 
 ## Quick Reference

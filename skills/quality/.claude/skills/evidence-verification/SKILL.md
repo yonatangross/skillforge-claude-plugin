@@ -11,22 +11,6 @@ allowed-tools:
   - Grep
   - Glob
   - Bash  # For running tests and capturing evidence
-hooks:
-  PostToolUse:
-    - matcher: Bash
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/evidence-collector.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/evidence-collector.sh"
----
-
-# Evidence-Based Verification Skill
-
-**Version:** 2.0.0
-**Type:** Quality Assurance
-**Auto-activate:** Code review, task completion, production deployment
-
-## Overview
-
 This skill teaches agents how to collect and verify evidence before marking tasks complete. Inspired by production-grade development practices, it ensures all claims are backed by executable proof: test results, coverage metrics, build success, and deployment verification.
 
 **Key Principle:** Show, don't tell. No task is complete without verifiable evidence.

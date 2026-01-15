@@ -1,16 +1,10 @@
 ---
 name: fastapi-advanced
-description: FastAPI 2026 advanced patterns including lifespan, dependencies, middleware, settings, and async best practices. Use when building production FastAPI applications.
+description: FastAPI 2026 advanced patterns including lifespan, dependencies, middleware, and Pydantic settings. Use when configuring FastAPI lifespan events, creating dependency injection, building Starlette middleware, or managing async Python services with uvicorn.
 context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [fastapi, python, async, middleware, dependencies, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
 author: SkillForge
 ---
 

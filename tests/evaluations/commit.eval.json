@@ -1,0 +1,80 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "commit",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "basic-commit",
+      "query": "commit my changes",
+      "context": {
+        "git_state": "dirty"
+      },
+      "expected_behavior": [
+        "Run git status to see changes",
+        "Run git diff to understand modifications",
+        "Generate conventional commit message",
+        "Stage relevant files with git add",
+        "Create commit with Co-Authored-By footer"
+      ],
+      "should_not": [
+        "Push to remote without explicit request",
+        "Commit to main/dev branch directly",
+        "Use git commit --amend without user confirmation"
+      ],
+      "success_criteria": [
+        "Commit message follows conventional format",
+        "All intended changes are committed",
+        "Branch protection is respected"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "commit-with-message",
+      "query": "commit with message 'fix: resolve login timeout'",
+      "context": {
+        "git_state": "staged"
+      },
+      "expected_behavior": [
+        "Use the exact message provided by user",
+        "Add Co-Authored-By footer",
+        "Verify changes are staged"
+      ],
+      "should_not": [
+        "Modify user-provided commit message",
+        "Generate different commit message"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "empty-commit-prevention",
+      "query": "commit my work",
+      "context": {
+        "git_state": "clean"
+      },
+      "expected_behavior": [
+        "Run git status",
+        "Detect no changes to commit",
+        "Inform user there are no changes"
+      ],
+      "should_not": [
+        "Create empty commit",
+        "Fail silently"
+      ],
+      "tags": ["edge-case"]
+    },
+    {
+      "id": "protected-branch-block",
+      "query": "commit to main branch",
+      "expected_behavior": [
+        "Detect protected branch",
+        "Block direct commit to main",
+        "Suggest creating feature branch instead"
+      ],
+      "should_not": [
+        "Commit directly to main",
+        "Bypass branch protection"
+      ],
+      "tags": ["security"]
+    }
+  ]
+}

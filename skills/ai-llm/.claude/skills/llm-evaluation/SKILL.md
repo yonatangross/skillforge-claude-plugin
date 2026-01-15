@@ -5,12 +5,6 @@ context: fork
 agent: llm-integrator
 version: 2.0.0
 tags: [evaluation, llm, quality, ragas, langfuse, 2026]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/eval-metrics-collector.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/eval-metrics-collector.sh"
 author: SkillForge
 ---
 

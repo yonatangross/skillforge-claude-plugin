@@ -3,12 +3,6 @@ name: vcr-http-recording
 description: VCR.py HTTP recording for Python tests. Use when testing Python code making HTTP requests, recording API responses for replay, or creating deterministic tests for external services.
 context: fork
 agent: test-generator
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/coverage-check.sh"
 version: 1.0.0
 author: SkillForge
 ---

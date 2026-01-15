@@ -1,6 +1,6 @@
 ---
 name: explore
-description: Deep codebase exploration with parallel specialized agents
+description: Deep codebase exploration with parallel specialized agents. Use when exploring codebase, understanding code, finding files, or discovering architecture.
 context: fork
 version: 1.0.0
 author: SkillForge

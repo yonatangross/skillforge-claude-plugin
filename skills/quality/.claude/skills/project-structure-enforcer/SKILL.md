@@ -6,17 +6,6 @@ agent: code-quality-reviewer
 version: 1.0.0
 author: SkillForge AI Agent Hub
 tags: [structure, architecture, enforcement, blocking, imports, organization]
-hooks:
-  PreToolUse:
-    - matcher: Write
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/structure-location-validator.sh"
-  PostToolUse:
-    - matcher: Write|Edit
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/import-direction-enforcer.sh"
----
-
-# Project Structure Enforcer
-
 Enforce 2026 folder structure best practices with **BLOCKING** validation.
 
 ## When to Use

@@ -1,6 +1,6 @@
 ---
 name: best-practices
-description: View and manage your personal best practices library with success/failure patterns
+description: View and manage your personal best practices library with success/failure patterns. Use when viewing best practices, checking patterns, reviewing success/failure history.
 context: inherit
 version: 1.0.0
 author: SkillForge

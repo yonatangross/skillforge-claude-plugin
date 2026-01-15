@@ -1,6 +1,6 @@
 ---
 name: configure
-description: Interactive SkillForge configuration wizard
+description: Interactive SkillForge configuration wizard. Use when configuring settings, setting up MCP servers, customizing plugin.
 context: inherit
 version: 1.0.0
 author: SkillForge

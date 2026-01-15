@@ -1,24 +1,16 @@
 ---
 name: type-safety-validation
-description: Use when adding runtime validation, type-safe APIs, or end-to-end TypeScript safety. Covers Zod schemas, tRPC, Prisma, and exhaustive type checking patterns.
+description: End-to-end type safety with Zod, tRPC, Prisma, and TypeScript 5.7+ patterns. Use when creating Zod schemas, setting up tRPC, validating input, implementing exhaustive switch statements, branded types, or type checking with ty.
 context: fork
 agent: frontend-ui-developer
 version: 1.1.0
 author: AI Agent Hub
 tags: [typescript, zod, trpc, prisma, type-safety, validation, exhaustive-types, branded-types, 2025]
-hooks:
-  PostToolUse:
-    - matcher: "Write|Edit"
-      command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
-  Stop:
-    - command: "$CLAUDE_PROJECT_DIR/.claude/hooks/skill/test-runner.sh"
 ---
 
 # Type Safety & Validation
 
 ## Overview
-
-End-to-end type safety ensures bugs are caught at compile time, not runtime. This skill covers Zod for runtime validation, tRPC for type-safe APIs, Prisma for type-safe database access, and modern TypeScript features.
 
 **When to use this skill:**
 - Building type-safe APIs (REST, RPC, GraphQL)

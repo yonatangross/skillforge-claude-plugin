@@ -1,0 +1,59 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "implement",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "feature-implementation",
+      "query": "implement a user authentication feature with JWT",
+      "expected_behavior": [
+        "Explore existing codebase for auth patterns",
+        "Create implementation plan",
+        "Write necessary files (routes, middleware, models)",
+        "Add appropriate tests",
+        "Follow project conventions"
+      ],
+      "should_not": [
+        "Overwrite existing auth without confirmation",
+        "Skip writing tests",
+        "Ignore existing project patterns"
+      ],
+      "success_criteria": [
+        "Feature is fully functional",
+        "Tests pass",
+        "Code follows project style"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "incremental-implementation",
+      "query": "add a logout endpoint to the existing auth system",
+      "expected_behavior": [
+        "Read existing auth code first",
+        "Identify appropriate file locations",
+        "Add endpoint following existing patterns",
+        "Update tests"
+      ],
+      "should_not": [
+        "Create new auth system",
+        "Ignore existing patterns"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "multi-file-feature",
+      "query": "implement user profile editing with validation",
+      "expected_behavior": [
+        "Create or update API endpoint",
+        "Add input validation",
+        "Update database schema if needed",
+        "Add frontend component if applicable"
+      ],
+      "success_criteria": [
+        "All related files are updated",
+        "Changes are cohesive"
+      ],
+      "tags": ["happy-path"]
+    }
+  ]
+}

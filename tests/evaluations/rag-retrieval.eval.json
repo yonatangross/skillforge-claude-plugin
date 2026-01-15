@@ -1,0 +1,62 @@
+{
+  "$schema": "../../.claude/schemas/skill-evaluation.schema.json",
+  "skill": "rag-retrieval",
+  "version": "1.0.0",
+  "evaluations": [
+    {
+      "id": "implement-basic-rag",
+      "query": "implement RAG for document Q&A",
+      "expected_behavior": [
+        "Set up document loading",
+        "Implement chunking strategy",
+        "Generate embeddings",
+        "Store in vector database",
+        "Implement retrieval with similarity search",
+        "Format context for LLM"
+      ],
+      "should_not": [
+        "Skip chunking for large documents",
+        "Use naive string matching instead of vectors"
+      ],
+      "success_criteria": [
+        "Documents are properly chunked",
+        "Embeddings are generated",
+        "Retrieval returns relevant results"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "hybrid-search",
+      "query": "add hybrid search combining vector and keyword search",
+      "expected_behavior": [
+        "Implement vector similarity search",
+        "Add BM25 or full-text search",
+        "Combine scores with fusion",
+        "Return re-ranked results"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "chunking-strategy",
+      "query": "what chunking strategy should I use for code documentation?",
+      "expected_behavior": [
+        "Recommend appropriate chunk sizes",
+        "Suggest overlap strategy",
+        "Consider semantic boundaries",
+        "Provide implementation guidance"
+      ],
+      "tags": ["happy-path"]
+    },
+    {
+      "id": "retrieval-optimization",
+      "query": "improve retrieval accuracy for my RAG system",
+      "expected_behavior": [
+        "Analyze current retrieval quality",
+        "Suggest re-ranking strategies",
+        "Recommend query expansion",
+        "Consider metadata filtering"
+      ],
+      "tags": ["performance"]
+    }
+  ]
+}
