@@ -8,8 +8,8 @@ This document provides essential context for Claude Code when working with the S
 
 - **92 skills**: Reusable knowledge modules in 10 category-based directories (CC 2.1.6 nested structure)
 - **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **12 commands**: Pre-configured workflows for common development tasks
-- **90 hooks (56 registered via CC 2.1.7 native parallel execution)**: Lifecycle automation for sessions, tools, permissions, and quality gates
+- **12 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands)
+- **56 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -24,7 +24,7 @@ This document provides essential context for Claude Code when working with the S
 ```
 .claude/
 ├── agents/              # 20 specialized AI agent personas (CC 2.1.6 native format)
-├── commands/            # 11 pre-configured development workflows
+├── commands/            # User-invocable skill workflows (CC 2.1.3+ unified)
 ├── context/             # Session state, knowledge base, and shared context
 ├── coordination/        # Multi-worktree coordination system (locks, registries)
 ├── hooks/               # 95 lifecycle hooks for automation
@@ -43,19 +43,19 @@ This document provides essential context for Claude Code when working with the S
 └── workflows/           # Multi-agent workflow orchestrations
 
 skills/                  # 92 skills in CC 2.1.6 nested structure
-├── ai-llm/.claude/skills/       # (19) RAG, embeddings, agents, caching
-├── langgraph/.claude/skills/    # (7)  LangGraph workflows
-├── backend/.claude/skills/      # (15) FastAPI, architecture, databases
-├── frontend/.claude/skills/     # (6)  React 19, design systems
-├── testing/.claude/skills/      # (9)  Unit, integration, E2E, mocking
-├── security/.claude/skills/     # (5)  OWASP, auth, validation
-├── devops/.claude/skills/       # (4)  CI/CD, observability
-├── workflows/.claude/skills/    # (13) Git, PR, implementation, HUD
-├── quality/.claude/skills/      # (8)  Quality gates, reviews
-└── context/.claude/skills/      # (6)  Context management, planning
+├── ai-llm/                       # (19) RAG, embeddings, agents, caching
+├── langgraph/                    # (7)  LangGraph workflows
+├── backend/                      # (15) FastAPI, architecture, databases
+├── frontend/                     # (6)  React 19, design systems
+├── testing/                      # (9)  Unit, integration, E2E, mocking
+├── security/                     # (5)  OWASP, auth, validation
+├── devops/                       # (4)  CI/CD, observability
+├── workflows/                    # (13) Git, PR, implementation, HUD
+├── quality/                      # (8)  Quality gates, reviews
+└── context/                      # (6)  Context management, planning
 
 # Each skill follows progressive loading:
-skills/<category>/.claude/skills/<skill-name>/
+skills/<category>/<skill-name>/
 ├── capabilities.json    # Tier 1: Task matching metadata (~100 tokens)
 ├── SKILL.md            # Tier 2: Overview and patterns (~500 tokens)
 ├── references/*.md     # Tier 3: Specific implementations (~200 tokens)
@@ -107,7 +107,7 @@ bin/                     # CLI utilities and scripts
 git clone https://github.com/yonatangross/skillforge-claude-plugin ~/.claude/plugins/skillforge
 
 # Verify installation - check nested structure
-ls ~/.claude/plugins/skillforge/skills/*/.claude/skills/
+ls ~/.claude/plugins/skillforge/skills/*/
 ```
 
 ### Testing
@@ -167,7 +167,7 @@ rm -rf hooks/logs/*.log
 ### Skill Development
 ```bash
 # Validate new skill structure (nested path)
-./bin/validate-skill.sh skills/backend/.claude/skills/my-new-skill
+./bin/validate-skill.sh skills/backend/my-new-skill
 
 # Test progressive loading
 ./bin/test-progressive-load.sh my-skill-id
@@ -233,16 +233,16 @@ Tier 1 (Discovery) → Tier 2 (Overview) → Tier 3 (Specific) → Tier 4 (Gener
 **Example** (with CC 2.1.6 nested paths):
 ```bash
 # Step 1: Read capabilities.json to check if skill is relevant
-Read skills/backend/.claude/skills/api-design-framework/capabilities.json
+Read skills/backend/api-design-framework/capabilities.json
 
 # Step 2: If relevant, read SKILL.md for patterns
-Read skills/backend/.claude/skills/api-design-framework/SKILL.md
+Read skills/backend/api-design-framework/SKILL.md
 
 # Step 3: If implementing specific pattern, read reference
-Read skills/backend/.claude/skills/api-design-framework/references/rest-pagination.md
+Read skills/backend/api-design-framework/references/rest-pagination.md
 
 # Step 4: If generating code, use template
-Read skills/backend/.claude/skills/api-design-framework/templates/endpoint-template.py
+Read skills/backend/api-design-framework/templates/endpoint-template.py
 ```
 
 ### 2. Hook Architecture (CC 2.1.7)
@@ -427,17 +427,17 @@ Use `/skf:claude-hud` to configure statusline display.
 ./bin/generate-skill.sh --name "My Skill" --category backend
 
 # Step 2: Create progressive loading files
-mkdir -p skills/backend/.claude/skills/my-skill/references
-touch skills/backend/.claude/skills/my-skill/capabilities.json  # Tier 1
-touch skills/backend/.claude/skills/my-skill/SKILL.md          # Tier 2
-touch skills/backend/.claude/skills/my-skill/references/impl.md # Tier 3
+mkdir -p skills/backend/my-skill/references
+touch skills/backend/my-skill/capabilities.json  # Tier 1
+touch skills/backend/my-skill/SKILL.md          # Tier 2
+touch skills/backend/my-skill/references/impl.md # Tier 3
 
 # Step 3: Update capabilities.json $schema path
 # Use: "../../../../../.claude/schemas/skill-capabilities.schema.json"
 
 # Step 4: Validate
 ./tests/schemas/validate-all.sh
-./bin/validate-skill.sh skills/backend/.claude/skills/my-skill
+./bin/validate-skill.sh skills/backend/my-skill
 
 # Step 5: Test discovery
 ./bin/test-progressive-load.sh my-skill
@@ -544,7 +544,7 @@ hooks/logs/
 .claude/schemas/*.json
 
 # Skills (CC 2.1.6 nested structure)
-skills/<category>/.claude/skills/<skill-name>/
+skills/<category>/<skill-name>/
 
 # Agents (CC 2.1.6 native format)
 agents/<agent-name>.md
@@ -576,7 +576,7 @@ cat .claude/coordination/work-registry.json | jq '.locks'
 ls skills/
 
 # List skills in a category
-ls skills/backend/.claude/skills/
+ls skills/backend/
 
 # List available agents
 ls agents/
@@ -605,7 +605,7 @@ ls agents/
 
 - **Current Version**: 4.12.0 (as of 2026-01-14)
 - **Claude Code Requirement**: >= 2.1.7
-- **Skills Structure**: CC 2.1.6 nested (.claude/skills/ pattern)
+- **Skills Structure**: Flat category-based (skills/<category>/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
 - **Hook Architecture**: CC 2.1.7 native parallel execution (32 direct, routing dispatchers for PreToolUse/PostToolUse)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)

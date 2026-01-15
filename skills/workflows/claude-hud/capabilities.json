@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../.claude/schemas/skill-capabilities.schema.json",
+  "name": "claude-hud",
+  "version": "1.0.0",
+  "description": "Configure Claude Code statusline with context window monitoring using CC 2.1.6 fields",
+  "capabilities": [
+    {"keywords": ["statusline", "hud", "context monitor"], "solves": ["see context usage", "monitor context window"]},
+    {"keywords": ["statusline config", "hud config"], "solves": ["customize statusline", "display fields"]},
+    {"keywords": ["context threshold", "context alert"], "solves": ["when to compact", "set warnings"]}
+  ],
+  "triggers": {
+    "high_confidence": ["statusline", "hud", "context.*display"],
+    "medium_confidence": ["token.*usage", "context.*window"]
+  },
+  "related_skills": ["context-compression", "context-engineering"],
+  "cc_version": ">=2.1.6"
+}

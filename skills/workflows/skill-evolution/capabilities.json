@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../.claude/schemas/skill-capabilities.schema.json",
+  "name": "skill-evolution",
+  "version": "1.0.0",
+  "description": "Analyze skill usage patterns and generate improvement suggestions",
+  "capabilities": [
+    "Analyze skill usage patterns and edit frequency",
+    "Generate improvement suggestions based on behavior",
+    "Manage skill versions and rollback",
+    "Track skill performance metrics"
+  ],
+  "triggers": {
+    "high_confidence": [
+      "skill evolution",
+      "evolve skill",
+      "skill analysis",
+      "skill metrics"
+    ],
+    "medium_confidence": [
+      "skill rollback",
+      "improve skill",
+      "skill usage"
+    ]
+  },
+  "progressive_loading": {
+    "tier_1_discovery": {
+      "file": "capabilities.json",
+      "tokens": 90
+    },
+    "tier_2_overview": {
+      "file": "SKILL.md",
+      "tokens": 400
+    }
+  }
+}

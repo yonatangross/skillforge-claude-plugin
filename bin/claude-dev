@@ -17,6 +17,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export CLAUDE_PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# Enable LSP tool for code intelligence
+export ENABLE_LSP_TOOL=1
+
 # Optional: Show dev mode indicator
 if [[ "${CLAUDE_DEV_QUIET:-0}" != "1" ]]; then
     echo "🔧 Plugin dev mode: CLAUDE_PLUGIN_ROOT=$CLAUDE_PLUGIN_ROOT"

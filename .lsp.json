@@ -1,0 +1,39 @@
+{
+  "$schema": "https://anthropic.com/claude-code/lsp.schema.json",
+  "pyright": {
+    "command": "pyright-langserver",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".py": "python",
+      ".pyi": "python"
+    }
+  },
+  "typescript": {
+    "command": "typescript-language-server",
+    "args": ["--stdio"],
+    "extensionToLanguage": {
+      ".ts": "typescript",
+      ".tsx": "typescriptreact",
+      ".js": "javascript",
+      ".jsx": "javascriptreact",
+      ".mts": "typescript",
+      ".cts": "typescript",
+      ".mjs": "javascript",
+      ".cjs": "javascript"
+    }
+  },
+  "rust": {
+    "command": "rust-analyzer",
+    "args": [],
+    "extensionToLanguage": {
+      ".rs": "rust"
+    }
+  },
+  "go": {
+    "command": "gopls",
+    "args": [],
+    "extensionToLanguage": {
+      ".go": "go"
+    }
+  }
+}
