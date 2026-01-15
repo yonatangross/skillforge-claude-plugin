@@ -50,14 +50,14 @@ while IFS= read -r hook_cmd; do
     hook_cmd=$(echo "$hook_cmd" | sed 's/.*"command":[[:space:]]*"\([^"]*\)".*/\1/')
 
     if [[ -n "$hook_cmd" && "$hook_cmd" != *"command"* ]]; then
-        ((TOTAL_HOOKS++))
+        ((TOTAL_HOOKS++)) || true
 
         resolved_path=$(resolve_hook_path "$hook_cmd")
 
         if [[ -f "$resolved_path" ]]; then
-            ((VALID_HOOKS++))
+            ((VALID_HOOKS++)) || true
             if [[ -x "$resolved_path" ]]; then
-                ((EXECUTABLE_HOOKS++))
+                ((EXECUTABLE_HOOKS++)) || true
             else
                 echo "WARN: Hook exists but not executable: $resolved_path"
             fi
@@ -107,16 +107,16 @@ for agent_file in "$AGENTS_DIR"/*.md; do
 
             if [[ "$in_hooks" == true && "$line" =~ command:[[:space:]]*(.+) ]]; then
                 hook_cmd="${BASH_REMATCH[1]}"
-                ((AGENT_HOOKS++))
-                ((TOTAL_HOOKS++))
+                ((AGENT_HOOKS++)) || true
+                ((TOTAL_HOOKS++)) || true
 
                 resolved_path=$(resolve_hook_path "$hook_cmd")
 
                 if [[ -f "$resolved_path" ]]; then
-                    ((AGENT_VALID++))
-                    ((VALID_HOOKS++))
+                    ((AGENT_VALID++)) || true
+                    ((VALID_HOOKS++)) || true
                     if [[ -x "$resolved_path" ]]; then
-                        ((EXECUTABLE_HOOKS++))
+                        ((EXECUTABLE_HOOKS++)) || true
                     fi
                 else
                     echo "FAIL: $agent_name - Hook path not found: $hook_cmd"

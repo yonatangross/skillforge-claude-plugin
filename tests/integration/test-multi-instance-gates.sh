@@ -22,10 +22,10 @@ assert_exit_code() {
     
     if [[ $actual -eq $expected ]]; then
         echo "  ✅ $test_name"
-        ((TESTS_PASSED++))
+        ((TESTS_PASSED++)) || true
     else
         echo "  ❌ $test_name (expected exit $expected, got $actual)"
-        ((TESTS_FAILED++))
+        ((TESTS_FAILED++)) || true
     fi
 }
 
@@ -36,10 +36,10 @@ assert_output_contains() {
     
     if echo "$output" | grep -q "$expected"; then
         echo "  ✅ $test_name"
-        ((TESTS_PASSED++))
+        ((TESTS_PASSED++)) || true
     else
         echo "  ❌ $test_name (expected output to contain '$expected')"
-        ((TESTS_FAILED++))
+        ((TESTS_FAILED++)) || true
     fi
 }
 
@@ -199,10 +199,10 @@ EXIT_CODE=$?
 # Should still warn about coverage, but not block
 if [[ $EXIT_CODE -eq 0 ]] || [[ $EXIT_CODE -eq 2 ]]; then
     echo "  ✅ Handles existing test file correctly"
-    ((TESTS_PASSED++))
+    ((TESTS_PASSED++)) || true
 else
     echo "  ❌ Should not block when test file exists"
-    ((TESTS_FAILED++))
+    ((TESTS_FAILED++)) || true
 fi
 
 # =============================================================================

@@ -72,12 +72,12 @@ for agent_file in "$AGENTS_DIR"/*.md; do
             # Extract command paths
             if [[ "$in_hooks" == true && "$line" =~ command:[[:space:]]*(.+) ]]; then
                 hook_cmd="${BASH_REMATCH[1]}"
-                ((TOTAL_HOOKS++))
+                ((TOTAL_HOOKS++)) || true
 
                 resolved_path=$(resolve_hook_path "$hook_cmd")
 
                 if [[ -f "$resolved_path" ]]; then
-                    ((VALID_HOOKS++))
+                    ((VALID_HOOKS++)) || true
                 else
                     echo "FAIL: $agent_name - Hook path not found: $hook_cmd"
                     echo "      Resolved to: $resolved_path"
