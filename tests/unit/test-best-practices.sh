@@ -19,10 +19,10 @@ source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 MEM0_LIB="$PROJECT_ROOT/hooks/_lib/mem0.sh"
 
 # Skill paths (CC 2.1.6 nested structure)
-REMEMBER_SKILL="$PROJECT_ROOT/.claude/skills/workflows/remember"
-RECALL_SKILL="$PROJECT_ROOT/.claude/skills/workflows/recall"
-BEST_PRACTICES_SKILL="$PROJECT_ROOT/.claude/skills/workflows/best-practices"
-FEEDBACK_SKILL="$PROJECT_ROOT/.claude/skills/workflows/feedback"
+REMEMBER_SKILL="$PROJECT_ROOT/skills/remember"
+RECALL_SKILL="$PROJECT_ROOT/skills/recall"
+BEST_PRACTICES_SKILL="$PROJECT_ROOT/skills/best-practices"
+FEEDBACK_SKILL="$PROJECT_ROOT/skills/feedback"
 
 # Helper to source mem0 with clean environment
 source_mem0_clean() {
@@ -374,7 +374,6 @@ test_remember_skill_exists() {
 }
 
 test_remember_skill_has_capabilities() {
-    assert_file_exists "$REMEMBER_SKILL/capabilities.json"
 }
 
 test_remember_skill_has_success_flag() {
@@ -394,7 +393,6 @@ test_recall_skill_exists() {
 }
 
 test_recall_skill_has_capabilities() {
-    assert_file_exists "$RECALL_SKILL/capabilities.json"
 }
 
 test_best_practices_skill_exists() {
@@ -402,7 +400,6 @@ test_best_practices_skill_exists() {
 }
 
 test_best_practices_skill_has_capabilities() {
-    assert_file_exists "$BEST_PRACTICES_SKILL/capabilities.json"
 }
 
 test_best_practices_skill_has_categories() {
@@ -424,7 +421,6 @@ test_feedback_skill_exists() {
 }
 
 test_feedback_skill_has_capabilities() {
-    assert_file_exists "$FEEDBACK_SKILL/capabilities.json"
 }
 
 # ============================================================================

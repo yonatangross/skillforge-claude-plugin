@@ -113,7 +113,6 @@ Try these to explore:
 
 | Tier | Content | Tokens | When Loaded |
 |------|---------|--------|-------------|
-| 1 - Discovery | `capabilities.json` | ~100 | Always (semantic matching) |
 | 2 - Overview | `SKILL.md` | ~500 | When skill is relevant |
 | 3 - Specific | `references/*.md` | ~200 | When implementing pattern |
 | 4 - Generate | `templates/*` | ~300 | When generating code |

@@ -536,8 +536,6 @@ cmd_apply() {
     # Apply based on target type
     case "$target" in
         capability)
-            # Add capability to capabilities.json
-            local caps_file="${skill_dir}/capabilities.json"
             if [[ -f "$caps_file" ]]; then
                 local cap_name
                 cap_name=$(echo "$pattern" | sed 's/add_//' | tr '_' '-')
@@ -593,8 +591,6 @@ EOF
             ;;
 
         integration)
-            # Add to integrates_with in capabilities.json
-            local caps_file="${skill_dir}/capabilities.json"
             if [[ -f "$caps_file" ]]; then
                 local int_name
                 int_name=$(echo "$pattern" | sed 's/add_//' | tr '_' '-')

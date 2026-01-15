@@ -26,12 +26,10 @@ project/
 .claude/
 ├── skills/                    ✅ Token-optimized
 │   ├── langfuse-observability/
-│   │   ├── capabilities.json  ✅ Complete
 │   │   ├── references/        ✅ 5 files
 │   │   ├── templates/         ✅ 2 files
 │   │   └── SKILL.md           ✅ Linked
 │   └── performance-optimization/
-│       ├── capabilities.json  ✅ Complete
 │       ├── references/        ✅ 5 files
 │       └── templates/         ✅ 5 files
 └── agents/                    ✅ 10 agents

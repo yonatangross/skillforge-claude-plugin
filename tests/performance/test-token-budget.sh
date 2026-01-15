@@ -30,7 +30,7 @@ warn() { echo -e "  ${YELLOW}⚠${NC} $1"; ((WARN_COUNT++)) || true; }
 info() { echo -e "  ${BLUE}ℹ${NC} $1"; }
 
 # Token limits per tier (relaxed - informational warnings, not hard failures)
-TIER1_LIMIT=500     # capabilities.json should be < 500 tokens
+TIER1_LIMIT=500     # SKILL.md should be < 500 tokens
 TIER2_LIMIT=1500    # SKILL.md should be < 1500 tokens
 TIER3_LIMIT=800     # references/*.md should be < 800 tokens each
 TIER4_LIMIT=1000    # templates/* should be < 1000 tokens each
@@ -54,7 +54,7 @@ echo "  Token Budget Validation Tests"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "  Recommended Limits (warnings if exceeded):"
-echo "  - Tier 1 (capabilities.json): < $TIER1_LIMIT tokens"
+echo "  - Tier 1 (SKILL.md): < $TIER1_LIMIT tokens"
 echo "  - Tier 2 (SKILL.md): < $TIER2_LIMIT tokens"
 echo "  - Tier 3 (references/*.md): < $TIER3_LIMIT tokens each"
 echo "  - Tier 4 (templates/*): < $TIER4_LIMIT tokens each"
@@ -64,7 +64,7 @@ echo ""
 # ============================================================================
 # Test 1: Tier 1 Token Budgets
 # ============================================================================
-echo "▶ Test 1: Tier 1 Token Budgets (capabilities.json)"
+echo "▶ Test 1: SKILL.md Token Budgets"
 echo "────────────────────────────────────────"
 
 tier1_total=0
@@ -74,9 +74,9 @@ tier1_max_skill=""
 skill_count=0
 
 for skill_dir in "$SKILLS_DIR"/*; do
-    if [ -d "$skill_dir" ] && [ -f "$skill_dir/capabilities.json" ]; then
+    if [ -d "$skill_dir" ] && [ -f "$skill_dir/SKILL.md" ]; then
         skill_name=$(basename "$skill_dir")
-        tokens=$(count_tokens "$skill_dir/capabilities.json")
+        tokens=$(count_tokens "$skill_dir/SKILL.md")
         tier1_total=$((tier1_total + tokens))
         ((skill_count++)) || true
 

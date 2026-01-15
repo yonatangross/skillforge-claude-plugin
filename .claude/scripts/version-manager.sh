@@ -51,10 +51,10 @@ find_skill_dir() {
     echo "$skill_dir"
 }
 
-# Get current version from capabilities.json
+# Get current version from SKILL.md
 get_current_version() {
     local skill_dir="$1"
-    local caps_file="${skill_dir}/capabilities.json"
+    local caps_file="${skill_dir}/SKILL.md"
 
     if [[ -f "$caps_file" ]]; then
         jq -r '.version // "1.0.0"' "$caps_file" 2>/dev/null || echo "1.0.0"
@@ -153,7 +153,7 @@ cmd_create() {
 
     # Copy current skill files to snapshot
     [[ -f "${skill_dir}/SKILL.md" ]] && cp "${skill_dir}/SKILL.md" "$snapshot_dir/"
-    [[ -f "${skill_dir}/capabilities.json" ]] && cp "${skill_dir}/capabilities.json" "$snapshot_dir/"
+    [[ -f "${skill_dir}/SKILL.md" ]] && cp "${skill_dir}/SKILL.md" "$snapshot_dir/"
     [[ -d "${skill_dir}/references" ]] && cp -r "${skill_dir}/references" "$snapshot_dir/" 2>/dev/null || true
     [[ -d "${skill_dir}/templates" ]] && cp -r "${skill_dir}/templates" "$snapshot_dir/" 2>/dev/null || true
 
@@ -223,8 +223,8 @@ EOF
         }]
        ' "$manifest_file" > "$tmp_file" && mv "$tmp_file" "$manifest_file"
 
-    # Update capabilities.json with new version
-    local caps_file="${skill_dir}/capabilities.json"
+    # Update SKILL.md with new version
+    local caps_file="${skill_dir}/SKILL.md"
     if [[ -f "$caps_file" ]]; then
         tmp_file=$(mktemp)
         jq --arg version "$new_version" '.version = $version' "$caps_file" > "$tmp_file" && mv "$tmp_file" "$caps_file"
@@ -272,13 +272,13 @@ cmd_restore() {
 
     # Backup current files
     [[ -f "${skill_dir}/SKILL.md" ]] && cp "${skill_dir}/SKILL.md" "$backup_dir/"
-    [[ -f "${skill_dir}/capabilities.json" ]] && cp "${skill_dir}/capabilities.json" "$backup_dir/"
+    [[ -f "${skill_dir}/SKILL.md" ]] && cp "${skill_dir}/SKILL.md" "$backup_dir/"
     [[ -d "${skill_dir}/references" ]] && cp -r "${skill_dir}/references" "$backup_dir/" 2>/dev/null || true
     [[ -d "${skill_dir}/templates" ]] && cp -r "${skill_dir}/templates" "$backup_dir/" 2>/dev/null || true
 
     # Restore from snapshot
     [[ -f "${snapshot_dir}/SKILL.md" ]] && cp "${snapshot_dir}/SKILL.md" "${skill_dir}/"
-    [[ -f "${snapshot_dir}/capabilities.json" ]] && cp "${snapshot_dir}/capabilities.json" "${skill_dir}/"
+    [[ -f "${snapshot_dir}/SKILL.md" ]] && cp "${snapshot_dir}/SKILL.md" "${skill_dir}/"
 
     # Remove and restore directories
     if [[ -d "${snapshot_dir}/references" ]]; then
@@ -408,10 +408,10 @@ cmd_diff() {
         echo ""
     fi
 
-    # Diff capabilities.json
-    if [[ -f "${dir1}/capabilities.json" && -f "${dir2}/capabilities.json" ]]; then
-        echo -e "${CYAN}capabilities.json changes:${NC}"
-        diff --color=auto -u "${dir1}/capabilities.json" "${dir2}/capabilities.json" 2>/dev/null || true
+    # Diff SKILL.md
+    if [[ -f "${dir1}/SKILL.md" && -f "${dir2}/SKILL.md" ]]; then
+        echo -e "${CYAN}SKILL.md changes:${NC}"
+        diff --color=auto -u "${dir1}/SKILL.md" "${dir2}/SKILL.md" 2>/dev/null || true
         echo ""
     fi
 

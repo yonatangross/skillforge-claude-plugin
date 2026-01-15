@@ -83,7 +83,7 @@ Validates JSON files against schemas in `.claude/schemas/`:
 ```bash
 # Files validated:
 # - plugin.json against plugin.schema.json
-# - All capabilities.json files
+# - All SKILL.md files
 # - context/*.json files
 # - coordination/*.json files
 ```
@@ -92,7 +92,7 @@ Validates JSON files against schemas in `.claude/schemas/`:
 ```
 Schemas: 15/15 compliant
 - plugin.json: valid
-- skills/*/capabilities.json: 79/79 valid
+- skills/*/SKILL.md: 79/79 valid
 - context/session/state.json: valid
 ```
 

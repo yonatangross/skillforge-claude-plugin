@@ -27,8 +27,8 @@ find_skill_dir() {
 }
 
 
-# Token budget: Based on Tier 1 (capabilities.json ~100 tokens each)
-MAX_TIER1_TOKEN_BUDGET=20000
+# Token budget: Based on skill files (SKILL.md ~100 tokens each)
+MAX_SKILL_TOKEN_BUDGET=20000
 
 # Verbose mode
 VERBOSE="${1:-}"
@@ -63,12 +63,12 @@ get_agent_skills_from_md() {
     fi
 }
 
-# Get integrates_with from capabilities.json
+# Get integrates_with from SKILL.md
 get_skill_integrates_with() {
     local skill_id="$1"
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_id")
-    local caps_file="$skill_dir/capabilities.json"
+    local caps_file="$skill_dir/SKILL.md"
     if [[ -f "$caps_file" ]]; then
         jq -r '.integrates_with[]?' "$caps_file" 2>/dev/null | sort -u
     fi
@@ -82,21 +82,21 @@ skill_exists() {
     [[ -n "$skill_dir" && -d "$skill_dir" ]]
 }
 
-# Check if capabilities.json exists
+# Check if SKILL.md exists
 skill_has_capabilities() {
     local skill_id="$1"
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_id")
-    [[ -n "$skill_dir" && -f "$skill_dir/capabilities.json" ]]
+    [[ -n "$skill_dir" && -f "$skill_dir/SKILL.md" ]]
 }
 
-# Estimate tokens for Tier 1 only
-estimate_tier1_tokens() {
+# Estimate tokens for skill files only
+estimate_skill_tokens() {
     local skill_id="$1"
     local skill_dir
     skill_dir=$(find_skill_dir "$skill_id")
-    if [[ -n "$skill_dir" && -f "$skill_dir/capabilities.json" ]]; then
-        estimate_tokens "$skill_dir/capabilities.json"
+    if [[ -n "$skill_dir" && -f "$skill_dir/SKILL.md" ]]; then
+        estimate_tokens "$skill_dir/SKILL.md"
     else
         echo 0
     fi
@@ -114,7 +114,7 @@ test_skill_directories_exist() {
         if [[ -n "$skill_id" ]]; then
             count=$((count + 1))
             if ! skill_has_capabilities "$skill_id"; then
-                missing_skills="$missing_skills  - Skill '$skill_id' missing capabilities.json\n"
+                missing_skills="$missing_skills  - Skill '$skill_id' missing SKILL.md\n"
             fi
         fi
     done < <(get_all_skill_ids)
@@ -236,22 +236,22 @@ test_cross_references() {
 # ============================================================================
 
 test_token_budget() {
-    local total_tier1_tokens=0
+    local total_skill_tokens=0
     local skill_count=0
 
     while IFS= read -r skill_id; do
         if skill_has_capabilities "$skill_id"; then
-            local tokens=$(estimate_tier1_tokens "$skill_id")
-            total_tier1_tokens=$((total_tier1_tokens + tokens))
+            local tokens=$(estimate_skill_tokens "$skill_id")
+            total_skill_tokens=$((total_skill_tokens + tokens))
             skill_count=$((skill_count + 1))
             vlog "Skill $skill_id: ~$tokens tokens"
         fi
     done < <(get_all_skill_ids)
 
-    vlog "Total Tier 1 tokens for $skill_count skills: ~$total_tier1_tokens"
+    vlog "Total skill files tokens for $skill_count skills: ~$total_skill_tokens"
 
-    if [[ $total_tier1_tokens -gt $MAX_TIER1_TOKEN_BUDGET ]]; then
-        echo "  Total Tier 1 budget exceeded: ~$total_tier1_tokens tokens (max: $MAX_TIER1_TOKEN_BUDGET)"
+    if [[ $total_skill_tokens -gt $MAX_SKILL_TOKEN_BUDGET ]]; then
+        echo "  Total skill files budget exceeded: ~$total_skill_tokens tokens (max: $MAX_SKILL_TOKEN_BUDGET)"
         return 1
     fi
     return 0
@@ -265,11 +265,11 @@ test_capabilities_validity() {
     local invalid_caps=""
 
     while IFS= read -r skill_id; do
-        local caps_file="$(find_skill_dir "$skill_id")/capabilities.json"
+        local caps_file="$(find_skill_dir "$skill_id")/SKILL.md"
         if [[ -f "$caps_file" ]]; then
-            vlog "Validating capabilities.json for: $skill_id"
+            vlog "Validating SKILL.md for: $skill_id"
             if ! jq empty "$caps_file" 2>/dev/null; then
-                invalid_caps="$invalid_caps  - Skill '$skill_id' has invalid capabilities.json\n"
+                invalid_caps="$invalid_caps  - Skill '$skill_id' has invalid SKILL.md\n"
             fi
         fi
     done < <(get_all_skill_ids)
@@ -314,7 +314,7 @@ echo ""
 # Run tests
 describe "Skill-Agent Integration Tests"
 
-it "All skill directories have capabilities.json" test_skill_directories_exist
+it "All skill directories have SKILL.md" test_skill_directories_exist
 
 it "All agent markdown files exist" test_agent_files_exist
 
@@ -322,9 +322,9 @@ it "Agent skill references point to valid skills" test_agent_skill_references
 
 it "Cross-references (integrates_with) point to valid skills" test_cross_references
 
-it "Total Tier 1 tokens within budget ($MAX_TIER1_TOKEN_BUDGET)" test_token_budget
+it "Total skill files tokens within budget ($MAX_SKILL_TOKEN_BUDGET)" test_token_budget
 
-it "All capabilities.json files are valid JSON" test_capabilities_validity
+it "All SKILL.md files are valid JSON" test_capabilities_validity
 
 # Print summary
 print_summary

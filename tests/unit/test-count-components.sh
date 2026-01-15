@@ -196,7 +196,7 @@ test_count_accuracy() {
     log_section "Verifying Count Accuracy"
 
     # Count skills manually
-    local actual_skills=$(find "${PROJECT_ROOT}/skills" -name "capabilities.json" -type f 2>/dev/null | wc -l | tr -d ' ')
+    local actual_skills=$(find "${PROJECT_ROOT}/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     local reported_skills=$("${PROJECT_ROOT}/bin/count-components.sh" --json | jq '.skills')
 
     if [[ "$actual_skills" -eq "$reported_skills" ]]; then

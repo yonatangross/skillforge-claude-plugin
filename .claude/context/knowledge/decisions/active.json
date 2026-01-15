@@ -41,7 +41,7 @@
       "id": "progressive-skill-loading",
       "date": "2026-01-05",
       "summary": "4-tier progressive loading for skills: discovery (100 tokens) -> overview (500) -> specific (200) -> generate (300)",
-      "rationale": "Token efficiency - only load what's needed when needed. capabilities.json for discovery, SKILL.md for patterns, references/ for details, templates/ for code generation.",
+      "rationale": "Token efficiency - only load what's needed when needed. SKILL.md for discovery and patterns, references/ for details, templates/ for code generation.",
       "status": "implemented",
       "impact": "high"
     },

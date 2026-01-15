@@ -9,19 +9,19 @@ Each skill can have versioned snapshots stored in:
 ```
 skills/<category>/<skill-name>/
 ├── SKILL.md                 # Current version
-├── capabilities.json        # Current metadata
+├── SKILL.md        # Current metadata
 ├── references/              # Current references
 ├── templates/               # Current templates
 └── versions/
     ├── manifest.json        # Version history metadata
     ├── 1.0.0/
     │   ├── SKILL.md
-    │   ├── capabilities.json
+    │   ├── SKILL.md
     │   ├── references/
     │   └── CHANGELOG.md
     └── 1.1.0/
         ├── SKILL.md
-        ├── capabilities.json
+        ├── SKILL.md
         ├── references/
         └── CHANGELOG.md
 ```

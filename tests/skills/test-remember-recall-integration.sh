@@ -6,14 +6,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-SKILLS_ROOT="$REPO_ROOT/.claude/skills/workflows/.claude/skills"
+SKILLS_ROOT="$REPO_ROOT/skills"
 
 REMEMBER_DIR="$SKILLS_ROOT/remember"
 RECALL_DIR="$SKILLS_ROOT/recall"
 REMEMBER_SKILL="$REMEMBER_DIR/SKILL.md"
 RECALL_SKILL="$RECALL_DIR/SKILL.md"
-REMEMBER_CAP="$REMEMBER_DIR/capabilities.json"
-RECALL_CAP="$RECALL_DIR/capabilities.json"
 
 FAILED=0
 TOTAL_TESTS=0
@@ -65,9 +63,7 @@ echo ""
 echo "Test 3: Category Filtering Implementation"
 echo "   Verifying recall properly adds metadata.category to filters..."
 
-# Check that recall mentions adding category to filters
 recall_has_category_filter=$(grep -c "metadata.category" "$RECALL_SKILL" || echo "0")
-recall_has_filter_example=$(grep -A 5 "WITH category" "$RECALL_SKILL" | grep -c "metadata.category" || echo "0")
 
 if [[ $recall_has_category_filter -gt 0 ]]; then
   pass_test "Recall skill implements metadata.category filtering (found $recall_has_category_filter references)"
@@ -118,108 +114,8 @@ else
 fi
 echo ""
 
-# Test 7: test_capabilities_json_valid
-echo "Test 7: Capabilities JSON Validation"
-echo "   Verifying both capabilities.json files are valid JSON..."
-
-remember_json_valid=0
-recall_json_valid=0
-
-if jq empty "$REMEMBER_CAP" 2>/dev/null; then
-  remember_json_valid=1
-fi
-
-if jq empty "$RECALL_CAP" 2>/dev/null; then
-  recall_json_valid=1
-fi
-
-if [[ $remember_json_valid -eq 1 && $recall_json_valid -eq 1 ]]; then
-  pass_test "Both capabilities.json files are valid JSON"
-else
-  fail_test "Invalid JSON detected" "remember valid: $remember_json_valid, recall valid: $recall_json_valid"
-fi
-echo ""
-
-# Test 8: Flags consistency between capabilities.json and SKILL.md
-echo "Test 8: Flag Consistency"
-echo "   Verifying flags in capabilities.json match SKILL.md documentation..."
-
-# Check remember flags
-remember_flags_in_cap=$(jq -r '.flags | keys[]' "$REMEMBER_CAP" 2>/dev/null | sort)
-remember_flags_expected="--agent --category --failed --global --graph --success"
-
-# Check recall flags
-recall_flags_in_cap=$(jq -r '.flags | keys[]' "$RECALL_CAP" 2>/dev/null | sort)
-recall_flags_expected="--agent --category --global --graph --limit"
-
-flags_consistent=1
-
-# Validate remember flags exist in SKILL.md (use grep -F for literal match to avoid -- option issues)
-for flag in $(echo "$remember_flags_in_cap"); do
-  if ! grep -F -- "$flag" "$REMEMBER_SKILL" >/dev/null 2>&1; then
-    echo "   WARNING: remember flag '$flag' in capabilities.json but not documented in SKILL.md"
-    flags_consistent=0
-  fi
-done
-
-# Validate recall flags exist in SKILL.md (use grep -F for literal match to avoid -- option issues)
-for flag in $(echo "$recall_flags_in_cap"); do
-  if ! grep -F -- "$flag" "$RECALL_SKILL" >/dev/null 2>&1; then
-    echo "   WARNING: recall flag '$flag' in capabilities.json but not documented in SKILL.md"
-    flags_consistent=0
-  fi
-done
-
-if [[ $flags_consistent -eq 1 ]]; then
-  pass_test "Flags in capabilities.json are documented in SKILL.md"
-else
-  fail_test "Flag documentation mismatch" "Some flags in capabilities.json are not documented in SKILL.md"
-fi
-echo ""
-
-# Test 9: Category consistency
-echo "Test 9: Category Consistency"
-echo "   Verifying categories are consistently documented..."
-
-# Extract categories from remember SKILL.md (categories are listed as "- `category`")
-remember_categories=$(grep -A 15 "^## Categories" "$REMEMBER_SKILL" | grep "^- \`" | sed 's/^- `//;s/`.*//' | sort)
-
-# Check if recall mentions the same categories (more lenient - just check if mentioned anywhere)
-category_consistent=1
-missing_count=0
-for category in $remember_categories; do
-  if ! grep -F -- "$category" "$RECALL_SKILL" >/dev/null 2>&1; then
-    if [[ $missing_count -eq 0 ]]; then
-      echo "   INFO: Some categories from remember not explicitly listed in recall (may be OK if mentioned in examples)"
-    fi
-    missing_count=$((missing_count + 1))
-  fi
-done
-
-# This is informational only - categories in recall don't need to be explicitly listed
-if [[ $missing_count -eq 0 ]]; then
-  pass_test "All categories from remember are mentioned in recall"
-else
-  pass_test "Categories documented (recall references all categories via examples)"
-fi
-echo ""
-
-# Test 10: Version alignment
-echo "Test 10: Version Alignment"
-echo "   Verifying both skills have matching versions..."
-
-remember_version=$(jq -r '.version' "$REMEMBER_CAP" 2>/dev/null)
-recall_version=$(jq -r '.version' "$RECALL_CAP" 2>/dev/null)
-
-if [[ "$remember_version" == "$recall_version" ]]; then
-  pass_test "Both skills have matching version: $remember_version"
-else
-  fail_test "Version mismatch" "remember: $remember_version, recall: $recall_version"
-fi
-echo ""
-
-# Test 11: mem0 MCP integration references
-echo "Test 11: mem0 MCP Integration"
+# Test 7: mem0 MCP integration references
+echo "Test 7: mem0 MCP Integration"
 echo "   Verifying both skills reference correct mem0 MCP tools..."
 
 remember_has_add_memory=$(grep -c "mcp__mem0__add_memory" "$REMEMBER_SKILL" || echo "0")
@@ -232,8 +128,8 @@ else
 fi
 echo ""
 
-# Test 12: Error handling documentation
-echo "Test 12: Error Handling Documentation"
+# Test 8: Error handling documentation
+echo "Test 8: Error Handling Documentation"
 echo "   Verifying both skills document error handling..."
 
 remember_has_error_handling=$(grep -c "## Error Handling" "$REMEMBER_SKILL" || echo "0")
@@ -269,8 +165,6 @@ else
   echo "  - Consistent category filtering"
   echo "  - Proper graph flag propagation"
   echo "  - Agent scoping support"
-  echo "  - Valid JSON schemas"
-  echo "  - Consistent flag documentation"
   echo "  - Proper mem0 MCP integration"
   exit 0
 fi

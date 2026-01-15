@@ -22,7 +22,7 @@
     "NEVER include database IDs in LLM prompts (IDs flow AROUND, not THROUGH)",
     "ALWAYS run tests before committing code",
     "NEVER store secrets in code (use .env files, excluded from git)",
-    "ALWAYS follow progressive loading for skills (capabilities.json first)"
+    "ALWAYS check SKILL.md for skill patterns and usage"
   ],
 
   "tech_stack": {

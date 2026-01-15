@@ -220,7 +220,6 @@ if [[ "$RUN_E2E" == "true" ]]; then
     echo -e "${BOLD}${CYAN}E2E TESTS${NC}"
     echo ""
 
-    run_test "Progressive Loading E2E" "$SCRIPT_DIR/e2e/test-progressive-loading.sh" || true
     run_test "Agent Lifecycle E2E" "$SCRIPT_DIR/e2e/test-agent-lifecycle.sh" || true
     run_test "Coordination System E2E" "$SCRIPT_DIR/e2e/test-coordination-e2e.sh" || true
 
@@ -242,9 +241,7 @@ if [[ "$RUN_SKILLS" == "true" ]]; then
 
     # Run skill tests via the skill test runner (uses quick mode in main runner)
     if [[ -f "$SCRIPT_DIR/.claude/skills/run-skill-tests.sh" ]]; then
-        run_test "Skill Structure Validation" "$SCRIPT_DIR/.claude/skills/structure/test-capabilities-json.sh" || true
         run_test "SKILL.md Validation" "$SCRIPT_DIR/.claude/skills/structure/test-skill-md.sh" || true
-        run_test "Progressive Loading" "$SCRIPT_DIR/.claude/skills/progressive-loading/test-tier-loading.sh" || true
         run_test "Semantic Matching" "$SCRIPT_DIR/.claude/skills/semantic-matching/test-skill-discovery.sh" || true
         run_test "Skill-Agent Integration" "$SCRIPT_DIR/.claude/skills/integration/test-skill-agent-integration.sh" || true
         run_test "Agent Definitions" "$SCRIPT_DIR/subagents/definition/test-agent-definitions.sh" || true

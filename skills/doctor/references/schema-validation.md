@@ -11,7 +11,7 @@ Located in `.claude/schemas/`:
 | Schema | Validates |
 |--------|-----------|
 | `plugin.schema.json` | `plugin.json` |
-| `skill-capabilities.schema.json` | All `capabilities.json` files |
+| `skill files` | All `SKILL.md` files |
 | `context.schema.json` | Context protocol files |
 | `coordination.schema.json` | Work registry and decision log |
 
@@ -28,11 +28,11 @@ Located in `.claude/schemas/`:
 ```bash
 # Using ajv
 npx ajv validate \
-  -s .claude/schemas/skill-capabilities.schema.json \
-  -d .claude/skills/doctor/capabilities.json
+  -s .claude/schemas/skill files \
+  -d .claude/skills/doctor/SKILL.md
 
 # Using jq for basic structure check
-jq empty .claude/skills/doctor/capabilities.json
+jq empty .claude/skills/doctor/SKILL.md
 ```
 
 ## Common Schema Errors
@@ -51,7 +51,7 @@ jq empty .claude/skills/doctor/capabilities.json
 
 ```json
 {
-  "$schema": "../../schemas/skill-capabilities.schema.json",
+  "$schema": "../../schemas/skill files",
   "name": "my-skill",
   "version": "1.0.0",
   "description": "Description of the skill",
@@ -96,10 +96,10 @@ jq empty .claude/skills/doctor/capabilities.json
 ## Batch Validation
 
 ```bash
-# Validate all capabilities.json files
-for category in skills/*/.claude/skills; do for f in "$category"/*/capabilities.json; do
+# Validate all SKILL.md files
+for category in skills/*/.claude/skills; do for f in "$category"/*/SKILL.md; do
   npx ajv validate \
-    -s .claude/schemas/skill-capabilities.schema.json \
+    -s .claude/schemas/skill files \
     -d "$f" || echo "INVALID: $f"
 done
 ```
@@ -110,9 +110,9 @@ Use schema as a template:
 
 ```bash
 # View required fields
-jq '.required' .claude/schemas/skill-capabilities.schema.json
+jq '.required' .claude/schemas/skill files
 
 # View property types
 jq '.properties | to_entries | map({key: .key, type: .value.type})' \
-  .claude/schemas/skill-capabilities.schema.json
+  .claude/schemas/skill files
 ```

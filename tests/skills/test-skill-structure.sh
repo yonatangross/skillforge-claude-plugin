@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Test: Validates all skills have required files (Tier 1-4)
-# Each skill must have capabilities.json (Tier 1) and SKILL.md (Tier 2)
+# Test: Validates all skills have required SKILL.md (CC 2.1.7 flat structure)
 
 set -euo pipefail
 
@@ -11,35 +10,24 @@ SKILLS_ROOT="$REPO_ROOT/skills"
 FAILED=0
 SKILL_COUNT=0
 
-echo "=== Skill Structure Test ==="
+echo "=== Skill Structure Test (CC 2.1.7) ==="
 echo ""
 
-# Find all skill directories using CC 2.1.6 nested structure
-for skill_dir in "$SKILLS_ROOT"/*/*/; do
+# CC 2.1.7 flat structure: skills/<skill-name>/SKILL.md
+for skill_dir in "$SKILLS_ROOT"/*/; do
   if [[ ! -d "$skill_dir" ]]; then
     continue
   fi
 
   skill_name=$(basename "$skill_dir")
   SKILL_COUNT=$((SKILL_COUNT + 1))
-  skill_failed=0
 
-  # Tier 1: capabilities.json (REQUIRED)
-  if [[ ! -f "${skill_dir}capabilities.json" ]]; then
-    echo "FAIL: $skill_name missing capabilities.json (Tier 1)"
-    skill_failed=1
-    FAILED=1
-  fi
-
-  # Tier 2: SKILL.md (REQUIRED)
+  # SKILL.md is the only required file in CC 2.1.7
   if [[ ! -f "${skill_dir}SKILL.md" ]]; then
-    echo "FAIL: $skill_name missing SKILL.md (Tier 2)"
-    skill_failed=1
+    echo "FAIL: $skill_name missing SKILL.md"
     FAILED=1
-  fi
-
-  if [[ $skill_failed -eq 0 ]]; then
-    echo "PASS: $skill_name has valid structure"
+  else
+    echo "PASS: $skill_name has SKILL.md"
   fi
 done
 
