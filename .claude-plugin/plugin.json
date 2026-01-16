@@ -1,7 +1,7 @@
 {
   "name": "skf",
-  "version": "4.17.2",
-  "description": "Comprehensive AI-assisted development toolkit with 97 skills (17 user-invocable commands, 80 internal knowledge), 20 agents, 105 hooks, progressive loading, and production-ready patterns for modern full-stack development",
+  "version": "4.18.0",
+  "description": "Comprehensive AI-assisted development toolkit with 103 skills (17 user-invocable commands, 86 internal knowledge), 20 agents, 109 hooks, progressive loading, and production-ready patterns for modern full-stack development",
   "author": {
     "name": "Yonatan Gross",
     "email": "yonatan2gross@gmail.com",
@@ -111,6 +111,22 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pretool/bash/conflict-predictor.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pretool/bash/git-commit-message-validator.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pretool/bash/git-branch-naming-validator.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pretool/bash/git-atomic-commit-checker.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pretool/bash/gh-issue-creation-guide.sh"
           }
         ]
       },

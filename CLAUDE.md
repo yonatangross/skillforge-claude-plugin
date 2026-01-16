@@ -6,10 +6,10 @@ This document provides essential context for Claude Code when working with the S
 
 **SkillForge Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
 
-- **97 skills**: Reusable knowledge modules in 10 category-based directories (flat structure)
+- **103 skills**: Reusable knowledge modules in flat structure (including 6 git/GitHub workflow skills)
 - **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
 - **17 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **105 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
+- **109 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -581,7 +581,7 @@ ls agents/
 
 ## Skills Overview (CC 2.1.7)
 
-97 skills in flat structure at `skills/`. Common skill types include:
+103 skills in flat structure at `skills/`. Common skill types include:
 
 - **AI/LLM**: RAG, embeddings, agents, caching, observability (19 skills)
 - **LangGraph**: State, routing, parallel, checkpoints, human-in-loop (7 skills)
@@ -590,6 +590,7 @@ ls agents/
 - **Testing**: Unit, integration, E2E, mocking, data management (9 skills)
 - **Security**: OWASP, auth, validation, defense-in-depth (5 skills)
 - **DevOps**: CI/CD, observability, GitHub CLI (4 skills)
+- **Git/GitHub**: Milestones, atomic commits, branch strategy, stacked PRs, releases, recovery (6 skills)
 - **Workflows**: Git, PR, implementation, exploration, HUD (13 skills)
 - **Quality**: Quality gates, reviews, golden datasets (8 skills)
 - **Context**: Compression, engineering, brainstorming, planning (6 skills)
@@ -633,16 +634,17 @@ Hooks use `${CLAUDE_SESSION_ID}` directly without fallback patterns (CC 2.1.9 gu
 
 ## Version Information
 
-- **Current Version**: 4.17.1 (as of 2026-01-16)
+- **Current Version**: 4.18.0 (as of 2026-01-16)
 - **Claude Code Requirement**: >= 2.1.9
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.9 additionalContext + CC 2.1.7 native parallel (105 hooks)
+- **Hook Architecture**: CC 2.1.9 additionalContext + CC 2.1.7 native parallel (109 hooks)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
 - **CC 2.1.9 Integration**: additionalContext, auto:N MCP, plansDirectory (v4.16.0)
 - **User-Invocable Skills**: CC 2.1.3 `user-invocable` field for 17 commands (v4.17.0)
+- **Git Enforcement**: Commit message, branch naming, atomic commits, issue creation (v4.18.0)
 
 ---
 
@@ -679,4 +681,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-16 (v4.17.2)
+**Last Updated**: 2026-01-16 (v4.18.0)
