@@ -23,10 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq shellcheck
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh --with-shellcheck
 
       - name: Run lint checks
         run: bash tests/ci/lint.sh
@@ -45,15 +43,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run unit tests
         run: |
@@ -121,15 +112,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run security tests
         run: |
@@ -159,15 +143,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-
-      - name: Install dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: brew install jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run integration tests
         run: |
@@ -193,10 +170,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run performance tests
         run: |
@@ -214,10 +189,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run skills structure compliance tests
         run: |
@@ -234,10 +207,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run mem0 integration tests
         run: |
@@ -256,10 +227,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run agent tests
         run: |
@@ -300,10 +269,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Run config tests
         run: |
@@ -330,10 +297,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup CI environment
+        run: ./bin/ci-setup.sh
 
       - name: Generate hook coverage report
         run: |
