@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.16.0] - 2026-01-16
+
+### Added
+
+**CC 2.1.9 Integration**
+- New helper functions in `hooks/_lib/common.sh`: `output_with_context()`, `output_allow_with_context()`, `output_allow_with_context_logged()`
+- New session ID helpers: `get_session_state_dir()`, `get_session_temp_file()`, `ensure_session_temp_dir()`
+- PreToolUse `additionalContext` support for injecting guidance before tool execution
+- `plansDirectory` setting in `.claude/defaults/config.json`
+- `auto:N` MCP thresholds in `.claude/templates/mcp-enabled.json` (context7:75, sequential-thinking:60, mem0:80, memory:70, playwright:50)
+
+**Hook Updates with additionalContext**
+- `git-branch-protection.sh` - Injects branch context before git commands
+- `error-pattern-warner.sh` - Injects learned error patterns
+- `context7-tracker.sh` - Injects cache state
+- `architecture-change-detector.sh` - Injects affected patterns
+
+### Changed
+
+- Engine requirement updated to `>=2.1.9`
+- Removed session ID fallback patterns (`:-default`, `:-unknown`) for CC 2.1.9 compliance
+- Updated `test-context-system.sh` to set `CLAUDE_SESSION_ID` for hook testing
+- Version bumped: 4.15.3 → 4.16.0
+
+### Fixed
+
+- Version consistency across marketplace.json, identity.json, plugin.json
+
+---
+
 ## [4.15.3] - 2026-01-15
 
 ### Fixed
