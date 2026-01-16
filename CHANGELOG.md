@@ -5,7 +5,50 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.18.0] - 2026-01-16
 
+### Added
+
+- **6 Git/GitHub Workflow Skills**
+  - `milestone-management`: gh api patterns for milestone CRUD (no native gh CLI support)
+  - `atomic-commits`: Small, focused commits with `git add -p` and interactive staging
+  - `branch-strategy`: GitHub Flow + feature flags for trunk-based development
+  - `stacked-prs`: Multi-PR development for large features with rebase management
+  - `release-management`: `gh release` + semantic versioning workflows
+  - `git-recovery`: Reflog, undo patterns, safe recovery from mistakes
+
+- **4 Git Enforcement Hooks** (CC 2.1.9 additionalContext)
+  - `git-commit-message-validator.sh`: **BLOCKS** invalid conventional commits
+  - `git-branch-naming-validator.sh`: **WARNS** on non-standard branch names
+  - `git-atomic-commit-checker.sh`: **WARNS** on commits >10 files or >400 lines
+  - `gh-issue-creation-guide.sh`: **INJECTS** checklist context before `gh issue create`
+
+- **GitHub CLI Skill Enrichment**
+  - `checklists/issue-creation-checklist.md`: Pre-creation verification workflow
+  - `checklists/labeling-guide.md`: Label categories, validation, audit queries
+  - `references/issue-templates.md`: Ready-to-use templates for bugs, features, tasks
+  - `templates/issue-scripts.sh`: Automation with duplicate checks
+
+- **CI Improvements**
+  - `bin/ci-setup.sh`: Centralized CI environment setup script
+  - Removes unreliable third-party repos (Microsoft, Azure CLI) before `apt-get update`
+  - Cross-platform support (Ubuntu/macOS)
+
+- **Tests**
+  - `tests/unit/test-git-enforcement-hooks.sh`: 28 tests for all new hooks and skills
+
+### Fixed
+
+- **CI 403 Errors**: Removed unused Microsoft/Azure package repos that cause intermittent failures
+- **Test 5 in test-context-deferral.sh**: Updated to check CLAUDE.md for CC version requirement (engines field was removed from plugin.json)
+
+### Changed
+
+- Skills count: 97 → 103 (added 6 git/GitHub skills)
+- Hooks count: 105 → 109 (added 4 enforcement hooks)
+- All CI jobs now use centralized `./bin/ci-setup.sh` instead of inline apt-get
+
+---
 
 ## [4.17.2] - 2026-01-16
 

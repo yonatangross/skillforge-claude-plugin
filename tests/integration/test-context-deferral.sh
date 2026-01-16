@@ -118,9 +118,10 @@ test_common_has_permission_feedback() {
 }
 test_common_has_permission_feedback
 
-log_section "Test 5: Plugin.json has CC 2.1.7 requirement"
+log_section "Test 5: Plugin version and CC requirement documented"
 test_plugin_version_requirement() {
   local plugin_json="$PROJECT_ROOT/.claude-plugin/plugin.json"
+  local claude_md="$PROJECT_ROOT/CLAUDE.md"
 
   if [[ ! -f "$plugin_json" ]]; then
     log_skip ".claude-plugin/plugin.json not found"
@@ -130,9 +131,6 @@ test_plugin_version_requirement() {
   local version
   version=$(jq -r '.version // "unknown"' "$plugin_json")
 
-  local engine_req
-  engine_req=$(jq -r '.engines["claude-code"] // "unknown"' "$plugin_json")
-
   # Check version is valid semver (4.x.x)
   if [[ "$version" =~ ^4\.[0-9]+\.[0-9]+$ ]]; then
     log_pass "Plugin version is valid: $version"
@@ -140,11 +138,12 @@ test_plugin_version_requirement() {
     log_fail "Expected version 4.x.x, got $version"
   fi
 
-  # Check engine requirement is >=2.1.9
-  if [[ "$engine_req" == ">=2.1.9" ]]; then
-    log_pass "Engine requirement is >=2.1.9"
+  # Check CC version requirement is documented in CLAUDE.md
+  # (engines field was removed from plugin.json as it's not a valid Claude Code field)
+  if [[ -f "$claude_md" ]] && grep -q "Claude Code.*>= 2.1.9\|>= 2.1.9\|>=2.1.9" "$claude_md"; then
+    log_pass "CC >=2.1.9 requirement documented in CLAUDE.md"
   else
-    log_fail "Expected engine >=2.1.9, got $engine_req"
+    log_fail "CC version requirement not found in CLAUDE.md"
   fi
 }
 test_plugin_version_requirement

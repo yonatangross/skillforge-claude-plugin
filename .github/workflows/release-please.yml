@@ -1,0 +1,62 @@
+# Release Please - Automated Versioning and Changelog
+#
+# This workflow automates:
+# - Version bumps based on conventional commits
+# - CHANGELOG.md generation
+# - GitHub Release creation
+#
+# How it works:
+# 1. On every push to main, release-please analyzes commits
+# 2. It creates/updates a "Release PR" with version bump and changelog
+# 3. When you merge the Release PR, it creates a GitHub Release
+#
+# Conventional Commits → Version Bumps:
+# - fix: → patch (1.0.0 → 1.0.1)
+# - feat: → minor (1.0.0 → 1.1.0)
+# - feat!: or BREAKING CHANGE → major (1.0.0 → 2.0.0)
+#
+# Reference: https://github.com/googleapis/release-please
+
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          # Use simple release type for non-npm projects
+          release-type: simple
+
+          # Package name for the release
+          package-name: skillforge-claude-plugin
+
+          # Changelog sections configuration
+          # Maps conventional commit types to changelog sections
+          changelog-types: |
+            [
+              {"type": "feat", "section": "Features", "hidden": false},
+              {"type": "fix", "section": "Bug Fixes", "hidden": false},
+              {"type": "chore", "section": "Miscellaneous", "hidden": false},
+              {"type": "docs", "section": "Documentation", "hidden": false},
+              {"type": "style", "section": "Styles", "hidden": true},
+              {"type": "refactor", "section": "Code Refactoring", "hidden": false},
+              {"type": "perf", "section": "Performance", "hidden": false},
+              {"type": "test", "section": "Tests", "hidden": true},
+              {"type": "ci", "section": "CI/CD", "hidden": false}
+            ]
+
+          # Extra files to update version in
+          extra-files: |
+            .claude-plugin/plugin.json
+            CLAUDE.md
