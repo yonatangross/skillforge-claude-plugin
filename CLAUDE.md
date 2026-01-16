@@ -6,10 +6,10 @@ This document provides essential context for Claude Code when working with the S
 
 **SkillForge Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
 
-- **103 skills**: Reusable knowledge modules in flat structure (including 6 git/GitHub workflow skills)
-- **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **17 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **109 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
+- **111 skills**: Reusable knowledge modules in flat structure (including 6 git/GitHub workflow skills)
+- **27 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
+- **18 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
+- **113 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -23,7 +23,7 @@ This document provides essential context for Claude Code when working with the S
 
 ```
 .claude/
-├── agents/              # 20 specialized AI agent personas (CC 2.1.6 native format)
+├── agents/              # 25 specialized AI agent personas (CC 2.1.6 native format)
 ├── commands/            # User-invocable skill workflows (CC 2.1.3+ unified)
 ├── context/             # Session state, knowledge base, and shared context
 ├── coordination/        # Multi-worktree coordination system (locks, registries)
@@ -42,7 +42,7 @@ This document provides essential context for Claude Code when working with the S
 ├── templates/           # Shared templates (ADR, commits, PRs)
 └── workflows/           # Multi-agent workflow orchestrations
 
-# Skills use CC 2.1.7 native flat structure (97 skills):
+# Skills use CC 2.1.7 native flat structure (111 skills):
 skills/<skill-name>/
 ├── SKILL.md            # Required: Overview and patterns (~500 tokens)
 ├── references/         # Optional: Specific implementations (~200 tokens)
@@ -154,14 +154,15 @@ rm -rf hooks/logs/*.log
 
 ### Skill Development
 ```bash
-# Validate skill structure
-./bin/validate-skill.sh skills/my-new-skill
+# Validate all skill structures (comprehensive 10-test suite)
+./tests/skills/structure/test-skill-md.sh
 
-# Test progressive loading
-./bin/test-progressive-load.sh my-skill-id
+# Create a new skill manually
+mkdir -p skills/my-new-skill/references
+# Then create skills/my-new-skill/SKILL.md with required frontmatter
 
-# Generate skill from template (automatically places in category)
-./bin/generate-skill.sh --name "My Skill" --category backend
+# Count and validate component numbers
+./bin/validate-counts.sh
 ```
 
 ---
@@ -581,19 +582,22 @@ ls agents/
 
 ## Skills Overview (CC 2.1.7)
 
-103 skills in flat structure at `skills/`. Common skill types include:
+111 skills in flat structure at `skills/`. Common skill types include:
 
 - **AI/LLM**: RAG, embeddings, agents, caching, observability (19 skills)
 - **LangGraph**: State, routing, parallel, checkpoints, human-in-loop (7 skills)
 - **Backend**: FastAPI, architecture, databases, APIs, resilience (15 skills)
 - **Frontend**: React 19, design systems, animations, i18n (6 skills)
-- **Testing**: Unit, integration, E2E, mocking, data management (9 skills)
+- **Testing**: Unit, integration, E2E, mocking, data management, a11y-testing (10 skills)
 - **Security**: OWASP, auth, validation, defense-in-depth (5 skills)
 - **DevOps**: CI/CD, observability, GitHub CLI (4 skills)
 - **Git/GitHub**: Milestones, atomic commits, branch strategy, stacked PRs, releases, recovery (6 skills)
 - **Workflows**: Git, PR, implementation, exploration, HUD (13 skills)
 - **Quality**: Quality gates, reviews, golden datasets (8 skills)
 - **Context**: Compression, engineering, brainstorming, planning (6 skills)
+- **Event-Driven**: Event sourcing, message queues, outbox pattern (3 skills)
+- **Database**: Alembic migrations, zero-downtime migrations, database versioning (3 skills)
+- **Accessibility**: WCAG compliance, focus management, React ARIA patterns (3 skills)
 
 ---
 
@@ -638,7 +642,7 @@ Hooks use `${CLAUDE_SESSION_ID}` directly without fallback patterns (CC 2.1.9 gu
 - **Claude Code Requirement**: >= 2.1.9
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.9 additionalContext + CC 2.1.7 native parallel (109 hooks)
+- **Hook Architecture**: CC 2.1.9 additionalContext + CC 2.1.7 native parallel (113 hooks)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1

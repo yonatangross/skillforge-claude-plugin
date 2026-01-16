@@ -8,8 +8,8 @@
 #
 # Note: Commands were migrated to skills in v4.7.0, so command validation
 # is skipped. The "17 user-invocable skills" have `user-invocable: true` in frontmatter
-# (commit, configure, explore, review-pr, etc.) which are part of the 97 skills count.
-# The remaining 80 skills have `user-invocable: false` (internal knowledge modules).
+# (commit, configure, explore, review-pr, etc.) which are part of the 116 skills count.
+# The remaining 99 skills have `user-invocable: false` (internal knowledge modules).
 #
 # Exit codes:
 #   0 - All counts match

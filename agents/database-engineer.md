@@ -15,6 +15,8 @@ skills:
   - database-schema-designer
   - pgvector-search
   - performance-optimization
+  - alembic-migrations
+  - database-versioning
   - remember
   - recall
 hooks:

@@ -22,7 +22,7 @@ skills:
   - devops-deployment
   - golden-dataset-management
   - edge-computing-patterns
-  - github-cli
+  - github-operations
   - resilience-patterns
   - langgraph-supervisor
   - mcp-server-building
