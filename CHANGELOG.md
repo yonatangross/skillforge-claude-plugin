@@ -5,6 +5,118 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.0 (2026-01-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **skills:** Skills moved from category-based to flat structure
+* **structure:** Skill paths changed from nested to flat-category structure
+* **hooks:** Plugin directory structure changed
+
+### Features
+
+* Add /skillforge:configure command and bundle system ([97250ad](https://github.com/yonatangross/skillforge-claude-plugin/commit/97250ad2bcb27697bdfe1aeb7692f9fa2772ebd4))
+* Add 5 new skills and update .claude directory ([cf6ff11](https://github.com/yonatangross/skillforge-claude-plugin/commit/cf6ff11d95270c500c7a9ad17afcd448cf48ce89))
+* Add 5 new skills and update .claude directory ([ae48573](https://github.com/yonatangross/skillforge-claude-plugin/commit/ae485739d78662849ae76cd426591aaa3ffa2cdc))
+* Add 6 new retrieval/AI skills and enhance existing skills ([8284744](https://github.com/yonatangross/skillforge-claude-plugin/commit/82847446bec79ac6d2225289c7919ee26eb76ae8))
+* Add 6 product thinking agents and pipeline workflow ([5a99396](https://github.com/yonatangross/skillforge-claude-plugin/commit/5a993967f859f54605643cebb08456d34572db59))
+* Add 6 product thinking agents and pipeline workflow ([5c325b3](https://github.com/yonatangross/skillforge-claude-plugin/commit/5c325b36221d57eecf3097c645fcd7772b3ae5fd))
+* Add 7 backend skills with complete subdirectories (v4.4.1) ([48d606e](https://github.com/yonatangross/skillforge-claude-plugin/commit/48d606e5e08a6dfa13930863b83c7541a626db25))
+* Add agent lifecycle hooks for multi-Claude coordination ([eab2465](https://github.com/yonatangross/skillforge-claude-plugin/commit/eab2465b1db5544c2cff974026891a1dbb8cf9a7))
+* Add CC 2.1.2 support and 138 new hook tests ([3e3cbb5](https://github.com/yonatangross/skillforge-claude-plugin/commit/3e3cbb5c8ccc4dbf216065e5a1091af1784540bc))
+* Add colored ANSI output to all hook dispatchers ([a8d2cdc](https://github.com/yonatangross/skillforge-claude-plugin/commit/a8d2cdc747e636bfe7e790e54bc4f4c9461608c6))
+* Add comprehensive CI/CD and cleanup AI slop (v4.6.1) ([6d72011](https://github.com/yonatangross/skillforge-claude-plugin/commit/6d720115368e8c70bf07bf66c16679145870df94))
+* Add comprehensive security testing framework (v4.5.1) ([3d3e41a](https://github.com/yonatangross/skillforge-claude-plugin/commit/3d3e41abce06607e426829c7fc3f28206c6ad083))
+* Add comprehensive skill, MCP, task hook tests ([9446fe5](https://github.com/yonatangross/skillforge-claude-plugin/commit/9446fe503b21d76714a37ebcdbca24a0be45fdc8))
+* Add dispatchers for consolidated hook output ([7cf8747](https://github.com/yonatangross/skillforge-claude-plugin/commit/7cf874741b938cf96f96393daa8d679de1ab1af6))
+* Add git/GitHub workflow skills and enforcement hooks ([d7f6378](https://github.com/yonatangross/skillforge-claude-plugin/commit/d7f6378ca9aefbbeadc56cb6629acadc9f9da931))
+* Add git/GitHub workflow skills and enforcement hooks ([eaa9fef](https://github.com/yonatangross/skillforge-claude-plugin/commit/eaa9fefe60e649b818a436a4ec3f9891106ea9f2))
+* Add marketplace plugin registry (v4.4.0) ([4fc3ed8](https://github.com/yonatangross/skillforge-claude-plugin/commit/4fc3ed8fce8c25c003f3a69d40fd67fcfff802f5))
+* Add marketplace plugin registry for installable bundles ([33bfd83](https://github.com/yonatangross/skillforge-claude-plugin/commit/33bfd83d20fded90012cb792c3302e3aaef7c6c4))
+* Add Motion animations and i18n date patterns (v4.4.0) ([2bd6f89](https://github.com/yonatangross/skillforge-claude-plugin/commit/2bd6f8939586de71a768a1f0b144d00edbf3fe18))
+* Add Motion animations and i18n date patterns (v4.4.0) ([6435972](https://github.com/yonatangross/skillforge-claude-plugin/commit/64359721ebd53404369527132e1e60b649c5d571))
+* Add multi-worktree coordination system (v4.6.0) ([8176619](https://github.com/yonatangross/skillforge-claude-plugin/commit/8176619d1968932397cc40f97926f222106c4e1d))
+* Add testing framework improvements for 9/10 quality score ([9204380](https://github.com/yonatangross/skillforge-claude-plugin/commit/9204380c74485638a1b98aa2356fd9c6c11003b4))
+* **analytics:** implement optional anonymous analytics ([#59](https://github.com/yonatangross/skillforge-claude-plugin/issues/59)) ([f12904f](https://github.com/yonatangross/skillforge-claude-plugin/commit/f12904f153e435c3af6a69b181fb999c768477f8))
+* CC 2.1.4 full overhaul - version 4.7.0 ([#30](https://github.com/yonatangross/skillforge-claude-plugin/issues/30)) ([db3f9ad](https://github.com/yonatangross/skillforge-claude-plugin/commit/db3f9ad504b4edfcf0c8b05e11e907f6d8f05d78))
+* **cc217:** implement CC 2.1.7 compatibility improvements ([#38](https://github.com/yonatangross/skillforge-claude-plugin/issues/38)) ([fb4f8c5](https://github.com/yonatangross/skillforge-claude-plugin/commit/fb4f8c5a07974d9e3e3886ff2c80956c0db51efd))
+* comprehensive plugin improvements ([#60](https://github.com/yonatangross/skillforge-claude-plugin/issues/60), [#62](https://github.com/yonatangross/skillforge-claude-plugin/issues/62), [#63](https://github.com/yonatangross/skillforge-claude-plugin/issues/63), [#64](https://github.com/yonatangross/skillforge-claude-plugin/issues/64)) ([a0e2e20](https://github.com/yonatangross/skillforge-claude-plugin/commit/a0e2e205fa3376cebffd2615b9e2c4eef83be165))
+* **feedback+memory:** implement Phase 1 core libraries and tests ([ca95e2b](https://github.com/yonatangross/skillforge-claude-plugin/commit/ca95e2bf6cb5c2b0f40ac1b30adeeb2af3eecee5))
+* **feedback:** implement agent performance tracking ([#55](https://github.com/yonatangross/skillforge-claude-plugin/issues/55)) ([7e4584d](https://github.com/yonatangross/skillforge-claude-plugin/commit/7e4584ddaff81dda1a740c3c0590e238ca43495e))
+* **feedback:** implement cross-project pattern sync ([#48](https://github.com/yonatangross/skillforge-claude-plugin/issues/48)) ([aa30070](https://github.com/yonatangross/skillforge-claude-plugin/commit/aa300705c5c545e7a52eb87743e4899e455f2dca))
+* **feedback:** implement Phase 4 skill usage analytics ([#56](https://github.com/yonatangross/skillforge-claude-plugin/issues/56)) ([e248676](https://github.com/yonatangross/skillforge-claude-plugin/commit/e2486761a6c1e90a605434129f078cdb588c4b6d))
+* **feedback:** implement satisfaction detection ([#57](https://github.com/yonatangross/skillforge-claude-plugin/issues/57)) ([d1bffbb](https://github.com/yonatangross/skillforge-claude-plugin/commit/d1bffbb73f2dcc20a3026e3dd7c141de15d17feb))
+* **feedback:** implement skill evolution system ([#58](https://github.com/yonatangross/skillforge-claude-plugin/issues/58)) ([6ec8255](https://github.com/yonatangross/skillforge-claude-plugin/commit/6ec82559d478332f2aa10ab8e45427a29e5d749a))
+* Initial release of SkillForge Claude Plugin v1.0.0 ([910e763](https://github.com/yonatangross/skillforge-claude-plugin/commit/910e7632b13623ddf35be037746f9bf56f2bd204))
+* **mem0:** enhance mem0 integration with agent skills and new hooks ([1341757](https://github.com/yonatangross/skillforge-claude-plugin/commit/1341757d1dda00b665fa6de429010320dba2ad0b))
+* **mem0:** implement decision sync with mem0 cloud ([#47](https://github.com/yonatangross/skillforge-claude-plugin/issues/47)) ([723b119](https://github.com/yonatangross/skillforge-claude-plugin/commit/723b1197af61524485fd3a4adc1bbcd8ed360808))
+* **mem0:** implement Phase 2 agent memory hooks ([#44](https://github.com/yonatangross/skillforge-claude-plugin/issues/44), [#45](https://github.com/yonatangross/skillforge-claude-plugin/issues/45)) ([d2e87f6](https://github.com/yonatangross/skillforge-claude-plugin/commit/d2e87f661b55515874f352ada70ed652b3d8ca30))
+* **mem0:** implement Phase 3 session memory hooks ([#46](https://github.com/yonatangross/skillforge-claude-plugin/issues/46), [#47](https://github.com/yonatangross/skillforge-claude-plugin/issues/47)) ([ee1e536](https://github.com/yonatangross/skillforge-claude-plugin/commit/ee1e53680340209fb964c05d9fbdb3ad8a03d568))
+* Migrate 72 skills to slim Tier 1 format with 75% token reduction ([2ab19c0](https://github.com/yonatangross/skillforge-claude-plugin/commit/2ab19c08461420b628e86d47ba9c71c96652016f))
+* Rename plugin to skf + silent hooks + version automation ([#25](https://github.com/yonatangross/skillforge-claude-plugin/issues/25)) ([aec0179](https://github.com/yonatangross/skillforge-claude-plugin/commit/aec0179a8dbe606ec9f11c15ebda14ee974f4cac))
+* SkillForge v4.6.3 - New Retrieval Skills & Tier 3 References ([24a0d2f](https://github.com/yonatangross/skillforge-claude-plugin/commit/24a0d2f7666a83d6eff0cc89b789ba79d6ceb655))
+* **skills:** CC 2.1.7 skills migration - flat structure ([46a25b2](https://github.com/yonatangross/skillforge-claude-plugin/commit/46a25b20fc866b4072436565ebb9e21b668484e3))
+* Update .claude skills to PostgreSQL 18 ([cfd66ae](https://github.com/yonatangross/skillforge-claude-plugin/commit/cfd66ae90fd0f0305b679b09a29cc792fdbb4b51))
+* Update .claude skills to PostgreSQL 18 ([d122e93](https://github.com/yonatangross/skillforge-claude-plugin/commit/d122e9311b4aca4e41e317749d031af00f9b7e6c))
+* Update logo and sync .claude from skillforge ([46c6151](https://github.com/yonatangross/skillforge-claude-plugin/commit/46c6151e2429880055ab42be030e8ce7492f9982))
+* Update plugin.json with new agents and hooks ([6707604](https://github.com/yonatangross/skillforge-claude-plugin/commit/67076041a82c7594b30d79a8a107deac16762dca))
+* v4.4.0 - Frontend updates + 7 backend skills with full subdirectories ([3c1ac90](https://github.com/yonatangross/skillforge-claude-plugin/commit/3c1ac906b58b703462cbea168a8cde7094a3782d))
+* v4.5.0 - Complete Claude Code 2.1.1 feature utilization ([f0288b5](https://github.com/yonatangross/skillforge-claude-plugin/commit/f0288b531d3d99e6488a3c5324a7d7d21d519e32))
+
+
+### Bug Fixes
+
+* **#68:** Add commands/ directory for autocomplete support ([#69](https://github.com/yonatangross/skillforge-claude-plugin/issues/69)) ([9221ee9](https://github.com/yonatangross/skillforge-claude-plugin/commit/9221ee93be7e9aa2256730bf41cc3fb68ec444b8))
+* Add CC 2.1.1 spec compliance to all hook outputs ([4f7c783](https://github.com/yonatangross/skillforge-claude-plugin/commit/4f7c78364f50c2e754308f010b2a66e5d425efb4))
+* Add required current_task field to session state template ([3433ea0](https://github.com/yonatangross/skillforge-claude-plugin/commit/3433ea04b3d2a0a10ece7fb25e9b0a56ebaec033))
+* **agents:** correct model and context mode misconfigurations ([#39](https://github.com/yonatangross/skillforge-claude-plugin/issues/39)) ([07657da](https://github.com/yonatangross/skillforge-claude-plugin/commit/07657da87ceeae5e74a03111b77f004714fc9a99))
+* Align marketplace.json with Claude Code schema ([#22](https://github.com/yonatangross/skillforge-claude-plugin/issues/22)) ([c61b530](https://github.com/yonatangross/skillforge-claude-plugin/commit/c61b530615f629f06954cc81ef141091a660445a))
+* Align plugin.json with Claude Code schema ([#23](https://github.com/yonatangross/skillforge-claude-plugin/issues/23)) ([045717e](https://github.com/yonatangross/skillforge-claude-plugin/commit/045717ec2e47d1be817047081e7b226fd4261cc1))
+* **ci:** comprehensive test coverage and CC 2.1.7 path fixes [v4.15.2] ([924e98e](https://github.com/yonatangross/skillforge-claude-plugin/commit/924e98e48a44e712dcb6ff1c866495ad402eead6))
+* Complete skill validation and handoff system fixes ([2b830ee](https://github.com/yonatangross/skillforge-claude-plugin/commit/2b830ee32b180d653cbb95c9edd251196f70340e))
+* Config system validation and test coverage ([e9213c7](https://github.com/yonatangross/skillforge-claude-plugin/commit/e9213c786e887edebd2798209b76cc90aa5cee16))
+* Coordination hook JSON output + dynamic component counting ([#20](https://github.com/yonatangross/skillforge-claude-plugin/issues/20)) ([999939c](https://github.com/yonatangross/skillforge-claude-plugin/commit/999939c1684185536c2a16e8d6fc99f022dd5c97))
+* Correct hooks count from 92 to 90 ([#18](https://github.com/yonatangross/skillforge-claude-plugin/issues/18)) ([17c7d65](https://github.com/yonatangross/skillforge-claude-plugin/commit/17c7d659a1db1b29f10698fcc074af0525613218))
+* Correct security test filename in CI workflow ([ab9bfe3](https://github.com/yonatangross/skillforge-claude-plugin/commit/ab9bfe3020a829e88dc0fd5d4a2063254795887b))
+* Full CC 2.1.1 and schema compliance validation ([f2c188e](https://github.com/yonatangross/skillforge-claude-plugin/commit/f2c188ec3b0bfdd4b1f2a385953d76dc5a16f632))
+* **hooks:** CC 2.1.7 compliance - remove ANSI from JSON output ([8119495](https://github.com/yonatangross/skillforge-claude-plugin/commit/81194952ad60b158b921ac72e46dec6df74076cd))
+* **hooks:** CC 2.1.7 compliance and comprehensive test suite ([78bded2](https://github.com/yonatangross/skillforge-claude-plugin/commit/78bded2e7426e7f1e56746324ca492422e275b61))
+* **hooks:** update hooks to CC 2.1.7 output format ([1091895](https://github.com/yonatangross/skillforge-claude-plugin/commit/10918950fe5842d9d40697e9a37615f8a60ee702))
+* Make all pretool hooks CC 2.1.2 compliant ([b72fd0d](https://github.com/yonatangross/skillforge-claude-plugin/commit/b72fd0dc3280dfec0069045b38108d0d693aca6d))
+* Make hooks silent on success, only show errors/warnings ([#24](https://github.com/yonatangross/skillforge-claude-plugin/issues/24)) ([5c352e3](https://github.com/yonatangross/skillforge-claude-plugin/commit/5c352e3310e13a6f96edea8105fe96d2b443cb90))
+* Marketplace schema compatibility + cleanup runtime artifacts ([#21](https://github.com/yonatangross/skillforge-claude-plugin/issues/21)) ([dbf16c0](https://github.com/yonatangross/skillforge-claude-plugin/commit/dbf16c0036f69e182c72b612d671dbf0a28c7762))
+* **paths:** complete migration to flat skill structure ([8f12814](https://github.com/yonatangross/skillforge-claude-plugin/commit/8f1281487402ececafb2399f8c759e49c03243a9))
+* Remove invalid 'engines' field from plugin manifest ([00221e4](https://github.com/yonatangross/skillforge-claude-plugin/commit/00221e42931cab9e40d370a1e7f6c9cb15cf5dea))
+* Remove template literals from skills + enforce version/changelog in CI ([#27](https://github.com/yonatangross/skillforge-claude-plugin/issues/27)) ([05129a3](https://github.com/yonatangross/skillforge-claude-plugin/commit/05129a37f0ecdf484c1eed866f9a747341a39ed3))
+* Resolve hook stdin caching and JSON field name issues ([c22cfca](https://github.com/yonatangross/skillforge-claude-plugin/commit/c22cfca747a1d6bd0848fb7159890856117dfefc))
+* Resolve skill/subagent test failures and hook errors for v4.6.2 ([40646cf](https://github.com/yonatangross/skillforge-claude-plugin/commit/40646cfe7621f0f99f4e446d86f057b104f537ba))
+* resolve startup hook errors and test failures ([#37](https://github.com/yonatangross/skillforge-claude-plugin/issues/37)) ([ba5112a](https://github.com/yonatangross/skillforge-claude-plugin/commit/ba5112a1d4de05765b05cf1925fa46498a88b7db))
+* **structure:** move skills to root level per CC plugin standard ([16593a2](https://github.com/yonatangross/skillforge-claude-plugin/commit/16593a2761a73e6c77cfad1ad165055d1d808635))
+* Sync marketplace.json version to 4.17.2 ([4e29f1b](https://github.com/yonatangross/skillforge-claude-plugin/commit/4e29f1b122d6df65b49765816efb6be23e81b9f1))
+* Sync plugin.json with actual .claude structure ([57a0bd1](https://github.com/yonatangross/skillforge-claude-plugin/commit/57a0bd1c67f787f1cef9671eecc9b9b9d4245018))
+* Sync plugin.json with actual .claude structure ([204d4f5](https://github.com/yonatangross/skillforge-claude-plugin/commit/204d4f558b795bac20bef02b7b6260f4c63163ee))
+* **tests:** fix syntax error in test-agent-required-hooks.sh ([#65](https://github.com/yonatangross/skillforge-claude-plugin/issues/65)) ([fbfd5af](https://github.com/yonatangross/skillforge-claude-plugin/commit/fbfd5afa0449c81a6bc1d49881b6eeaf9f3fbb14))
+* **tests:** resolve Feedback System Tests infrastructure issues ([d5f3899](https://github.com/yonatangross/skillforge-claude-plugin/commit/d5f3899400026b403910f0df7260393c88839653))
+* **tests:** resolve pre-existing test failures ([aef5823](https://github.com/yonatangross/skillforge-claude-plugin/commit/aef5823070255aaa200b031793629d0e092a7881))
+* Update all references from CC 2.1.1 to CC 2.1.2 ([cd98b1f](https://github.com/yonatangross/skillforge-claude-plugin/commit/cd98b1f17be7525db1444946d7cc44f42932ad9c))
+* Update component counts to match actual v4.6.3 ([#17](https://github.com/yonatangross/skillforge-claude-plugin/issues/17)) ([49c64a9](https://github.com/yonatangross/skillforge-claude-plugin/commit/49c64a9dae4f7f8988791aded3dfb57d4b85c870))
+* Update README naming and fix hooks count in about ([#26](https://github.com/yonatangross/skillforge-claude-plugin/issues/26)) ([02a020c](https://github.com/yonatangross/skillforge-claude-plugin/commit/02a020c864db36f87bf60e81b9d1f2aa577343bd))
+* use ${CLAUDE_PLUGIN_ROOT} for plugin installation compatibility ([#34](https://github.com/yonatangross/skillforge-claude-plugin/issues/34)) ([d78ea55](https://github.com/yonatangross/skillforge-claude-plugin/commit/d78ea55742b373724e61eca3b94f3b30371f35a8))
+* Version consistency and missing metadata (v4.4.1) ([500a1bd](https://github.com/yonatangross/skillforge-claude-plugin/commit/500a1bd3a76d0eed5b5069ef2aa4f9c43b46ed58))
+
+
+### Performance Improvements
+
+* **hooks:** optimize SessionStart and PromptSubmit latency ([09fb786](https://github.com/yonatangross/skillforge-claude-plugin/commit/09fb78631e09d011518f57e89ea9ee23eedab961))
+* **hooks:** parallelize all major dispatchers for 2-3x faster execution ([d4097b5](https://github.com/yonatangross/skillforge-claude-plugin/commit/d4097b58c94a3f1f05847d03ea73f21007120229))
+
+
+### Code Refactoring
+
+* **hooks:** consolidate to 24 hooks + v4.11.0 ([#36](https://github.com/yonatangross/skillforge-claude-plugin/issues/36)) ([e844b4b](https://github.com/yonatangross/skillforge-claude-plugin/commit/e844b4b25d0da25b3cd635d5573690a05ec0a2d9))
+* **structure:** CC 2.1.7 compliance - flatten skills, remove redundant context ([99bd80d](https://github.com/yonatangross/skillforge-claude-plugin/commit/99bd80d3228b9c21abc97064fccccf75e7bb0d25))
+
 ## [4.18.0] - 2026-01-16
 
 ### Added
