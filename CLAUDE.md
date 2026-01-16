@@ -8,7 +8,7 @@ This document provides essential context for Claude Code when working with the S
 
 - **97 skills**: Reusable knowledge modules in 10 category-based directories (flat structure)
 - **20 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **12 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands)
+- **17 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
 - **105 hooks**: Lifecycle automation via CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
@@ -633,7 +633,7 @@ Hooks use `${CLAUDE_SESSION_ID}` directly without fallback patterns (CC 2.1.9 gu
 
 ## Version Information
 
-- **Current Version**: 4.16.0 (as of 2026-01-16)
+- **Current Version**: 4.17.0 (as of 2026-01-16)
 - **Claude Code Requirement**: >= 2.1.9
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
@@ -642,6 +642,7 @@ Hooks use `${CLAUDE_SESSION_ID}` directly without fallback patterns (CC 2.1.9 gu
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
 - **CC 2.1.9 Integration**: additionalContext, auto:N MCP, plansDirectory (v4.16.0)
+- **User-Invocable Skills**: CC 2.1.3 `user-invocable` field for 17 commands (v4.17.0)
 
 ---
 
@@ -678,4 +679,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-16 (v4.16.0 - CC 2.1.9 integration: additionalContext, auto:N MCP, plansDirectory)
+**Last Updated**: 2026-01-16 (v4.17.0 - CC 2.1.3 user-invocable field for 17 commands, 80 internal skills)

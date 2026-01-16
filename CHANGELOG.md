@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [4.17.0] - 2026-01-16
+
+### Added
+
+**CC 2.1.3 User-Invocable Skills**
+- Added `user-invocable: true` to 17 command skills (commit, review-pr, explore, implement, verify, configure, doctor, feedback, recall, remember, add-golden, skill-evolution, claude-hud, create-pr, fix-issue, brainstorming, worktree-coordination)
+- Added `user-invocable: false` to 80 internal knowledge skills
+- Only user-invocable skills appear in `/skf:*` slash command menu
+
+**Test Coverage**
+- New Test 10 in `tests/skills/structure/test-skill-md.sh`: validates user-invocable field presence and counts (17 commands, 80 internal)
+
+### Changed
+
+- Updated plugin.json description to clarify "97 skills (17 user-invocable commands, 80 internal knowledge)"
+- Updated CLAUDE.md to reflect 17 user-invocable skills (was 12)
+- Updated bin/validate-counts.sh comments for accuracy
+- Version bumped: 4.16.0 → 4.17.0
+
+---
+
 ## [4.16.0] - 2026-01-16
 
 ### Added

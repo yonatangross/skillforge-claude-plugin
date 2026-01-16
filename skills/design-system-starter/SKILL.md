@@ -6,6 +6,7 @@ agent: rapid-ui-designer
 version: 1.0.0
 author: AI Agent Hub
 tags: [design-system, ui, components, design-tokens, accessibility, frontend]
+user-invocable: false
 ---
 
 # Design System Starter

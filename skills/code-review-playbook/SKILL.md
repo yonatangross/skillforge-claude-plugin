@@ -6,6 +6,7 @@ author: AI Agent Hub
 tags: [code-review, quality, collaboration, best-practices]
 context: fork
 agent: code-quality-reviewer
+user-invocable: false
 ---
 
 # Code Review Playbook

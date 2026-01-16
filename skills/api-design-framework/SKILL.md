@@ -6,6 +6,7 @@ agent: backend-system-architect
 version: 1.2.0
 author: AI Agent Hub
 tags: [api, rest, graphql, grpc, backend, documentation]
+user-invocable: false
 ---
 
 # API Design Framework

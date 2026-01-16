@@ -6,6 +6,7 @@ agent: code-quality-reviewer
 version: 1.1.0
 author: SkillForge AI Agent Hub
 tags: [quality, complexity, planning, escalation, blocking]
+user-invocable: false
 ---
 
 # Quality Gates

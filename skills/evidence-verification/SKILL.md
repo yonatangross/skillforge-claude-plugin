@@ -16,7 +16,7 @@ allowed-tools:
 This skill teaches agents how to collect and verify evidence before marking tasks complete. Inspired by production-grade development practices, it ensures all claims are backed by executable proof: test results, coverage metrics, build success, and deployment verification.
 
 **Key Principle:** Show, don't tell. No task is complete without verifiable evidence.
-
+user-invocable: false
 ---
 
 # Evidence Verification

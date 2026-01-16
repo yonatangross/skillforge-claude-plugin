@@ -6,6 +6,7 @@ author: AI Agent Hub
 tags: [database, schema-design, sql, nosql, performance, migrations]
 context: fork
 agent: database-engineer
+user-invocable: false
 ---
 
 # Database Schema Designer

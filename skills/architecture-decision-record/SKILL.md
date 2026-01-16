@@ -6,6 +6,7 @@ author: AI Agent Hub
 tags: [architecture, documentation, decision-making, backend]
 context: fork
 agent: backend-system-architect
+user-invocable: false
 ---
 
 # Architecture Decision Records
