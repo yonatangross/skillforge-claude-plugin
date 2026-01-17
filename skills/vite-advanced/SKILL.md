@@ -163,10 +163,25 @@ export default defineConfig({
 | `buildApp` hook | New for plugins |
 | `createBuilder` | Multi-env builds |
 
+## Key Decisions
+
+| Decision | Recommendation |
+|----------|----------------|
+| Multi-env builds | Use Vite 7 Environment API |
+| Plugin scope | Use `this.environment` for env-aware plugins |
+| SSR | Middleware mode for dev, separate builds for prod |
+| Chunks | Manual chunks for vendor/router separation |
+
+## Related Skills
+
+- `biome-linting` - Fast linting alongside Vite
+- `react-server-components-framework` - SSR integration
+- `edge-computing-patterns` - Edge environment builds
+
 ## References
 
-- `references/environment-api.md` - Multi-environment builds
-- `references/plugin-development.md` - Plugin hooks and patterns
-- `references/ssr-configuration.md` - SSR setup
-- `references/library-mode.md` - Building packages
-- `references/chunk-optimization.md` - Build optimization
+- [Environment API](references/environment-api.md) - Multi-environment builds
+- [Plugin Development](references/plugin-development.md) - Plugin hooks
+- [SSR Configuration](references/ssr-configuration.md) - SSR setup
+- [Library Mode](references/library-mode.md) - Building packages
+- [Chunk Optimization](references/chunk-optimization.md) - Build optimization

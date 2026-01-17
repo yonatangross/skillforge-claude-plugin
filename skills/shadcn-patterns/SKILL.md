@@ -138,10 +138,25 @@ npx shadcn@latest add dialog
 npx shadcn@latest init
 ```
 
+## Key Decisions
+
+| Decision | Recommendation |
+|----------|----------------|
+| Color format | OKLCH for perceptually uniform theming |
+| Class merging | Always use cn() for Tailwind conflicts |
+| Extending components | Wrap, don't modify source files |
+| Variants | Use CVA for type-safe multi-axis variants |
+
+## Related Skills
+
+- `radix-primitives` - Underlying accessibility primitives
+- `design-system-starter` - Design system patterns
+- `biome-linting` - Code quality for components
+
 ## References
 
-- `references/cva-variant-system.md` - CVA patterns and compound variants
-- `references/oklch-theming.md` - Modern color space theming
-- `references/cn-utility-patterns.md` - Class merging patterns
-- `references/component-extension.md` - Extending shadcn components
-- `references/dark-mode-toggle.md` - next-themes integration
+- [CVA Variant System](references/cva-variant-system.md) - CVA patterns
+- [OKLCH Theming](references/oklch-theming.md) - Modern color space
+- [cn() Utility](references/cn-utility-patterns.md) - Class merging
+- [Component Extension](references/component-extension.md) - Extending components
+- [Dark Mode](references/dark-mode-toggle.md) - next-themes integration

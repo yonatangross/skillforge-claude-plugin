@@ -143,9 +143,24 @@ npx @biomejs/biome migrate eslint --write
 }
 ```
 
+## Key Decisions
+
+| Decision | Recommendation |
+|----------|----------------|
+| New vs migration | Biome first for new projects; migrate existing gradually |
+| Config strictness | Start with recommended, tighten over time |
+| CI strategy | Use `biome ci` for strict mode, `biome check` for local |
+| Type inference | Enable for TypeScript projects (v2.0+) |
+
+## Related Skills
+
+- `vite-advanced` - Build tooling integration
+- `react-server-components-framework` - React linting rules
+- `ci-cd-engineer` - CI pipeline setup
+
 ## References
 
-- `references/eslint-migration.md` - Step-by-step migration
-- `references/biome-json-config.md` - Full configuration options
-- `references/type-aware-rules.md` - Biome 2.0 type inference
-- `references/ci-integration.md` - GitHub Actions setup
+- [ESLint Migration](references/eslint-migration.md) - Step-by-step migration
+- [Biome Config](references/biome-json-config.md) - Full configuration options
+- [Type-Aware Rules](references/type-aware-rules.md) - Biome 2.0 type inference
+- [CI Integration](references/ci-integration.md) - GitHub Actions setup

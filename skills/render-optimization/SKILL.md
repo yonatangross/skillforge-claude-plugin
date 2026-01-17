@@ -133,10 +133,25 @@ function App() {
 3. **Debounce**: Input handlers with `useDeferredValue`
 4. **Suspense**: Streaming with proper boundaries
 
+## Key Decisions
+
+| Decision | Recommendation |
+|----------|----------------|
+| Memoization | Let React Compiler handle it (2026 default) |
+| Lists 100+ items | Use TanStack Virtual |
+| State placement | Colocate as close to usage as possible |
+| Profiling | Always measure before optimizing |
+
+## Related Skills
+
+- `react-server-components-framework` - Server-first rendering
+- `vite-advanced` - Build optimization
+- `e2e-testing` - Performance testing with Playwright
+
 ## References
 
-- `references/react-compiler-migration.md` - Compiler adoption guide
-- `references/memoization-escape-hatches.md` - When useMemo/useCallback needed
-- `references/tanstack-virtual-patterns.md` - Virtualization patterns
-- `references/state-colocation.md` - State placement strategies
-- `references/devtools-profiler-workflow.md` - Finding bottlenecks
+- [React Compiler Migration](references/react-compiler-migration.md) - Compiler adoption
+- [Memoization Escape Hatches](references/memoization-escape-hatches.md) - When useMemo needed
+- [TanStack Virtual](references/tanstack-virtual-patterns.md) - Virtualization
+- [State Colocation](references/state-colocation.md) - State placement
+- [DevTools Profiler](references/devtools-profiler-workflow.md) - Finding bottlenecks

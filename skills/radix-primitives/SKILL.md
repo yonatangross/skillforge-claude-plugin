@@ -125,10 +125,25 @@ import { Dialog, DropdownMenu, Tooltip } from 'radix-ui'
 </Dialog.Root>
 ```
 
+## Key Decisions
+
+| Decision | Recommendation |
+|----------|----------------|
+| Styling approach | Data attributes + Tailwind arbitrary variants |
+| Composition | Use `asChild` to avoid wrapper divs |
+| Animation | CSS-only with data-state selectors |
+| Form components | Combine with react-hook-form |
+
+## Related Skills
+
+- `shadcn-patterns` - Pre-styled Radix components
+- `focus-management` - Accessibility patterns
+- `design-system-starter` - Design system foundation
+
 ## References
 
-- `references/aschild-composition.md` - Polymorphic rendering patterns
-- `references/dialog-modal-patterns.md` - Dialog and AlertDialog
-- `references/dropdown-menu-patterns.md` - Menus and Select
-- `references/popover-tooltip-patterns.md` - Popover and Tooltip
-- `references/focus-management.md` - Keyboard and focus handling
+- [asChild Composition](references/aschild-composition.md) - Polymorphic rendering
+- [Dialog Patterns](references/dialog-modal-patterns.md) - Dialog and AlertDialog
+- [Dropdown Patterns](references/dropdown-menu-patterns.md) - Menus and Select
+- [Popover Patterns](references/popover-tooltip-patterns.md) - Popover and Tooltip
+- [Focus Management](references/focus-management.md) - Keyboard and focus

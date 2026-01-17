@@ -26,6 +26,8 @@ skills:
   - render-optimization
   - shadcn-patterns
   - radix-primitives
+  - biome-linting
+  - vite-advanced
   - remember
   - recall
 ---
