@@ -8,9 +8,9 @@
 *Transform Claude Code into a full-stack development powerhouse*
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.9-7C3AED?style=flat-square&logo=anthropic)](https://claude.ai/claude-code)
-[![Skills](https://img.shields.io/badge/Skills-97-blue?style=flat-square)](./skills)
-[![Agents](https://img.shields.io/badge/Agents-20-green?style=flat-square)](./agents)
-[![Hooks](https://img.shields.io/badge/Hooks-105-orange?style=flat-square)](./hooks)
+[![Skills](https://img.shields.io/badge/Skills-116-blue?style=flat-square)](./skills)
+[![Agents](https://img.shields.io/badge/Agents-27-green?style=flat-square)](./agents)
+[![Hooks](https://img.shields.io/badge/Hooks-113-orange?style=flat-square)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
 [Features](#features) • [Quick Start](#quick-start) • [Skills](#skill-system) • [Agents](#agents) • [Hooks](#hooks) • [Commands](#commands)
@@ -23,9 +23,9 @@
 
 SkillForge Complete is a production-ready plugin for Claude Code that provides:
 
-- **97 Skills** across 10 categories with progressive loading (saves ~70% context tokens)
-- **20 Specialized Agents** with native CC 2.1.6+ skill injection
-- **105 Registered Hooks** for lifecycle automation, security gates, and quality enforcement
+- **113 Skills** across 13 categories with progressive loading (saves ~70% context tokens)
+- **25 Specialized Agents** with native CC 2.1.6+ skill injection
+- **109 Registered Hooks** for lifecycle automation, security gates, and quality enforcement
 - **Context Window HUD** with real-time usage monitoring
 - **Multi-Instance Coordination** for parallel Claude Code sessions
 
@@ -33,7 +33,14 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 
 ---
 
-## What's New in v4.17.2 (Commands Autocomplete Fix)
+## What's New in v4.18.0 (Skills & Agents Expansion)
+
+- **10 New Skills**: Event-driven (event-sourcing, message-queues, outbox-pattern), Database (alembic-migrations, zero-downtime-migration, database-versioning), Accessibility (react-aria-patterns, focus-management, wcag-compliance, a11y-testing)
+- **5 New Agents**: accessibility-specialist, ci-cd-engineer, deployment-manager, event-driven-architect, infrastructure-architect
+- **3 New Agent Hooks**: a11y-lint-check.sh, ci-safety-check.sh, deployment-safety-check.sh
+- **Total**: 115 skills, 27 agents, 113 hooks
+
+### Previous (v4.17.2 - Commands Autocomplete Fix)
 
 - **Commands Autocomplete**: Added `commands/` directory with 17 command files - commands now appear when typing `/skf:`
 - **Test Coverage**: New `tests/commands/test-commands-structure.sh` validates commands match user-invocable skills
@@ -83,7 +90,7 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 ### Previous (v4.11.0 - Hook Consolidation)
 
 - Hook Consolidation: Reduced from 44 to 23 registered hooks using dispatcher pattern
-- MCP Updates: Added mem0 (cloud semantic memory) alongside Anthropic memory
+- MCP Updates: Memory Fabric v2.1 - graph-first architecture (knowledge graph PRIMARY, mem0 optional)
 - Note: Dispatchers for lifecycle hooks removed in v4.13.0 (CC 2.1.7 native parallel)
 
 ### Previous (v4.10.0 - CC 2.1.6 Integration)
@@ -132,7 +139,7 @@ Try these to explore:
 
 ### Skill System
 
-**97 skills** organized in CC 2.1.6 nested structure with 4-tier progressive loading:
+**115 skills** organized in CC 2.1.7 nested structure with 4-tier progressive loading:
 
 | Tier | Content | Tokens | When Loaded |
 |------|---------|--------|-------------|
@@ -144,7 +151,7 @@ Try these to explore:
 
 ### Agents
 
-**20 specialized agents** with native CC 2.1.6+ skill injection:
+**25 specialized agents** with native CC 2.1.6+ skill injection:
 
 | Agent | Purpose | Model |
 |-------|---------|-------|
@@ -154,6 +161,9 @@ Try these to explore:
 | `workflow-architect` | LangGraph, multi-agent orchestration | sonnet |
 | `security-auditor` | OWASP Top 10, vulnerability scanning | sonnet |
 | `test-generator` | Unit/integration tests, MSW mocking | sonnet |
+| `accessibility-specialist` | WCAG 2.2, ARIA, focus management | sonnet |
+| `event-driven-architect` | Event sourcing, message queues | opus |
+| `ci-cd-engineer` | GitHub Actions, deployment pipelines | sonnet |
 | ... | See `agents/` for full list | |
 
 ### Hooks
@@ -190,7 +200,7 @@ Try these to explore:
 ```
 skillforge-claude-plugin/
 ├── .claude/
-│   ├── agents/           # 20 agent definitions
+│   ├── agents/           # 25 agent definitions
 │   ├── commands/         # 11 workflow commands
 │   ├── context/          # Session state, knowledge base
 │   ├── coordination/     # Multi-instance locks
@@ -203,7 +213,7 @@ skillforge-claude-plugin/
 │   ├── pretool/          # PreToolUse dispatchers (tool-based routing)
 │   ├── posttool/         # PostToolUse dispatcher (file-type routing)
 │   └── permission/       # Auto-approval hooks
-├── skills/       # 97 skills in flat structure
+├── skills/       # 115 skills in flat structure
 │   └── <skill-name>/
 │       ├── SKILL.md           # Required
 │       ├── references/        # Optional
@@ -221,7 +231,8 @@ Configure via `/skf:configure`:
 
 - **Context7**: Up-to-date library documentation
 - **Sequential Thinking**: Complex reasoning chains
-- **Memory (mem0)**: Cross-session persistent memory
+- **Memory (graph)**: Knowledge graph for persistent memory (PRIMARY, zero-config)
+- **Mem0 (cloud)**: Semantic search enhancement (OPTIONAL, requires MEM0_API_KEY)
 - **Playwright**: Browser automation for E2E testing
 
 ### Environment Variables
