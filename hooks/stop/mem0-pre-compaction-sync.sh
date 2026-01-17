@@ -24,16 +24,28 @@ DECISION_LOG="$PLUGIN_ROOT/.claude/coordination/decision-log.json"
 PATTERNS_LOG="${CLAUDE_PROJECT_DIR:-.}/.claude/logs/agent-patterns.jsonl"
 
 # -----------------------------------------------------------------------------
-# Count Pending Items
+# Count Pending Items (only unsynced decisions, not total)
 # -----------------------------------------------------------------------------
 
 DECISION_COUNT=0
 PATTERN_COUNT=0
 PENDING_PATTERNS=""
 
-# Count decisions
+SYNC_STATE="$PLUGIN_ROOT/.claude/coordination/.decision-sync-state.json"
+
+# Count PENDING decisions (not total) by comparing against sync state
 if [[ -f "$DECISION_LOG" ]]; then
-    DECISION_COUNT=$(jq '.decisions | length // 0' "$DECISION_LOG" 2>/dev/null || echo "0")
+    if [[ -f "$SYNC_STATE" ]]; then
+        # Get synced decision IDs
+        SYNCED_IDS=$(jq -r '.synced_decisions // []' "$SYNC_STATE" 2>/dev/null || echo '[]')
+        # Count decisions NOT in synced list
+        DECISION_COUNT=$(jq --argjson synced "$SYNCED_IDS" '
+            [.decisions[]? | select(.decision_id as $id | $synced | index($id) | not)] | length
+        ' "$DECISION_LOG" 2>/dev/null || echo "0")
+    else
+        # No sync state = all are pending
+        DECISION_COUNT=$(jq '.decisions | length // 0' "$DECISION_LOG" 2>/dev/null || echo "0")
+    fi
     if [[ "$DECISION_COUNT" == "null" ]]; then
         DECISION_COUNT=0
     fi

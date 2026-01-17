@@ -171,6 +171,23 @@ Avoid:
 6. **Force-with-lease** - Safer than force push
 7. **Delete after merge** - No stale branches
 
+## Related Skills
+
+- `commit` - Create commits with conventional format and pre-commit validation
+- `git-recovery-command` - Quick recovery from common git mistakes using reflog operations
+- `stacked-prs` - Multi-PR development for large features with dependent PRs
+- `create-pr` - Comprehensive PR creation with proper formatting
+
+## Key Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Branching model | GitHub Flow | Simple single-branch workflow, main is always deployable |
+| Merge strategy | Rebase over merge | Keeps history clean and linear, easier to bisect |
+| Branch naming | issue/<number>-<desc> | Links work to tracking, enables automation |
+| Commit granularity | Atomic (one thing) | Independent revert, clear history, easier review |
+| Force push | --force-with-lease only | Prevents overwriting others' work on shared branches |
+
 ## References
 
 - [GitHub Flow Guide](references/github-flow.md)

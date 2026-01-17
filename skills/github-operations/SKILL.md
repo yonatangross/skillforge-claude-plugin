@@ -120,6 +120,23 @@ Projects v2 uses GraphQL for setting custom fields (Status, Priority, Domain). B
 
 ---
 
+## Related Skills
+
+- `create-pr` - Create pull requests with proper formatting and review assignments
+- `review-pr` - Comprehensive PR review with specialized agents
+- `release-management` - GitHub release workflow with semantic versioning and changelogs
+- `stacked-prs` - Manage dependent PRs with rebase coordination
+
+## Key Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| CLI vs API | gh CLI preferred | Simpler auth, better UX, handles pagination automatically |
+| Output format | --json with --jq | Reliable parsing for automation, no regex parsing needed |
+| Milestones vs Epics | Milestones for time | Milestones have due dates and progress bars, epics for topic grouping |
+| Projects v2 fields | GraphQL mutations | gh project commands limited, GraphQL required for custom fields |
+| Milestone lifecycle | Close, don't delete | Preserves history and progress tracking |
+
 ## References
 
 - [Issue Management](references/issue-management.md) - Bulk operations, templates, sub-issues

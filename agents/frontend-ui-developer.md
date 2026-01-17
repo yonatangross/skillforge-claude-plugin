@@ -21,6 +21,8 @@ skills:
   - webapp-testing
   - i18n-date-patterns
   - motion-animation-patterns
+  - a11y-testing
+  - focus-management
   - remember
   - recall
 ---

@@ -26,6 +26,8 @@ skills:
   - resilience-patterns
   - langgraph-supervisor
   - mcp-server-building
+  - caching-strategies
+  - auth-patterns
   - remember
   - recall
 ---

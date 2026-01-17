@@ -14,7 +14,10 @@ tools:
 skills:
   - wcag-compliance
   - a11y-testing
+  - focus-management
   - design-system-starter
+  - motion-animation-patterns
+  - i18n-date-patterns
   - e2e-testing
   - remember
   - recall

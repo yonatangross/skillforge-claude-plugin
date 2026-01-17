@@ -18,6 +18,8 @@ skills:
   - worktree-coordination
   - commit
   - release-management
+  - git-recovery-command
+  - architecture-decision-record
   - remember
   - recall
 hooks:

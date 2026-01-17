@@ -17,6 +17,8 @@ skills:
   - performance-optimization
   - alembic-migrations
   - database-versioning
+  - zero-downtime-migration
+  - caching-strategies
   - remember
   - recall
 hooks:

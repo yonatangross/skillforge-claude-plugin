@@ -71,8 +71,8 @@ if [[ -n "${INSTANCE_ID}" ]]; then
   ACTIVE_INSTANCES=$(coord_list_instances 2>/dev/null | jq 'length' 2>/dev/null) || ACTIVE_INSTANCES="1"
   log "Active Claude Code instances: ${ACTIVE_INSTANCES}"
 
-  # Log session start decision
-  coord_log_decision "architecture" "Session started" "New Claude Code session initiated" "local" >/dev/null 2>&1 || true
+  # Note: Removed "Session started" decision logging - it was just noise
+  # Only log meaningful architectural decisions, not session lifecycle events
 fi
 
 # Success - output JSON and clear trap

@@ -19,6 +19,8 @@ skills:
   - vcr-http-recording
   - webapp-testing
   - performance-testing
+  - a11y-testing
+  - test-data-management
   - remember
   - recall
 ---

@@ -61,7 +61,9 @@ while IFS= read -r commit; do
   [[ -z "$commit" ]] && continue
 
   # Extract type from conventional commit format
-  if [[ "$commit" =~ ^(feat|fix|docs|refactor|test|chore|style|perf|ci|build)(\([^)]+\))?:\ (.+) ]]; then
+  # Pattern stored in variable to avoid bash regex parsing issues
+  CONV_COMMIT_PATTERN='^(feat|fix|docs|refactor|test|chore|style|perf|ci|build)(\([^)]+\))?:[[:space:]]+(.+)'
+  if [[ "$commit" =~ $CONV_COMMIT_PATTERN ]]; then
     type="${BASH_REMATCH[1]}"
     COMMIT_GROUPS["$type"]+="- $commit"$'\n'
   else
