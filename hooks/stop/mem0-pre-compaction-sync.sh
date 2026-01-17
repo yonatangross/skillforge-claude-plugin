@@ -36,29 +36,34 @@ SYNC_STATE="$PLUGIN_ROOT/.claude/coordination/.decision-sync-state.json"
 # Count PENDING decisions (not total) by comparing against sync state
 if [[ -f "$DECISION_LOG" ]]; then
     if [[ -f "$SYNC_STATE" ]]; then
-        # Get synced decision IDs
-        SYNCED_IDS=$(jq -r '.synced_decisions // []' "$SYNC_STATE" 2>/dev/null || echo '[]')
+        # Get synced decision IDs (use -c for compact single-line output)
+        SYNCED_IDS=$(jq -c '.synced_decisions // []' "$SYNC_STATE" 2>/dev/null || echo '[]')
         # Count decisions NOT in synced list
         DECISION_COUNT=$(jq --argjson synced "$SYNCED_IDS" '
             [.decisions[]? | select(.decision_id as $id | $synced | index($id) | not)] | length
-        ' "$DECISION_LOG" 2>/dev/null || echo "0")
+        ' "$DECISION_LOG" 2>/dev/null | tr -d '[:space:]' || echo "0")
     else
         # No sync state = all are pending
-        DECISION_COUNT=$(jq '.decisions | length // 0' "$DECISION_LOG" 2>/dev/null || echo "0")
+        DECISION_COUNT=$(jq '.decisions | length // 0' "$DECISION_LOG" 2>/dev/null | tr -d '[:space:]' || echo "0")
     fi
-    if [[ "$DECISION_COUNT" == "null" ]]; then
-        DECISION_COUNT=0
-    fi
+    # Ensure it's a valid integer
+    [[ "$DECISION_COUNT" =~ ^[0-9]+$ ]] || DECISION_COUNT=0
 fi
 
 # Count and read pending patterns
+# Note: PATTERNS_LOG can be either JSONL (one object per line) or a single JSON object
 if [[ -f "$PATTERNS_LOG" ]]; then
-    # Count patterns marked as pending_sync
-    PATTERN_COUNT=$(grep -c '"pending_sync":true' "$PATTERNS_LOG" 2>/dev/null || echo "0")
+    # Try to count pending patterns using jq (handles both formats)
+    # For JSONL: count lines with pending_sync:true
+    # For single JSON: check if pending_sync is true (returns 1 or 0)
+    PATTERN_COUNT=$(jq -s '[.[] | select(.pending_sync == true)] | length' "$PATTERNS_LOG" 2>/dev/null | tr -d '[:space:]' || echo "0")
+    # Ensure it's a valid integer
+    [[ "$PATTERN_COUNT" =~ ^[0-9]+$ ]] || PATTERN_COUNT=0
 
-    # Read pending patterns (last 10)
-    if [[ "$PATTERN_COUNT" -gt 0 ]]; then
-        PENDING_PATTERNS=$(grep '"pending_sync":true' "$PATTERNS_LOG" 2>/dev/null | tail -10)
+    # Read pending patterns (for extracting agent info)
+    if [[ $PATTERN_COUNT -gt 0 ]]; then
+        # Get agent IDs from pending patterns
+        PENDING_PATTERNS=$(jq -s '[.[] | select(.pending_sync == true)]' "$PATTERNS_LOG" 2>/dev/null || echo "[]")
     fi
 fi
 
@@ -91,17 +96,21 @@ fi
 if [[ "$PATTERN_COUNT" -gt 0 ]]; then
     MSG_PARTS+=("$PATTERN_COUNT agent patterns pending")
 
-    # Extract unique agents from pending patterns
-    if [[ -n "$PENDING_PATTERNS" ]]; then
-        UNIQUE_AGENTS=$(echo "$PENDING_PATTERNS" | jq -r '.agent_id // .agent' 2>/dev/null | sort -u | head -5 | tr '\n' ', ' | sed 's/,$//')
+    # Extract unique agents from pending patterns (PENDING_PATTERNS is now a JSON array)
+    if [[ -n "$PENDING_PATTERNS" && "$PENDING_PATTERNS" != "[]" ]]; then
+        UNIQUE_AGENTS=$(echo "$PENDING_PATTERNS" | jq -r '.[] | .agent_id // .agent' 2>/dev/null | sort -u | head -5 | tr '\n' ', ' | sed 's/,$//')
         if [[ -n "$UNIQUE_AGENTS" ]]; then
             MSG_PARTS+=("agents: $UNIQUE_AGENTS")
         fi
     fi
 fi
 
-# Build the summary
-SUMMARY=$(IFS='; '; echo "${MSG_PARTS[*]}")
+# Build the summary (handle empty array for set -u)
+if [[ ${#MSG_PARTS[@]} -gt 0 ]]; then
+    SUMMARY=$(IFS='; '; echo "${MSG_PARTS[*]}")
+else
+    SUMMARY="No pending items"
+fi
 
 # Build detailed sync message
 MSG=$(cat <<EOF
