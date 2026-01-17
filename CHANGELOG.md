@@ -5,6 +5,45 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.19.0] - 2026-01-17
+
+### Added
+
+- **CC 2.1.11 Setup Hooks**
+  - New `--init`, `--init-only`, and `--maintenance` CLI support
+  - `hooks/setup/setup-check.sh`: Entry point with fast validation (< 10ms happy path)
+  - `hooks/setup/first-run-setup.sh`: Full setup + interactive wizard
+  - `hooks/setup/setup-repair.sh`: Self-healing for broken installations
+  - `hooks/setup/setup-maintenance.sh`: Periodic maintenance (log rotation, lock cleanup)
+  - Hybrid marker file detection for fast first-run checking
+
+- **Skills Expansion**
+  - Checklists and examples added to 6 git/github workflow skills
+  - Related Skills and Key Decisions sections added to 34 skills
+  - New skills: `wcag-compliance`, `zero-downtime-migration`, `focus-management`
+
+- **Agent Enhancements**
+  - 2 new agents added (total: 27)
+  - Improved skill injection with CC 2.1.6 native format
+
+### Fixed
+
+- **Bash 3.2 Compatibility**: Fixed macOS compatibility issues with case conversion
+- **Hook stdin handling**: Fixed Python 3.13 compatibility for hook input
+- **Ruff linting errors**: Resolved all Python linting issues
+- **Stop hooks**: Now log silently to files instead of stdout
+- **Unbound variables**: Fixed several hooks with unbound variable errors
+- **JSON output**: Fixed hooks producing invalid JSON in edge cases
+
+### Changed
+
+- Skills count: 103 → 111 (added 8 new skills)
+- Agents count: 25 → 27 (added 2 agents)
+- Hooks count: 109 → 118 (added 9 Setup and maintenance hooks)
+- Updated CLAUDE.md with CC 2.1.11 documentation
+
+---
+
 ## [4.18.0] - 2026-01-16
 
 ### Added

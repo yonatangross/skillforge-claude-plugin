@@ -42,11 +42,11 @@ DESCRIPTION=$(jq -r '.description' "$PLUGIN_JSON")
 
 # Parse counts from description using regex
 # Skills: "N skills" (total including command-type skills)
-DECLARED_SKILLS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ skills' | grep -oE '[0-9]+' || echo "0")
+DECLARED_SKILLS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ skills' | head -1 | grep -oE '[0-9]+' || echo "0")
 # Agents: "N agents"
-DECLARED_AGENTS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ agents' | grep -oE '[0-9]+' || echo "0")
-# Hooks: "N hooks"
-DECLARED_HOOKS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+[^0-9]*hooks' | grep -oE '[0-9]+' || echo "0")
+DECLARED_AGENTS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ agents' | head -1 | grep -oE '[0-9]+' || echo "0")
+# Hooks: "N hooks" - match exactly "N hooks" pattern (not "N X hooks")
+DECLARED_HOOKS=$(echo "$DESCRIPTION" | grep -oE '[0-9]+ hooks' | head -1 | grep -oE '[0-9]+' || echo "0")
 
 # =============================================================================
 # VALIDATION
