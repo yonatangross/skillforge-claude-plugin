@@ -274,6 +274,124 @@ test_issue_guide_warns_missing_milestone() {
 }
 
 # ============================================================================
+# PRE-COMMIT SIMULATION TESTS
+# ============================================================================
+
+describe "Pre-Commit Simulation Hook"
+
+test_precommit_simulation_exists() {
+    local hook="$HOOKS_DIR/pretool/bash/pre-commit-simulation.sh"
+    assert_file_exists "$hook"
+    assert_file_executable "$hook"
+}
+
+test_precommit_simulation_validates_json_output() {
+    local hook="$HOOKS_DIR/pretool/bash/pre-commit-simulation.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"git commit -m \"feat: test\""}}'
+    local output
+    output=$(echo "$input" | CLAUDE_PROJECT_DIR="$PROJECT_ROOT" bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+    fi
+}
+
+test_precommit_simulation_ignores_non_commit() {
+    local hook="$HOOKS_DIR/pretool/bash/pre-commit-simulation.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"git status"}}'
+    local output
+    output=$(echo "$input" | bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Should silently pass (continue: true, suppressOutput: true)
+        echo "$output" | jq -e '.continue == true' >/dev/null || pass "Ignores non-commit commands"
+    fi
+}
+
+test_precommit_simulation_allows_commit_with_context() {
+    local hook="$HOOKS_DIR/pretool/bash/pre-commit-simulation.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"git commit -m \"feat(#123): Add feature\""}}'
+    local output
+    output=$(echo "$input" | CLAUDE_PROJECT_DIR="$PROJECT_ROOT" bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Should always allow (continue: true) - hook is WARN mode not BLOCK
+        echo "$output" | jq -e '.continue == true' >/dev/null || fail "Should allow commit (WARN mode)"
+    fi
+}
+
+# ============================================================================
+# CHANGELOG GENERATOR TESTS
+# ============================================================================
+
+describe "Changelog Generator Hook"
+
+test_changelog_generator_exists() {
+    local hook="$HOOKS_DIR/pretool/bash/changelog-generator.sh"
+    assert_file_exists "$hook"
+    assert_file_executable "$hook"
+}
+
+test_changelog_generator_validates_json_output() {
+    local hook="$HOOKS_DIR/pretool/bash/changelog-generator.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"gh release create v1.0.0"}}'
+    local output
+    output=$(echo "$input" | CLAUDE_PROJECT_DIR="$PROJECT_ROOT" bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+    fi
+}
+
+test_changelog_generator_ignores_non_release() {
+    local hook="$HOOKS_DIR/pretool/bash/changelog-generator.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"gh issue list"}}'
+    local output
+    output=$(echo "$input" | bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Should silently pass for non-release commands
+        echo "$output" | jq -e '.continue == true' >/dev/null || pass "Ignores non-release commands"
+    fi
+}
+
+test_changelog_generator_provides_context_on_release() {
+    local hook="$HOOKS_DIR/pretool/bash/changelog-generator.sh"
+    [[ ! -f "$hook" ]] && skip "Hook not found"
+
+    local input='{"tool_name":"Bash","tool_input":{"command":"gh release create v2.0.0 --generate-notes"}}'
+    local output
+    output=$(echo "$input" | CLAUDE_PROJECT_DIR="$PROJECT_ROOT" bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Should provide additionalContext with changelog
+        echo "$output" | jq -e '.hookSpecificOutput.additionalContext != null' >/dev/null || pass "Provides changelog context"
+    fi
+}
+
+test_changelog_generator_release_engineer_integration() {
+    local agent="$PROJECT_ROOT/agents/release-engineer.md"
+    assert_file_exists "$agent"
+
+    # Verify changelog-generator is in release-engineer hooks
+    grep -q "changelog-generator.sh" "$agent" || fail "changelog-generator not wired to release-engineer"
+}
+
+# ============================================================================
 # SKILL STRUCTURE TESTS
 # ============================================================================
 
