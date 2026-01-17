@@ -26,6 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 2 new agents added (total: 27)
   - Improved skill injection with CC 2.1.6 native format
 
+- **Automatic Pattern Extraction** (#48, #49)
+  - `hooks/posttool/bash/pattern-extractor.sh`: Auto-extracts patterns from commits, tests, builds, PR merges
+  - `hooks/stop/session-patterns.sh`: Persists patterns to `learned-patterns.json` on session end
+  - `hooks/prompt/antipattern-warning.sh`: Detects 7 built-in anti-patterns and injects warnings via CC 2.1.9 additionalContext
+  - Fully automatic - no manual commands needed
+  - Bash 3.2 compatible (no associative arrays)
+
+- **Tests**
+  - `tests/unit/test-pattern-extraction.sh`: 20 tests for pattern extraction system
+
 ### Fixed
 
 - **Bash 3.2 Compatibility**: Fixed macOS compatibility issues with case conversion
@@ -39,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Skills count: 103 → 111 (added 8 new skills)
 - Agents count: 25 → 27 (added 2 agents)
-- Hooks count: 109 → 118 (added 9 Setup and maintenance hooks)
+- Hooks count: 109 → 120 (added 9 Setup hooks + 2 pattern extraction hooks)
 - Updated CLAUDE.md with CC 2.1.11 documentation
 
 ---

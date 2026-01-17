@@ -9,7 +9,7 @@ This document provides essential context for Claude Code when working with the S
 - **111 skills**: Reusable knowledge modules in flat structure (including 6 git/GitHub workflow skills)
 - **27 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
 - **18 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **118 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
+- **120 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -362,6 +362,38 @@ Use the statusline to monitor context usage:
 
 Use `/skf:claude-hud` to configure statusline display.
 
+### 10. Automatic Pattern Extraction (#48, #49)
+The plugin automatically extracts and learns from development patterns without manual intervention:
+
+**Three-Hook Pipeline:**
+1. **pattern-extractor.sh** (PostToolUse/Bash): Extracts patterns from commits, tests, builds, PR merges
+2. **antipattern-warning.sh** (UserPromptSubmit): Detects known anti-patterns and injects warnings via additionalContext
+3. **session-patterns.sh** (Stop): Persists patterns to `.claude/feedback/learned-patterns.json`
+
+**What Gets Extracted:**
+- Git commits: Technology tags (JWT, cursor-pagination, etc.), categories
+- Test results: Pass/fail outcomes with framework detection
+- Build results: Success/failure with tool detection
+- PR merges: Decision records
+
+**Anti-Pattern Detection (7 built-in):**
+- Offset pagination → cursor-based pagination
+- Manual JWT validation → established libraries
+- Plaintext passwords → bcrypt/argon2/scrypt
+- Global state → dependency injection
+- Synchronous file I/O → async operations
+- N+1 queries → eager loading/batch queries
+- Polling for real-time → SSE/WebSocket
+
+**Storage Locations:**
+```
+.claude/feedback/
+├── patterns-queue.json      # Temporary queue during session
+└── learned-patterns.json    # Persistent pattern storage
+```
+
+**No manual commands required** - all extraction and warnings happen automatically via hooks.
+
 ---
 
 ## What NOT to Do
@@ -693,7 +725,7 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **Claude Code Requirement**: >= 2.1.11
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (118 hooks)
+- **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (120 hooks)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
@@ -701,6 +733,7 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **User-Invocable Skills**: CC 2.1.3 `user-invocable` field for 17 commands (v4.17.0)
 - **Git Enforcement**: Commit message, branch naming, atomic commits, issue creation (v4.18.0)
 - **CC 2.1.11 Integration**: Setup hooks (--init, --init-only, --maintenance), self-healing, maintenance automation (v4.19.0)
+- **Automatic Pattern Extraction**: Hook-driven pattern learning and anti-pattern warnings (#48, #49) (v4.19.0)
 
 ---
 
