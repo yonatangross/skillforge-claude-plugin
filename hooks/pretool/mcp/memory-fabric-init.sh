@@ -50,7 +50,7 @@ LOG_FILE="${HOOK_LOG_DIR}/memory-fabric-init.log"
 mkdir -p "$(dirname "$LOG_FILE")" 2>/dev/null || true
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$(pwd)}"
-SESSION_ID="${CLAUDE_SESSION_ID}"
+SESSION_ID="${CLAUDE_SESSION_ID:-unknown}"
 
 # State file to track orphaned sessions
 ORPHAN_CHECK_FILE="${PROJECT_DIR}/.claude/logs/.memory-fabric-sessions.json"
