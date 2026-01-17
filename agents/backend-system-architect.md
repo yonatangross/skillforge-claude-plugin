@@ -28,6 +28,11 @@ skills:
   - mcp-server-building
   - caching-strategies
   - auth-patterns
+  - asyncio-advanced
+  - sqlalchemy-2-async
+  - fastapi-advanced
+  - connection-pooling
+  - idempotency-patterns
   - remember
   - recall
 ---

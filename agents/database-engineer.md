@@ -18,6 +18,7 @@ skills:
   - alembic-migrations
   - database-versioning
   - zero-downtime-migration
+  - sqlalchemy-2-async
   - caching-strategies
   - remember
   - recall
