@@ -214,6 +214,8 @@ assert_contains "$CHECKLIST_CONTENT" "Post-Sync" "Checklist has post-sync sectio
 
 # -----------------------------------------------------------------------------
 # Test: Hook Integration (mem0-pre-compaction-sync.sh)
+# Stop hooks only support: continue, suppressOutput, stopReason, systemMessage
+# (No hookSpecificOutput for Stop events - v1.5.0 compliance)
 # -----------------------------------------------------------------------------
 
 echo ""
@@ -225,28 +227,38 @@ HOOK="$PROJECT_ROOT/hooks/stop/mem0-pre-compaction-sync.sh"
 
 # Test hook version
 TESTS_RUN=$((TESTS_RUN + 1))
-if head -10 "$HOOK" | grep -q "Version: 1.4.0"; then
+if head -10 "$HOOK" | grep -q "Version: 1.5.0"; then
     TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}PASS${NC}: Hook version is 1.4.0"
+    echo -e "${GREEN}PASS${NC}: Hook version is 1.5.0"
 else
     TESTS_FAILED=$((TESTS_FAILED + 1))
-    echo -e "${RED}FAIL${NC}: Hook version should be 1.4.0"
+    echo -e "${RED}FAIL${NC}: Hook version should be 1.5.0"
 fi
 
-# Test hook outputs valid JSON with skill invocation
+# Test hook outputs valid JSON (Stop hook schema compliant)
 HOOK_OUTPUT=$(echo "" | bash "$HOOK" 2>/dev/null || echo '{"continue":true,"suppressOutput":true}')
 assert_json_valid "$HOOK_OUTPUT" "Hook outputs valid JSON"
 
-# Check for invokeSkill field
-if echo "$HOOK_OUTPUT" | jq -e '.hookSpecificOutput.invokeSkill' >/dev/null 2>&1; then
+# Check that hook uses valid Stop hook fields (no hookSpecificOutput)
+TESTS_RUN=$((TESTS_RUN + 1))
+if echo "$HOOK_OUTPUT" | jq -e '.hookSpecificOutput' >/dev/null 2>&1; then
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    echo -e "${RED}FAIL${NC}: Stop hooks should NOT use hookSpecificOutput"
+else
+    TESTS_PASSED=$((TESTS_PASSED + 1))
+    echo -e "${GREEN}PASS${NC}: Hook correctly omits hookSpecificOutput (Stop hook compliance)"
+fi
+
+# Check for systemMessage with mem0-sync directive
+if echo "$HOOK_OUTPUT" | jq -e '.systemMessage' >/dev/null 2>&1; then
     TESTS_RUN=$((TESTS_RUN + 1))
-    INVOKE_SKILL=$(echo "$HOOK_OUTPUT" | jq -r '.hookSpecificOutput.invokeSkill')
-    if [[ "$INVOKE_SKILL" == "mem0-sync" ]]; then
+    SYS_MSG=$(echo "$HOOK_OUTPUT" | jq -r '.systemMessage')
+    if [[ "$SYS_MSG" == *"mem0-sync"* ]]; then
         TESTS_PASSED=$((TESTS_PASSED + 1))
-        echo -e "${GREEN}PASS${NC}: Hook invokes mem0-sync skill"
+        echo -e "${GREEN}PASS${NC}: Hook systemMessage mentions mem0-sync skill"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: Hook should invoke mem0-sync skill (got: $INVOKE_SKILL)"
+        echo -e "${RED}FAIL${NC}: Hook systemMessage should mention mem0-sync skill"
     fi
 else
     # Hook might output suppressOutput:true if no pending items
@@ -256,75 +268,18 @@ else
         echo -e "${GREEN}PASS${NC}: Hook correctly suppresses output when no pending items"
     else
         TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: Hook should have invokeSkill or suppressOutput"
+        echo -e "${RED}FAIL${NC}: Hook should have systemMessage or suppressOutput"
     fi
 fi
 
-# Check for syncContext when invokeSkill is present
-if echo "$HOOK_OUTPUT" | jq -e '.hookSpecificOutput.syncContext' >/dev/null 2>&1; then
-    TESTS_RUN=$((TESTS_RUN + 1))
+# Check that continue is true (allows session to end normally)
+TESTS_RUN=$((TESTS_RUN + 1))
+if echo "$HOOK_OUTPUT" | jq -e '.continue == true' >/dev/null 2>&1; then
     TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}PASS${NC}: Hook provides syncContext"
-
-    # Check syncContext structure
-    SYNC_CTX=$(echo "$HOOK_OUTPUT" | jq '.hookSpecificOutput.syncContext')
-
-    if echo "$SYNC_CTX" | jq -e '.project_id' >/dev/null 2>&1; then
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        echo -e "${GREEN}PASS${NC}: syncContext has project_id"
-    else
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: syncContext missing project_id"
-    fi
-
-    if echo "$SYNC_CTX" | jq -e '.user_ids' >/dev/null 2>&1; then
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        echo -e "${GREEN}PASS${NC}: syncContext has user_ids"
-    else
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: syncContext missing user_ids"
-    fi
-fi
-
-# Check for readyMcpCalls
-if echo "$HOOK_OUTPUT" | jq -e '.hookSpecificOutput.readyMcpCalls' >/dev/null 2>&1; then
-    TESTS_RUN=$((TESTS_RUN + 1))
-    TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}PASS${NC}: Hook provides readyMcpCalls"
-
-    # Check first MCP call structure
-    FIRST_MCP=$(echo "$HOOK_OUTPUT" | jq '.hookSpecificOutput.readyMcpCalls[0]')
-
-    if echo "$FIRST_MCP" | jq -e '.tool == "mcp__mem0__add_memory"' >/dev/null 2>&1; then
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        echo -e "${GREEN}PASS${NC}: First MCP call is mcp__mem0__add_memory"
-    else
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: First MCP call should be mcp__mem0__add_memory"
-    fi
-
-    if echo "$FIRST_MCP" | jq -e '.args.enable_graph == true' >/dev/null 2>&1; then
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_PASSED=$((TESTS_PASSED + 1))
-        echo -e "${GREEN}PASS${NC}: MCP call has enable_graph=true"
-    else
-        TESTS_RUN=$((TESTS_RUN + 1))
-        TESTS_FAILED=$((TESTS_FAILED + 1))
-        echo -e "${RED}FAIL${NC}: MCP call should have enable_graph=true"
-    fi
-fi
-
-# Check for autoExecute flag
-if echo "$HOOK_OUTPUT" | jq -e '.hookSpecificOutput.autoExecute == true' >/dev/null 2>&1; then
-    TESTS_RUN=$((TESTS_RUN + 1))
-    TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}PASS${NC}: Hook has autoExecute=true"
+    echo -e "${GREEN}PASS${NC}: Hook has continue=true (non-blocking)"
+else
+    TESTS_FAILED=$((TESTS_FAILED + 1))
+    echo -e "${RED}FAIL${NC}: Hook should have continue=true"
 fi
 
 # -----------------------------------------------------------------------------

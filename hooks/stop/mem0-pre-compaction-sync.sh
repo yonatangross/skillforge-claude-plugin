@@ -3,7 +3,7 @@
 # Prompts Claude to save important session context to Mem0 before compaction
 # Enhanced with graph memory support, pending pattern sync, and session summaries
 #
-# Version: 1.4.0 - Auto-invoke mem0-sync skill with ready MCP calls
+# Version: 1.5.0 - Fixed Stop hook schema compliance (no hookSpecificOutput)
 # Part of Mem0 Pro Integration - Phase 5
 
 set -euo pipefail
@@ -227,19 +227,11 @@ SESSION_MCP=$(jq -n \
         }
     }')
 
-# Output skill invocation directive with sync context
-# The systemMessage tells Claude to execute the skill with the provided context
+# Output Stop hook compliant JSON (no hookSpecificOutput for Stop events)
+# The systemMessage provides all context needed for Claude to run /mem0-sync
 jq -n \
     --arg msg "$SKILL_MSG" \
-    --argjson sync_context "$SYNC_CONTEXT" \
-    --argjson session_mcp "$SESSION_MCP" \
     '{
         continue: true,
-        systemMessage: $msg,
-        hookSpecificOutput: {
-            invokeSkill: "mem0-sync",
-            syncContext: $sync_context,
-            readyMcpCalls: [$session_mcp],
-            autoExecute: true
-        }
+        systemMessage: $msg
     }'
