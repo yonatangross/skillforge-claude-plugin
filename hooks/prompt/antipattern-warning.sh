@@ -82,8 +82,7 @@ main() {
     search_query=$(check_for_antipattern_query "$prompt")
 
     # Silent operation - Claude already has access to mem0 tools
-    # Log the suggestion instead of showing to user
-    log_hook "Antipattern check suggested for category: $category"
+    # No logging needed - hook runs silently
     echo '{"continue": true, "suppressOutput": true}'
 }
 
