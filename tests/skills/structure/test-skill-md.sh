@@ -14,7 +14,7 @@
 # 7. Token budget between 300-1500 tokens (chars/4)
 # 8. Has "Related Skills" or "Key Decisions" section
 # 9. No broken internal links to references/ or templates/
-# 10. user-invocable field validation (18 commands, 93 internal)
+# 10. user-invocable field validation (18 commands, 97 internal)
 #
 # Usage: ./test-skill-md.sh [--verbose]
 # Exit codes: 0 = all pass, 1 = failures found
@@ -489,7 +489,7 @@ echo "────────────────────────�
 
 # Expected counts
 EXPECTED_USER_INVOCABLE=18
-EXPECTED_INTERNAL=93
+EXPECTED_INTERNAL=97
 
 missing_user_invocable=()
 user_invocable_true=()
