@@ -110,6 +110,16 @@ validate_dependencies() {
     warnings+=("flock not found - using fallback file locking")
   fi
 
+  # Optional: anthropic SDK (Memory Fabric Agent SDK for guaranteed MCP execution)
+  if command -v python3 >/dev/null 2>&1; then
+    if ! python3 -c "import anthropic" 2>/dev/null; then
+      warnings+=("anthropic SDK not found - Memory Fabric Agent will use fallback mode")
+      warnings+=("  Install with: pip install 'skillforge-claude-plugin[memory]'")
+    else
+      log_hook "Anthropic SDK: available (Memory Fabric Agent enabled)"
+    fi
+  fi
+
   # Report missing required dependencies
   if [[ ${#missing[@]} -gt 0 ]]; then
     log_hook "ERROR: Missing required dependencies:"

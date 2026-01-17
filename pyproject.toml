@@ -19,6 +19,10 @@ dev = [
     "pytest>=8.0.0",
     "pytest-cov>=6.0.0",
 ]
+# Memory Fabric Agent SDK (for guaranteed MCP execution)
+memory = [
+    "anthropic>=0.40.0",
+]
 # Template dependencies (for validating skill templates)
 templates = [
     "fastapi>=0.115.0",

@@ -135,7 +135,7 @@ test_branch_validator_allows_fix_branch() {
     fi
 }
 
-test_branch_validator_warns_nonstandard_branch() {
+test_branch_validator_blocks_nonstandard_branch() {
     local hook="$HOOKS_DIR/pretool/bash/git-branch-naming-validator.sh"
     [[ ! -f "$hook" ]] && skip "Hook not found"
 
@@ -145,8 +145,8 @@ test_branch_validator_warns_nonstandard_branch() {
 
     if [[ -n "$output" ]]; then
         assert_valid_json "$output"
-        # Should warn but still allow (continue: true with additionalContext)
-        echo "$output" | jq -e '.continue == true' >/dev/null || pass "Warns on non-standard branch"
+        # Should block non-standard branches (continue: false)
+        echo "$output" | jq -e '.continue == false' >/dev/null || fail "Should block non-standard branch"
     fi
 }
 
@@ -397,25 +397,23 @@ test_changelog_generator_release_engineer_integration() {
 
 describe "Git Skills Structure"
 
-test_milestone_management_skill_exists() {
-    local skill_dir="$PROJECT_ROOT/skills/milestone-management"
+test_git_workflow_skill_exists() {
+    local skill_dir="$PROJECT_ROOT/skills/git-workflow"
     assert_file_exists "$skill_dir/SKILL.md"
 
-    # Check for references
+    # Check for references (consolidated from atomic-commits, branch-strategy)
     [[ -d "$skill_dir/references" ]] || fail "Missing references directory"
 
-    # Check for templates
-    [[ -d "$skill_dir/templates" ]] || fail "Missing templates directory"
+    # Check for checklists
+    [[ -d "$skill_dir/checklists" ]] || fail "Missing checklists directory"
 }
 
-test_atomic_commits_skill_exists() {
-    local skill_dir="$PROJECT_ROOT/skills/atomic-commits"
+test_github_operations_skill_exists() {
+    local skill_dir="$PROJECT_ROOT/skills/github-operations"
     assert_file_exists "$skill_dir/SKILL.md"
-}
 
-test_branch_strategy_skill_exists() {
-    local skill_dir="$PROJECT_ROOT/skills/branch-strategy"
-    assert_file_exists "$skill_dir/SKILL.md"
+    # Check for references (consolidated from github-cli, milestone-management)
+    [[ -d "$skill_dir/references" ]] || fail "Missing references directory"
 }
 
 test_stacked_prs_skill_exists() {
@@ -428,37 +426,38 @@ test_release_management_skill_exists() {
     assert_file_exists "$skill_dir/SKILL.md"
 }
 
-test_git_recovery_skill_exists() {
-    local skill_dir="$PROJECT_ROOT/skills/git-recovery"
+test_git_recovery_command_skill_exists() {
+    local skill_dir="$PROJECT_ROOT/skills/git-recovery-command"
     assert_file_exists "$skill_dir/SKILL.md"
 }
 
 # ============================================================================
-# GITHUB-CLI SKILL ENRICHMENT TESTS
+# GITHUB OPERATIONS SKILL ENRICHMENT TESTS
 # ============================================================================
 
-describe "GitHub CLI Skill Enrichment"
+describe "GitHub Operations Skill Enrichment"
 
-test_issue_creation_checklist_exists() {
-    local file="$PROJECT_ROOT/skills/github-cli/checklists/issue-creation-checklist.md"
-    assert_file_exists "$file"
+test_github_operations_references_exist() {
+    local ref_dir="$PROJECT_ROOT/skills/github-operations/references"
 
-    # Verify it contains key sections
-    grep -q "Pre-Creation Checks" "$file" || fail "Missing pre-creation checks section"
-    grep -q "Labels" "$file" || fail "Missing labeling section"
+    # Verify references directory exists
+    [[ -d "$ref_dir" ]] || fail "Missing references directory"
+
+    # Check for key reference files
+    assert_file_exists "$ref_dir/issue-management.md"
+    assert_file_exists "$ref_dir/pr-workflows.md"
+    assert_file_exists "$ref_dir/milestone-api.md"
 }
 
-test_labeling_guide_exists() {
-    local file="$PROJECT_ROOT/skills/github-cli/checklists/labeling-guide.md"
-    assert_file_exists "$file"
+test_github_operations_examples_exist() {
+    local examples_dir="$PROJECT_ROOT/skills/github-operations/examples"
 
-    # Verify it contains key sections
-    grep -q "Type Labels" "$file" || fail "Missing type labels section"
-    grep -q "Priority Labels" "$file" || fail "Missing priority labels section"
+    # Check for examples (consolidated from github-cli)
+    [[ -d "$examples_dir" ]] && assert_file_exists "$examples_dir/automation-scripts.md"
 }
 
-test_issue_templates_reference_exists() {
-    local file="$PROJECT_ROOT/skills/github-cli/references/issue-templates.md"
+test_github_operations_has_graphql_reference() {
+    local file="$PROJECT_ROOT/skills/github-operations/references/graphql-api.md"
     assert_file_exists "$file"
 }
 

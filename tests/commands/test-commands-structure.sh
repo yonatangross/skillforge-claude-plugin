@@ -155,7 +155,7 @@ fi
 echo ""
 echo -e "${BLUE}Test 4: Command count validation${NC}"
 
-EXPECTED_COMMANDS=17
+EXPECTED_COMMANDS=18
 ACTUAL_COMMANDS=$(find "$COMMANDS_DIR" -name "*.md" -type f | wc -l | tr -d ' ')
 ACTUAL_SKILLS=${#USER_INVOCABLE_SKILLS[@]}
 

@@ -28,6 +28,13 @@ skills:
   - radix-primitives
   - biome-linting
   - vite-advanced
+  - zustand-patterns
+  - tanstack-query-advanced
+  - form-state-patterns
+  - core-web-vitals
+  - image-optimization
+  - react-aria-patterns
+  - wcag-compliance
   - remember
   - recall
 ---
