@@ -1,18 +1,24 @@
 #!/bin/bash
-# Mem0 Memory Operations Library for SkillForge Plugin
-# Provides helper functions for interacting with Mem0 MCP server
+# Memory Operations Library for SkillForge Plugin
+# Provides helper functions for both Knowledge Graph (primary) and Mem0 (optional)
 #
-# Version: 1.2.0 - Graph memory enabled by default, cross-agent federation support
-# Part of SkillForge Plugin - Works across ANY repository
+# Graph-First Architecture (v2.1):
+# - Knowledge graph (mcp__memory__*) is ALWAYS available - zero config
+# - Mem0 (mcp__mem0__*) is an optional enhancement for semantic search
+# - Use is_graph_available() for primary check (always true)
+# - Use is_enhanced_available() to check if mem0 is configured
+#
+# Version: 2.1.0 - Graph-First Architecture
+# Part of Memory Fabric v2.1 - Graph-First Architecture
 #
 # Usage: source "${CLAUDE_PLUGIN_ROOT}/hooks/_lib/mem0.sh"
 #
 # Key Design Principles:
+# - Graph-first: Knowledge graph is always available, mem0 is optional
 # - Project-agnostic: Works in any repository where the plugin is installed
 # - Graceful degradation: Works even if project has no .claude/context structure
 # - Scoped memory: Uses {project-name}-{scope} format for user_id
-# - MCP-compatible: Outputs JSON suitable for mcp__mem0__* tool calls
-# - Graph-first: enable_graph=true by default for relationship extraction
+# - MCP-compatible: Outputs JSON suitable for mcp__memory__* and mcp__mem0__* tool calls
 # - Agent-aware: Supports agent_id for agent-scoped memories
 # - Cross-agent: Federation support for multi-agent knowledge sharing
 
@@ -550,10 +556,30 @@ build_decisions_content() {
 }
 
 # -----------------------------------------------------------------------------
-# Validation Functions
+# Validation Functions (Graph-First v2.1)
 # -----------------------------------------------------------------------------
 
-# Check if Mem0 MCP server is likely available
+# Check if knowledge graph is available
+# Graph-First: ALWAYS returns 0 (true) - graph requires no configuration
+# This is the preferred check for primary memory operations
+is_graph_available() {
+    return 0
+}
+
+# Alias for is_graph_available - preferred name for clarity
+# Graph-First: ALWAYS returns 0 (true)
+is_memory_available() {
+    return 0
+}
+
+# Check if enhanced memory (mem0 cloud) is available
+# Returns 0 if mem0 is configured, 1 if not
+# Use this when mem0-specific features are requested (e.g., --mem0 flag)
+is_enhanced_available() {
+    is_mem0_available
+}
+
+# Check if Mem0 MCP server is likely available (optional enhancement)
 # This is a heuristic check based on environment
 # Returns 0 if likely available, 1 if not
 is_mem0_available() {
@@ -651,6 +677,9 @@ export -f mem0_build_relations_array
 export -f mem0_extract_entities_hint
 export -f build_continuity_content
 export -f build_decisions_content
+export -f is_graph_available
+export -f is_memory_available
+export -f is_enhanced_available
 export -f is_mem0_available
 export -f validate_memory_content
 export -f validate_agent_id

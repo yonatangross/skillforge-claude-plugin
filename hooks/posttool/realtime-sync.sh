@@ -1,19 +1,23 @@
 #!/bin/bash
-# Realtime Sync Hook - Priority-based immediate memory persistence
+# Realtime Sync Hook - Graph-First Priority-based immediate memory persistence
 # Triggers on PostToolUse for Bash, Write, and Skill completions
 #
-# Purpose: Sync critical decisions immediately instead of waiting for session end
+# Purpose: Sync critical decisions immediately to knowledge graph
+#
+# Graph-First Architecture (v2.1):
+# - IMMEDIATE syncs target knowledge graph (mcp__memory__*) - always works
+# - mem0 cloud sync only if API key present AND critical priority
 #
 # Priority Classification:
 # - IMMEDIATE: "decided", "chose", "architecture", "security", "blocked", "breaking"
 # - BATCHED: "pattern", "convention", "preference"
 # - SESSION_END: Everything else (handled by existing Stop hooks)
 #
-# Version: 1.1.0 - CC 2.1.9/2.1.11 compliant
+# Version: 2.1.0 - CC 2.1.9/2.1.11 compliant, Graph-First Architecture
 # CC 2.1.9: Uses systemMessage for actionable sync recommendations
 # CC 2.1.11: Session ID guaranteed available (direct substitution)
 #
-# Part of Memory Fabric v2.0 - Unified Memory System
+# Part of Memory Fabric v2.1 - Graph-First Architecture
 
 set -euo pipefail
 
@@ -48,6 +52,10 @@ mkdir -p "$(dirname "$LOG_FILE")" 2>/dev/null || true
 SESSION_ID="${CLAUDE_SESSION_ID}"
 PENDING_SYNC_FILE="${CLAUDE_PROJECT_DIR:-.}/.claude/logs/.mem0-pending-sync-${SESSION_ID}.json"
 
+# Memory Fabric Agent path
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(dirname "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")}"
+MEMORY_AGENT="${PLUGIN_ROOT}/bin/memory-fabric-agent.py"
+
 # Priority keywords
 IMMEDIATE_KEYWORDS="decided|chose|architecture|security|blocked|breaking|critical|must|cannot|deprecated|removed|migration"
 BATCHED_KEYWORDS="pattern|convention|preference|style|format|naming"
@@ -58,6 +66,13 @@ MIN_CONTENT_LENGTH=30
 # Context pressure thresholds (CC 2.1.6)
 CONTEXT_EMERGENCY_THRESHOLD=85
 CONTEXT_CRITICAL_THRESHOLD=90
+
+# Agent SDK is available when memory agent exists and python3 is present
+# anthropic package is a required dependency (installed via pip install 'skillforge[memory]')
+HAS_AGENT_SDK=false
+if [[ -f "$MEMORY_AGENT" ]] && command -v python3 &>/dev/null; then
+    HAS_AGENT_SDK=true
+fi
 
 # -----------------------------------------------------------------------------
 # Context Pressure Detection (CC 2.1.6)
@@ -296,15 +311,15 @@ if is_critical_sync_needed; then
     PENDING_COUNT=$(get_pending_count)
     if [[ "$PENDING_COUNT" -gt 0 ]]; then
         log_sync "CRITICAL: Context at ${CONTEXT_PRESSURE}%, flushing $PENDING_COUNT pending items"
-        # Generate urgent flush message
+        # Generate urgent flush message - Graph-First
         MSG=$(cat <<EOF
 [CRITICAL SYNC] Context at ${CONTEXT_PRESSURE}% - compaction imminent!
 
-${PENDING_COUNT} items in pending queue need immediate sync.
+${PENDING_COUNT} items in pending queue need immediate sync to knowledge graph.
 Pending sync file: ${PENDING_SYNC_FILE}
 
-Execute mcp__mem0__add_memory for each item in the pending file NOW
-to preserve session context before compaction.
+Execute mcp__memory__create_entities for each item in the pending file NOW
+to preserve session context in the knowledge graph before compaction.
 EOF
 )
         jq -n --arg msg "$MSG" '{continue:true,systemMessage:$msg}'
@@ -334,26 +349,56 @@ case "$PRIORITY" in
 
         log_sync "IMMEDIATE sync triggered: category=$CATEGORY"
 
-        # Build suggestion message
+        # Try Agent SDK first for guaranteed execution
+        if [[ "$HAS_AGENT_SDK" == "true" ]]; then
+            log_sync "Using Memory Fabric Agent for guaranteed sync"
+
+            PROJECT_ID=$(mem0_get_project_id 2>/dev/null || basename "${CLAUDE_PROJECT_DIR:-.}")
+
+            # Execute via Agent SDK - returns tool_calls for Claude to execute
+            AGENT_RESULT=$(python3 "$MEMORY_AGENT" write \
+                "$DECISION" \
+                "$PROJECT_ID" \
+                --category "$CATEGORY" \
+                --outcome "neutral" 2>/dev/null)
+
+            if [[ $? -eq 0 ]] && echo "$AGENT_RESULT" | jq -e '.tool_calls' &>/dev/null; then
+                # Agent returned tool calls - instruct Claude to execute them
+                TOOL_CALLS=$(echo "$AGENT_RESULT" | jq -c '.tool_calls')
+                log_sync "Agent SDK ready: $(echo "$TOOL_CALLS" | jq 'length') tool calls"
+
+                MSG=$(cat <<EOF
+[IMMEDIATE SYNC via Agent SDK] Critical decision ready for storage.
+
+Execute these MCP tool calls NOW:
+${TOOL_CALLS}
+
+Decision: "${DECISION:0:150}..."
+Category: ${CATEGORY}
+EOF
+)
+                jq -n --arg msg "$MSG" '{continue:true,systemMessage:$msg}'
+                exit 0
+            else
+                log_sync "Agent SDK failed, falling back to suggestion"
+            fi
+        fi
+
+        # Fallback: Build suggestion message - Graph-First Architecture
         MSG=$(cat <<EOF
-[IMMEDIATE SYNC] Critical decision detected that should be persisted now.
+[IMMEDIATE SYNC] Critical decision detected - store in knowledge graph now.
 
 Category: ${CATEGORY}
 Decision: "${DECISION:0:200}"
 
-Store immediately with mcp__mem0__add_memory:
+Store in knowledge graph with mcp__memory__create_entities:
 \`\`\`json
 {
-  "text": "${DECISION:0:300}",
-  "user_id": "${USER_ID}",
-  "metadata": {
-    "category": "${CATEGORY}",
-    "priority": "immediate",
-    "tool": "${TOOL_NAME}",
-    "stored_at": "$(date -Iseconds)",
-    "source": "realtime-sync"
-  },
-  "enable_graph": true
+  "entities": [{
+    "name": "${CATEGORY}-decision",
+    "entityType": "Decision",
+    "observations": ["${DECISION:0:300}"]
+  }]
 }
 \`\`\`
 
@@ -383,11 +428,11 @@ EOF
                 log_sync "BATCHED queue has $PENDING_COUNT items"
 
                 MSG=$(cat <<EOF
-[BATCHED SYNC] ${PENDING_COUNT} patterns/conventions queued for sync.
+[BATCHED SYNC] ${PENDING_COUNT} patterns/conventions queued for graph sync.
 
 Latest: "${DECISION:0:100}..." (${CATEGORY})
 
-These will be synced at session end, or you can trigger batch sync now with mcp__mem0__add_memory for each item in:
+These will be synced to knowledge graph at session end, or trigger batch sync now with mcp__memory__create_entities for each item in:
 ${PENDING_SYNC_FILE}
 EOF
 )

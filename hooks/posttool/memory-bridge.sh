@@ -1,17 +1,21 @@
 #!/bin/bash
-# Memory Bridge Hook - Bidirectional sync between Mem0 and Knowledge Graph
-# Triggers on PostToolUse for mcp__mem0__add_memory and mcp__memory__create_entities
+# Memory Bridge Hook - Graph-First Memory Sync
+# Triggers on PostToolUse for mcp__mem0__add_memory
 #
-# Purpose: When memory is added to one system, suggest syncing to the other
+# Graph-First Architecture (v2.1):
+# - Graph is AUTHORITATIVE - always the source of truth
+# - When mem0 is used, ALWAYS sync TO graph (preserve in local storage)
+# - When graph is used (default), NO sync needed (already in primary)
 #
-# Mem0 -> Graph: Extract entities from text, suggest create_entities
-# Graph -> Mem0: Format entities as natural language, suggest add_memory
+# Sync Direction: Mem0 -> Graph ONLY (one-way)
+# - mcp__mem0__add_memory → Extract entities, sync to graph
+# - mcp__memory__create_entities → No action needed (already in primary)
 #
-# Version: 1.1.0 - CC 2.1.9/2.1.11 compliant
+# Version: 2.1.0 - CC 2.1.9/2.1.11 compliant, Graph-First Architecture
 # CC 2.1.9: Uses systemMessage for actionable sync suggestions
 # CC 2.1.11: Session ID guaranteed available (no fallback needed)
 #
-# Part of Memory Fabric v2.0 - Unified Memory System
+# Part of Memory Fabric v2.1 - Graph-First Architecture
 
 set -euo pipefail
 
@@ -40,6 +44,17 @@ fi
 
 LOG_FILE="${HOOK_LOG_DIR}/memory-bridge.log"
 mkdir -p "$(dirname "$LOG_FILE")" 2>/dev/null || true
+
+# Memory Fabric Agent path
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(dirname "$(dirname "$(dirname "${BASH_SOURCE[0]}")")")}"
+MEMORY_AGENT="${PLUGIN_ROOT}/bin/memory-fabric-agent.py"
+
+# Agent SDK is available when memory agent exists and python3 is present
+# anthropic package is a required dependency (installed via pip install 'skillforge[memory]')
+HAS_AGENT_SDK=false
+if [[ -f "$MEMORY_AGENT" ]] && command -v python3 &>/dev/null; then
+    HAS_AGENT_SDK=true
+fi
 
 # Entity type mapping patterns (Bash 3.2 compatible - no associative arrays)
 ENTITY_TYPE_TECHNOLOGY="fastapi|react|typescript|python|postgres|redis|docker|kubernetes|langchain|langgraph|pgvector|qdrant|openai|anthropic|celery|rabbitmq|kafka|nginx|vite|tailwind|prisma|sqlalchemy|alembic|pydantic|zod"
@@ -219,8 +234,9 @@ TOOL_NAME=$(get_tool_name)
 # Only process memory-related tools
 case "$TOOL_NAME" in
     mcp__mem0__add_memory)
-        # Mem0 -> Graph: Extract entities from added memory
-        log_bridge "Processing mcp__mem0__add_memory for entity extraction"
+        # Graph-First: Sync mem0 content TO graph (preserve in primary storage)
+        # When using mem0 (cloud), always sync to graph (local) for durability
+        log_bridge "Processing mcp__mem0__add_memory - syncing to graph (primary)"
 
         # Get the text that was added
         MEMORY_TEXT=$(get_field '.tool_input.text // ""')
@@ -231,7 +247,37 @@ case "$TOOL_NAME" in
             exit 0
         fi
 
-        # Extract entities
+        # Try Agent SDK first for smart entity extraction
+        if [[ "$HAS_AGENT_SDK" == "true" ]]; then
+            log_bridge "Using Memory Fabric Agent for bidirectional sync"
+
+            # Use agent to extract entities (it uses Claude for NLP)
+            SYNC_DATA=$(jq -n --arg text "$MEMORY_TEXT" '{"text": $text}')
+            AGENT_RESULT=$(python3 "$MEMORY_AGENT" sync mem0 "$SYNC_DATA" 2>/dev/null)
+
+            if [[ $? -eq 0 ]] && echo "$AGENT_RESULT" | jq -e '.tool_calls' &>/dev/null; then
+                TOOL_CALLS=$(echo "$AGENT_RESULT" | jq -c '.tool_calls')
+                EXTRACTED=$(echo "$AGENT_RESULT" | jq -c '.extracted // {}')
+                log_bridge "Agent SDK extracted entities for sync"
+
+                MSG=$(cat <<EOF
+[Memory Bridge] Sync to Graph (primary storage) ready.
+
+When using mem0, content should be synced to the knowledge graph for durability.
+Execute these MCP tool calls:
+${TOOL_CALLS}
+
+Extracted from: "${MEMORY_TEXT:0:100}..."
+EOF
+)
+                jq -n --arg msg "$MSG" '{continue:true,systemMessage:$msg}'
+                exit 0
+            else
+                log_bridge "Agent SDK failed, falling back to regex extraction"
+            fi
+        fi
+
+        # Fallback: Use regex-based extraction
         ENTITIES=$(extract_entities_from_text "$MEMORY_TEXT")
         ENTITY_COUNT=$(echo "$ENTITIES" | jq 'length' 2>/dev/null || echo "0")
 
@@ -249,13 +295,14 @@ case "$TOOL_NAME" in
 
         # Format suggestion message
         MSG=$(cat <<EOF
-[Memory Bridge] Sync Suggestion: Mem0 -> Knowledge Graph
+[Memory Bridge] Sync to Graph (primary storage)
 
-Detected ${ENTITY_COUNT} entities from memory text that could be synced to knowledge graph:
+Mem0 content should be synced to the knowledge graph for durability.
+Detected ${ENTITY_COUNT} entities to preserve:
 
 $(echo "$ENTITIES" | jq -r '.[] | "- \(.name) (\(.entityType)): \(.observations[0] // "observed")"' 2>/dev/null | head -5)
 
-To sync, call mcp__memory__create_entities with:
+Store in graph with mcp__memory__create_entities:
 \`\`\`json
 {"entities": $(echo "$ENTITIES" | jq -c '.')}
 \`\`\`
@@ -272,56 +319,10 @@ EOF
         ;;
 
     mcp__memory__create_entities)
-        # Graph -> Mem0: Format entities as natural language for mem0
-        log_bridge "Processing mcp__memory__create_entities for mem0 sync"
-
-        # Get the entities that were created
-        ENTITIES_INPUT=$(get_field '.tool_input.entities // "[]"')
-
-        if [[ -z "$ENTITIES_INPUT" || "$ENTITIES_INPUT" == "[]" || "$ENTITIES_INPUT" == "null" ]]; then
-            log_bridge "No entities to process"
-            output_silent_success
-            exit 0
-        fi
-
-        # Format as natural language
-        FORMATTED_TEXT=$(format_entities_as_text "$ENTITIES_INPUT")
-
-        if [[ -z "$FORMATTED_TEXT" ]]; then
-            log_bridge "Could not format entities"
-            output_silent_success
-            exit 0
-        fi
-
-        # Get project-scoped user_id if mem0.sh is available
-        USER_ID="default-user"
-        if [[ "$HAS_MEM0_LIB" == "true" ]] && type mem0_user_id &>/dev/null; then
-            USER_ID=$(mem0_user_id "patterns")
-        fi
-
-        log_bridge "Formatted entities for mem0 sync"
-
-        # Format suggestion message
-        MSG=$(cat <<EOF
-[Memory Bridge] Sync Suggestion: Knowledge Graph -> Mem0
-
-Created knowledge graph entities can be synced to Mem0 for semantic search:
-
-Text: "${FORMATTED_TEXT:0:200}..."
-
-To sync, call mcp__mem0__add_memory with:
-\`\`\`json
-{
-  "text": "${FORMATTED_TEXT:0:500}",
-  "user_id": "${USER_ID}",
-  "metadata": {"source": "knowledge-graph-sync", "synced_at": "$(date -Iseconds)"},
-  "enable_graph": true
-}
-\`\`\`
-EOF
-)
-
-        jq -n --arg msg "$MSG" '{continue:true,systemMessage:$msg}'
+        # Graph-First: No sync needed when writing to graph (it's already the primary)
+        # The knowledge graph IS the source of truth - no need to duplicate to mem0
+        log_bridge "mcp__memory__create_entities - graph is primary, no sync needed"
+        output_silent_success
         exit 0
         ;;
 

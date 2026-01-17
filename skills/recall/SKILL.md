@@ -1,35 +1,30 @@
 ---
 name: recall
-description: Search and retrieve decisions and patterns from semantic memory. Use when recalling patterns, retrieving memories, finding past decisions.
+description: Search and retrieve decisions and patterns from knowledge graph. Use when recalling patterns, retrieving memories, finding past decisions.
 context: inherit
-version: 2.0.0
+version: 2.1.0
 author: SkillForge
-tags: [memory, search, decisions, patterns, mem0, graph-memory, unified-memory]
+tags: [memory, search, decisions, patterns, graph-memory, mem0, unified-memory]
 user-invocable: true
 ---
 
-# Recall - Search Unified Memory Fabric
+# Recall - Search Knowledge Graph
 
-Search past decisions and patterns across the unified memory fabric (mem0 semantic + knowledge graph).
+Search past decisions and patterns from the knowledge graph with optional cloud semantic search enhancement.
 
-## Unified Search (v2.0)
+## Graph-First Architecture (v2.1)
 
-The recall skill now queries **BOTH** memory systems in parallel for comprehensive results:
+The recall skill uses **graph memory as PRIMARY** search:
 
-1. **Semantic Memory (mem0)**: Full-text semantic search via `mcp__mem0__search_memories`
-2. **Knowledge Graph**: Entity and relationship search via `mcp__memory__search_nodes`
+1. **Knowledge Graph (PRIMARY)**: Entity and relationship search via `mcp__memory__search_nodes` - FREE, zero-config, always works
+2. **Semantic Memory (mem0)**: Optional cloud search via `mcp__mem0__search_memories` - requires MEM0_API_KEY, use with `--mem0` flag
 
-**Benefits of Unified Search:**
-- Semantic search finds contextually similar memories even with different wording
-- Graph search finds explicit entity relationships and connections
-- Cross-referencing links semantic memories to graph entities
-- Deduplication prevents showing the same information twice
-
-**Result Merging Strategy:**
-1. Query both systems in parallel
-2. Deduplicate by matching memory text to entity observations
-3. Cross-reference: If a mem0 result mentions an entity found in graph, mark as linked
-4. Sort by relevance (semantic score) then recency
+**Benefits of Graph-First:**
+- Zero configuration required - works out of the box
+- Explicit entity and relationship queries
+- Fast local search with no network latency
+- No cloud dependency for basic operation
+- Optional cloud enhancement with `--mem0` flag for semantic similarity search
 
 ## When to Use
 
@@ -38,6 +33,7 @@ The recall skill now queries **BOTH** memory systems in parallel for comprehensi
 - Looking up project context
 - Retrieving stored knowledge
 - Querying cross-project best practices
+- Finding entity relationships
 
 ## Usage
 
@@ -46,34 +42,25 @@ The recall skill now queries **BOTH** memory systems in parallel for comprehensi
 /recall --category <category> <search query>
 /recall --limit <number> <search query>
 
-# Advanced options (v1.1.0+)
-/recall --graph <query>                     # Search with graph relationships
+# Cloud-enhanced search (v2.1.0+)
+/recall --mem0 <query>                     # Search BOTH graph AND mem0 cloud
+/recall --mem0 --limit 20 <query>          # More results from both systems
+
+# Scoped search
 /recall --agent <agent-id> <query>          # Filter by agent scope
 /recall --global <query>                    # Search cross-project best practices
-/recall --global --category pagination      # Combine flags
-
-# Unified search options (v2.0.0+)
-/recall --unified <query>                   # Query both mem0 AND knowledge graph (default)
-/recall --mem0-only <query>                 # Query only mem0 semantic memory
-/recall --graph-only <query>                # Query only knowledge graph
 ```
 
-## Options
+## Flags
 
-- `--category <category>` - Filter by category (decision, architecture, pattern, blocker, constraint, preference, pagination, database, authentication, api, frontend, performance)
-- `--limit <number>` - Maximum results to return (default: 10)
-
-## Advanced Flags
-
-- `--graph` - Enable graph search to find related entities and relationships
-- `--agent <agent-id>` - Filter results to a specific agent's memories (e.g., `database-engineer`)
-- `--global` - Search cross-project best practices instead of project-specific memories
-
-## Unified Search Flags (v2.0.0)
-
-- `--unified` - Query both mem0 AND knowledge graph (default behavior in v2.0)
-- `--mem0-only` - Query only mem0 semantic memory, skip knowledge graph
-- `--graph-only` - Query only knowledge graph, skip mem0
+| Flag | Behavior |
+|------|----------|
+| (default) | Search graph only |
+| `--mem0` | Search BOTH graph and mem0 cloud |
+| `--limit <n>` | Max results (default: 10) |
+| `--category <cat>` | Filter by category |
+| `--agent <agent-id>` | Filter results to a specific agent's memories |
+| `--global` | Search cross-project best practices |
 
 ## Context-Aware Result Limits (CC 2.1.6)
 
@@ -85,17 +72,6 @@ Result limits automatically adjust based on `context_window.used_percentage`:
 | 70-85% | 5 results | Reduced, summarized results |
 | >85% | 3 results | Minimal with "more available" hint |
 
-**Example output at high context:**
-```
-[Recall] Found 12 matches (showing 3 due to context pressure at 87%)
-
-1. [MEM0] Use cursor-based pagination...
-2. [GRAPH] pgvector -> RECOMMENDS -> cosine_similarity
-3. [MEM0+GRAPH] FastAPI async preferred for I/O bound operations
-
-More results available. Use /recall --limit 10 to override.
-```
-
 ## Workflow
 
 ### 1. Parse Input
@@ -103,64 +79,15 @@ More results available. Use /recall --limit 10 to override.
 ```
 Check for --category <category> flag
 Check for --limit <number> flag
-Check for --graph flag → enable_graph: true
+Check for --mem0 flag → search_mem0: true
 Check for --agent <agent-id> flag → filter by agent_id
-Check for --global flag → search global user_id
-Check for --unified flag → query both systems (default in v2.0)
-Check for --mem0-only flag → skip knowledge graph
-Check for --graph-only flag → skip mem0
+Check for --global flag → search global scope
 Extract the search query
 ```
 
-### 2. Search mem0 (Semantic Memory)
+### 2. Search Knowledge Graph (PRIMARY)
 
-**Skip if `--graph-only` flag is set.**
-
-Use `mcp__mem0__search_memories` with:
-
-```json
-{
-  "query": "user's search query",
-  "filters": {
-    "AND": [
-      { "user_id": "skillforge-{project-name}-decisions" }
-    ]
-  },
-  "limit": 10,
-  "enable_graph": false
-}
-```
-
-**User ID Selection:**
-- Default: `skillforge-{project-name}-decisions`
-- With `--global`: `skillforge-global-best-practices`
-
-**Filter Construction:**
-- Always include `user_id` filter
-- With `--category`: Add `{ "metadata.category": "{category}" }` to AND array
-- With `--agent`: Add `{ "agent_id": "skf:{agent-id}" }` to AND array
-
-**Example with category and agent filters:**
-```json
-{
-  "query": "pagination patterns",
-  "filters": {
-    "AND": [
-      { "user_id": "skillforge-myproject-decisions" },
-      { "metadata.category": "pagination" },
-      { "agent_id": "skf:database-engineer" }
-    ]
-  },
-  "limit": 10,
-  "enable_graph": true
-}
-```
-
-### 2.5. Search Knowledge Graph (v2.0)
-
-**Skip if `--mem0-only` flag is set.**
-
-Use `mcp__memory__search_nodes` IN PARALLEL with step 2:
+Use `mcp__memory__search_nodes`:
 
 ```json
 {
@@ -179,82 +106,117 @@ Use `mcp__memory__search_nodes` IN PARALLEL with step 2:
 - `Pattern`: Named patterns (cursor-pagination, connection-pooling)
 - `Decision`: Architectural decisions
 - `Project`: Project-specific context
+- `AntiPattern`: Failed patterns
 
-### 3. Merge and Deduplicate Results
+### 3. Search mem0 (OPTIONAL - only if --mem0 flag)
 
-**Deduplication Strategy:**
+**Skip if `--mem0` flag NOT set or MEM0_API_KEY not configured.**
+
+Use `mcp__mem0__search_memories` IN PARALLEL with step 2:
+
+```json
+{
+  "query": "user's search query",
+  "filters": {
+    "AND": [
+      { "user_id": "skillforge-{project-name}-decisions" }
+    ]
+  },
+  "limit": 10,
+  "enable_graph": true
+}
+```
+
+**User ID Selection:**
+- Default: `skillforge-{project-name}-decisions`
+- With `--global`: `skillforge-global-best-practices`
+
+**Filter Construction:**
+- Always include `user_id` filter
+- With `--category`: Add `{ "metadata.category": "{category}" }` to AND array
+- With `--agent`: Add `{ "agent_id": "skf:{agent-id}" }` to AND array
+
+### 4. Merge and Deduplicate Results (if --mem0)
+
+**Only when both systems return results:**
+
 1. Collect results from both systems
 2. For each mem0 memory, check if its text matches a graph entity observation
-3. If matched, mark as `[MEM0+GRAPH]` and merge metadata
+3. If matched, mark as `[CROSS-REF]` and merge metadata
 4. Remove pure duplicates (same content from both systems)
-5. Sort: linked results first, then by relevance score, then by recency
+5. Sort: graph results first, then mem0 results, cross-refs highlighted
 
-**Cross-Reference Linking:**
-- If mem0 memory mentions an entity found in graph, add relationship info
-- If graph entity has observations matching mem0 memory, link them
-- Track which entities are mentioned in which memories
+### 5. Format Results
 
-### 4. Format Unified Results
-
-**Unified Results (default in v2.0):**
+**Graph-Only Results (default):**
 ```
-🔍 Found {count} results matching "{query}" (unified search):
+🔍 Found {count} results matching "{query}":
 
-[MEM0] [{time ago}] ({category}) {memory text}
-[MEM0] [{time ago}] ({category}) {memory text}
-[GRAPH] {entity1} → {relation} → {entity2}
-[GRAPH] {entity1} → {relation} → {entity2}
-[MEM0+GRAPH] {memory text} (linked to {N} entities)
-```
-
-**Standard Results (--mem0-only):**
-```
-🔍 Found {count} memories matching "{query}":
-
-1. [{time ago}] ({category}) {memory text}
-
-2. [{time ago}] ({category}) {memory text}
-```
-
-**Graph-Only Results (--graph-only):**
-```
-🔍 Found {count} entities matching "{query}":
-
-1. {entity_name} ({entity_type})
+[GRAPH] {entity_name} ({entity_type})
    → {relation1} → {target1}
    → {relation2} → {target2}
    Observations: {observation1}, {observation2}
 
-2. {entity_name} ({entity_type})
+[GRAPH] {entity_name2} ({entity_type2})
+   Observations: {observation}
+```
+
+**With --mem0 (combined results):**
+```
+🔍 Found {count} results matching "{query}":
+
+[GRAPH] {entity_name} ({entity_type})
    → {relation} → {target}
+   Observations: {observation}
+
+[GRAPH] {entity_name2} ({entity_type2})
+   Observations: {observation}
+
+[MEM0] [{time ago}] ({category}) {memory text}
+
+[MEM0] [{time ago}] ({category}) {memory text}
+
+[CROSS-REF] {memory text} (linked to {N} graph entities)
+   📊 Linked entities: {entity1}, {entity2}
 ```
 
-**With Graph Relationships (when --graph used with mem0):**
+**With --mem0 when MEM0_API_KEY not configured:**
 ```
-🔍 Found {count} memories matching "{query}":
+🔍 Found {count} results matching "{query}":
 
-1. [{time ago}] ({category}) {memory text}
-   📊 Related: {entity1} → {relation} → {entity2}
+[GRAPH] {entity_name} ({entity_type})
+   → {relation} → {target}
+   Observations: {observation}
 
-2. [{time ago}] ({category}) {memory text}
-   📊 Related: {entity1} → {relation} → {entity2}
+⚠️ mem0 search requested but MEM0_API_KEY not configured (graph-only results)
 ```
 
-### 5. Handle No Results
+**High Context Pressure (>85%):**
+```
+🔍 Found 12 matches (showing 3 due to context pressure at 87%)
+
+[GRAPH] pgvector (Technology)
+   → USED_FOR → RAG
+[GRAPH] cursor-pagination (Pattern)
+[GRAPH] database-engineer (Agent)
+   → RECOMMENDS → pgvector
+
+More results available. Use /recall --limit 10 to override.
+```
+
+### 6. Handle No Results
 
 ```
-🔍 No results found matching "{query}" in unified memory
+🔍 No results found matching "{query}"
 
 Searched:
-• mem0 semantic memory: 0 results
 • Knowledge graph: 0 entities
 
 Try:
 • Broader search terms
 • /remember to store new decisions
 • --global flag to search cross-project best practices
-• --mem0-only or --graph-only to search a single system
-• Check if mem0 and memory MCP servers are configured
+• --mem0 flag to include cloud semantic search
 ```
 
 ## Time Formatting
@@ -269,19 +231,26 @@ Try:
 
 ## Examples
 
-### Basic Search
+### Basic Graph Search
 
 **Input:** `/recall database`
 
 **Output:**
 ```
-🔍 Found 3 memories matching "database":
+🔍 Found 3 results matching "database":
 
-1. [2 days ago] (decision) PostgreSQL chosen for ACID requirements and team familiarity
+[GRAPH] PostgreSQL (Technology)
+   → CHOSEN_FOR → ACID-requirements
+   → USED_WITH → pgvector
+   Observations: Chosen for ACID requirements and team familiarity
 
-2. [1 week ago] (pattern) Database connection pooling with pool_size=10, max_overflow=20
+[GRAPH] database-engineer (Agent)
+   → RECOMMENDS → pgvector
+   → RECOMMENDS → cursor-pagination
+   Observations: Uses pgvector for RAG applications
 
-3. [2 weeks ago] (architecture) Using pgvector extension for vector similarity search
+[GRAPH] cursor-pagination (Pattern)
+   Observations: Scales well for large datasets
 ```
 
 ### Category Filter
@@ -290,59 +259,57 @@ Try:
 
 **Output:**
 ```
-🔍 Found 2 memories matching "API" (category: architecture):
+🔍 Found 2 results matching "API" (category: architecture):
 
-1. [3 days ago] (architecture) Layered API architecture with controllers, services, repositories
+[GRAPH] api-gateway (Architecture)
+   → IMPLEMENTS → rate-limiting
+   → USES → JWT-authentication
+   Observations: Central entry point for all services
 
-2. [1 week ago] (architecture) API versioning using /api/v1 prefix in URL path
+[GRAPH] REST-API (Pattern)
+   → FOLLOWS → OpenAPI-spec
+   Observations: Standard for external-facing APIs
 ```
 
-### Limited Results
+### Cloud-Enhanced Search
 
-**Input:** `/recall --limit 5 auth`
+**Input:** `/recall --mem0 database`
 
 **Output:**
 ```
-🔍 Found 5 memories matching "auth":
+🔍 Found 5 results matching "database":
 
-1. [1 day ago] (decision) JWT authentication with 24h expiry for access tokens
+[GRAPH] PostgreSQL (Technology)
+   → CHOSEN_FOR → ACID-requirements
+   Observations: Chosen for ACID requirements
 
-2. [3 days ago] (pattern) Refresh tokens stored in httpOnly cookies
+[GRAPH] database-engineer (Agent)
+   → RECOMMENDS → pgvector
+   Observations: Uses pgvector for RAG
 
-3. [1 week ago] (architecture) Auth middleware in src/auth/middleware.py
+[MEM0] [2 days ago] (decision) PostgreSQL chosen for ACID requirements and team familiarity
 
-4. [1 week ago] (constraint) Must support OAuth2 for enterprise customers
+[MEM0] [1 week ago] (pattern) Database connection pooling with pool_size=10, max_overflow=20
 
-5. [2 weeks ago] (blocker) Auth tokens not refreshing properly - fixed by adding token rotation
+[CROSS-REF] [3 days ago] pgvector for RAG applications (linked to 2 entities)
+   📊 Linked: database-engineer, pgvector
 ```
 
-### Graph Search (New)
-
-**Input:** `/recall --graph "what does database-engineer recommend for vectors?"`
-
-**Output:**
-```
-🔍 Found 2 memories with relationships:
-
-1. [3 days ago] (database) database-engineer uses pgvector for RAG applications
-   📊 Related: database-engineer → recommends → pgvector
-   📊 Related: pgvector → used_for → RAG
-
-2. [1 week ago] (performance) pgvector requires HNSW index for >100k vectors
-   📊 Related: pgvector → requires → HNSW index
-```
-
-### Agent-Scoped Search (New)
+### Agent-Scoped Search
 
 **Input:** `/recall --agent backend-system-architect "API patterns"`
 
 **Output:**
 ```
-🔍 Found 2 memories from backend-system-architect:
+🔍 Found 2 results from backend-system-architect:
 
-1. [2 days ago] (api) Use versioned endpoints: /api/v1/, /api/v2/
+[GRAPH] backend-system-architect (Agent)
+   → RECOMMENDS → cursor-pagination
+   → RECOMMENDS → repository-pattern
+   Observations: Use versioned endpoints: /api/v1/, /api/v2/
 
-2. [1 week ago] (architecture) Separate controllers, services, and repositories
+[GRAPH] repository-pattern (Pattern)
+   Observations: Separate controllers, services, and repositories
 ```
 
 ### Cross-Project Search
@@ -351,87 +318,46 @@ Try:
 
 **Output:**
 ```
-🔍 Found 4 GLOBAL best practices (pagination):
+🔍 Found 3 GLOBAL best practices (pagination):
 
-1. [Project: ecommerce] (pagination) Cursor-based pagination scales better than offset for large datasets
+[GRAPH] cursor-pagination (Pattern)
+   → SCALES_FOR → large-datasets
+   → PREFERRED_OVER → offset-pagination
+   Observations: From project: ecommerce, analytics, cms
 
-2. [Project: analytics] (pagination) Use keyset pagination for real-time feeds
+[GRAPH] keyset-pagination (Pattern)
+   → USED_FOR → real-time-feeds
+   Observations: From project: analytics
 
-3. [Project: cms] (pagination) Cache page counts separately - they're expensive to compute
-
-4. [Project: api-gateway] (pagination) Always return next_cursor even if empty to signal end
+[GRAPH] offset-pagination (AntiPattern)
+   Observations: Caused timeouts on 1M+ rows
 ```
 
-### Unified Search (v2.0)
+### Relationship Query
 
-**Input:** `/recall database`
+**Input:** `/recall what does database-engineer recommend`
 
 **Output:**
 ```
-🔍 Found 5 results matching "database" (unified search):
-
-[MEM0] [2 days ago] (decision) PostgreSQL chosen for ACID requirements
-[MEM0] [1 week ago] (pattern) Connection pooling with pool_size=10
-[GRAPH] database-engineer → RECOMMENDS → pgvector
-[GRAPH] PostgreSQL → ENABLES → vector-search
-[MEM0+GRAPH] pgvector for RAG (linked to 3 entities)
-```
-
-### Unified Search with Cross-References
-
-**Input:** `/recall --unified "what technology does database-engineer recommend?"`
-
-**Output:**
-```
-🔍 Found 4 results matching "what technology does database-engineer recommend?" (unified search):
-
-[MEM0+GRAPH] [3 days ago] (database) database-engineer uses pgvector for RAG applications
-   📊 Linked entities: database-engineer, pgvector, RAG
-   📊 Relations: database-engineer → RECOMMENDS → pgvector, pgvector → USED_FOR → RAG
+🔍 Found relationships for database-engineer:
 
 [GRAPH] database-engineer (Agent)
    → RECOMMENDS → pgvector
-   → RECOMMENDS → PostgreSQL
-   → PREFERS → cursor-pagination
-
-[MEM0] [1 week ago] (performance) pgvector requires HNSW index for >100k vectors
-
-[GRAPH] pgvector (Technology)
-   → REQUIRES → HNSW-index
-   → ENABLES → vector-search
+   → RECOMMENDS → cursor-pagination
+   → RECOMMENDS → connection-pooling
+   → USES → PostgreSQL
+   Observations: Specialist in database architecture
 ```
-
-### Graph-Only Search
-
-**Input:** `/recall --graph-only pgvector`
-
-**Output:**
-```
-🔍 Found 2 entities matching "pgvector":
-
-1. pgvector (Technology)
-   → USED_FOR → RAG
-   → USED_FOR → vector-search
-   → REQUIRES → HNSW-index
-   → RECOMMENDED_BY → database-engineer
-   Observations: "Extension for PostgreSQL", "Supports cosine similarity"
-
-2. database-engineer (Agent)
-   → RECOMMENDS → pgvector
-   Observations: "Uses pgvector for RAG applications"
-```
-
 
 ## Related Skills
 - remember: Store information for later recall
 
 ## Error Handling
 
-- If mem0 unavailable, inform user to check MCP configuration
-- If knowledge graph unavailable, fall back to mem0-only search with notice
-- If both systems unavailable, show configuration instructions
-- If search query empty, show recent memories instead
+- If knowledge graph unavailable, show configuration instructions
+- If --mem0 requested without MEM0_API_KEY, proceed with graph-only and notify user
+- If search query empty, show recent entities instead
 - If no results, suggest alternatives
 - If --agent used without agent-id, show available agents
 - If --global returns no results, suggest storing with /remember --global
-- If --unified returns partial results (one system failed), show results with degradation notice
+- If --mem0 returns partial results (mem0 failed), show graph results with degradation notice

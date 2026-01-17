@@ -1,16 +1,22 @@
 #!/bin/bash
 # Memory Fabric Orchestration Library for SkillForge Plugin
-# Unifies mem0 (semantic cloud) and mcp__memory (local graph) operations
+# Graph-First Architecture: mcp__memory (local graph) as PRIMARY,
+# mem0 (semantic cloud) as OPTIONAL enhancement
 #
-# Version: 1.0.0
-# Part of SkillForge Plugin - Works across ANY repository
+# Version: 2.1.0
+# Part of Memory Fabric v2.1 - Graph-First Architecture
 #
 # Usage: source "${CLAUDE_PLUGIN_ROOT}/hooks/_lib/memory-fabric.sh"
 #
+# Architecture (v2.1 Graph-First):
+# - PRIMARY: mcp__memory__* (local knowledge graph) - FREE, zero-config, always works
+# - OPTIONAL: mcp__mem0__* (cloud semantic search) - requires MEM0_API_KEY
+#
 # Key Design Principles:
-# - Unified search: Queries both mem0 and mcp__memory in parallel
+# - Graph-first: Knowledge graph is PRIMARY storage (always available)
+# - Optional cloud: mem0 enhances but is not required
 # - Result merging: Deduplicates with >85% similarity threshold
-# - Cross-reference boosting: Boosts results mentioned in both systems
+# - Graph priority: In merge, graph results take precedence
 # - Project-agnostic: Works in any repository where the plugin is installed
 # - MCP-compatible: Outputs JSON suitable for MCP tool calls
 
@@ -102,6 +108,37 @@ readonly FABRIC_KNOWN_TECHNOLOGIES=(
     "mem0"
     "langfuse"
 )
+
+# -----------------------------------------------------------------------------
+# Availability Check Functions (v2.1 Graph-First)
+# -----------------------------------------------------------------------------
+
+# Check if knowledge graph is available (always true - graph is built-in)
+# Usage: is_graph_available
+# Returns: 0 (always - graph requires no configuration)
+is_graph_available() {
+    return 0
+}
+
+# Check if memory is available (alias for is_graph_available)
+# Usage: is_memory_available
+# Returns: 0 (always - graph is always available)
+is_memory_available() {
+    return 0
+}
+
+# Check if enhanced memory (mem0) is available
+# Usage: is_enhanced_available
+# Returns: 0 if mem0 is configured, 1 otherwise
+is_enhanced_available() {
+    # Delegate to mem0.sh if available
+    if type is_mem0_available &>/dev/null; then
+        is_mem0_available
+        return $?
+    fi
+    # Fallback: check for API key
+    [[ -n "${MEM0_API_KEY:-}" ]]
+}
 
 # -----------------------------------------------------------------------------
 # Project Context Functions
@@ -313,26 +350,41 @@ fabric_normalize_graph_result() {
 
 # Merge two results when similarity > threshold
 # Usage: fabric_merge_results "result_a_json" "result_b_json"
-# Output: Merged result JSON (prefers higher relevance, combines metadata)
+# Output: Merged result JSON (graph-first: graph results take priority)
 fabric_merge_results() {
     local result_a="$1"
     local result_b="$2"
 
-    # Determine which has higher relevance
-    local relevance_a relevance_b
-    relevance_a=$(echo "$result_a" | jq -r '.relevance // 0')
-    relevance_b=$(echo "$result_b" | jq -r '.relevance // 0')
+    # Graph-First: Determine source types
+    local source_a source_b
+    source_a=$(echo "$result_a" | jq -r '.source // "unknown"')
+    source_b=$(echo "$result_b" | jq -r '.source // "unknown"')
 
     local primary secondary
-    if (( $(echo "$relevance_a >= $relevance_b" | bc -l) )); then
+
+    # Graph-First Priority: graph > mem0 > other
+    if [[ "$source_a" == "graph" ]]; then
         primary="$result_a"
         secondary="$result_b"
-    else
+    elif [[ "$source_b" == "graph" ]]; then
         primary="$result_b"
         secondary="$result_a"
+    else
+        # Neither is graph - fall back to relevance
+        local relevance_a relevance_b
+        relevance_a=$(echo "$result_a" | jq -r '.relevance // 0')
+        relevance_b=$(echo "$result_b" | jq -r '.relevance // 0')
+
+        if (( $(echo "$relevance_a >= $relevance_b" | bc -l) )); then
+            primary="$result_a"
+            secondary="$result_b"
+        else
+            primary="$result_b"
+            secondary="$result_a"
+        fi
     fi
 
-    # Merge: keep primary text, combine entities, merge metadata
+    # Merge: keep primary (graph) text, combine entities, merge metadata
     jq -n \
         --argjson primary "$primary" \
         --argjson secondary "$secondary" \
@@ -340,6 +392,7 @@ fabric_merge_results() {
             id: ($primary.id + "+merged"),
             text: $primary.text,
             source: "merged",
+            primary_source: $primary.source,
             timestamp: ($primary.timestamp // $secondary.timestamp),
             relevance: ([$primary.relevance, $secondary.relevance] | max),
             entities: (($primary.entities + $secondary.entities) | unique),
@@ -630,10 +683,25 @@ fabric_usage_hint() {
     local project_id
     project_id=$(echo "$project_context" | jq -r '.project_id')
 
-    cat <<EOF
-Memory Fabric available for ${project_id}:
+    local enhanced_msg=""
+    if is_enhanced_available; then
+        enhanced_msg=" + mem0 cloud enabled"
+    fi
 
-1. Unified Search (both mem0 + graph):
+    cat <<EOF
+Memory Fabric v2.1 (Graph-First) ready for ${project_id}${enhanced_msg}:
+
+PRIMARY (always available):
+- mcp__memory__search_nodes: Search knowledge graph
+- mcp__memory__create_entities: Store entities
+- mcp__memory__create_relations: Store relationships
+
+OPTIONAL (if --mem0 flag and API key configured):
+- mcp__mem0__search_memories: Cloud semantic search
+- mcp__mem0__add_memory: Cloud storage
+
+Functions:
+1. Graph-First Search:
    - fabric_unified_search "query" "scope" limit
    - Scopes: decisions, patterns, continuity, agents, best-practices
 
@@ -643,17 +711,23 @@ Memory Fabric available for ${project_id}:
 3. Entity Extraction:
    - fabric_extract_entities "text to analyze"
 
-4. Result Merging:
+4. Result Merging (graph takes priority):
    - Results with >85% similarity are merged
+   - Graph results are PRIMARY in merge
    - Cross-referenced results get 1.2x boost
 
-Execute both MCP tools in parallel for best performance.
+Graph search first, mem0 enhances if available.
 EOF
 }
 
 # -----------------------------------------------------------------------------
 # Export Functions
 # -----------------------------------------------------------------------------
+
+# Availability functions (v2.1)
+export -f is_graph_available
+export -f is_memory_available
+export -f is_enhanced_available
 
 export -f fabric_get_project_context
 export -f fabric_unified_search

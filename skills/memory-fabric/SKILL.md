@@ -1,16 +1,16 @@
 ---
 name: memory-fabric
-description: Core orchestration layer that unifies mem0 (semantic cloud) and mcp__memory (local graph), merging results with deduplication and cross-reference boosting.
+description: Graph-first memory orchestration - knowledge graph (PRIMARY, always available) with optional mem0 cloud enhancement for semantic search.
 context: inherit
-version: 1.0.0
+version: 2.1.0
 author: SkillForge
-tags: [memory, orchestration, mem0, graph, unified-search, deduplication, cross-reference]
+tags: [memory, orchestration, graph-first, graph, mem0, unified-search, deduplication, cross-reference]
 user-invocable: false
 ---
 
-# Memory Fabric - Unified Memory Orchestration
+# Memory Fabric - Graph-First Orchestration
 
-Core layer that queries BOTH mcp__mem0__* (semantic cloud memory) AND mcp__memory__* (local knowledge graph), then merges and deduplicates results.
+Graph-first architecture: mcp__memory__* (knowledge graph) is PRIMARY and always available. mcp__mem0__* (semantic cloud) is an OPTIONAL enhancement for semantic search when configured.
 
 ## When to Use
 
@@ -213,16 +213,10 @@ MEMORY_FABRIC_MAX_RESULTS=20          # Max results per source
 
 ## MCP Requirements
 
-Requires BOTH MCP servers configured:
-
+**Required (PRIMARY):** Knowledge graph MCP server:
 ```json
 {
   "mcpServers": {
-    "mem0": {
-      "command": "npx",
-      "args": ["-y", "@mem0/mcp-server"],
-      "env": { "MEM0_API_KEY": "your-key" }
-    },
     "memory": {
       "command": "npx",
       "args": ["-y", "@anthropic/memory-mcp-server"]
@@ -231,14 +225,27 @@ Requires BOTH MCP servers configured:
 }
 ```
 
-## Error Handling
+**Optional (ENHANCEMENT):** Mem0 cloud for semantic search:
+```json
+{
+  "mcpServers": {
+    "mem0": {
+      "command": "npx",
+      "args": ["-y", "@mem0/mcp-server"],
+      "env": { "MEM0_API_KEY": "your-key" }
+    }
+  }
+}
+```
+
+## Error Handling (Graph-First)
 
 | Scenario | Behavior |
 |----------|----------|
-| mem0 unavailable | Fallback to graph-only results |
-| graph unavailable | Fallback to mem0-only results |
-| Both unavailable | Return empty with error message |
-| Query empty | Return recent memories from both |
+| mem0 unavailable | Use graph-only (fully functional) |
+| graph unavailable | Error - graph is required |
+| --mem0 flag without MEM0_API_KEY | Graph storage succeeds, warn about mem0 |
+| Query empty | Return recent memories from graph |
 
 ## Related Skills
 

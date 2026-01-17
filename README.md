@@ -90,7 +90,7 @@ Built for teams building modern full-stack applications with FastAPI, React 19, 
 ### Previous (v4.11.0 - Hook Consolidation)
 
 - Hook Consolidation: Reduced from 44 to 23 registered hooks using dispatcher pattern
-- MCP Updates: Added mem0 (cloud semantic memory) alongside Anthropic memory
+- MCP Updates: Memory Fabric v2.1 - graph-first architecture (knowledge graph PRIMARY, mem0 optional)
 - Note: Dispatchers for lifecycle hooks removed in v4.13.0 (CC 2.1.7 native parallel)
 
 ### Previous (v4.10.0 - CC 2.1.6 Integration)
@@ -231,7 +231,8 @@ Configure via `/skf:configure`:
 
 - **Context7**: Up-to-date library documentation
 - **Sequential Thinking**: Complex reasoning chains
-- **Memory (mem0)**: Cross-session persistent memory
+- **Memory (graph)**: Knowledge graph for persistent memory (PRIMARY, zero-config)
+- **Mem0 (cloud)**: Semantic search enhancement (OPTIONAL, requires MEM0_API_KEY)
 - **Playwright**: Browser automation for E2E testing
 
 ### Environment Variables

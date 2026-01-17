@@ -1,17 +1,18 @@
 #!/bin/bash
-# test-memory-fabric.sh - Integration tests for unified Memory Fabric
+# test-memory-fabric.sh - Integration tests for Memory Fabric
 # Part of SkillForge Claude Plugin comprehensive test suite
 # CC 2.1.7 Compliant
 #
-# Tests Memory Fabric v2.0 features:
-# - Unified query across mem0 and graph
+# Tests Memory Fabric v2.1 (Graph-First Architecture):
+# - Graph is PRIMARY (always available, zero-config)
+# - Mem0 is OPTIONAL enhancement for semantic search
 # - Result merging and deduplication
 # - Entity extraction from text
-# - Bidirectional sync (mem0 ↔ graph)
+# - One-way sync (mem0 → graph when mem0 used explicitly)
 # - Real-time sync priority classification
 # - load-context command auto-loading
-# - Dual-write in remember skill
-# - Unified search in recall skill
+# - Graph-first storage in remember skill
+# - Graph-first search in recall skill
 
 set -uo pipefail
 
@@ -251,8 +252,8 @@ test_realtime_sync_priority_classification() {
 # Test: Updated Recall Skill
 # =============================================================================
 
-test_recall_skill_unified_search() {
-    test_start "recall skill mentions unified search"
+test_recall_skill_graph_first() {
+    test_start "recall skill uses graph-first architecture"
 
     local skill_file="$PROJECT_ROOT/skills/recall/SKILL.md"
 
@@ -261,11 +262,11 @@ test_recall_skill_unified_search() {
         return
     fi
 
-    # Check for unified search or both systems mentioned
-    if grep -qi "unified\|both.*system\|mem0.*graph\|mcp__memory" "$skill_file"; then
+    # Check for graph-first architecture: graph PRIMARY, mem0 optional
+    if grep -qi "graph.*primary\|mcp__memory.*search_nodes\|knowledge.*graph" "$skill_file"; then
         test_pass
     else
-        test_fail "Recall skill doesn't mention unified search"
+        test_fail "Recall skill doesn't use graph-first architecture"
     fi
 }
 
@@ -273,8 +274,8 @@ test_recall_skill_unified_search() {
 # Test: Updated Remember Skill
 # =============================================================================
 
-test_remember_skill_dual_write() {
-    test_start "remember skill mentions dual-write"
+test_remember_skill_graph_first() {
+    test_start "remember skill uses graph-first storage"
 
     local skill_file="$PROJECT_ROOT/skills/remember/SKILL.md"
 
@@ -283,11 +284,11 @@ test_remember_skill_dual_write() {
         return
     fi
 
-    # Check for dual-write or entity creation mentioned
-    if grep -qi "dual.*write\|entity\|mcp__memory.*create\|graph" "$skill_file"; then
+    # Check for graph-first storage: graph primary, mem0 optional with --mem0 flag
+    if grep -qi "graph.*primary\|mcp__memory.*create\|knowledge.*graph\|--mem0" "$skill_file"; then
         test_pass
     else
-        test_fail "Remember skill doesn't mention dual-write or entity creation"
+        test_fail "Remember skill doesn't use graph-first storage"
     fi
 }
 
@@ -348,8 +349,8 @@ test_agent_memory_inject_updated() {
 # Test: Context Retrieval Hook Updated
 # =============================================================================
 
-test_context_retrieval_updated() {
-    test_start "mem0-context-retrieval triggers load-context"
+test_context_retrieval_graph_first() {
+    test_start "mem0-context-retrieval uses graph-first architecture"
 
     local hook_file="$PROJECT_ROOT/hooks/lifecycle/mem0-context-retrieval.sh"
 
@@ -358,11 +359,11 @@ test_context_retrieval_updated() {
         return
     fi
 
-    # Check for load-context or memory-fabric reference
-    if grep -qi "load-context\|memory.*fabric\|unified\|Auto-load" "$hook_file"; then
+    # Check for graph-first architecture indicators
+    if grep -qi "graph.*first\|graph.*primary\|v2\.1\|graph.*always" "$hook_file"; then
         test_pass
     else
-        test_fail "Hook doesn't reference load-context or memory-fabric"
+        test_fail "Hook doesn't use graph-first architecture"
     fi
 }
 
@@ -395,16 +396,16 @@ test_realtime_sync_hook_exists
 test_realtime_sync_priority_classification
 echo ""
 
-echo "🔍 Updated Skills:"
-test_recall_skill_unified_search
-test_remember_skill_dual_write
+echo "🔍 Graph-First Skills:"
+test_recall_skill_graph_first
+test_remember_skill_graph_first
 echo ""
 
 echo "📋 Schema & Hooks:"
 test_memory_fabric_schema_exists
 test_memory_fabric_schema_valid_json
 test_agent_memory_inject_updated
-test_context_retrieval_updated
+test_context_retrieval_graph_first
 echo ""
 
 # =============================================================================

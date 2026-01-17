@@ -234,7 +234,7 @@ Read skills/api-design-framework/templates/endpoint-template.py
 
 ### 2. Hook Architecture (CC 2.1.7)
 Lifecycle hooks use CC 2.1.7 native parallel execution with output aggregation:
-- **SessionStart**: 8 hooks registered directly (context, env, mem0, patterns, coordination)
+- **SessionStart**: 8 hooks registered directly (context, env, memory, patterns, coordination)
 - **UserPromptSubmit**: 4 hooks registered directly (context injection, memory search)
 - **SessionEnd**: 4 hooks registered directly (cleanup, metrics, sync)
 - **Stop**: 10 hooks registered directly (auto-save, compaction, cleanup)
@@ -652,11 +652,11 @@ Enhanced hooks: `git-branch-protection.sh`, `error-pattern-warner.sh`, `context7
 MCP servers use `auto:N` syntax to auto-enable based on context window percentage:
 - `context7`: auto:75 (high-value docs, keep available longer)
 - `sequential-thinking`: auto:60 (complex reasoning needs room)
-- `mem0`: auto:90 (memory critical - preserve until compaction)
-- `memory`: auto:85 (graph memory important for relationships)
+- `memory`: auto:90 (knowledge graph - PRIMARY, preserve until compaction)
+- `mem0`: auto:85 (optional cloud enhancement, less critical than graph)
 - `playwright`: auto:50 (browser-heavy, disable early)
 
-**Rationale for high memory thresholds:** When context is tight, memory becomes MORE important, not less. Compaction is imminent and memory operations help preserve session context before it's lost.
+**Graph-First Architecture (v2.1):** Knowledge graph (memory) is PRIMARY and always available. Mem0 is an optional enhancement for semantic search. When context is tight, graph memory is MORE important as it preserves session context before compaction.
 
 ### Plans Directory
 Configure custom plans directory in `.claude/defaults/config.json`:
@@ -729,7 +729,7 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
 - **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (124 hooks)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
-- **Mem0 Integration**: v1.2.0 (graph memory default, cross-agent federation, session continuity 2.0)
+- **Memory Fabric**: v2.1.0 (graph-first architecture, knowledge graph PRIMARY, mem0 optional enhancement)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
 - **CC 2.1.9 Integration**: additionalContext, auto:N MCP, plansDirectory (v4.16.0)
@@ -737,7 +737,7 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **Git Enforcement**: Commit message, branch naming, atomic commits, issue creation (v4.18.0)
 - **CC 2.1.11 Integration**: Setup hooks (--init, --init-only, --maintenance), self-healing, maintenance automation (v4.19.0)
 - **Automatic Pattern Extraction**: Hook-driven pattern learning and anti-pattern warnings (#48, #49) (v4.19.0)
-- **Mem0 Pro Integration**: Graph memory, cross-agent federation, proactive patterns, session continuity 2.0 (v4.20.0)
+- **Memory Fabric v2.1**: Graph-first architecture (v4.21.0) - knowledge graph PRIMARY, mem0 optional cloud enhancement
 
 ---
 

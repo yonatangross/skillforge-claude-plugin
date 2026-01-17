@@ -2,14 +2,19 @@
 # Memory Fabric Lazy Initialization Hook
 # Triggered once on first memory MCP call (CC 2.1.0 once:true)
 #
+# Graph-First Architecture (v2.1):
+# - Knowledge graph is ALWAYS ready (no configuration needed)
+# - Mem0 is optional enhancement (only if MEM0_API_KEY set)
+# - No warnings for missing mem0 - it's an enhancement, not a requirement
+#
 # Purpose: Perform one-time setup when memory is first used, rather than at session start.
 # This avoids overhead for sessions that never use memory operations.
 #
-# Version: 1.0.0
+# Version: 2.1.0 - Graph-First Architecture
 # CC 2.1.0: Uses once:true to fire only on first memory MCP call
 # CC 2.1.9: Uses additionalContext for initialization message
 #
-# Part of Memory Fabric v2.0 - Unified Memory System
+# Part of Memory Fabric v2.1 - Graph-First Architecture
 
 set -euo pipefail
 
@@ -93,29 +98,26 @@ init_directories() {
     mkdir -p "${PROJECT_DIR}/.claude/context/session" 2>/dev/null || true
 }
 
-# Validate MCP connectivity
+# Validate MCP connectivity (Graph-First)
 validate_mcp_health() {
     local tool_name
     tool_name=$(get_tool_name)
 
-    # We can't actually call MCP from a hook, but we can check environment
-    local health_status="unknown"
+    # Graph-First: graph is always ready, mem0 is optional enhancement
+    local graph_ready="true"
+    local mem0_ready="false"
 
-    # Check for mem0 API key if using mem0
-    if [[ "$tool_name" =~ mem0 ]]; then
-        if [[ -n "${MEM0_API_KEY:-}" ]]; then
-            health_status="configured"
-        else
-            health_status="missing_api_key"
-        fi
+    # Check for mem0 API key (optional enhancement)
+    if [[ -n "${MEM0_API_KEY:-}" ]]; then
+        mem0_ready="true"
     fi
 
-    # Check for memory (local, no special config needed)
-    if [[ "$tool_name" =~ ^mcp__memory ]]; then
-        health_status="available"
+    # Return combined status
+    if [[ "$mem0_ready" == "true" ]]; then
+        echo "enhanced"  # Both graph and mem0 available
+    else
+        echo "ready"     # Graph-only mode (default, fully functional)
     fi
-
-    echo "$health_status"
 }
 
 # Register this session as active
@@ -160,30 +162,33 @@ fi
 
 log_init "Initialization complete: project=$PROJECT_ID, health=$HEALTH, orphaned=$ORPHANED"
 
-# Build initialization message
+# Build initialization message (Graph-First - positive messaging)
 MSG=""
 
+# Only warn about orphaned sessions (actual issue that needs attention)
 if [[ "$ORPHANED" -gt 0 ]]; then
-    MSG="[Memory Fabric Init] Detected $ORPHANED orphaned session(s) with pending syncs.
+    MSG="[Memory Fabric] Detected $ORPHANED orphaned session(s) with pending syncs.
 Consider running maintenance: claude --maintenance
 
 "
 fi
 
-if [[ "$HEALTH" == "missing_api_key" ]]; then
-    MSG="${MSG}[Memory Fabric Init] Warning: MEM0_API_KEY not set. Mem0 calls will fail.
-Configure with: /configure → Enable Mem0 integration
-
-"
+# Graph-First: Show positive status, no warnings for missing mem0
+if [[ "$HEALTH" == "enhanced" ]]; then
+    # Both graph and mem0 available
+    log_init "Memory Fabric ready (enhanced mode with mem0)"
+elif [[ "$HEALTH" == "ready" ]]; then
+    # Graph-only mode - fully functional, no warning needed
+    log_init "Memory Fabric ready (graph mode)"
 fi
 
-# If there's something to report, output it
+# If there's something to report (only orphaned sessions), output it
 if [[ -n "$MSG" ]]; then
     # Use additionalContext (CC 2.1.9) for context injection
     jq -nc --arg ctx "$MSG" \
         '{continue:true,hookSpecificOutput:{additionalContext:$ctx}}'
 else
-    # Silent success - no issues found
+    # Silent success - Memory Fabric ready (no issues to report)
     echo '{"continue":true,"suppressOutput":true}'
 fi
 
