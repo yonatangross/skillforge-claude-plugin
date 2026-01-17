@@ -33,6 +33,9 @@ skills:
   - fastapi-advanced
   - connection-pooling
   - idempotency-patterns
+  - domain-driven-design
+  - aggregate-patterns
+  - distributed-locks
   - remember
   - recall
 ---
