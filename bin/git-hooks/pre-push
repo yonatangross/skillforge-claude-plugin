@@ -1,0 +1,115 @@
+#!/bin/bash
+# Git Pre-push Hook for SkillForge Plugin
+# Mirrors CI version-check.yml - fail fast locally before pushing
+# Version: 1.0.0
+
+set -uo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "$PROJECT_ROOT"
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+REMOTE="$1"
+REMOTE_URL="$2"
+
+echo "Running pre-push validations for branch: $BRANCH"
+
+# ===== Skip for non-release branches =====
+if [[ "$BRANCH" =~ ^(docs|chore|ci|style|test)/ ]]; then
+  echo "  ✓ Skipping version check for $BRANCH (non-release branch)"
+  exit 0
+fi
+
+# ===== Check if only non-code files changed =====
+CHANGED_FILES=$(git diff --name-only origin/main...HEAD 2>/dev/null || git diff --name-only HEAD~1...HEAD)
+CODE_CHANGES=$(echo "$CHANGED_FILES" | grep -vE '\.(md|txt|yml|yaml|json)$|^\.github/|^docs/' || true)
+
+if [[ -z "$CODE_CHANGES" ]]; then
+  echo "  ✓ Skipping version check (only docs/config changes)"
+  exit 0
+fi
+
+# ===== Version Check =====
+echo -n "  Checking version bump... "
+
+# Get versions
+PR_VERSION=$(jq -r '.version' .claude-plugin/plugin.json 2>/dev/null || echo "")
+MAIN_VERSION=$(git show origin/main:.claude-plugin/plugin.json 2>/dev/null | jq -r '.version' 2>/dev/null || echo "")
+
+if [[ -z "$PR_VERSION" ]]; then
+  echo "FAILED (cannot read version)"
+  exit 1
+fi
+
+if [[ -z "$MAIN_VERSION" ]]; then
+  echo "OK (new repo or no main branch)"
+else
+  if [[ "$PR_VERSION" == "$MAIN_VERSION" ]]; then
+    echo "FAILED"
+    echo ""
+    echo "╔════════════════════════════════════════════════════════════╗"
+    echo "║  Version not bumped! Current: $MAIN_VERSION"
+    echo "╠════════════════════════════════════════════════════════════╣"
+    echo "║  Run: ./bin/bump-version.sh patch"
+    echo "╚════════════════════════════════════════════════════════════╝"
+    exit 1
+  fi
+  echo "OK ($MAIN_VERSION → $PR_VERSION)"
+fi
+
+# ===== Changelog Check =====
+echo -n "  Checking CHANGELOG.md... "
+
+if ! git diff origin/main --name-only 2>/dev/null | grep -q "CHANGELOG.md"; then
+  echo "FAILED"
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════╗"
+  echo "║  CHANGELOG.md not updated!"
+  echo "╠════════════════════════════════════════════════════════════╣"
+  echo "║  Run: ./bin/bump-version.sh patch"
+  echo "║  Then edit CHANGELOG.md with your changes"
+  echo "╚════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+echo "OK"
+
+# ===== Changelog Entry Check =====
+echo -n "  Checking CHANGELOG entry for v$PR_VERSION... "
+
+if ! grep -q "^\## \[$PR_VERSION\]" CHANGELOG.md; then
+  echo "FAILED"
+  echo ""
+  echo "╔════════════════════════════════════════════════════════════╗"
+  echo "║  CHANGELOG.md missing entry for version $PR_VERSION"
+  echo "╠════════════════════════════════════════════════════════════╣"
+  echo "║  Add: ## [$PR_VERSION] - $(date +%Y-%m-%d)"
+  echo "╚════════════════════════════════════════════════════════════╝"
+  exit 1
+fi
+echo "OK"
+
+# ===== Version Sync Check =====
+echo -n "  Checking version sync... "
+
+PLUGIN_V=$(jq -r '.version' .claude-plugin/plugin.json 2>/dev/null)
+MARKET_V=$(jq -r '.version' .claude-plugin/marketplace.json 2>/dev/null)
+PYPROJ_V=$(grep -E '^version\s*=' pyproject.toml 2>/dev/null | sed -E 's/.*"([^"]*)".*/\1/')
+
+MISMATCH=0
+[[ "$PLUGIN_V" != "$MARKET_V" ]] && MISMATCH=1
+[[ "$PLUGIN_V" != "$PYPROJ_V" ]] && MISMATCH=1
+
+if [[ $MISMATCH -eq 1 ]]; then
+  echo "FAILED"
+  echo "  plugin.json: $PLUGIN_V"
+  echo "  marketplace.json: $MARKET_V"
+  echo "  pyproject.toml: $PYPROJ_V"
+  echo ""
+  echo "  Run: ./bin/bump-version.sh patch"
+  exit 1
+fi
+echo "OK (all at v$PLUGIN_V)"
+
+echo ""
+echo "Pre-push validation passed"
+exit 0
