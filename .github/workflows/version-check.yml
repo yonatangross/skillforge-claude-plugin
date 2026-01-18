@@ -18,7 +18,34 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Check if version bump required
+        id: check_required
+        run: |
+          # Skip version check for docs, chore, ci, style, test branches/commits
+          BRANCH_NAME="${{ github.head_ref }}"
+
+          # Check branch name prefix
+          if [[ "$BRANCH_NAME" =~ ^(docs|chore|ci|style|test)/ ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "✅ Skipping version check for $BRANCH_NAME (non-release branch)"
+            exit 0
+          fi
+
+          # Check if only non-code files changed
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+          CODE_CHANGES=$(echo "$CHANGED_FILES" | grep -vE '\.(md|txt|yml|yaml|json)$|^\.github/|^docs/' || true)
+
+          if [[ -z "$CODE_CHANGES" ]]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "✅ Skipping version check (only docs/config changes)"
+            exit 0
+          fi
+
+          echo "skip=false" >> $GITHUB_OUTPUT
+          echo "Version bump required - code changes detected"
+
       - name: Get version from PR branch
+        if: steps.check_required.outputs.skip != 'true'
         id: pr_version
         run: |
           PR_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
@@ -26,6 +53,7 @@ jobs:
           echo "PR branch version: $PR_VERSION"
 
       - name: Get version from main branch
+        if: steps.check_required.outputs.skip != 'true'
         id: main_version
         run: |
           git fetch origin main
@@ -34,6 +62,7 @@ jobs:
           echo "Main branch version: $MAIN_VERSION"
 
       - name: Check version bumped
+        if: steps.check_required.outputs.skip != 'true'
         id: version_check
         run: |
           PR_VERSION="${{ steps.pr_version.outputs.version }}"
@@ -48,6 +77,7 @@ jobs:
           fi
 
       - name: Check CHANGELOG updated
+        if: steps.check_required.outputs.skip != 'true'
         id: changelog_check
         run: |
           if git diff origin/main --name-only | grep -q "CHANGELOG.md"; then
@@ -60,7 +90,7 @@ jobs:
 
       - name: Validate CHANGELOG entry matches version
         id: changelog_version_check
-        if: steps.version_check.outputs.bumped == 'true' && steps.changelog_check.outputs.updated == 'true'
+        if: steps.check_required.outputs.skip != 'true' && steps.version_check.outputs.bumped == 'true' && steps.changelog_check.outputs.updated == 'true'
         run: |
           PR_VERSION="${{ steps.pr_version.outputs.version }}"
 
@@ -74,7 +104,7 @@ jobs:
           fi
 
       - name: Comment on PR with issues
-        if: steps.version_check.outputs.bumped == 'false' || steps.changelog_check.outputs.updated == 'false' || steps.changelog_version_check.outputs.matches == 'false'
+        if: steps.check_required.outputs.skip != 'true' && (steps.version_check.outputs.bumped == 'false' || steps.changelog_check.outputs.updated == 'false' || steps.changelog_version_check.outputs.matches == 'false')
         uses: actions/github-script@v7
         with:
           script: |
@@ -139,13 +169,13 @@ jobs:
             }
 
       - name: Fail if checks not passed
-        if: steps.version_check.outputs.bumped == 'false' || steps.changelog_check.outputs.updated == 'false'
+        if: steps.check_required.outputs.skip != 'true' && (steps.version_check.outputs.bumped == 'false' || steps.changelog_check.outputs.updated == 'false')
         run: |
           echo "::error::PR blocked: Version must be bumped and CHANGELOG.md must be updated"
           exit 1
 
       - name: Fail if CHANGELOG entry missing
-        if: steps.version_check.outputs.bumped == 'true' && steps.changelog_check.outputs.updated == 'true' && steps.changelog_version_check.outputs.matches == 'false'
+        if: steps.check_required.outputs.skip != 'true' && steps.version_check.outputs.bumped == 'true' && steps.changelog_check.outputs.updated == 'true' && steps.changelog_version_check.outputs.matches == 'false'
         run: |
           echo "::error::PR blocked: CHANGELOG.md must have entry for version ${{ steps.pr_version.outputs.version }}"
           exit 1
