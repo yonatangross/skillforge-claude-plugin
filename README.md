@@ -3,7 +3,7 @@
 
 # SkillForge Claude Plugin
 
-### Stop re-explaining your codebase to Claude. Start shipping.
+### Stop satisficing your codebase to Claude. Start shipping.
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.11-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
 [![Skills](https://img.shields.io/badge/Skills-159-blue?style=for-the-badge)](./skills)
@@ -23,37 +23,115 @@
 
 **The Solution:** SkillForge gives Claude persistent knowledge of 159 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
 
-| Without SkillForge | With SkillForge |
-|-------------------|-----------------|
-| "Use FastAPI with async SQLAlchemy 2.0 and Pydantic v2 settings..." | Just say "create an API endpoint" |
-| "Remember to use cursor pagination, not offset..." | Agents know your patterns |
-| "Don't commit to main branch..." | Hooks block it automatically |
-| "Run tests before committing..." | `/skf:commit` handles everything |
+<table>
+<tr>
+<td width="50%">
 
-### What You Get
+**Without SkillForge**
+```
+😩 "Use FastAPI with async SQLAlchemy 2.0..."
+😩 "Remember cursor pagination, not offset..."
+😩 "Don't commit to main branch..."
+😩 "Run tests before committing..."
+```
+
+</td>
+<td width="50%">
+
+**With SkillForge**
+```
+✨ "Create an API endpoint" → Done right
+✨ Agents know your patterns already
+✨ Hooks block bad commits automatically
+✨ /skf:commit runs tests for you
+```
+
+</td>
+</tr>
+</table>
+
+---
+
+## How It Works
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         YOUR PROMPT                                 │
-└─────────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │   144 HOOKS  │  │  159 SKILLS  │  │  34 AGENTS   │              │
-│  │              │  │              │  │              │              │
-│  │ • Security   │  │ • FastAPI    │  │ • Backend    │              │
-│  │ • Git guard  │  │ • React 19   │  │ • Frontend   │              │
-│  │ • Auto-test  │  │ • LangGraph  │  │ • Security   │              │
-│  │ • Quality    │  │ • Testing    │  │ • Database   │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
-│                         SKILLFORGE                                  │
-└─────────────────────────────────────────────────────────────────────┘
-                                │
-                                ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PRODUCTION-READY CODE                            │
-└─────────────────────────────────────────────────────────────────────┘
+                                   YOUR PROMPT
+                                       │
+                 ┌─────────────────────┼─────────────────────┐
+                 │                     │                     │
+                 ▼                     ▼                     ▼
+        ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+        │   🛡️ HOOKS     │    │   📚 SKILLS   │    │   🤖 AGENTS   │
+        │               │    │               │    │               │
+        │ Security gate │    │ Pattern libs  │    │ Specialists   │
+        │ Git protect   │    │ Best practice │    │ Auto-activate │
+        │ Quality check │    │ Code templates│    │ Domain expert │
+        │               │    │               │    │               │
+        │    144 hooks  │    │  159 skills   │    │   34 agents   │
+        └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+                │                    │                    │
+                │    ┌───────────────┴───────────────┐    │
+                │    │                               │    │
+                ▼    ▼                               ▼    ▼
+        ┌─────────────────────────────────────────────────────┐
+        │                                                     │
+        │             ✅ PRODUCTION-READY CODE                │
+        │                                                     │
+        │   • Follows your stack's patterns                   │
+        │   • Security validated                              │
+        │   • Tests included                                  │
+        │   • Ready to commit                                 │
+        │                                                     │
+        └─────────────────────────────────────────────────────┘
+```
+
+### Lifecycle Flow
+
+```mermaid
+flowchart LR
+    subgraph Trigger["⚡ TRIGGER"]
+        P[Your Prompt]
+    end
+
+    subgraph Parallel["⚙️ PARALLEL PROCESSING"]
+        direction TB
+        H["🛡️ Hooks<br/>Security & Quality"]
+        S["📚 Skills<br/>Pattern Injection"]
+        A["🤖 Agents<br/>Auto-Activation"]
+    end
+
+    subgraph Execute["🚀 EXECUTE"]
+        direction TB
+        V[Validate]
+        G[Generate]
+        T[Test]
+    end
+
+    subgraph Output["✅ OUTPUT"]
+        C[Production Code]
+    end
+
+    P --> H & S & A
+    H --> V
+    S --> G
+    A --> G
+    V --> T
+    G --> T
+    T --> C
+
+    classDef trigger fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef hooks fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef skills fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    classDef agents fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef execute fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef output fill:#e0f2f1,stroke:#00695c,stroke-width:2px
+
+    class P trigger
+    class H hooks
+    class S skills
+    class A agents
+    class V,G,T execute
+    class C output
 ```
 
 ---
@@ -82,78 +160,124 @@ You should see:
 ✅ 144 hooks active
 ```
 
-### Try It
+### Try These
 
 ```bash
-# Commit with conventional format + pre-commit checks
-/skf:commit
-
-# Get a code review checklist
-/skf:review-pr
-
-# Explore your codebase structure
-/skf:explore
+/skf:commit        # Commit with checks
+/skf:review-pr     # Code review checklist
+/skf:explore       # Analyze codebase
 ```
 
 ---
 
 ## Commands
 
-**20 slash commands** for common workflows:
+**20 slash commands** organized by workflow:
 
-| Command | What It Does |
-|---------|--------------|
-| `/skf:doctor` | Check plugin health and configuration |
-| `/skf:configure` | Setup MCP servers (Context7, Memory, Playwright) |
-| `/skf:commit` | Guided commit with conventional format |
+### 🔧 Git & Development
+
+| Command | Description |
+|---------|-------------|
+| `/skf:commit` | Conventional commit with pre-commit checks |
 | `/skf:create-pr` | Create PR with summary and test plan |
 | `/skf:review-pr` | Code review checklist |
-| `/skf:explore` | Analyze codebase structure |
-| `/skf:implement` | Implement a feature with agent guidance |
-| `/skf:verify` | Verify implementation correctness |
-| `/skf:fix-issue` | Fix a GitHub issue |
-| `/skf:claude-hud` | Configure context window HUD |
-| `/skf:remember` | Save information to memory |
+| `/skf:git-recovery-command` | Recover from git mistakes |
+
+### 🧠 Memory & Context
+
+| Command | Description |
+|---------|-------------|
+| `/skf:remember` | Save information to persistent memory |
 | `/skf:recall` | Retrieve from memory |
 | `/skf:load-context` | Load relevant memories at session start |
-| `/skf:feedback` | Submit feedback or suggestions |
+| `/skf:mem0-sync` | Sync memories to Mem0 cloud |
+
+### 🔍 Analysis & Implementation
+
+| Command | Description |
+|---------|-------------|
+| `/skf:explore` | Analyze codebase structure |
+| `/skf:implement` | Implement feature with agent guidance |
+| `/skf:verify` | Verify implementation correctness |
+| `/skf:fix-issue` | Fix a GitHub issue |
+
+### ⚙️ Configuration & Health
+
+| Command | Description |
+|---------|-------------|
+| `/skf:doctor` | Check plugin health |
+| `/skf:configure` | Setup MCP servers |
+| `/skf:claude-hud` | Configure context window HUD |
+
+### 📋 Other Workflows
+
+| Command | Description |
+|---------|-------------|
 | `/skf:brainstorming` | Structured ideation session |
+| `/skf:feedback` | Submit feedback or suggestions |
 | `/skf:add-golden` | Add golden test dataset |
 | `/skf:skill-evolution` | Evolve skills based on usage |
-| `/skf:git-recovery-command` | Recover from git mistakes |
-| `/skf:mem0-sync` | Sync memories to Mem0 cloud |
 | `/skf:worktree-coordination` | Coordinate multiple Claude instances |
 
 ---
 
 ## Skills
 
-**159 skills** organized by domain, loaded progressively to save tokens (~70% reduction):
+**159 skills** with progressive loading (~70% token savings):
 
-### AI/ML (27 skills)
-`rag-retrieval` · `embeddings` · `llm-streaming` · `function-calling` · `agentic-rag-patterns` · `prompt-engineering-suite` · `fine-tuning-customization` · `high-performance-inference` · `vision-language-models` · `mcp-security-hardening` · `advanced-guardrails` · `llm-safety-patterns` ...
+### 🤖 AI & ML — 27 skills
 
-### Backend (19 skills)
-`fastapi-advanced` · `sqlalchemy-2-async` · `asyncio-advanced` · `celery-advanced` · `temporal-io` · `strawberry-graphql` · `grpc-python` · `saga-patterns` · `cqrs-patterns` · `connection-pooling` · `rate-limiting` ...
+| Category | Count | Key Skills |
+|----------|-------|------------|
+| **RAG & Retrieval** | 6 | `rag-retrieval`, `contextual-retrieval`, `reranking-patterns`, `hyde-retrieval`, `query-decomposition`, `agentic-rag-patterns` |
+| **LLM Patterns** | 8 | `function-calling`, `llm-streaming`, `llm-evaluation`, `prompt-engineering-suite`, `fine-tuning-customization`, `vision-language-models`, `high-performance-inference`, `semantic-caching` |
+| **Agents & Orchestration** | 7 | `agent-loops`, `multi-agent-orchestration`, `langgraph-*` (7 skills), `alternative-agent-frameworks` |
+| **Safety & Security** | 6 | `llm-safety-patterns`, `advanced-guardrails`, `mcp-security-hardening`, `llm-testing` |
 
-### Frontend (23 skills)
-`react-server-components-framework` · `tanstack-query-advanced` · `zustand-patterns` · `form-state-patterns` · `core-web-vitals` · `lazy-loading-patterns` · `view-transitions` · `pwa-patterns` · `recharts-patterns` ...
+### ⚡ Backend — 19 skills
 
-### Testing (10 skills)
-`pytest-advanced` · `msw-mocking` · `property-based-testing` · `contract-testing` · `e2e-testing` · `integration-testing` · `test-data-management` · `vcr-http-recording` ...
+| Category | Count | Key Skills |
+|----------|-------|------------|
+| **FastAPI & Async** | 4 | `fastapi-advanced`, `asyncio-advanced`, `sqlalchemy-2-async`, `connection-pooling` |
+| **Task Processing** | 3 | `celery-advanced`, `temporal-io`, `background-jobs` |
+| **APIs & Communication** | 3 | `strawberry-graphql`, `grpc-python`, `streaming-api-patterns` |
+| **Architecture** | 5 | `saga-patterns`, `cqrs-patterns`, `event-sourcing`, `outbox-pattern`, `aggregate-patterns` |
+| **Resilience** | 4 | `rate-limiting`, `idempotency-patterns`, `distributed-locks`, `resilience-patterns` |
 
-### Security (5 skills)
+### 🎨 Frontend — 23 skills
+
+| Category | Count | Key Skills |
+|----------|-------|------------|
+| **React & State** | 6 | `react-server-components-framework`, `zustand-patterns`, `tanstack-query-advanced`, `form-state-patterns` |
+| **Performance** | 5 | `core-web-vitals`, `lazy-loading-patterns`, `image-optimization`, `render-optimization` |
+| **UI & Animation** | 6 | `view-transitions`, `scroll-driven-animations`, `motion-animation-patterns`, `radix-primitives`, `shadcn-patterns` |
+| **Data Viz & PWA** | 4 | `recharts-patterns`, `dashboard-patterns`, `pwa-patterns`, `responsive-patterns` |
+| **Build & Quality** | 2 | `vite-advanced`, `biome-linting` |
+
+### 🧪 Testing — 10 skills
+
+| Category | Count | Key Skills |
+|----------|-------|------------|
+| **Unit & Integration** | 4 | `pytest-advanced`, `unit-testing`, `integration-testing`, `msw-mocking` |
+| **Advanced Testing** | 4 | `property-based-testing`, `contract-testing`, `e2e-testing`, `vcr-http-recording` |
+| **Test Data** | 2 | `test-data-management`, `golden-dataset-*` (3 skills) |
+
+### 🔒 Security — 5 skills
+
 `owasp-top-10` · `auth-patterns` · `input-validation` · `defense-in-depth` · `security-scanning`
 
-### DevOps & Git (10 skills)
-`github-operations` · `git-workflow` · `stacked-prs` · `release-management` · `observability-monitoring` · `devops-deployment` ...
+### 🚀 DevOps & Git — 10 skills
+
+`github-operations` · `git-workflow` · `stacked-prs` · `release-management` · `observability-monitoring` · `devops-deployment` · `zero-downtime-migration` · `database-versioning` · `alembic-migrations`
 
 <details>
-<summary><strong>View all 159 skills</strong></summary>
+<summary><strong>📁 View all 159 skills</strong></summary>
 
 ```bash
 ls skills/
 ```
+
+Full list in [`skills/`](./skills) directory.
 
 </details>
 
@@ -161,78 +285,144 @@ ls skills/
 
 ## Agents
 
-**34 specialized agents** that automatically activate based on your task:
+**34 specialized agents** organized by domain:
 
-| Agent | Specialty | Triggers On |
-|-------|-----------|-------------|
-| `backend-system-architect` | REST/GraphQL APIs, microservices | "create API", "design endpoint" |
-| `frontend-ui-developer` | React 19, TypeScript, components | "build component", "create page" |
-| `database-engineer` | PostgreSQL, migrations, pgvector | "design schema", "optimize query" |
-| `security-auditor` | OWASP Top 10, vulnerability scanning | "security review", "audit code" |
-| `test-generator` | Unit/integration tests, MSW mocking | "write tests", "add coverage" |
-| `workflow-architect` | LangGraph, multi-agent orchestration | "create workflow", "agent pipeline" |
-| `performance-engineer` | Core Web Vitals, bundle optimization | "optimize performance", "slow page" |
-| `ai-safety-auditor` | LLM safety, prompt injection defense | "AI security", "guardrails" |
-| `prompt-engineer` | Chain-of-thought, few-shot learning | "improve prompt", "prompt design" |
-| `monitoring-engineer` | Prometheus, Grafana, alerting | "add monitoring", "observability" |
-| `accessibility-specialist` | WCAG 2.2, ARIA, focus management | "a11y", "accessibility" |
-| `event-driven-architect` | Event sourcing, message queues | "event-driven", "CQRS" |
-| `ci-cd-engineer` | GitHub Actions, deployment pipelines | "CI/CD", "pipeline" |
-| `debug-investigator` | Root cause analysis, debugging | "debug", "investigate error" |
-| ... | ... | ... |
+### ⚡ Backend & Data — 6 agents
 
-<details>
-<summary><strong>View all 34 agents</strong></summary>
+| Agent | Specialty |
+|-------|-----------|
+| `backend-system-architect` | REST/GraphQL APIs, microservices, clean architecture |
+| `database-engineer` | PostgreSQL, pgvector, schema design, migrations |
+| `event-driven-architect` | Event sourcing, CQRS, message queues |
+| `data-pipeline-engineer` | ETL, data flows, batch processing |
+| `python-performance-engineer` | Async optimization, profiling, caching |
+| `infrastructure-architect` | Cloud architecture, scaling patterns |
 
-```bash
-ls agents/
-```
+### 🎨 Frontend & UX — 5 agents
 
-</details>
+| Agent | Specialty |
+|-------|-----------|
+| `frontend-ui-developer` | React 19, TypeScript, component architecture |
+| `rapid-ui-designer` | Quick prototypes, design systems |
+| `performance-engineer` | Core Web Vitals, bundle optimization |
+| `accessibility-specialist` | WCAG 2.2, ARIA, keyboard navigation |
+| `ux-researcher` | User flows, usability analysis |
+
+### 🤖 AI & ML — 5 agents
+
+| Agent | Specialty |
+|-------|-----------|
+| `llm-integrator` | LLM APIs, prompt design, token optimization |
+| `workflow-architect` | LangGraph, multi-agent orchestration |
+| `ai-safety-auditor` | Guardrails, prompt injection defense |
+| `prompt-engineer` | Chain-of-thought, few-shot learning |
+| `multimodal-specialist` | Vision, audio, multi-modal pipelines |
+
+### 🔒 Security — 2 agents
+
+| Agent | Specialty |
+|-------|-----------|
+| `security-auditor` | OWASP Top 10, vulnerability assessment |
+| `security-layer-auditor` | Defense-in-depth, authentication flows |
+
+### ✅ Quality & Testing — 4 agents
+
+| Agent | Specialty |
+|-------|-----------|
+| `test-generator` | Unit/integration tests, MSW, coverage |
+| `code-quality-reviewer` | Code review, best practices, refactoring |
+| `system-design-reviewer` | Architecture review, trade-offs |
+| `debug-investigator` | Root cause analysis, debugging |
+
+### 🚀 DevOps & Ops — 6 agents
+
+| Agent | Specialty |
+|-------|-----------|
+| `ci-cd-engineer` | GitHub Actions, deployment pipelines |
+| `deployment-manager` | Release coordination, rollback strategies |
+| `release-engineer` | Versioning, changelogs, release automation |
+| `git-operations-engineer` | Branch strategies, merge workflows |
+| `monitoring-engineer` | Prometheus, Grafana, alerting |
+| `metrics-architect` | Observability, KPIs, dashboards |
+
+### 📊 Product & Strategy — 5 agents
+
+| Agent | Specialty |
+|-------|-----------|
+| `product-strategist` | Feature prioritization, roadmaps |
+| `business-case-builder` | ROI analysis, business justification |
+| `market-intelligence` | Competitive analysis, trends |
+| `prioritization-analyst` | Backlog management, impact scoring |
+| `requirements-translator` | Specs to implementation plans |
+
+### 📝 Documentation — 1 agent
+
+| Agent | Specialty |
+|-------|-----------|
+| `documentation-specialist` | API docs, READMEs, technical writing |
 
 ---
 
 ## Architecture
 
 ```mermaid
-graph TB
-    subgraph Input
-        UP[Your Prompt]
+flowchart TB
+    subgraph Input["📝 INPUT"]
+        P["Your Prompt"]
     end
 
-    subgraph SkillForge[SkillForge Plugin]
+    subgraph SkillForge["🔷 SKILLFORGE PLUGIN"]
         direction TB
 
-        subgraph Hooks[144 Hooks]
-            H1[Security Gates]
-            H2[Git Protection]
-            H3[Quality Checks]
-            H4[Auto-formatting]
+        subgraph Hooks["🛡️ 144 HOOKS"]
+            direction LR
+            H1["PreToolUse"]
+            H2["PostToolUse"]
+            H3["Permission"]
+            H4["Lifecycle"]
         end
 
-        subgraph Skills[159 Skills]
-            S1[Backend Patterns]
-            S2[Frontend Patterns]
-            S3[AI/ML Patterns]
-            S4[Testing Patterns]
+        subgraph Skills["📚 159 SKILLS"]
+            direction LR
+            S1["Backend"]
+            S2["Frontend"]
+            S3["AI/ML"]
+            S4["Testing"]
         end
 
-        subgraph Agents[34 Agents]
-            A1[Backend Architect]
-            A2[Frontend Dev]
-            A3[Security Auditor]
-            A4[Test Generator]
+        subgraph Agents["🤖 34 AGENTS"]
+            direction LR
+            A1["Architects"]
+            A2["Engineers"]
+            A3["Reviewers"]
+            A4["Specialists"]
         end
     end
 
-    subgraph Output
-        CODE[Production Code]
+    subgraph Output["✅ OUTPUT"]
+        C["Production Code"]
     end
 
-    UP --> Hooks
-    Hooks --> Skills
-    Skills --> Agents
-    Agents --> CODE
+    P --> Hooks
+    P --> Skills
+    P --> Agents
+    Hooks --> C
+    Skills --> C
+    Agents --> C
+
+    classDef input fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#0d47a1
+    classDef hooks fill:#ffebee,stroke:#c62828,stroke-width:2px,color:#b71c1c
+    classDef skills fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px,color:#1b5e20
+    classDef agents fill:#fff3e0,stroke:#ef6c00,stroke-width:2px,color:#e65100
+    classDef output fill:#e0f2f1,stroke:#00695c,stroke-width:2px,color:#004d40
+    classDef container fill:#fafafa,stroke:#9e9e9e,stroke-width:1px
+
+    class P input
+    class H1,H2,H3,H4 hooks
+    class S1,S2,S3,S4 skills
+    class A1,A2,A3,A4 agents
+    class C output
+    class SkillForge container
 ```
 
 ### Directory Structure
@@ -241,20 +431,21 @@ graph TB
 skillforge-claude-plugin/
 ├── skills/                  # 159 knowledge modules
 │   └── <skill-name>/
-│       ├── SKILL.md         # Overview + patterns
-│       ├── references/      # Implementation guides
-│       └── templates/       # Code templates
+│       ├── SKILL.md         # Overview + patterns (~500 tokens)
+│       ├── references/      # Deep-dive guides (~200 tokens)
+│       └── templates/       # Code generation (~300 tokens)
 ├── agents/                  # 34 specialized agents
-│   └── <agent-name>.md
+│   └── <agent-name>.md      # Agent definition + skills
 ├── hooks/                   # 144 lifecycle hooks
 │   ├── pretool/             # Security gates
 │   ├── posttool/            # Quality checks
-│   └── lifecycle/           # Session management
+│   ├── lifecycle/           # Session management
+│   └── permission/          # Auto-approval rules
 ├── .claude/
-│   ├── commands/            # Slash command configs
+│   ├── commands/            # 20 slash commands
 │   ├── context/             # Session state
 │   └── coordination/        # Multi-instance locks
-└── tests/                   # Comprehensive test suite
+└── tests/                   # 88 tests, ~96% coverage
 ```
 
 ---
@@ -262,14 +453,16 @@ skillforge-claude-plugin/
 ## Comparison
 
 | Feature | SkillForge | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
-|---------|------------|----------------------|-----------|
-| Skills/Patterns | **159** | ~10 | 0 |
-| Specialized Agents | **34** | ~5 | 0 |
-| Security Hooks | **8-layer defense** | Basic | Manual |
-| Setup Time | **2 minutes** | 5 minutes | Hours |
-| Maintenance | Automatic | Manual | Manual |
-| AI/ML Patterns | **27 skills** | Limited | None |
-| Testing Patterns | **10 skills** | Basic | None |
+|---------|:----------:|:--------------------:|:---------:|
+| **Skills/Patterns** | ✅ 159 | ⚠️ ~10 | ❌ 0 |
+| **Specialized Agents** | ✅ 34 | ⚠️ ~5 | ❌ 0 |
+| **Security Layers** | ✅ 8-layer | ⚠️ Basic | ❌ Manual |
+| **AI/ML Patterns** | ✅ 27 | ⚠️ Limited | ❌ None |
+| **Testing Patterns** | ✅ 10 | ⚠️ Basic | ❌ None |
+| **Setup Time** | ✅ 2 min | ⚠️ 5 min | ❌ Hours |
+| **Maintenance** | ✅ Auto | ❌ Manual | ❌ Manual |
+| **Progressive Loading** | ✅ Yes | ❌ No | ❌ No |
+| **Memory Integration** | ✅ Graph + Mem0 | ❌ None | ❌ None |
 
 ---
 
@@ -277,19 +470,17 @@ skillforge-claude-plugin/
 
 ### MCP Servers (Optional)
 
-Enhance capabilities with Model Context Protocol servers:
-
 ```bash
 /skf:configure
 ```
 
-| Server | Purpose | Auto-Enable |
-|--------|---------|-------------|
-| Context7 | Up-to-date library docs | At 75% context |
-| Memory (graph) | Persistent knowledge graph | At 90% context |
-| Sequential Thinking | Complex reasoning | At 60% context |
-| Playwright | Browser automation | At 50% context |
-| Mem0 (cloud) | Semantic search | Optional |
+| Server | Purpose | When Active |
+|--------|---------|:-----------:|
+| **Context7** | Up-to-date library docs | ✅ Until 75% context |
+| **Memory** | Knowledge graph (PRIMARY) | ✅ Until 90% context |
+| **Sequential Thinking** | Complex reasoning | ✅ Until 60% context |
+| **Playwright** | Browser automation | ✅ Until 50% context |
+| **Mem0** | Semantic search (optional) | ⚙️ Requires API key |
 
 ### Environment Variables
 
@@ -305,7 +496,7 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 ## FAQ
 
 <details>
-<summary><strong>Plugin not found after installation?</strong></summary>
+<summary><strong>❓ Plugin not found after installation?</strong></summary>
 
 ```bash
 # Verify installation
@@ -320,7 +511,7 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 </details>
 
 <details>
-<summary><strong>Hooks not firing?</strong></summary>
+<summary><strong>❓ Hooks not firing?</strong></summary>
 
 1. Check hook logs: `tail -f hooks/logs/*.log`
 2. Verify settings: Check `.claude/settings.json` exists
@@ -329,13 +520,11 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 </details>
 
 <details>
-<summary><strong>How do I add my own skills?</strong></summary>
+<summary><strong>❓ How do I add my own skills?</strong></summary>
 
 ```bash
-# Create skill directory
 mkdir -p skills/my-skill/references
 
-# Create SKILL.md with frontmatter
 cat > skills/my-skill/SKILL.md << 'EOF'
 ---
 name: my-skill
@@ -344,44 +533,44 @@ tags: [keyword1, keyword2]
 ---
 
 # My Skill
-
 Overview of patterns...
 EOF
 
-# Validate
 ./tests/skills/structure/test-skill-md.sh
 ```
 
 </details>
 
 <details>
-<summary><strong>Can I use this with existing Claude Code projects?</strong></summary>
+<summary><strong>❓ Works with existing projects?</strong></summary>
 
-Yes! SkillForge is additive. It won't modify your existing files. Install it and skills/agents activate automatically based on context.
-
-</details>
-
-<details>
-<summary><strong>How much context does this use?</strong></summary>
-
-SkillForge uses **progressive loading**:
-- Discovery: ~50 tokens (skill names only)
-- Overview: ~500 tokens (when skill is relevant)
-- Specific: ~200 tokens (when implementing)
-- Templates: ~300 tokens (when generating code)
-
-This saves ~70% compared to loading everything upfront.
+Yes! SkillForge is additive—it won't modify your files. Skills and agents activate automatically based on context.
 
 </details>
 
 <details>
-<summary><strong>Does this work with Claude Code's native features?</strong></summary>
+<summary><strong>❓ How much context does this use?</strong></summary>
 
-Yes! SkillForge uses CC 2.1.11+ native features:
-- CC 2.1.6 agent skill injection
-- CC 2.1.7 parallel hook execution
-- CC 2.1.9 additionalContext injection
-- CC 2.1.11 setup hooks
+**Progressive loading** minimizes usage:
+| Stage | Tokens | When |
+|-------|--------|------|
+| Discovery | ~50 | Always |
+| Overview | ~500 | Skill relevant |
+| Specific | ~200 | Implementing |
+| Templates | ~300 | Generating |
+
+**Result:** ~70% savings vs loading everything.
+
+</details>
+
+<details>
+<summary><strong>❓ Claude Code version requirements?</strong></summary>
+
+Requires **Claude Code ≥2.1.11** for full features:
+- CC 2.1.6: Agent skill injection
+- CC 2.1.7: Parallel hook execution
+- CC 2.1.9: additionalContext injection
+- CC 2.1.11: Setup hooks
 
 </details>
 
@@ -392,40 +581,31 @@ Yes! SkillForge uses CC 2.1.11+ native features:
 ### Running Tests
 
 ```bash
-# All tests (88 tests, ~96% coverage)
-./tests/run-all-tests.sh
-
-# Security tests (critical - must pass)
-./tests/security/run-security-tests.sh
-
-# Validate skills/agents
-./tests/skills/test-skill-structure.sh
-./tests/agents/test-agent-frontmatter.sh
+./tests/run-all-tests.sh              # All 88 tests
+./tests/security/run-security-tests.sh # Security (must pass)
+./tests/skills/test-skill-structure.sh # Validate skills
+./tests/agents/test-agent-frontmatter.sh # Validate agents
 ```
 
 ### Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-skill`)
-3. Add tests for new functionality
-4. Ensure all tests pass
-5. Submit a PR
+1. Fork → 2. Branch → 3. Test → 4. PR
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ---
 
 ## What's New
 
-**v4.27.2** - Complete skill-agent integration, Jinja2 prompt templates, MCP security templates
+**v4.27.2** — Complete skill-agent integration, Jinja2 prompt templates, MCP security templates
 
-See [CHANGELOG.md](./CHANGELOG.md) for full version history.
+[Full Changelog →](./CHANGELOG.md)
 
 ---
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) for details.
+MIT License — see [LICENSE](./LICENSE)
 
 ---
 
