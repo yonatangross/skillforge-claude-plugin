@@ -8,8 +8,8 @@ This document provides essential context for Claude Code when working with the S
 
 - **135 skills**: Reusable knowledge modules in flat structure (including 6 git/GitHub workflow skills)
 - **27 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **18 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **132 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
+- **20 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
+- **128 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -727,7 +727,7 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **Claude Code Requirement**: >= 2.1.11
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (132 hooks)
+- **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (128 hooks)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Memory Fabric**: v2.1.0 (graph-first architecture, knowledge graph PRIMARY, mem0 optional enhancement)
 - **Coordination System**: Multi-worktree support added in v4.6.0

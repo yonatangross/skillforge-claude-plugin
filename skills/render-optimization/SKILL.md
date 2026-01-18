@@ -5,6 +5,7 @@ context: fork
 agent: frontend-ui-developer
 version: 1.0.0
 tags: [react, performance, optimization, react-compiler, virtualization, memo, profiler]
+user-invocable: false
 ---
 
 # React Render Optimization

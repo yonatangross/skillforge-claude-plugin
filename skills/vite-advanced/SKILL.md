@@ -5,6 +5,7 @@ context: fork
 agent: frontend-ui-developer
 version: 1.0.0
 tags: [vite, build, bundler, plugins, ssr, library-mode, environment-api, optimization]
+user-invocable: false
 ---
 
 # Vite Advanced Patterns

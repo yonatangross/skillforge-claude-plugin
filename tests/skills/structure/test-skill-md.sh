@@ -488,8 +488,8 @@ echo -e "${CYAN}Test 10: user-invocable Field Validation${NC}"
 echo "────────────────────────────────────────────────────────────────────────────"
 
 # Expected counts
-EXPECTED_USER_INVOCABLE=18
-EXPECTED_INTERNAL=98
+EXPECTED_USER_INVOCABLE=20
+EXPECTED_INTERNAL=115
 
 missing_user_invocable=()
 user_invocable_true=()
