@@ -22,7 +22,7 @@ source "$(dirname "$0")/../_lib/common.sh"
 # Determine plugin root
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-$(pwd)}}"
 MARKER_FILE="${PLUGIN_ROOT}/.setup-complete"
-CURRENT_VERSION="4.19.0"
+CURRENT_VERSION="4.25.0"
 
 # Mode: --interactive (default) or --silent (CI/CD)
 MODE="${1:---interactive}"
