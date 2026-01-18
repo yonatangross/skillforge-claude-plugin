@@ -349,8 +349,8 @@ test_plugin_counts_updated() {
     local plugin_content
     plugin_content=$(cat "$PROJECT_ROOT/.claude-plugin/plugin.json")
 
-    assert_contains "$plugin_content" "124 hooks" "Plugin description shows 124 hooks"
-    assert_contains "$plugin_content" "116 skills" "Plugin description shows 116 skills"
+    assert_contains "$plugin_content" "132 hooks" "Plugin description shows 132 hooks"
+    assert_contains "$plugin_content" "135 skills" "Plugin description shows 135 skills"
 }
 
 # =============================================================================

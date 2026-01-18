@@ -128,11 +128,11 @@ test_count_sanity() {
     local commands=$(echo "$output" | jq '.commands // 0')
     local hooks=$(echo "$output" | jq '.hooks // 0')
 
-    # Skills should be 70-120 based on known count (updated for 103+ skills)
-    if [[ "$skills" -ge 70 && "$skills" -le 120 ]]; then
-        log_pass "Skills count in expected range (70-120): $skills"
+    # Skills should be 100-150 based on known count (updated for 134 skills)
+    if [[ "$skills" -ge 100 && "$skills" -le 150 ]]; then
+        log_pass "Skills count in expected range (100-150): $skills"
     else
-        log_fail "Skills count out of range: $skills (expected 70-120)"
+        log_fail "Skills count out of range: $skills (expected 100-150)"
     fi
 
     # Agents should be 15-30
