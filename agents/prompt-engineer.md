@@ -18,6 +18,8 @@ skills:
   - context-engineering
   - function-calling
   - llm-streaming
+  - remember
+  - recall
 ---
 
 ## Directive

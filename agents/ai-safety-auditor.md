@@ -19,6 +19,8 @@ skills:
   - llm-safety-patterns
   - owasp-top-10
   - input-validation
+  - remember
+  - recall
 ---
 
 ## Directive

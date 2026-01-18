@@ -18,6 +18,8 @@ skills:
   - langfuse-observability
   - core-web-vitals
   - performance-testing
+  - remember
+  - recall
 ---
 
 ## Directive

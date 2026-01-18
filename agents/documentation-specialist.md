@@ -17,6 +17,8 @@ skills:
   - architecture-decision-record
   - git-workflow
   - release-management
+  - remember
+  - recall
 ---
 
 ## Directive
