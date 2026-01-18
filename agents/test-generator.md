@@ -24,6 +24,8 @@ skills:
   - pytest-advanced
   - property-based-testing
   - contract-testing
+  - llm-testing
+  - test-standards-enforcer
   - remember
   - recall
 ---

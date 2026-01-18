@@ -20,6 +20,9 @@ skills:
   - langgraph-human-in-loop
   - langgraph-functional
   - multi-agent-orchestration
+  - agent-loops
+  - alternative-agent-frameworks
+  - temporal-io
   - langfuse-observability
   - observability-monitoring
   - remember

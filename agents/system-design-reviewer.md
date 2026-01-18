@@ -11,6 +11,7 @@ tools:
   - Bash
 skills:
   - architecture-decision-record
+  - system-design-interrogation
   - owasp-top-10
   - security-scanning
   - performance-optimization
