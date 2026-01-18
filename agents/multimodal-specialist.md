@@ -19,6 +19,8 @@ skills:
   - streaming-api-patterns
   - llm-streaming
   - embeddings
+  - recall
+  - remember
 ---
 
 ## Directive
