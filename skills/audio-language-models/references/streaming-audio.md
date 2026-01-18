@@ -1,252 +1,399 @@
-# Real-Time Audio Streaming
+# Real-Time Voice Streaming (2026)
 
-Patterns for real-time speech-to-text with low latency requirements.
+Patterns for building real-time voice agents using Grok Voice Agent API and Gemini Live API.
 
-## Provider Comparison for Streaming
+## Provider Comparison
 
-| Provider | Latency | Interim Results | Best For |
-|----------|---------|-----------------|----------|
-| Deepgram Nova-3 | <300ms | Yes | Lowest latency |
-| AssemblyAI | ~200ms | Yes | Best accuracy |
-| OpenAI (stream) | ~500ms | Limited | API simplicity |
-| Google Chirp | ~400ms | Yes | Batch hybrid |
+| Provider | TTFA | Architecture | Best For |
+|----------|------|--------------|----------|
+| **Grok Voice Agent** | <1s | Native S2S | Fastest, phone agents |
+| **Gemini Live API** | Low | Native S2S | Emotional awareness |
+| **OpenAI Realtime** | ~1s | Native S2S | Ecosystem integration |
+| **Deepgram + LLM** | ~500ms | STT→LLM→TTS | Custom pipelines |
 
-## Deepgram Real-Time Streaming
-
-```python
-import asyncio
-from deepgram import DeepgramClient, LiveOptions, LiveTranscriptionEvents
-
-async def stream_transcription_deepgram(
-    audio_stream,  # Async generator of audio chunks
-    on_transcript: callable
-):
-    """Ultra-low latency streaming with Deepgram."""
-    client = DeepgramClient("YOUR_API_KEY")
-    connection = client.listen.live.v("1")
-
-    # Configure options
-    options = LiveOptions(
-        model="nova-3",
-        language="en",
-        smart_format=True,
-        punctuate=True,
-        interim_results=True,  # Get partial results
-        utterance_end_ms=1000,  # Silence detection
-        vad_events=True  # Voice activity detection
-    )
-
-    # Event handlers
-    @connection.on(LiveTranscriptionEvents.Transcript)
-    async def on_message(self, result, **kwargs):
-        transcript = result.channel.alternatives[0].transcript
-        is_final = result.is_final
-
-        if transcript:
-            await on_transcript(transcript, is_final)
-
-    @connection.on(LiveTranscriptionEvents.Error)
-    async def on_error(self, error, **kwargs):
-        print(f"Error: {error}")
-
-    # Start connection
-    await connection.start(options)
-
-    # Stream audio chunks
-    async for chunk in audio_stream:
-        await connection.send(chunk)
-
-    # Signal end
-    await connection.finish()
-```
-
-## AssemblyAI Real-Time
-
-```python
-import assemblyai as aai
-
-aai.settings.api_key = "YOUR_API_KEY"
-
-async def stream_transcription_assemblyai(
-    on_transcript: callable,
-    on_final: callable
-):
-    """Real-time streaming with speaker labels."""
-
-    def on_data(transcript: aai.RealtimeTranscript):
-        if isinstance(transcript, aai.RealtimeFinalTranscript):
-            on_final(transcript.text)
-        else:
-            on_transcript(transcript.text)
-
-    transcriber = aai.RealtimeTranscriber(
-        sample_rate=16_000,
-        on_data=on_data,
-        on_error=lambda e: print(f"Error: {e}"),
-        on_open=lambda session: print(f"Session: {session.session_id}")
-    )
-
-    transcriber.connect()
-
-    # Use with microphone or audio stream
-    # transcriber.stream(audio_chunk)
-
-    transcriber.close()
-```
-
-## WebSocket Audio Streaming
+## Grok Voice Agent (WebSocket)
 
 ```python
 import asyncio
 import websockets
-from fastapi import FastAPI, WebSocket
+import json
+import base64
 
-app = FastAPI()
+class GrokVoiceAgent:
+    """Real-time voice agent - #1 on Big Bench Audio.
 
-@app.websocket("/ws/transcribe")
-async def transcribe_websocket(websocket: WebSocket):
-    """WebSocket endpoint for real-time transcription."""
-    await websocket.accept()
+    - <1 second time-to-first-audio
+    - Native speech-to-speech (no transcription step)
+    - $0.05/min (half of OpenAI)
+    - OpenAI Realtime API compatible
+    """
 
-    # Initialize Deepgram connection
-    dg_connection = await setup_deepgram_stream()
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.uri = "wss://api.x.ai/v1/realtime"
+        self.ws = None
 
-    try:
-        while True:
-            # Receive audio chunk from client
-            audio_chunk = await websocket.receive_bytes()
+    async def connect(
+        self,
+        voice: str = "Aria",
+        instructions: str = "You are a helpful assistant."
+    ):
+        """Establish WebSocket connection."""
+        headers = {"Authorization": f"Bearer {self.api_key}"}
 
-            # Send to transcription service
-            await dg_connection.send(audio_chunk)
+        self.ws = await websockets.connect(
+            self.uri,
+            extra_headers=headers
+        )
 
-            # Get transcript (if available)
-            transcript = await get_latest_transcript()
-            if transcript:
-                await websocket.send_json({
+        # Configure session
+        await self.ws.send(json.dumps({
+            "type": "session.update",
+            "session": {
+                "model": "grok-4-voice",
+                "voice": voice,  # Aria, Eve, Leo
+                "instructions": instructions,
+                "input_audio_format": "pcm16",
+                "output_audio_format": "pcm16",
+                "turn_detection": {
+                    "type": "server_vad",
+                    "threshold": 0.5,
+                    "silence_duration_ms": 500
+                }
+            }
+        }))
+
+    async def send_audio(self, audio_chunk: bytes):
+        """Send audio chunk to the model."""
+        await self.ws.send(json.dumps({
+            "type": "input_audio_buffer.append",
+            "audio": base64.b64encode(audio_chunk).decode()
+        }))
+
+    async def receive(self):
+        """Receive responses from the model."""
+        async for message in self.ws:
+            data = json.loads(message)
+
+            if data["type"] == "response.audio.delta":
+                yield {
+                    "type": "audio",
+                    "data": base64.b64decode(data["delta"])
+                }
+            elif data["type"] == "response.text.delta":
+                yield {
                     "type": "transcript",
-                    "text": transcript.text,
-                    "is_final": transcript.is_final
-                })
+                    "data": data["delta"]
+                }
+            elif data["type"] == "input_audio_buffer.speech_started":
+                yield {"type": "user_speaking"}
+            elif data["type"] == "input_audio_buffer.speech_stopped":
+                yield {"type": "user_stopped"}
 
-    except websockets.ConnectionClosed:
-        await dg_connection.finish()
+    async def close(self):
+        """Close the connection."""
+        if self.ws:
+            await self.ws.close()
+
+# Usage
+async def voice_assistant():
+    agent = GrokVoiceAgent(api_key="YOUR_XAI_KEY")
+    await agent.connect(
+        voice="Aria",
+        instructions="You are a friendly customer support agent."
+    )
+
+    # Stream microphone audio
+    async for audio_chunk in get_microphone_stream():
+        await agent.send_audio(audio_chunk)
+
+    # Receive and play responses
+    async for response in agent.receive():
+        if response["type"] == "audio":
+            play_audio(response["data"])
+        elif response["type"] == "transcript":
+            print(f"Assistant: {response['data']}")
 ```
 
-## Browser Audio Capture
+## Gemini Live API (Emotional AI)
 
-```typescript
-// Client-side: Capture and stream microphone audio
-async function startAudioStream(wsUrl: string) {
-  const ws = new WebSocket(wsUrl);
+```python
+import google.generativeai as genai
+from google.generativeai import live
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      channelCount: 1,
-      sampleRate: 16000,
-      echoCancellation: true,
-      noiseSuppression: true
-    }
-  });
+genai.configure(api_key="YOUR_API_KEY")
 
-  const mediaRecorder = new MediaRecorder(stream, {
-    mimeType: 'audio/webm;codecs=opus'
-  });
+class GeminiLiveAgent:
+    """Real-time voice with emotional understanding.
 
-  mediaRecorder.ondataavailable = (event) => {
-    if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-      ws.send(event.data);
-    }
-  };
+    - 30 HD voices in 24 languages
+    - Affective dialog (understands user emotions)
+    - Barge-in support
+    - Proactive audio mode
+    """
 
-  // Send chunks every 250ms for low latency
-  mediaRecorder.start(250);
+    def __init__(self):
+        self.model = genai.GenerativeModel("gemini-2.5-flash-live")
+        self.session = None
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-    if (data.type === 'transcript') {
-      updateTranscriptDisplay(data.text, data.is_final);
-    }
-  };
+    async def connect(
+        self,
+        voice: str = "Puck",
+        instructions: str = "You are a helpful assistant."
+    ):
+        """Connect to Gemini Live."""
+        config = live.LiveConnectConfig(
+            response_modalities=["AUDIO", "TEXT"],
+            speech_config=live.SpeechConfig(
+                voice_config=live.VoiceConfig(
+                    prebuilt_voice_config=live.PrebuiltVoiceConfig(
+                        voice_name=voice  # Puck, Charon, Kore, Fenrir, Aoede
+                    )
+                )
+            ),
+            system_instruction=instructions,
+            # Enable emotional understanding
+            enable_affective_dialog=True
+        )
 
-  return { mediaRecorder, ws, stream };
+        self.session = await self.model.connect(config=config)
+
+    async def send_audio(self, audio_chunk: bytes):
+        """Send audio to Gemini."""
+        await self.session.send(
+            input=live.LiveClientContent(
+                realtime_input=live.RealtimeInput(
+                    media_chunks=[live.MediaChunk(
+                        data=audio_chunk,
+                        mime_type="audio/pcm"
+                    )]
+                )
+            )
+        )
+
+    async def receive(self):
+        """Receive audio and text responses."""
+        async for response in self.session.receive():
+            if response.data:
+                yield {"type": "audio", "data": response.data}
+
+            if response.server_content:
+                if response.server_content.model_turn:
+                    for part in response.server_content.model_turn.parts:
+                        if part.text:
+                            yield {"type": "transcript", "data": part.text}
+
+    async def close(self):
+        """Close the session."""
+        if self.session:
+            await self.session.close()
+
+# Gemini voices
+GEMINI_VOICES = {
+    "Puck": "Playful, energetic",
+    "Charon": "Deep, authoritative",
+    "Kore": "Warm, friendly",
+    "Fenrir": "Strong, confident",
+    "Aoede": "Melodic, soothing"
 }
 ```
 
-## Audio Preprocessing for Streaming
+## FastAPI WebSocket Endpoint
 
 ```python
-import numpy as np
-from pydub import AudioSegment
+from fastapi import FastAPI, WebSocket
+import asyncio
 
-def preprocess_chunk(audio_bytes: bytes, target_sample_rate: int = 16000) -> bytes:
-    """Normalize and resample audio chunk for streaming."""
-    # Convert bytes to AudioSegment
-    audio = AudioSegment.from_raw(
-        audio_bytes,
-        sample_width=2,  # 16-bit
-        frame_rate=48000,  # Original rate
-        channels=1
+app = FastAPI()
+
+@app.websocket("/ws/voice")
+async def voice_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time voice."""
+    await websocket.accept()
+
+    # Choose provider based on requirements
+    provider = websocket.query_params.get("provider", "grok")
+
+    if provider == "grok":
+        agent = GrokVoiceAgent(api_key=XAI_KEY)
+    else:
+        agent = GeminiLiveAgent()
+
+    await agent.connect()
+
+    async def receive_from_client():
+        """Receive audio from client."""
+        try:
+            while True:
+                audio = await websocket.receive_bytes()
+                await agent.send_audio(audio)
+        except Exception:
+            pass
+
+    async def send_to_client():
+        """Send audio to client."""
+        async for response in agent.receive():
+            if response["type"] == "audio":
+                await websocket.send_bytes(response["data"])
+            elif response["type"] == "transcript":
+                await websocket.send_json({
+                    "type": "transcript",
+                    "text": response["data"]
+                })
+
+    # Run both tasks
+    await asyncio.gather(
+        receive_from_client(),
+        send_to_client()
     )
 
-    # Resample to target
-    audio = audio.set_frame_rate(target_sample_rate)
-
-    # Normalize volume
-    audio = audio.normalize()
-
-    return audio.raw_data
+    await agent.close()
 ```
 
-## Voice Activity Detection (VAD)
+## Browser Client (JavaScript)
+
+```javascript
+class VoiceClient {
+  constructor(wsUrl) {
+    this.ws = new WebSocket(wsUrl);
+    this.audioContext = new AudioContext({ sampleRate: 24000 });
+    this.mediaRecorder = null;
+  }
+
+  async start() {
+    // Get microphone
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        channelCount: 1,
+        sampleRate: 16000,
+        echoCancellation: true,
+        noiseSuppression: true
+      }
+    });
+
+    // Record and send audio
+    this.mediaRecorder = new MediaRecorder(stream, {
+      mimeType: 'audio/webm;codecs=opus'
+    });
+
+    this.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0 && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(e.data);
+      }
+    };
+
+    // Send chunks every 100ms for low latency
+    this.mediaRecorder.start(100);
+
+    // Handle incoming audio
+    this.ws.onmessage = async (e) => {
+      if (e.data instanceof Blob) {
+        const arrayBuffer = await e.data.arrayBuffer();
+        this.playAudio(arrayBuffer);
+      } else {
+        const data = JSON.parse(e.data);
+        if (data.type === 'transcript') {
+          this.onTranscript(data.text);
+        }
+      }
+    };
+  }
+
+  playAudio(arrayBuffer) {
+    this.audioContext.decodeAudioData(arrayBuffer, (buffer) => {
+      const source = this.audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(this.audioContext.destination);
+      source.start();
+    });
+  }
+
+  onTranscript(text) {
+    console.log('Assistant:', text);
+  }
+
+  stop() {
+    this.mediaRecorder?.stop();
+    this.ws?.close();
+  }
+}
+
+// Usage
+const client = new VoiceClient('wss://api.example.com/ws/voice?provider=grok');
+await client.start();
+```
+
+## Expressive Voice (Grok)
 
 ```python
-import webrtcvad
+# Grok supports auditory cues for natural speech
+AUDITORY_CUES = [
+    "[whisper]",   # Soft, quiet speech
+    "[sigh]",      # Exhalation
+    "[laugh]",     # Laughter
+    "[pause]",     # Brief pause
+    "[excited]",   # Enthusiastic tone
+    "[concerned]", # Worried tone
+]
 
-vad = webrtcvad.Vad(3)  # Aggressiveness 0-3
+async def send_expressive_response(agent, text: str):
+    """Send response with emotional cues."""
+    await agent.ws.send(json.dumps({
+        "type": "response.create",
+        "response": {
+            "modalities": ["text", "audio"],
+            "instructions": text
+        }
+    }))
 
-def detect_speech(audio_chunk: bytes, sample_rate: int = 16000) -> bool:
-    """Detect if audio chunk contains speech."""
-    # Chunk must be 10, 20, or 30ms
-    frame_duration_ms = 30
-    frame_size = int(sample_rate * frame_duration_ms / 1000) * 2
-
-    # Check each frame
-    for i in range(0, len(audio_chunk), frame_size):
-        frame = audio_chunk[i:i + frame_size]
-        if len(frame) == frame_size:
-            if vad.is_speech(frame, sample_rate):
-                return True
-
-    return False
+# Example: Empathetic response
+await send_expressive_response(
+    agent,
+    "[concerned] I understand that must be frustrating. "
+    "[pause] Let me help you resolve this issue."
+)
 ```
 
 ## Error Handling & Reconnection
 
 ```python
-async def resilient_stream(audio_source, on_transcript):
-    """Stream with automatic reconnection."""
-    max_retries = 3
+async def resilient_voice_agent(
+    agent_class,
+    max_retries: int = 3
+):
+    """Voice agent with automatic reconnection."""
     retry_count = 0
+    agent = None
 
     while retry_count < max_retries:
         try:
-            await stream_transcription_deepgram(audio_source, on_transcript)
-            break  # Success
-        except ConnectionError as e:
+            agent = agent_class()
+            await agent.connect()
+
+            async for response in agent.receive():
+                yield response
+                retry_count = 0  # Reset on success
+
+        except websockets.ConnectionClosed:
             retry_count += 1
-            wait_time = 2 ** retry_count  # Exponential backoff
-            print(f"Connection lost, retrying in {wait_time}s...")
-            await asyncio.sleep(wait_time)
+            wait = 2 ** retry_count
+            print(f"Connection lost, retrying in {wait}s...")
+            await asyncio.sleep(wait)
+
         except Exception as e:
-            print(f"Fatal error: {e}")
-            raise
+            print(f"Error: {e}")
+            break
+
+        finally:
+            if agent:
+                await agent.close()
 ```
 
-## Latency Optimization Tips
+## Best Practices
 
-1. **Chunk size**: 250ms chunks balance latency vs overhead
-2. **Use interim results**: Show partial transcripts immediately
-3. **VAD**: Skip silent audio to reduce API calls
-4. **Buffer management**: Don't buffer too much audio
-5. **WebSocket**: Use binary frames, not base64
-6. **Geographic routing**: Use closest API region
+1. **Use native S2S**: Avoid STT→LLM→TTS pipelines for latency
+2. **Enable VAD**: Let server detect speech for natural turn-taking
+3. **Support barge-in**: Allow users to interrupt at any time
+4. **Handle emotions**: Use Gemini's affective dialog for empathy
+5. **Test latency**: Measure TTFA with real users
+6. **Graceful degradation**: Fall back to text if audio fails

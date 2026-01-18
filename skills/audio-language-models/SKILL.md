@@ -1,95 +1,262 @@
 ---
 name: audio-language-models
-description: Whisper, GPT-4o-Transcribe, AssemblyAI, Deepgram patterns for speech-to-text, transcription, and TTS integration. Use when implementing audio transcription, real-time speech recognition, or text-to-speech.
+description: Gemini Live API, Grok Voice Agent, GPT-4o-Transcribe, AssemblyAI patterns for real-time voice, speech-to-text, and TTS. Use when implementing voice agents, audio transcription, or conversational AI.
 context: fork
 agent: multimodal-specialist
-version: 1.0.0
+version: 1.1.0
 author: SkillForge
 user-invocable: false
-tags: [audio, multimodal, whisper, tts, speech, transcription, stt, 2026]
+tags: [audio, multimodal, gemini-live, grok-voice, whisper, tts, speech, voice-agent, 2026]
 ---
 
 # Audio Language Models (2026)
 
-Integrate speech-to-text and text-to-speech capabilities using the latest audio AI models.
+Build real-time voice agents and audio processing using the latest native speech-to-speech models.
 
 ## When to Use
 
-- Audio transcription (meetings, podcasts, calls)
-- Real-time speech recognition
-- Multi-language transcription
+- Real-time voice assistants and agents
+- Live conversational AI (phone agents, support bots)
+- Audio transcription with speaker diarization
+- Multilingual voice interactions
 - Text-to-speech generation
-- Voice-based AI assistants
-- Audio preprocessing pipelines
+- Voice-to-voice translation
 
 ## Model Comparison (January 2026)
 
+### Real-Time Voice (Speech-to-Speech)
+
+| Model | Latency | Languages | Price | Best For |
+|-------|---------|-----------|-------|----------|
+| **Grok Voice Agent** | <1s TTFA | 100+ | $0.05/min | Fastest, #1 Big Bench |
+| **Gemini Live API** | Low | 24 (30 voices) | Usage-based | Emotional awareness |
+| **OpenAI Realtime** | ~1s | 50+ | $0.10/min | Ecosystem integration |
+
+### Speech-to-Text Only
+
 | Model | WER | Latency | Best For |
 |-------|-----|---------|----------|
+| **Gemini 2.5 Pro** | ~5% | Medium | 9.5hr audio, diarization |
 | **GPT-4o-Transcribe** | ~7% | Medium | Accuracy + accents |
-| **Whisper Large V3** | 7.4% | Slow | Multilingual, self-host |
-| **Whisper V3 Turbo** | ~8% | 6x faster | Balance speed/accuracy |
-| **AssemblyAI Universal-2** | 8.4% | 200ms | Best accuracy + features |
+| **AssemblyAI Universal-2** | 8.4% | 200ms | Best features |
 | **Deepgram Nova-3** | ~18% | <300ms | Lowest latency |
-| **Google Chirp** | 11.6% | Batch | Best for batch processing |
+| **Whisper Large V3** | 7.4% | Slow | Self-host, 99+ langs |
 
-## OpenAI Whisper / GPT-4o-Transcribe
+## Grok Voice Agent API (xAI) - Fastest
+
+```python
+import asyncio
+import websockets
+import json
+
+async def grok_voice_agent():
+    """Real-time voice agent with Grok - #1 on Big Bench Audio.
+
+    Features:
+    - <1 second time-to-first-audio (5x faster than competitors)
+    - Native speech-to-speech (no transcription intermediary)
+    - 100+ languages, $0.05/min
+    - OpenAI Realtime API compatible
+    """
+    uri = "wss://api.x.ai/v1/realtime"
+    headers = {"Authorization": f"Bearer {XAI_API_KEY}"}
+
+    async with websockets.connect(uri, extra_headers=headers) as ws:
+        # Configure session
+        await ws.send(json.dumps({
+            "type": "session.update",
+            "session": {
+                "model": "grok-4-voice",
+                "voice": "Aria",  # or "Eve", "Leo"
+                "instructions": "You are a helpful voice assistant.",
+                "input_audio_format": "pcm16",
+                "output_audio_format": "pcm16",
+                "turn_detection": {"type": "server_vad"}
+            }
+        }))
+
+        # Stream audio in/out
+        async def send_audio(audio_stream):
+            async for chunk in audio_stream:
+                await ws.send(json.dumps({
+                    "type": "input_audio_buffer.append",
+                    "audio": base64.b64encode(chunk).decode()
+                }))
+
+        async def receive_audio():
+            async for message in ws:
+                data = json.loads(message)
+                if data["type"] == "response.audio.delta":
+                    yield base64.b64decode(data["delta"])
+
+        return send_audio, receive_audio
+
+# Expressive voice with auditory cues
+async def expressive_response(ws, text: str):
+    """Use auditory cues for natural speech."""
+    # Supports: [whisper], [sigh], [laugh], [pause]
+    await ws.send(json.dumps({
+        "type": "response.create",
+        "response": {
+            "instructions": "[sigh] Let me think about that... [pause] Here's what I found."
+        }
+    }))
+```
+
+## Gemini Live API (Google) - Emotional Awareness
+
+```python
+import google.generativeai as genai
+from google.generativeai import live
+
+genai.configure(api_key="YOUR_API_KEY")
+
+async def gemini_live_voice():
+    """Real-time voice with emotional understanding.
+
+    Features:
+    - 30 HD voices in 24 languages
+    - Affective dialog (understands emotions)
+    - Barge-in support (interrupt anytime)
+    - Proactive audio (responds only when relevant)
+    """
+    model = genai.GenerativeModel("gemini-2.5-flash-live")
+
+    config = live.LiveConnectConfig(
+        response_modalities=["AUDIO"],
+        speech_config=live.SpeechConfig(
+            voice_config=live.VoiceConfig(
+                prebuilt_voice_config=live.PrebuiltVoiceConfig(
+                    voice_name="Puck"  # or Charon, Kore, Fenrir, Aoede
+                )
+            )
+        ),
+        system_instruction="You are a friendly voice assistant."
+    )
+
+    async with model.connect(config=config) as session:
+        # Send audio
+        async def send_audio(audio_chunk: bytes):
+            await session.send(
+                input=live.LiveClientContent(
+                    realtime_input=live.RealtimeInput(
+                        media_chunks=[live.MediaChunk(
+                            data=audio_chunk,
+                            mime_type="audio/pcm"
+                        )]
+                    )
+                )
+            )
+
+        # Receive audio responses
+        async for response in session.receive():
+            if response.data:
+                yield response.data  # Audio bytes
+
+# With transcription
+async def gemini_live_with_transcript():
+    """Get both audio and text transcripts."""
+    async with model.connect(config=config) as session:
+        async for response in session.receive():
+            if response.server_content:
+                # Text transcript
+                if response.server_content.model_turn:
+                    for part in response.server_content.model_turn.parts:
+                        if part.text:
+                            print(f"Transcript: {part.text}")
+            if response.data:
+                yield response.data  # Audio
+```
+
+## Gemini Audio Transcription (Long-Form)
+
+```python
+import google.generativeai as genai
+
+def transcribe_with_gemini(audio_path: str) -> dict:
+    """Transcribe up to 9.5 hours of audio with speaker diarization.
+
+    Gemini 2.5 Pro handles long-form audio natively.
+    """
+    model = genai.GenerativeModel("gemini-2.5-pro")
+
+    # Upload audio file
+    audio_file = genai.upload_file(audio_path)
+
+    response = model.generate_content([
+        audio_file,
+        """Transcribe this audio with:
+        1. Speaker labels (Speaker 1, Speaker 2, etc.)
+        2. Timestamps for each segment
+        3. Punctuation and formatting
+
+        Format:
+        [00:00:00] Speaker 1: First statement...
+        [00:00:15] Speaker 2: Response..."""
+    ])
+
+    return {
+        "transcript": response.text,
+        "audio_duration": audio_file.duration
+    }
+```
+
+## Gemini TTS (Text-to-Speech)
+
+```python
+def gemini_text_to_speech(text: str, voice: str = "Kore") -> bytes:
+    """Generate speech with Gemini 2.5 TTS.
+
+    Features:
+    - Enhanced expressivity with style prompts
+    - Precision pacing (context-aware speed)
+    - Multi-speaker dialogue consistency
+    """
+    model = genai.GenerativeModel("gemini-2.5-flash-tts")
+
+    response = model.generate_content(
+        contents=text,
+        generation_config=genai.GenerationConfig(
+            response_mime_type="audio/mp3",
+            speech_config=genai.SpeechConfig(
+                voice_config=genai.VoiceConfig(
+                    prebuilt_voice_config=genai.PrebuiltVoiceConfig(
+                        voice_name=voice  # Puck, Charon, Kore, Fenrir, Aoede
+                    )
+                )
+            )
+        )
+    )
+
+    return response.audio
+```
+
+## OpenAI GPT-4o-Transcribe
 
 ```python
 from openai import OpenAI
 
 client = OpenAI()
 
-def transcribe_audio(audio_path: str, language: str = None) -> str:
-    """Transcribe audio using GPT-4o-Transcribe or Whisper."""
-    with open(audio_path, "rb") as audio_file:
-        response = client.audio.transcriptions.create(
-            model="gpt-4o-transcribe",  # or "whisper-1"
-            file=audio_file,
-            language=language,  # Optional: "en", "es", "fr", etc.
-            response_format="verbose_json",  # text, json, srt, vtt
-            timestamp_granularities=["word", "segment"]
-        )
-    return response
-
-# With timestamps
-def transcribe_with_timestamps(audio_path: str) -> dict:
-    """Get word-level timestamps for subtitle generation."""
+def transcribe_openai(audio_path: str, language: str = None) -> dict:
+    """Transcribe with GPT-4o-Transcribe (enhanced accuracy)."""
     with open(audio_path, "rb") as audio_file:
         response = client.audio.transcriptions.create(
             model="gpt-4o-transcribe",
             file=audio_file,
+            language=language,
             response_format="verbose_json",
-            timestamp_granularities=["word"]
+            timestamp_granularities=["word", "segment"]
         )
     return {
         "text": response.text,
-        "words": response.words,  # [{word, start, end}, ...]
+        "words": response.words,
+        "segments": response.segments,
         "duration": response.duration
     }
 ```
 
-## Streaming Transcription (Real-Time)
-
-```python
-from openai import OpenAI
-
-client = OpenAI()
-
-async def stream_transcription(audio_path: str):
-    """Stream transcription as it processes."""
-    with open(audio_path, "rb") as audio_file:
-        response = client.audio.transcriptions.create(
-            model="gpt-4o-transcribe",
-            file=audio_file,
-            stream=True
-        )
-
-    async for chunk in response:
-        yield chunk.text
-```
-
-## AssemblyAI (Best Accuracy + Features)
+## AssemblyAI (Best Features)
 
 ```python
 import assemblyai as aai
@@ -97,13 +264,13 @@ import assemblyai as aai
 aai.settings.api_key = "YOUR_API_KEY"
 
 def transcribe_assemblyai(audio_url: str) -> dict:
-    """Transcribe with speaker diarization and sentiment."""
+    """Transcribe with speaker diarization, sentiment, entities."""
     config = aai.TranscriptionConfig(
-        speaker_labels=True,           # Who said what
-        sentiment_analysis=True,       # Sentiment per utterance
-        entity_detection=True,         # Named entities
-        auto_highlights=True,          # Key phrases
-        language_detection=True        # Auto-detect language
+        speaker_labels=True,
+        sentiment_analysis=True,
+        entity_detection=True,
+        auto_highlights=True,
+        language_detection=True
     )
 
     transcriber = aai.Transcriber()
@@ -115,263 +282,94 @@ def transcribe_assemblyai(audio_url: str) -> dict:
         "sentiment": transcript.sentiment_analysis,
         "entities": transcript.entities
     }
-
-# Real-time streaming
-async def stream_assemblyai():
-    """Real-time transcription with AssemblyAI."""
-    transcriber = aai.RealtimeTranscriber(
-        sample_rate=16_000,
-        on_data=lambda data: print(data.text),
-        on_error=lambda error: print(f"Error: {error}")
-    )
-
-    transcriber.connect()
-    # Stream audio chunks...
-    transcriber.close()
 ```
 
-## Deepgram Nova-3 (Lowest Latency)
+## Real-Time Streaming Comparison
 
 ```python
-from deepgram import DeepgramClient, PrerecordedOptions
+async def choose_realtime_provider(
+    requirements: dict
+) -> str:
+    """Select best real-time voice provider."""
 
-def transcribe_deepgram(audio_path: str) -> dict:
-    """Ultra-low latency transcription with Deepgram."""
-    client = DeepgramClient("YOUR_API_KEY")
+    if requirements.get("fastest_latency"):
+        return "grok"  # <1s TTFA, 5x faster
 
-    with open(audio_path, "rb") as audio:
-        options = PrerecordedOptions(
-            model="nova-3",
-            smart_format=True,
-            diarize=True,
-            punctuate=True,
-            language="en"
-        )
+    if requirements.get("emotional_understanding"):
+        return "gemini"  # Affective dialog
 
-        response = client.listen.prerecorded.v("1").transcribe_file(
-            {"buffer": audio.read()},
-            options
-        )
+    if requirements.get("openai_ecosystem"):
+        return "openai"  # Compatible tools
 
-    return response.results.channels[0].alternatives[0]
+    if requirements.get("lowest_cost"):
+        return "grok"  # $0.05/min (half of OpenAI)
 
-# Streaming (sub-300ms latency)
-async def stream_deepgram(audio_stream):
-    """Real-time streaming with Deepgram Nova-3."""
-    from deepgram import LiveOptions
-
-    client = DeepgramClient("YOUR_API_KEY")
-    connection = client.listen.live.v("1")
-
-    options = LiveOptions(
-        model="nova-3",
-        language="en",
-        smart_format=True,
-        interim_results=True  # Get partial results
-    )
-
-    await connection.start(options)
-
-    async for chunk in audio_stream:
-        await connection.send(chunk)
-
-    await connection.finish()
+    return "gemini"  # Best overall for 2026
 ```
 
-## Text-to-Speech (TTS)
+## API Pricing (January 2026)
 
-### OpenAI TTS
-
-```python
-from openai import OpenAI
-from pathlib import Path
-
-client = OpenAI()
-
-def generate_speech(text: str, voice: str = "alloy") -> bytes:
-    """Generate speech from text using OpenAI TTS.
-
-    Voices: alloy, echo, fable, onyx, nova, shimmer
-    """
-    response = client.audio.speech.create(
-        model="tts-1-hd",  # or "tts-1" for faster/cheaper
-        voice=voice,
-        input=text,
-        response_format="mp3"  # mp3, opus, aac, flac
-    )
-    return response.content
-
-# Stream TTS for long content
-async def stream_speech(text: str):
-    """Stream TTS audio for immediate playback."""
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="nova",
-        input=text
-    )
-
-    for chunk in response.iter_bytes(chunk_size=4096):
-        yield chunk
-```
-
-### ElevenLabs (Premium Quality)
-
-```python
-from elevenlabs import generate, Voice, VoiceSettings
-
-def generate_elevenlabs(text: str, voice_id: str) -> bytes:
-    """High-quality TTS with ElevenLabs."""
-    audio = generate(
-        text=text,
-        voice=Voice(
-            voice_id=voice_id,
-            settings=VoiceSettings(
-                stability=0.5,
-                similarity_boost=0.8
-            )
-        ),
-        model="eleven_turbo_v2_5"
-    )
-    return audio
-```
-
-## Audio Preprocessing
-
-```python
-from pydub import AudioSegment
-import tempfile
-
-def preprocess_audio(audio_path: str) -> str:
-    """Prepare audio for optimal transcription."""
-    audio = AudioSegment.from_file(audio_path)
-
-    # Convert to mono, 16kHz (optimal for most APIs)
-    audio = audio.set_channels(1)
-    audio = audio.set_frame_rate(16000)
-
-    # Normalize volume
-    audio = audio.normalize()
-
-    # Export as WAV
-    temp_path = tempfile.mktemp(suffix=".wav")
-    audio.export(temp_path, format="wav")
-
-    return temp_path
-
-def chunk_long_audio(audio_path: str, chunk_seconds: int = 300) -> list[str]:
-    """Split long audio for API limits (25MB max)."""
-    audio = AudioSegment.from_file(audio_path)
-    chunks = []
-
-    chunk_ms = chunk_seconds * 1000
-    for i in range(0, len(audio), chunk_ms):
-        chunk = audio[i:i + chunk_ms]
-        chunk_path = tempfile.mktemp(suffix=".wav")
-        chunk.export(chunk_path, format="wav")
-        chunks.append(chunk_path)
-
-    return chunks
-```
-
-## Handling Long Audio
-
-```python
-async def transcribe_long_audio(audio_path: str) -> str:
-    """Transcribe audio longer than 25MB limit."""
-    chunks = chunk_long_audio(audio_path, chunk_seconds=300)
-    transcripts = []
-
-    previous_text = ""
-    for chunk_path in chunks:
-        # Use previous transcript as prompt for context
-        with open(chunk_path, "rb") as audio:
-            response = client.audio.transcriptions.create(
-                model="gpt-4o-transcribe",
-                file=audio,
-                prompt=previous_text[-224:]  # Last 224 tokens
-            )
-
-        transcripts.append(response.text)
-        previous_text = response.text
-
-    return " ".join(transcripts)
-```
-
-## API Limits & Pricing (2026)
-
-| Provider | File Limit | Pricing | Features |
-|----------|-----------|---------|----------|
-| OpenAI Whisper | 25MB | $0.006/min | Basic |
-| GPT-4o-Transcribe | 25MB | $0.01/min | Enhanced accuracy |
-| AssemblyAI | 5GB | ~$0.15/hr | Diarization, sentiment |
-| Deepgram | 2GB | ~$0.0043/min | Fastest latency |
+| Provider | Type | Price | Notes |
+|----------|------|-------|-------|
+| Grok Voice Agent | Real-time | $0.05/min | Cheapest real-time |
+| Gemini Live | Real-time | Usage-based | 30 HD voices |
+| OpenAI Realtime | Real-time | $0.10/min | |
+| Gemini 2.5 Pro | Transcription | $1.25/M tokens | 9.5hr audio |
+| GPT-4o-Transcribe | Transcription | $0.01/min | |
+| AssemblyAI | Transcription | ~$0.15/hr | Best features |
+| Deepgram | Transcription | ~$0.0043/min | |
 
 ## Key Decisions
 
 | Scenario | Recommendation |
 |----------|----------------|
-| Highest accuracy | AssemblyAI Universal-2 |
-| Real-time/live | Deepgram Nova-3 (<300ms) |
-| Cost-sensitive | Whisper self-hosted |
-| Multilingual | Whisper Large V3 (99+ langs) |
-| Speaker identification | AssemblyAI (best diarization) |
+| Voice assistant | Grok Voice Agent (fastest) |
+| Emotional AI | Gemini Live API |
+| Long audio (hours) | Gemini 2.5 Pro (9.5hr) |
+| Speaker diarization | AssemblyAI or Gemini |
+| Lowest latency STT | Deepgram Nova-3 |
+| Self-hosted | Whisper Large V3 |
 
 ## Common Mistakes
 
-- Not preprocessing audio (sample rate, channels)
-- Ignoring file size limits (chunk long audio)
-- Missing timestamps for subtitles
-- Not using prompts for context continuity
-- Skipping language parameter (hurts non-English)
-- Using sync API for real-time (use streaming)
-
-## Supported Formats
-
-```
-Supported: mp3, mp4, mpeg, mpga, m4a, wav, webm
-Optimal: WAV 16kHz mono (best accuracy)
-Avoid: Highly compressed formats for important content
-```
+- Using STT+LLM+TTS pipeline instead of native speech-to-speech
+- Not leveraging emotional understanding (Gemini)
+- Ignoring barge-in support for natural conversations
+- Using deprecated Whisper-1 instead of GPT-4o-Transcribe
+- Not testing latency with real users
 
 ## Related Skills
 
 - `vision-language-models` - Image/video processing
 - `multimodal-rag` - Audio + text retrieval
-- `streaming-api-patterns` - SSE for real-time
+- `streaming-api-patterns` - WebSocket patterns
 
 ## Capability Details
+
+### real-time-voice
+**Keywords:** voice agent, real-time, conversational, live audio
+**Solves:**
+- Build voice assistants
+- Phone agents and support bots
+- Interactive voice response (IVR)
+
+### speech-to-speech
+**Keywords:** native audio, speech-to-speech, no transcription
+**Solves:**
+- Low-latency voice responses
+- Natural conversation flow
+- Emotional voice interactions
 
 ### transcription
 **Keywords:** transcribe, speech-to-text, STT, convert audio
 **Solves:**
 - Convert audio files to text
 - Generate meeting transcripts
-- Process podcast audio
+- Process long-form audio
 
-### real-time-stt
-**Keywords:** real-time, live transcription, streaming audio
+### voice-tts
+**Keywords:** TTS, text-to-speech, voice synthesis
 **Solves:**
-- Live transcription during calls
-- Voice assistants
-- Real-time captioning
-
-### speaker-diarization
-**Keywords:** speaker, diarization, who said, identify speaker
-**Solves:**
-- Identify different speakers
-- Generate speaker-labeled transcripts
-- Meeting participant tracking
-
-### text-to-speech
-**Keywords:** TTS, speech synthesis, voice, speak text
-**Solves:**
-- Convert text to natural speech
-- Generate voiceovers
-- Accessibility audio
-
-### audio-preprocessing
-**Keywords:** preprocess, normalize, convert audio, chunk
-**Solves:**
-- Prepare audio for transcription
-- Handle long recordings
-- Optimize audio quality
+- Generate natural speech
+- Multi-voice dialogue
+- Expressive audio output
