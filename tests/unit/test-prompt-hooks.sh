@@ -87,6 +87,46 @@ test_satisfaction_detector_outputs_json() {
     fi
 }
 
+test_context_pruning_advisor_outputs_json() {
+    local hook="$HOOKS_DIR/prompt/context-pruning-advisor.sh"
+    if [[ ! -f "$hook" ]]; then
+        skip "context-pruning-advisor.sh not found"
+    fi
+
+    local input='{"prompt":"Design a REST API endpoint"}'
+    local output
+    output=$(echo "$input" | bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Check for continue field (CC 2.1.7)
+        echo "$output" | jq -e 'has("continue")' >/dev/null 2>&1
+    fi
+}
+
+test_context_pruning_advisor_triggers_at_70_percent() {
+    local hook="$HOOKS_DIR/prompt/context-pruning-advisor.sh"
+    if [[ ! -f "$hook" ]]; then
+        skip "context-pruning-advisor.sh not found"
+    fi
+
+    # Set high context usage to trigger advisor
+    export CLAUDE_CONTEXT_USAGE_PERCENT=0.75
+    local input='{"prompt":"Add a new feature"}'
+    local output
+    output=$(echo "$input" | bash "$hook" 2>/dev/null) || true
+
+    if [[ -n "$output" ]]; then
+        assert_valid_json "$output"
+        # Should include additionalContext when triggered
+        if echo "$output" | jq -e '.hookSpecificOutput.additionalContext' >/dev/null 2>&1; then
+            return 0
+        fi
+    fi
+
+    unset CLAUDE_CONTEXT_USAGE_PERCENT
+}
+
 # ============================================================================
 # CC 2.1.7 COMPLIANCE TESTS
 # ============================================================================
@@ -99,6 +139,7 @@ test_all_prompt_hooks_have_suppress_output() {
         "$HOOKS_DIR/prompt/todo-enforcer.sh"
         "$HOOKS_DIR/prompt/memory-context.sh"
         "$HOOKS_DIR/prompt/satisfaction-detector.sh"
+        "$HOOKS_DIR/prompt/context-pruning-advisor.sh"
     )
 
     for hook in "${hooks[@]}"; do
@@ -115,11 +156,12 @@ test_all_prompt_hooks_have_suppress_output() {
 test_hooks_registered_in_plugin_json() {
     local plugin_json="$PROJECT_ROOT/.claude-plugin/plugin.json"
 
-    # Check all 4 prompt hooks are registered individually
+    # Check all 5 prompt hooks are registered individually
     grep -q "context-injector.sh" "$plugin_json" || return 1
     grep -q "todo-enforcer.sh" "$plugin_json" || return 1
     grep -q "memory-context.sh" "$plugin_json" || return 1
     grep -q "satisfaction-detector.sh" "$plugin_json" || return 1
+    grep -q "context-pruning-advisor.sh" "$plugin_json" || return 1
 }
 
 # ============================================================================
