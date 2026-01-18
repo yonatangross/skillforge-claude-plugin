@@ -5,6 +5,21 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.27.3] - 2026-01-18
+
+### Added
+
+- **New Agents** - Complete agent coverage for critical workflows (#143, #151)
+  - `documentation-specialist`: Technical writing expert for API docs, READMEs, ADRs, changelogs, OpenAPI specs
+  - `monitoring-engineer`: Observability specialist for Prometheus, Grafana, alerting, OpenTelemetry, SLOs/SLIs
+
+### Changed
+
+- Agent count increased from 32 to 34
+- Updated token budget to 350,000 for expanded skill library (159 skills)
+
+---
+
 ## [4.27.2] - 2026-01-18
 
 ### Added

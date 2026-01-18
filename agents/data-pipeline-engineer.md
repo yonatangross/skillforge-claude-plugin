@@ -29,6 +29,7 @@ skills:
   - browser-content-capture
   - devops-deployment
   - mem0-memory
+  - memory-fabric
   - remember
   - recall
 ---

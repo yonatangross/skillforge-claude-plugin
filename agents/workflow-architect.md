@@ -25,6 +25,7 @@ skills:
   - temporal-io
   - langfuse-observability
   - observability-monitoring
+  - context-compression
   - remember
   - recall
 ---

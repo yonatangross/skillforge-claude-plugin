@@ -23,6 +23,7 @@ skills:
   - biome-linting
   - clean-architecture
   - project-structure-enforcer
+  - best-practices
   - remember
   - recall
 hooks:
