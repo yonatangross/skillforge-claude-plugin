@@ -5,6 +5,35 @@ All notable changes to the SkillForge Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.24.0] - 2026-01-18
+
+### Added
+
+- **Error Solution Suggester Hook** (#124)
+  - `hooks/posttool/error-solution-suggester.sh`: PostToolUse hook for intelligent error remediation
+  - Pattern matches error output from Bash commands to known solutions
+  - 45+ error patterns covering:
+    - Database: PostgreSQL role/relation errors, connection pool exhaustion, constraint violations
+    - Node.js/npm: Module not found, ENOENT, permission errors, peer dependencies
+    - Git: Merge conflicts, detached HEAD, protected branch violations
+    - Python: ModuleNotFoundError, asyncio errors, Pydantic validation
+    - TypeScript: Type errors, declaration missing
+    - Network: ECONNREFUSED, timeout, CORS
+    - Auth: JWT errors, 401/403 responses
+    - Docker: Container exit, port conflicts
+    - Build: Webpack/Vite errors, memory issues, React hydration
+  - Automatic skill linking: Suggests relevant SkillForge skills based on error category
+  - Deduplication: Prevents repeated suggestions for same error within session
+  - CC 2.1.9 compliant: Injects solutions via `hookSpecificOutput.additionalContext`
+  - `.claude/rules/error_solutions.json`: Comprehensive error→solution database
+  - 25 unit tests for pattern matching and deduplication validation
+
+### Changed
+
+- Hook count: 130 → 131
+
+---
+
 ## [4.23.0] - 2026-01-18
 
 ### Added

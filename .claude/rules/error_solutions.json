@@ -1,0 +1,700 @@
+{
+  "version": "1.0.0",
+  "description": "Error-to-solution mappings with skill linking for error-solution-suggester hook",
+  "categories": {
+    "db_auth": {
+      "description": "Database authentication/authorization errors",
+      "related_skills": ["connection-pooling", "database-schema-designer", "sqlalchemy-2-async"]
+    },
+    "db_schema": {
+      "description": "Database schema/relation errors",
+      "related_skills": ["alembic-migrations", "database-schema-designer", "zero-downtime-migration"]
+    },
+    "db_connection": {
+      "description": "Database connection errors",
+      "related_skills": ["connection-pooling", "observability-monitoring"]
+    },
+    "db_pool": {
+      "description": "Connection pool exhaustion errors",
+      "related_skills": ["connection-pooling", "sqlalchemy-2-async", "performance-testing"]
+    },
+    "db_constraint": {
+      "description": "Database constraint violation errors",
+      "related_skills": ["database-schema-designer", "alembic-migrations"]
+    },
+    "npm_missing": {
+      "description": "npm module resolution errors",
+      "related_skills": ["security-scanning", "biome-linting"]
+    },
+    "npm_permission": {
+      "description": "npm permission errors",
+      "related_skills": ["security-scanning", "owasp-top-10"]
+    },
+    "npm_version": {
+      "description": "npm version/dependency conflicts",
+      "related_skills": ["security-scanning"]
+    },
+    "git_conflict": {
+      "description": "Git merge/rebase conflicts",
+      "related_skills": ["git-recovery-command", "git-workflow", "stacked-prs"]
+    },
+    "git_state": {
+      "description": "Git state/branch errors",
+      "related_skills": ["git-workflow", "git-recovery-command"]
+    },
+    "git_protection": {
+      "description": "Git branch protection errors",
+      "related_skills": ["git-workflow", "github-operations"]
+    },
+    "py_import": {
+      "description": "Python import/module errors",
+      "related_skills": ["pytest-advanced"]
+    },
+    "py_async": {
+      "description": "Python async/asyncio errors",
+      "related_skills": ["asyncio-advanced", "sqlalchemy-2-async"]
+    },
+    "py_type": {
+      "description": "Python type/validation errors",
+      "related_skills": ["input-validation", "fastapi-advanced"]
+    },
+    "ts_type": {
+      "description": "TypeScript type errors",
+      "related_skills": ["input-validation", "biome-linting"]
+    },
+    "build_error": {
+      "description": "Build/compilation errors",
+      "related_skills": ["biome-linting", "core-web-vitals"]
+    },
+    "network_error": {
+      "description": "Network/connection errors",
+      "related_skills": ["connection-pooling", "observability-monitoring"]
+    },
+    "auth_error": {
+      "description": "Authentication/authorization errors",
+      "related_skills": ["auth-patterns", "owasp-top-10"]
+    },
+    "test_error": {
+      "description": "Testing framework errors",
+      "related_skills": ["integration-testing", "pytest-advanced", "msw-mocking"]
+    },
+    "docker_error": {
+      "description": "Docker/container errors",
+      "related_skills": ["observability-monitoring"]
+    },
+    "file_error": {
+      "description": "File system errors",
+      "related_skills": []
+    },
+    "cmd_missing": {
+      "description": "Command not found errors",
+      "related_skills": []
+    }
+  },
+  "patterns": [
+    {
+      "id": "db-role-not-exist",
+      "regex": "role \"([^\"]+)\" does not exist",
+      "category": "db_auth",
+      "severity": "high",
+      "solution": {
+        "brief": "PostgreSQL role missing. Create role or use correct credentials.",
+        "steps": [
+          "For Docker: docker exec -it <container> psql -U postgres -c \"CREATE ROLE <role> WITH LOGIN PASSWORD 'pass'\"",
+          "Check .env for correct DATABASE_URL",
+          "Verify role exists: \\du in psql"
+        ]
+      }
+    },
+    {
+      "id": "db-relation-not-exist",
+      "regex": "relation \"([^\"]+)\" does not exist",
+      "category": "db_schema",
+      "severity": "high",
+      "solution": {
+        "brief": "Table/view does not exist. Run migrations or check database.",
+        "steps": [
+          "Run migrations: alembic upgrade head",
+          "Verify connected to correct database",
+          "List tables: \\dt in psql"
+        ]
+      }
+    },
+    {
+      "id": "db-connection-refused",
+      "regex": "connection refused|ECONNREFUSED.*(5432|postgres)",
+      "category": "db_connection",
+      "severity": "high",
+      "solution": {
+        "brief": "Database connection refused. Check if PostgreSQL is running.",
+        "steps": [
+          "Check PostgreSQL: docker ps | grep postgres",
+          "Start if needed: docker-compose up -d postgres",
+          "Verify port: lsof -i :5432"
+        ]
+      }
+    },
+    {
+      "id": "db-socket-error",
+      "regex": "connection to server on socket.*/var/run/postgresql",
+      "category": "db_connection",
+      "severity": "high",
+      "solution": {
+        "brief": "PostgreSQL socket connection failed. Use TCP connection instead.",
+        "steps": [
+          "For Docker, use TCP: docker exec -it CONTAINER psql -h localhost -U USER",
+          "Unset PGHOST if set to socket path",
+          "Check PostgreSQL logs: docker logs postgres-container"
+        ]
+      }
+    },
+    {
+      "id": "db-pool-exhausted",
+      "regex": "QueuePool limit|too many connections|pool timeout|connection pool exhausted",
+      "category": "db_pool",
+      "severity": "high",
+      "solution": {
+        "brief": "Connection pool exhausted. Check for leaks or increase pool size.",
+        "steps": [
+          "Check for connection leaks (connections not returned)",
+          "Increase pool_size in SQLAlchemy engine",
+          "Add pool_pre_ping=True to validate connections",
+          "Monitor: SELECT count(*) FROM pg_stat_activity"
+        ]
+      }
+    },
+    {
+      "id": "db-unique-violation",
+      "regex": "duplicate key.*violates unique constraint|UNIQUE constraint failed",
+      "category": "db_constraint",
+      "severity": "medium",
+      "solution": {
+        "brief": "Duplicate key violation. Check for existing data or use upsert.",
+        "steps": [
+          "Find existing record with same key",
+          "Use INSERT...ON CONFLICT for upsert",
+          "Check if constraint is intentional"
+        ]
+      }
+    },
+    {
+      "id": "db-fk-violation",
+      "regex": "violates foreign key constraint|FOREIGN KEY constraint failed",
+      "category": "db_constraint",
+      "severity": "medium",
+      "solution": {
+        "brief": "Foreign key violation. Parent record missing or child exists.",
+        "steps": [
+          "For insert: ensure parent record exists first",
+          "For delete: remove child records first or use CASCADE",
+          "Verify referential integrity"
+        ]
+      }
+    },
+    {
+      "id": "npm-module-not-found",
+      "regex": "Cannot find module '([^']+)'",
+      "category": "npm_missing",
+      "severity": "high",
+      "solution": {
+        "brief": "Node module not found. Install or fix import path.",
+        "steps": [
+          "Install: npm install <package>",
+          "Or reinstall all: rm -rf node_modules && npm ci",
+          "Check import path for typos"
+        ]
+      }
+    },
+    {
+      "id": "npm-enoent-modules",
+      "regex": "ENOENT.*node_modules",
+      "category": "npm_missing",
+      "severity": "high",
+      "solution": {
+        "brief": "node_modules missing. Run npm install.",
+        "steps": [
+          "Run: npm ci (or npm install)",
+          "Clear cache if needed: npm cache clean --force",
+          "Check package-lock.json is committed"
+        ]
+      }
+    },
+    {
+      "id": "npm-peer-dep",
+      "regex": "peer dep|peer dependency|unmet peer dependency",
+      "category": "npm_version",
+      "severity": "medium",
+      "solution": {
+        "brief": "Peer dependency conflict. Update or use legacy mode.",
+        "steps": [
+          "Check compatible versions: npm view <pkg> peerDependencies",
+          "Temporary fix: npm install --legacy-peer-deps",
+          "Better: update package versions"
+        ]
+      }
+    },
+    {
+      "id": "npm-eacces",
+      "regex": "EACCES.*permission denied.*(npm|node)",
+      "category": "npm_permission",
+      "severity": "medium",
+      "solution": {
+        "brief": "npm permission denied. Fix ownership, don't use sudo.",
+        "steps": [
+          "Never use sudo with npm",
+          "Fix npm cache: chown -R $(whoami) ~/.npm",
+          "Or use nvm for Node version management"
+        ]
+      }
+    },
+    {
+      "id": "git-merge-conflict",
+      "regex": "CONFLICT.*Merge conflict|Automatic merge failed",
+      "category": "git_conflict",
+      "severity": "medium",
+      "solution": {
+        "brief": "Merge conflict detected. Resolve conflicts manually.",
+        "steps": [
+          "View conflicts: git diff --name-only --diff-filter=U",
+          "Edit files, remove conflict markers (<<<<<<, ======, >>>>>>)",
+          "Stage resolved: git add <file>",
+          "Complete: git commit"
+        ]
+      }
+    },
+    {
+      "id": "git-detached-head",
+      "regex": "HEAD detached|You are in.*detached HEAD",
+      "category": "git_state",
+      "severity": "low",
+      "solution": {
+        "brief": "Detached HEAD state. Create branch or checkout existing.",
+        "steps": [
+          "Create branch from HEAD: git checkout -b new-branch",
+          "Or return to branch: git checkout main",
+          "Stash changes first if needed: git stash"
+        ]
+      }
+    },
+    {
+      "id": "git-not-repository",
+      "regex": "fatal: not a git repository",
+      "category": "git_state",
+      "severity": "low",
+      "solution": {
+        "brief": "Not a git repository. Initialize or change directory.",
+        "steps": [
+          "Initialize: git init",
+          "Or change to project root",
+          "Check if .git directory exists"
+        ]
+      }
+    },
+    {
+      "id": "git-behind-remote",
+      "regex": "Your branch is behind|non-fast-forward|rejected.*push",
+      "category": "git_state",
+      "severity": "medium",
+      "solution": {
+        "brief": "Branch behind remote. Pull or rebase first.",
+        "steps": [
+          "Fetch latest: git fetch origin",
+          "Rebase: git rebase origin/main (or git pull --rebase)",
+          "Then push: git push"
+        ]
+      }
+    },
+    {
+      "id": "git-protected-branch",
+      "regex": "protected branch|cannot force push|permission denied.*push",
+      "category": "git_protection",
+      "severity": "high",
+      "solution": {
+        "brief": "Protected branch. Use feature branch and PR.",
+        "steps": [
+          "Create feature branch: git checkout -b feature/my-feature",
+          "Push feature branch: git push -u origin feature/my-feature",
+          "Create PR: gh pr create"
+        ]
+      }
+    },
+    {
+      "id": "py-module-not-found",
+      "regex": "ModuleNotFoundError: No module named '([^']+)'",
+      "category": "py_import",
+      "severity": "high",
+      "solution": {
+        "brief": "Python module not found. Install with pip.",
+        "steps": [
+          "Activate virtualenv if needed",
+          "Install: pip install <package>",
+          "Or: pip install -r requirements.txt"
+        ]
+      }
+    },
+    {
+      "id": "py-import-error",
+      "regex": "ImportError: cannot import name '([^']+)'",
+      "category": "py_import",
+      "severity": "medium",
+      "solution": {
+        "brief": "Import error. Check for circular imports or name changes.",
+        "steps": [
+          "Check for circular imports (A imports B imports A)",
+          "Use TYPE_CHECKING guard for type imports",
+          "Verify the name exists in the module"
+        ]
+      }
+    },
+    {
+      "id": "py-asyncio-closed",
+      "regex": "Event loop is closed|RuntimeError.*event loop",
+      "category": "py_async",
+      "severity": "medium",
+      "solution": {
+        "brief": "Asyncio event loop issue. Check async context.",
+        "steps": [
+          "Use asyncio.run() for main entry point",
+          "Don't close event loop prematurely",
+          "Use TaskGroup for structured concurrency (Python 3.11+)"
+        ]
+      }
+    },
+    {
+      "id": "py-asyncio-timeout",
+      "regex": "asyncio\\.TimeoutError|TimeoutError.*async",
+      "category": "py_async",
+      "severity": "medium",
+      "solution": {
+        "brief": "Async operation timed out. Increase timeout or optimize.",
+        "steps": [
+          "Increase timeout: async with asyncio.timeout(30)",
+          "Add retry logic with exponential backoff",
+          "Check if operation is actually slow"
+        ]
+      }
+    },
+    {
+      "id": "py-pydantic-validation",
+      "regex": "ValidationError.*validation error|pydantic.*validation",
+      "category": "py_type",
+      "severity": "medium",
+      "solution": {
+        "brief": "Pydantic validation failed. Check input data types.",
+        "steps": [
+          "Check error details: exc.errors()",
+          "Verify input matches schema",
+          "For Pydantic v2: use model_validate() instead of direct init"
+        ]
+      }
+    },
+    {
+      "id": "ts-type-error",
+      "regex": "error TS\\d+:|Type '([^']+)' is not assignable",
+      "category": "ts_type",
+      "severity": "medium",
+      "solution": {
+        "brief": "TypeScript type error. Fix type mismatch.",
+        "steps": [
+          "Read error message for expected vs actual type",
+          "Add explicit type annotation",
+          "Use 'as' for type assertion if certain"
+        ]
+      }
+    },
+    {
+      "id": "ts-cannot-find-module",
+      "regex": "Cannot find module.*\\.d\\.ts|Could not find declaration",
+      "category": "ts_type",
+      "severity": "low",
+      "solution": {
+        "brief": "TypeScript type declarations missing. Install @types package.",
+        "steps": [
+          "Install types: npm install -D @types/<package>",
+          "Or add to tsconfig: \"skipLibCheck\": true",
+          "Create custom .d.ts if needed"
+        ]
+      }
+    },
+    {
+      "id": "build-webpack-error",
+      "regex": "Module (parse|build) failed|Failed to compile|webpack.*error",
+      "category": "build_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Build failed. Check file syntax and dependencies.",
+        "steps": [
+          "Check error location in file",
+          "Verify imports resolve correctly",
+          "Clear cache: rm -rf .next && npm run build"
+        ]
+      }
+    },
+    {
+      "id": "build-vite-error",
+      "regex": "\\[vite\\].*error|failed to resolve|vite.*not found",
+      "category": "build_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Vite build error. Check import paths and config.",
+        "steps": [
+          "Check vite.config.ts alias configuration",
+          "Verify file exists at import path",
+          "Clear cache: rm -rf node_modules/.vite"
+        ]
+      }
+    },
+    {
+      "id": "network-econnrefused",
+      "regex": "ECONNREFUSED|connect ECONNREFUSED|Connection refused",
+      "category": "network_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Connection refused. Service not running or wrong port.",
+        "steps": [
+          "Check if service is running",
+          "Verify port: lsof -i :<port>",
+          "Check firewall rules"
+        ]
+      }
+    },
+    {
+      "id": "network-timeout",
+      "regex": "ETIMEDOUT|connection timeout|request timeout",
+      "category": "network_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "Connection timed out. Increase timeout or check network.",
+        "steps": [
+          "Increase timeout in request config",
+          "Check network connectivity: ping host",
+          "Add retry logic for transient failures"
+        ]
+      }
+    },
+    {
+      "id": "network-cors",
+      "regex": "CORS policy|Cross-Origin Request Blocked|Access-Control-Allow",
+      "category": "network_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "CORS error. Add CORS headers to server.",
+        "steps": [
+          "Add CORS middleware to backend (FastAPI: CORSMiddleware)",
+          "Set Access-Control-Allow-Origin header",
+          "Handle preflight OPTIONS requests"
+        ]
+      }
+    },
+    {
+      "id": "auth-401-unauthorized",
+      "regex": "401 Unauthorized|not authenticated|authentication required",
+      "category": "auth_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Authentication failed. Check token or credentials.",
+        "steps": [
+          "Verify token is present in Authorization header",
+          "Check token expiration",
+          "Refresh token if expired"
+        ]
+      }
+    },
+    {
+      "id": "auth-403-forbidden",
+      "regex": "403 Forbidden|permission denied|access denied|not authorized",
+      "category": "auth_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Authorization failed. User lacks required permissions.",
+        "steps": [
+          "Check user role/permissions",
+          "Verify resource ownership",
+          "Review access control rules"
+        ]
+      }
+    },
+    {
+      "id": "auth-jwt-error",
+      "regex": "jwt malformed|TokenExpiredError|JsonWebTokenError|invalid token",
+      "category": "auth_error",
+      "severity": "high",
+      "solution": {
+        "brief": "JWT token error. Token expired, malformed, or wrong secret.",
+        "steps": [
+          "Check token format (should be eyJ...eyJ...xxx)",
+          "Verify using correct secret for verification",
+          "Check token expiration (exp claim)"
+        ]
+      }
+    },
+    {
+      "id": "test-timeout",
+      "regex": "Timeout.*exceeded|Test timeout|Async callback was not invoked",
+      "category": "test_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "Test timed out. Increase timeout or fix async issue.",
+        "steps": [
+          "Increase timeout: jest.setTimeout(10000)",
+          "Verify async operations complete",
+          "Check for hanging database connections"
+        ]
+      }
+    },
+    {
+      "id": "test-assertion-failed",
+      "regex": "AssertionError|expect\\(.*\\)\\.(toBe|toEqual)|Expected.*Received",
+      "category": "test_error",
+      "severity": "low",
+      "solution": {
+        "brief": "Test assertion failed. Check expected vs actual values.",
+        "steps": [
+          "Read error to see expected vs actual",
+          "Add console.log before assertion to debug",
+          "Check fixture/mock data is correct"
+        ]
+      }
+    },
+    {
+      "id": "docker-not-running",
+      "regex": "Cannot connect to the Docker daemon|docker.*not running",
+      "category": "docker_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Docker daemon not running. Start Docker.",
+        "steps": [
+          "Start Docker Desktop (macOS/Windows)",
+          "Or: systemctl start docker (Linux)",
+          "Check: docker info"
+        ]
+      }
+    },
+    {
+      "id": "docker-port-in-use",
+      "regex": "port is already allocated|Bind for 0\\.0\\.0\\.0:\\d+ failed",
+      "category": "docker_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "Port already in use. Stop conflicting process or use different port.",
+        "steps": [
+          "Find process: lsof -i :<port>",
+          "Kill it: kill <pid>",
+          "Or use different port in docker-compose"
+        ]
+      }
+    },
+    {
+      "id": "docker-container-exit",
+      "regex": "container exited|Exited \\(\\d+\\)|container.*stopped",
+      "category": "docker_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "Container exited unexpectedly. Check logs.",
+        "steps": [
+          "View logs: docker logs <container>",
+          "Check exit code: docker ps -a | grep <container>",
+          "Debug interactively: docker run -it <image> /bin/sh"
+        ]
+      }
+    },
+    {
+      "id": "file-enoent",
+      "regex": "ENOENT: no such file|Error: ENOENT|FileNotFoundError",
+      "category": "file_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "File not found. Check path exists.",
+        "steps": [
+          "Verify path: ls -la <path>",
+          "Check relative vs absolute path",
+          "Ensure file is created by build step if needed"
+        ]
+      }
+    },
+    {
+      "id": "file-eacces",
+      "regex": "EACCES: permission denied|PermissionError.*denied",
+      "category": "file_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "File permission denied. Check ownership.",
+        "steps": [
+          "Check permissions: ls -la <file>",
+          "Fix ownership: chown $(whoami) <file>",
+          "Add permissions: chmod +rw <file>"
+        ]
+      }
+    },
+    {
+      "id": "cmd-not-found",
+      "regex": "command not found|Command '([^']+)' not found",
+      "category": "cmd_missing",
+      "severity": "low",
+      "solution": {
+        "brief": "Command not found. Install or check PATH.",
+        "steps": [
+          "Check if installed: which <command>",
+          "Install via package manager",
+          "Check PATH: echo $PATH"
+        ]
+      }
+    },
+    {
+      "id": "memory-heap",
+      "regex": "JavaScript heap out of memory|FATAL ERROR.*Allocation failed|Cannot allocate memory",
+      "category": "build_error",
+      "severity": "high",
+      "solution": {
+        "brief": "Out of memory. Increase Node heap size.",
+        "steps": [
+          "Increase heap: NODE_OPTIONS=\"--max-old-space-size=4096\" npm run build",
+          "Check for memory leaks in code",
+          "Consider code splitting for smaller bundles"
+        ]
+      }
+    },
+    {
+      "id": "react-hydration",
+      "regex": "Hydration failed|Expected server HTML|Text content does not match",
+      "category": "build_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "React hydration mismatch. Server/client render differently.",
+        "steps": [
+          "Avoid browser-only APIs in SSR (typeof window)",
+          "Use useId() for stable IDs instead of Math.random()",
+          "Check for date/time formatting differences"
+        ]
+      }
+    },
+    {
+      "id": "react-hooks-order",
+      "regex": "Rendered more hooks than|Rendered fewer hooks|hooks order changed",
+      "category": "build_error",
+      "severity": "high",
+      "solution": {
+        "brief": "React hooks order violation. Hooks must be called consistently.",
+        "steps": [
+          "Don't call hooks inside conditions or loops",
+          "Move conditional logic inside the hook",
+          "Ensure same hooks run on every render"
+        ]
+      }
+    },
+    {
+      "id": "react-update-during-render",
+      "regex": "Cannot update a component|setState during render",
+      "category": "build_error",
+      "severity": "medium",
+      "solution": {
+        "brief": "State update during render. Use useEffect instead.",
+        "steps": [
+          "Move state update into useEffect",
+          "Check for parent-child update conflicts",
+          "Wrap handler in useCallback"
+        ]
+      }
+    }
+  ]
+}
