@@ -1,6 +1,6 @@
 ---
 name: focus-management
-description: Keyboard focus management patterns for accessibility. Covers focus traps, roving tabindex, focus restore, skip links, and FocusScope components for WCAG-compliant interactive widgets.
+description: Keyboard focus management patterns for accessibility. Covers focus traps, roving tabindex, focus restore, skip links, and FocusScope components for WCAG-compliant interactive widgets. Use when implementing focus traps or keyboard navigation.
 context: fork
 agent: accessibility-specialist
 version: 1.0.0

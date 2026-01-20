@@ -1,6 +1,6 @@
 ---
 name: architecture-decision-record
-description: Use this skill when documenting significant architectural decisions. Provides ADR templates following the Nygard format with sections for context, decision, consequences, and alternatives. Helps teams maintain architectural memory and rationale for backend systems, API designs, database choices, and infrastructure decisions.
+description: Use this skill when documenting significant architectural decisions. Provides ADR templates following the Nygard format with sections for context, decision, consequences, and alternatives. Use when writing ADRs, recording decisions, or evaluating options.
 version: 2.0.0
 author: AI Agent Hub
 tags: [architecture, documentation, decision-making, backend]

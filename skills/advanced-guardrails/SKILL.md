@@ -1,6 +1,6 @@
 ---
 name: advanced-guardrails
-description: LLM guardrails with NeMo, Guardrails AI, and OpenAI. Input/output rails, hallucination prevention, fact-checking, toxicity detection, red-teaming patterns.
+description: LLM guardrails with NeMo, Guardrails AI, and OpenAI. Input/output rails, hallucination prevention, fact-checking, toxicity detection, red-teaming patterns. Use when building LLM guardrails, safety checks, or red-team workflows.
 version: 1.0.0
 tags: [guardrails, nemo, safety, hallucination, factuality, red-teaming, colang, 2026]
 context: fork

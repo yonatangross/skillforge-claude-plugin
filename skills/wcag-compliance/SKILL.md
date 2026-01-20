@@ -1,6 +1,6 @@
 ---
 name: wcag-compliance
-description: WCAG 2.2 AA accessibility compliance patterns for web applications
+description: WCAG 2.2 AA accessibility compliance patterns for web applications. Use when auditing accessibility or implementing WCAG requirements.
 context: fork
 agent: accessibility-specialist
 version: 1.0.0

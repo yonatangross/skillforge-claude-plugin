@@ -1,6 +1,6 @@
 ---
 name: lazy-loading-patterns
-description: Code splitting and lazy loading with React.lazy, Suspense, route-based splitting, intersection observer, and preload strategies for optimal bundle performance
+description: Code splitting and lazy loading with React.lazy, Suspense, route-based splitting, intersection observer, and preload strategies for optimal bundle performance. Use when implementing lazy loading or preloading.
 tags: [lazy-loading, code-splitting, suspense, dynamic-import, intersection-observer, preload, react-19, performance]
 context: fork
 agent: frontend-ui-developer

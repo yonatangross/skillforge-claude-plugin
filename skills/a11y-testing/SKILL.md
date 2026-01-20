@@ -1,6 +1,6 @@
 ---
 name: a11y-testing
-description: Automated accessibility testing with axe-core, Playwright, and jest-axe for WCAG compliance
+description: Automated accessibility testing with axe-core, Playwright, and jest-axe for WCAG compliance. Use when adding or validating a11y tests, running WCAG checks, or auditing UI accessibility.
 context: fork
 agent: test-generator
 version: 1.1.0

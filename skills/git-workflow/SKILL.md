@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Complete git workflow patterns including GitHub Flow branching, atomic commits with interactive staging, and recovery operations using reflog. Essential patterns for clean history.
+description: Complete git workflow patterns including GitHub Flow branching, atomic commits with interactive staging, and recovery operations using reflog. Essential patterns for clean history. Use when defining branching strategy or recovering git history.
 context: inherit
 version: 1.0.0
 tags: [git, branch, commit, recovery, workflow, reflog, staging]

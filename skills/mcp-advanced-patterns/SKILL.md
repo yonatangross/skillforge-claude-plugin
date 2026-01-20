@@ -1,6 +1,6 @@
 ---
 name: mcp-advanced-patterns
-description: Advanced MCP patterns for tool composition, resource management, and scaling. Build custom MCP servers, compose tools, manage resources efficiently.
+description: Advanced MCP patterns for tool composition, resource management, and scaling. Build custom MCP servers, compose tools, manage resources efficiently. Use when composing MCP tools or scaling MCP servers.
 version: 1.0.0
 author: SkillForge
 context: fork

@@ -1,6 +1,6 @@
 ---
 name: git-recovery
-description: Quick recovery from common git mistakes including undo commits, recover branches, and reflog operations
+description: Quick recovery from common git mistakes including undo commits, recover branches, and reflog operations. Use when you need to undo, recover, or fix Git history.
 context: inherit
 version: 1.0.0
 author: SkillForge

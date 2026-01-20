@@ -1,6 +1,6 @@
 ---
 name: load-context
-description: Auto-load relevant memories at session start from both mem0 and graph
+description: Auto-load relevant memories at session start from both mem0 and graph. Use when you need session context restored or preloaded.
 tags: [memory, mem0, graph, session, context, continuity, auto-load]
 user-invocable: true
 auto-invoke: session-start

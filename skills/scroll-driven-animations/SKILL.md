@@ -1,6 +1,6 @@
 ---
 name: scroll-driven-animations
-description: CSS Scroll-Driven Animations with ScrollTimeline, ViewTimeline, parallax effects, and progressive enhancement for performant scroll effects
+description: CSS Scroll-Driven Animations with ScrollTimeline, ViewTimeline, parallax effects, and progressive enhancement for performant scroll effects. Use when implementing scroll-linked animations or parallax.
 tags: [scroll-animation, scroll-timeline, view-timeline, parallax, css-animation, scroll-driven, performance]
 context: fork
 agent: frontend-ui-developer

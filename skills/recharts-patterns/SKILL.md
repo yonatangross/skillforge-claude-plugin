@@ -1,6 +1,6 @@
 ---
 name: recharts-patterns
-description: Data visualization with Recharts 3.x including responsive charts, custom tooltips, animations, and accessibility for React applications
+description: Data visualization with Recharts 3.x including responsive charts, custom tooltips, animations, and accessibility for React applications. Use when building charts or dashboards with Recharts.
 tags: [recharts, charts, data-visualization, react, svg, accessibility, responsive, d3]
 context: fork
 agent: frontend-ui-developer

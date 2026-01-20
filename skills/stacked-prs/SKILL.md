@@ -1,6 +1,6 @@
 ---
 name: stacked-prs
-description: Multi-PR development for large features. Stack dependent PRs, manage rebases, and get faster reviews on smaller changes.
+description: Multi-PR development for large features. Stack dependent PRs, manage rebases, and get faster reviews on smaller changes. Use when stacking dependent PRs or splitting large changes.
 context: fork
 version: 1.0.0
 author: SkillForge

@@ -1,6 +1,6 @@
 ---
 name: pwa-patterns
-description: Progressive Web App patterns with Workbox 7.x, service worker lifecycle, offline-first strategies, and installability
+description: Progressive Web App patterns with Workbox 7.x, service worker lifecycle, offline-first strategies, and installability. Use when building PWAs, service workers, or offline support.
 tags: [pwa, service-worker, workbox, offline-first, cache-api, push-notifications, manifest, installable]
 context: fork
 agent: frontend-ui-developer
