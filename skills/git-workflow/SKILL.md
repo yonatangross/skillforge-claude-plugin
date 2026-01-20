@@ -11,15 +11,6 @@ user-invocable: false
 
 Complete git workflow patterns: GitHub Flow branching, atomic commits, and recovery operations. Essential for maintaining clean, reviewable history.
 
-## Overview
-
-- Setting up team git workflow
-- Making commits (use atomic patterns)
-- Recovering from git mistakes
-- Managing feature branches
-
----
-
 ## Branch Naming Convention
 
 ```bash

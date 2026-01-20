@@ -12,13 +12,6 @@ user-invocable: false
 
 Break large features into small, reviewable PRs that depend on each other. Merge in order for clean history.
 
-## Overview
-
-- Feature requires 500+ lines of changes
-- Multiple logical parts to implement
-- Want faster code review cycles
-- Need parallel work on related changes
-
 ## Quick Reference
 
 ```

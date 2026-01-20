@@ -13,14 +13,6 @@ user-invocable: false
 
 Dashboard UI patterns for building admin panels, analytics dashboards, and data-driven interfaces with React.
 
-## Overview
-
-- Building admin dashboards
-- Creating analytics/metrics displays
-- Implementing real-time monitoring UIs
-- Building data tables with sorting/filtering
-- Creating widget-based layouts
-
 ## Layout Patterns
 
 ### Responsive Dashboard Grid

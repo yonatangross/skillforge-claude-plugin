@@ -13,14 +13,6 @@ user-invocable: false
 
 Progressive Web App patterns using Workbox 7.x for service worker management, offline-first strategies, and app-like experiences.
 
-## Overview
-
-- Building offline-capable web applications
-- Implementing caching strategies for performance
-- Creating installable web apps
-- Adding push notifications
-- Background sync for offline form submissions
-
 ## Service Worker Lifecycle
 
 ```

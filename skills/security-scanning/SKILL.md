@@ -17,13 +17,6 @@ user-invocable: false
 
 Automate vulnerability detection in code and dependencies.
 
-## Overview
-
-- Before code review completion
-- After dependency updates
-- In CI/CD pipelines
-- Before production deployments
-
 ## Dependency Scanning
 
 ### JavaScript (npm)

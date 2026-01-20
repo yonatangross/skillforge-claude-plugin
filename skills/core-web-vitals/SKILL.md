@@ -14,14 +14,6 @@ user-invocable: false
 
 Performance optimization for Google's Core Web Vitals - LCP, INP, CLS with 2025 thresholds.
 
-## Overview
-
-- Performance audits and optimization
-- Lighthouse score improvements
-- Real User Monitoring (RUM) setup
-- Performance budgets enforcement
-- SEO optimization (Core Web Vitals ranking factor)
-
 ## Core Web Vitals Thresholds (2025)
 
 | Metric | Good | Needs Improvement | Poor |

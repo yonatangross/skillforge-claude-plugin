@@ -10,13 +10,6 @@ user-invocable: false
 ---
 Autonomous end-to-end testing with Playwright's three specialized agents for planning, generating, and self-healing tests automatically.
 
-## Overview
-
-- Setting up E2E testing for web applications
-- Generating tests from user flows
-- Creating self-healing test suites
-- Testing critical user journeys
-
 ## The Three Agents
 
 1. **Planner** - Explores app and creates test plans

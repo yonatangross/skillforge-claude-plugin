@@ -12,14 +12,6 @@ user-invocable: false
 
 Create clear ASCII visualizations for explaining complex concepts.
 
-## Overview
-
-- Explaining system architecture
-- Showing workflow steps
-- Displaying progress/metrics
-- Before/after comparisons
-- File/directory structures
-
 ## Box-Drawing Characters
 
 **IMPORTANT:** Use a fixed-width (monospace) font for proper rendering.

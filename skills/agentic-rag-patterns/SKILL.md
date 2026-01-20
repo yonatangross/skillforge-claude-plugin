@@ -15,14 +15,6 @@ Build self-correcting retrieval systems with LLM-driven decision making.
 
 > **LangGraph 1.0.6** (Jan 2026): langgraph-checkpoint 4.0.0, compile-time checkpointer validation, namespace sanitization.
 
-## Overview
-
-- RAG systems that need quality assurance
-- Self-correcting retrieval pipelines
-- Multi-source retrieval with fallbacks
-- Knowledge graph enhanced search
-- Adaptive retrieval strategies
-
 ## Architecture Overview
 
 ```

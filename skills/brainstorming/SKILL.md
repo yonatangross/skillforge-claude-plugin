@@ -18,16 +18,6 @@ Transform rough ideas into fully-formed designs through structured questioning a
 
 **Announce skill usage at start of session.**
 
-## Overview
-
-Activate this skill when:
-- Request contains "I have an idea for..." or "I want to build..."
-- User asks "help me design..." or "what's the best approach for..."
-- Requirements are vague or high-level
-- Multiple approaches might work
-- Before writing any code or implementation plans
-- User needs to explore trade-offs between different solutions
-
 ## When NOT to Use This Skill
 
 **Skip brainstorming when:**

@@ -12,13 +12,6 @@ user-invocable: false
 
 Test execution with parallel analysis agents for failures.
 
-## Overview
-
-- Running test suites
-- Checking test coverage
-- Analyzing test failures
-- Verifying code changes
-
 ## Quick Start
 
 ```bash

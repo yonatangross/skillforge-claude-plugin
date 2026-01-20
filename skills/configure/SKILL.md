@@ -12,14 +12,6 @@ user-invocable: true
 
 Interactive setup for customizing your SkillForge installation.
 
-## Overview
-
-- Initial setup of SkillForge
-- Customizing skill categories
-- Toggling agents on/off
-- Configuring hooks
-- Enabling MCP integrations
-
 ## Quick Start
 
 ```bash
@@ -144,7 +136,6 @@ When enabled:
 - Compression triggers use effective window
 - MCP deferral more accurate
 
-
 ## Step 7: Preview & Save
 
 Save to: `~/.claude/plugins/skillforge/config.json`
@@ -159,7 +150,6 @@ Save to: `~/.claude/plugins/skillforge/config.json`
   "mcps": { "context7": false, ... }
 }
 ```
-
 
 ## Related Skills
 - doctor: Diagnose configuration issues

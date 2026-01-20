@@ -12,13 +12,6 @@ user-invocable: false
 
 Validate system behavior under load.
 
-## Overview
-
-- Pre-production validation
-- Capacity planning
-- Bottleneck identification
-- Performance regression detection
-
 ## k6 Load Test (JavaScript)
 
 ```javascript

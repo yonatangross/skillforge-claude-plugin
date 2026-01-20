@@ -10,17 +10,6 @@ user-invocable: true
 
 # Worktree Coordination Skill
 
-## Overview
-
-Manage multiple Claude Code instances working in parallel across git worktrees with automatic file locking, conflict detection, and decision synchronization.
-
-## Overview
-
-- Running multiple Claude Code instances simultaneously
-- Working on related features in parallel
-- Coordinating changes across git worktrees
-- Preventing merge conflicts from parallel work
-
 ## Commands
 
 ### /worktree-status

@@ -12,12 +12,6 @@ user-invocable: true
 
 Comprehensive PR creation with validation. All output goes directly to GitHub PR.
 
-## Overview
-
-- Creating pull requests for feature branches
-- Submitting changes for code review
-- Opening PRs with auto-generated descriptions
-
 ## Quick Start
 
 ```bash
@@ -118,7 +112,6 @@ Only use Task agents for:
 - Complex code analysis requiring multiple files
 - Security review of sensitive changes
 - Architecture review for large refactors
-
 
 ## Related Skills
 - commit: Create commits before PRs

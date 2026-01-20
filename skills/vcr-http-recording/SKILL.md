@@ -12,13 +12,6 @@ user-invocable: false
 
 Record and replay HTTP interactions for Python tests.
 
-## Overview
-
-- External API testing
-- Deterministic HTTP tests
-- Avoiding live API calls in CI
-- LLM API response recording
-
 ## Basic Setup
 
 ```python

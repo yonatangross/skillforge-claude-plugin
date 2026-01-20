@@ -12,13 +12,6 @@ user-invocable: true
 
 Multi-angle codebase exploration using 3-5 parallel agents.
 
-## Overview
-
-- Understanding how a feature works
-- Finding where code is defined
-- Tracing data flow through the system
-- Learning codebase architecture
-
 ## Quick Start
 
 ```bash
@@ -89,7 +82,6 @@ For AI/ML topics, add exploration of:
 - "Where are API endpoints defined?"
 - "Find all usages of EventBroadcaster"
 - "What's the workflow for content analysis?"
-
 
 ## Related Skills
 - implement: Implement after exploration

@@ -12,14 +12,6 @@ user-invocable: true
 
 Interactive recovery from common git mistakes. Safe operations with verification steps.
 
-## Overview
-
-- Undo a commit you just made
-- Recover a deleted branch
-- Undo a bad rebase or merge
-- Reset files to previous state
-- Find and restore lost commits
-
 ## Quick Start
 
 ```bash

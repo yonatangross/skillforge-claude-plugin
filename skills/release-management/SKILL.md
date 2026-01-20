@@ -12,13 +12,6 @@ user-invocable: false
 
 Automate releases with `gh release`, semantic versioning, and changelog generation.
 
-## Overview
-
-- Publishing new versions
-- Creating release notes
-- Managing release assets
-- Automating release workflows
-
 ## Quick Reference
 
 ### Create Release
