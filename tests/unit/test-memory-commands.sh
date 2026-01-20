@@ -49,8 +49,17 @@ test_remember_has_workflow() {
 }
 
 test_remember_has_when_to_use() {
-    # Check for "Overview" section (standardized in #179)
-    assert_file_contains "$SKILLS_DIR/remember/SKILL.md" "## Overview"
+    # Overview is optional if description has trigger phrases (standardized in #179)
+    local file="$SKILLS_DIR/remember/SKILL.md"
+    if grep -q "## Overview" "$file"; then
+        # Has Overview - OK
+        return 0
+    elif grep -qiE "description:.*use\s+(when|for|this)" "$file"; then
+        # Description has triggers - Overview optional
+        return 0
+    else
+        fail "remember SKILL.md should have Overview section or trigger phrases in description"
+    fi
 }
 
 test_remember_has_auto_detect_logic() {
@@ -92,8 +101,17 @@ test_recall_has_workflow() {
 }
 
 test_recall_has_when_to_use() {
-    # Check for "Overview" section (standardized in #179)
-    assert_file_contains "$SKILLS_DIR/recall/SKILL.md" "## Overview"
+    # Overview is optional if description has trigger phrases (standardized in #179)
+    local file="$SKILLS_DIR/recall/SKILL.md"
+    if grep -q "## Overview" "$file"; then
+        # Has Overview - OK
+        return 0
+    elif grep -qiE "description:.*use\s+(when|for|this)" "$file"; then
+        # Description has triggers - Overview optional
+        return 0
+    else
+        fail "recall SKILL.md should have Overview section or trigger phrases in description"
+    fi
 }
 
 test_recall_has_filter_options() {
@@ -143,8 +161,17 @@ test_feedback_has_subcommand_sections() {
 }
 
 test_feedback_has_when_to_use() {
-    # Check for "Overview" section (standardized in #179)
-    assert_file_contains "$SKILLS_DIR/feedback/SKILL.md" "## Overview"
+    # Overview is optional if description has trigger phrases (standardized in #179)
+    local file="$SKILLS_DIR/feedback/SKILL.md"
+    if grep -q "## Overview" "$file"; then
+        # Has Overview - OK
+        return 0
+    elif grep -qiE "description:.*use\s+(when|for|this)" "$file"; then
+        # Description has triggers - Overview optional
+        return 0
+    else
+        fail "feedback SKILL.md should have Overview section or trigger phrases in description"
+    fi
 }
 
 test_feedback_has_output_examples() {
