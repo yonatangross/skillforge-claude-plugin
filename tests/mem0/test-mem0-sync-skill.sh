@@ -145,7 +145,7 @@ echo "=========================================="
 echo "Testing SKILL.md Content"
 echo "=========================================="
 
-assert_contains "$SKILL_CONTENT" "mcp__mem0__add_memory" "SKILL.md includes MCP call examples"
+assert_contains "$SKILL_CONTENT" "add-memory.py" "SKILL.md includes script execution examples"
 assert_contains "$SKILL_CONTENT" "Session Summary" "SKILL.md documents session summary"
 assert_contains "$SKILL_CONTENT" "enable_graph: true" "SKILL.md specifies enable_graph"
 assert_contains "$SKILL_CONTENT" "user_id" "SKILL.md documents user_id format"
@@ -166,7 +166,7 @@ assert_file_exists "$SKILL_DIR/references/decision-sync.md" "decision-sync.md re
 # Check reference content
 SESSION_REF=$(cat "$SKILL_DIR/references/session-sync.md")
 assert_contains "$SESSION_REF" "Session Summary" "session-sync.md documents session summary"
-assert_contains "$SESSION_REF" "mcp__mem0__add_memory" "session-sync.md includes MCP example"
+assert_contains "$SESSION_REF" "add-memory.py" "session-sync.md includes script example"
 
 PATTERN_REF=$(cat "$SKILL_DIR/references/pattern-sync.md")
 assert_contains "$PATTERN_REF" "agent_id" "pattern-sync.md documents agent_id"

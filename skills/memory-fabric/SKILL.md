@@ -10,7 +10,7 @@ user-invocable: false
 
 # Memory Fabric - Graph-First Orchestration
 
-Graph-first architecture: mcp__memory__* (knowledge graph) is PRIMARY and always available. mcp__mem0__* (semantic cloud) is an OPTIONAL enhancement for semantic search when configured.
+Graph-first architecture: mcp__memory__* (knowledge graph) is PRIMARY and always available. mem0 scripts (semantic cloud) are an OPTIONAL enhancement for semantic search when configured.
 
 ## Overview
 
@@ -37,8 +37,8 @@ Graph-first architecture: mcp__memory__* (knowledge graph) is PRIMARY and always
 │   └──────────────┬───────────────────┬───────────┘          │
 │                  │                   │                      │
 │        ┌─────────▼─────────┐  ┌──────▼──────────┐           │
-│        │  mcp__mem0__*     │  │  mcp__memory__* │           │
-│        │  (Semantic Cloud) │  │  (Local Graph)  │           │
+│        │  mem0 scripts      │  │  mcp__memory__* │           │
+│        │  (Semantic Cloud)  │  │  (Local Graph)  │           │
 │        └─────────┬─────────┘  └──────┬──────────┘           │
 │                  │                   │                      │
 │                  ▼                   ▼                      │
@@ -84,17 +84,12 @@ Parsed:
 ### Step 2: Execute Parallel Queries
 
 **Query Mem0 (semantic search):**
-```javascript
-mcp__mem0__search_memories({
-  query: "pagination approach recommend",
-  filters: {
-    AND: [
-      { user_id: "{project}-decisions" }
-    ]
-  },
-  limit: 10,
-  enable_graph: true
-})
+```bash
+!bash skills/mem0-memory/scripts/search-memories.py \
+  --query "pagination approach recommend" \
+  --user-id "{project}-decisions" \
+  --limit 10 \
+  --enable-graph
 ```
 
 **Query Graph (entity search):**

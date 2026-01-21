@@ -201,7 +201,7 @@ test_memory_bridge_outputs_valid_json() {
     fi
 
     # Run hook with mock input
-    export HOOK_INPUT='{"tool_name":"mcp__mem0__add_memory","tool_result":"success"}'
+    export HOOK_INPUT='{"tool_name":"bash","tool_result":"success","command":"add-memory.py"}'
     local output
     output=$(bash "$hook_file" 2>/dev/null || echo '{"continue":true}')
 

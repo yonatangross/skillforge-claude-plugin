@@ -17,7 +17,7 @@ Search past decisions and patterns from the knowledge graph with optional cloud 
 The recall skill uses **graph memory as PRIMARY** search:
 
 1. **Knowledge Graph (PRIMARY)**: Entity and relationship search via `mcp__memory__search_nodes` - FREE, zero-config, always works
-2. **Semantic Memory (mem0)**: Optional cloud search via `mcp__mem0__search_memories` - requires MEM0_API_KEY, use with `--mem0` flag
+2. **Semantic Memory (mem0)**: Optional cloud search via `search-memories.py` script - requires MEM0_API_KEY, use with `--mem0` flag
 
 **Benefits of Graph-First:**
 - Zero configuration required - works out of the box
@@ -112,19 +112,14 @@ Use `mcp__memory__search_nodes`:
 
 **Skip if `--mem0` flag NOT set or MEM0_API_KEY not configured.**
 
-Use `mcp__mem0__search_memories` IN PARALLEL with step 2:
+Execute the script IN PARALLEL with step 2:
 
-```json
-{
-  "query": "user's search query",
-  "filters": {
-    "AND": [
-      { "user_id": "skillforge-{project-name}-decisions" }
-    ]
-  },
-  "limit": 10,
-  "enable_graph": true
-}
+```bash
+!bash skills/mem0-memory/scripts/search-memories.py \
+  --query "user's search query" \
+  --user-id "skillforge-{project-name}-decisions" \
+  --limit 10 \
+  --enable-graph
 ```
 
 **User ID Selection:**

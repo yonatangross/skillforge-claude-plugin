@@ -41,7 +41,8 @@ test_remember_has_categories() {
 }
 
 test_remember_references_mem0_tool() {
-    assert_file_contains "$SKILLS_DIR/remember/SKILL.md" "mcp__mem0__add_memory"
+    # Check for script reference instead of MCP
+    assert_file_contains "$SKILLS_DIR/remember/SKILL.md" "add-memory.py"
 }
 
 test_remember_has_workflow() {
@@ -93,7 +94,8 @@ test_recall_has_options() {
 }
 
 test_recall_references_mem0_search() {
-    assert_file_contains "$SKILLS_DIR/recall/SKILL.md" "mcp__mem0__search_memories"
+    # Check for script reference instead of MCP
+    assert_file_contains "$SKILLS_DIR/recall/SKILL.md" "search-memories.py"
 }
 
 test_recall_has_workflow() {

@@ -76,8 +76,8 @@ echo ""
 echo "Test 4: Graph Flag Propagation"
 echo "   Verifying --graph flag adds enable_graph=true..."
 
-remember_has_graph=$(grep -c "enable_graph.*true" "$REMEMBER_SKILL" || echo "0")
-recall_has_graph=$(grep -c "enable_graph.*true" "$RECALL_SKILL" || echo "0")
+remember_has_graph=$(grep -c "enable_graph\|--enable-graph" "$REMEMBER_SKILL" || echo "0")
+recall_has_graph=$(grep -c "enable_graph\|--enable-graph" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_graph -gt 0 && $recall_has_graph -gt 0 ]]; then
   pass_test "Both skills support graph flag with enable_graph=true"
@@ -114,17 +114,17 @@ else
 fi
 echo ""
 
-# Test 7: mem0 MCP integration references
-echo "Test 7: mem0 MCP Integration"
-echo "   Verifying both skills reference correct mem0 MCP tools..."
+# Test 7: mem0 script integration references
+echo "Test 7: mem0 Script Integration"
+echo "   Verifying both skills reference correct mem0 scripts..."
 
-remember_has_add_memory=$(grep -c "mcp__mem0__add_memory" "$REMEMBER_SKILL" || echo "0")
-recall_has_search_memories=$(grep -c "mcp__mem0__search_memories" "$RECALL_SKILL" || echo "0")
+remember_has_add_memory=$(grep -c "add-memory.py" "$REMEMBER_SKILL" || echo "0")
+recall_has_search_memories=$(grep -c "search-memories.py" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_add_memory -gt 0 && $recall_has_search_memories -gt 0 ]]; then
-  pass_test "Both skills reference correct mem0 MCP tools"
+  pass_test "Both skills reference correct mem0 scripts"
 else
-  fail_test "mem0 MCP integration incomplete" "remember (add): $remember_has_add_memory, recall (search): $recall_has_search_memories"
+  fail_test "mem0 script integration incomplete" "remember (add): $remember_has_add_memory, recall (search): $recall_has_search_memories"
 fi
 echo ""
 
@@ -165,6 +165,6 @@ else
   echo "  - Consistent category filtering"
   echo "  - Proper graph flag propagation"
   echo "  - Agent scoping support"
-  echo "  - Proper mem0 MCP integration"
+  echo "  - Proper mem0 script integration"
   exit 0
 fi

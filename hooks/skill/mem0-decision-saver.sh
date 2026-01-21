@@ -159,14 +159,25 @@ DECISION_COUNT=$(echo "$EXTRACTED_DECISIONS" | grep -c . || echo "0")
 # Build entity hints for graph memory
 ENTITY_HINTS=$(mem0_extract_entities_hint "$FIRST_DECISION")
 
-# Build system message with storage recommendation
+# Build script path
+SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/add-memory.py"
+
+# Build metadata JSON
+METADATA_JSON=$(jq -n \
+    --arg category "$CATEGORY" \
+    --arg skill "${SKILL_NAME:-unknown}" \
+    '{
+        category: $category,
+        source: "skillforge-plugin",
+        skill: $skill
+    }')
+
+# Build system message with script command
 MSG=$(cat <<EOF
 [Decision Extraction] Found $DECISION_COUNT decisions from ${SKILL_NAME:-skill} (category: $CATEGORY)
 
-To persist these decisions, use mcp__mem0__add_memory with:
-- user_id="$DECISIONS_USER_ID"
-- text=<decision content>
-- metadata={"category": "$CATEGORY", "source": "skillforge-plugin", "skill": "${SKILL_NAME:-unknown}"}
+To persist these decisions, execute:
+bash $SCRIPT_PATH --text "<decision content>" --user-id "$DECISIONS_USER_ID" --metadata '$METADATA_JSON' --enable-graph
 
 Note: Graph memory enabled by default (v1.2.0) - entities extracted: $ENTITY_HINTS
 

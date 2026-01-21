@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.28.2] - 2026-01-20
 
+### Added
+
+- **Mem0 Python SDK Scripts** - Direct API integration replacing MCP layer
+  - 15 Python scripts in `skills/mem0-memory/scripts/` for all mem0 operations
+  - Core scripts: add-memory.py, search-memories.py, get-memories.py, get-memory.py, update-memory.py, delete-memory.py
+  - Advanced scripts: batch-update.py, batch-delete.py, memory-history.py, export-memories.py, get-export.py, memory-summary.py, get-events.py, get-users.py, create-webhook.py
+  - Shared library: `lib/mem0_client.py` for centralized client initialization
+  - Requirements: `requirements.txt` with mem0ai>=1.0.0 dependency
+
+- **Comprehensive Test Suite** - `tests/mem0/test-mem0-scripts.sh` with 22 test cases
+  - Script structure validation (7 tests)
+  - Script execution verification (4 tests)
+  - Import pattern validation (3 tests)
+  - Script functionality testing (4 tests)
+  - Integration testing (2 tests)
+  - Error handling validation (2 tests)
+
+### Changed
+
+- **Mem0 Integration Architecture** - Migrated from MCP to direct Python SDK calls
+  - Updated `mem0-memory`, `mem0-sync`, `memory-fabric`, `remember`, `recall` skills to use scripts
+  - Updated hooks: `mem0-pre-compaction-sync.sh`, `mem0-decision-saver.sh`, `mem0-context-retrieval.sh`
+  - All MCP references replaced with script invocations via Bash tool
+
+- **Test Suite Updates** - Updated 6 test files to reflect script-based approach
+  - `tests/unit/test-memory-commands.sh` - Checks for script references
+  - `tests/mem0/test-mem0-sync-skill.sh` - Validates script examples
+  - `tests/mem0/test-mem0-integration.sh` - Checks script paths in hooks
+  - `tests/skills/test-remember-recall-integration.sh` - Validates script integration
+  - `tests/unit/test-decision-sync.sh` - Checks script commands
+  - `tests/mem0/test-memory-fabric.sh` - Uses script pattern
+
 ### Fixed
 
 - Improved skill description triggers for semantic discovery

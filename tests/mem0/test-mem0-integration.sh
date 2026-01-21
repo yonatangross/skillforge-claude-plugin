@@ -93,10 +93,11 @@ test_mem0_context_retrieval_provides_hint() {
     local context
     context=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext // ""' 2>/dev/null || echo "")
 
-    if [[ "$context" == *"mcp__mem0__search_memories"* ]] || [[ "$context" == "" ]]; then
+    # Check for script path instead of MCP tool
+    if [[ "$context" == *"search-memories.py"* ]] || [[ "$context" == *"scripts/"* ]] || [[ "$context" == "" ]]; then
         test_pass
     else
-        test_fail "Expected mem0 search hint or empty"
+        test_fail "Expected mem0 script path hint or empty"
     fi
 }
 

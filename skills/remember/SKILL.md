@@ -17,7 +17,7 @@ Store important decisions, patterns, or context in the knowledge graph for futur
 The remember skill uses **graph memory as PRIMARY** storage:
 
 1. **Knowledge Graph (PRIMARY)**: Entity and relationship storage via `mcp__memory__create_entities` and `mcp__memory__create_relations` - FREE, zero-config, always works
-2. **Semantic Memory (mem0)**: Optional cloud storage via `mcp__mem0__add_memory` - requires MEM0_API_KEY
+2. **Semantic Memory (mem0)**: Optional cloud storage via `add-memory.py` script - requires MEM0_API_KEY
 
 **Benefits of Graph-First:**
 - Zero configuration required - works out of the box
@@ -197,23 +197,15 @@ Use `mcp__memory__create_relations`:
 
 **Skip if `--mem0` flag NOT set or MEM0_API_KEY not configured.**
 
-Use `mcp__mem0__add_memory` with:
+Execute the script:
 
-```json
-{
-  "user_id": "skillforge-{project-name}-decisions",
-  "text": "The user's text",
-  "agent_id": "skf:{agent-id}",
-  "enable_graph": true,
-  "metadata": {
-    "category": "detected_category",
-    "outcome": "success|failed|neutral",
-    "timestamp": "current_datetime",
-    "project": "current_project_name",
-    "source": "user",
-    "lesson": "extracted_lesson_if_failed"
-  }
-}
+```bash
+!bash skills/mem0-memory/scripts/add-memory.py \
+  --text "The user's text" \
+  --user-id "skillforge-{project-name}-decisions" \
+  --agent-id "skf:{agent-id}" \
+  --metadata '{"category":"detected_category","outcome":"success|failed|neutral","timestamp":"current_datetime","project":"current_project_name","source":"user","lesson":"extracted_lesson_if_failed"}' \
+  --enable-graph
 ```
 
 **User ID Selection:**

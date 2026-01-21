@@ -16,29 +16,56 @@ Persist and retrieve semantic memories across Claude sessions.
 
 Organize memories by scope for efficient retrieval:
 
-| Scope | Purpose | Examples |
-|-------|---------|----------|
-| `project-decisions` | Architecture and design decisions | "Use PostgreSQL with pgvector for RAG" |
-| `project-patterns` | Code patterns and conventions | "Components use kebab-case filenames" |
-| `project-continuity` | Session handoff context | "Working on auth refactor, PR #123 pending" |
+
+| Scope                | Purpose                           | Examples                                    |
+| -------------------- | --------------------------------- | ------------------------------------------- |
+| `project-decisions`  | Architecture and design decisions | "Use PostgreSQL with pgvector for RAG"      |
+| `project-patterns`   | Code patterns and conventions     | "Components use kebab-case filenames"       |
+| `project-continuity` | Session handoff context           | "Working on auth refactor, PR #123 pending" |
+
+
+## Setup
+
+**Install mem0 Python SDK:**
+
+```bash
+# Install the mem0ai package
+pip install mem0ai
+
+# Or install from requirements file
+pip install -r skills/mem0-memory/scripts/requirements.txt
+```
+
+**Set environment variables:**
+
+```bash
+export MEM0_API_KEY="sk-..."
+export MEM0_ORG_ID="org_..."  # Optional (Pro feature)
+export MEM0_PROJECT_ID="proj_..."  # Optional (Pro feature)
+```
+
+**Verify installation:**
+
+```bash
+python3 -c "from mem0 import MemoryClient; print('✓ mem0ai installed successfully')"
+```
 
 ## Core Operations
 
 ### Adding Memories
 
-```python
-# mcp__mem0__add_memory
-await mcp.mem0.add_memory(
-    content="Decided to use FastAPI over Flask for async support",
-    metadata={
-        "scope": "project-decisions",
-        "category": "backend",
-        "date": "2026-01-12"
-    }
-)
+Execute the script via Bash tool:
+
+```bash
+!bash skills/mem0-memory/scripts/add-memory.py \
+  --text "Decided to use FastAPI over Flask for async support" \
+  --user-id "project-decisions" \
+  --metadata '{"scope":"project-decisions","category":"backend","date":"2026-01-12"}' \
+  --enable-graph
 ```
 
 **Best practices for adding:**
+
 - Be specific and actionable
 - Include rationale ("because...")
 - Add scope and category metadata
@@ -46,37 +73,53 @@ await mcp.mem0.add_memory(
 
 ### Searching Memories
 
-```python
-# mcp__mem0__search_memories
-results = await mcp.mem0.search_memories(
-    query="authentication approach",
-    limit=5
-)
+```bash
+!bash skills/mem0-memory/scripts/search-memories.py \
+  --query "authentication approach" \
+  --user-id "project-decisions" \
+  --limit 5 \
+  --enable-graph
 ```
 
 **Search tips:**
+
 - Use natural language queries
 - Search by topic, not exact phrases
 - Combine with scope filters when available
 
 ### Listing Memories
 
-```python
-# mcp__mem0__get_memories
-all_memories = await mcp.mem0.get_memories(
-    user_id="project-skillforge",
-    limit=100
-)
+```bash
+!bash skills/mem0-memory/scripts/get-memories.py \
+  --user-id "project-skillforge" \
+  --filters '{"limit":100}'
+```
+
+### Getting Single Memory
+
+```bash
+!bash skills/mem0-memory/scripts/get-memory.py \
+  --memory-id "mem_abc123"
+```
+
+### Updating Memories
+
+```bash
+!bash skills/mem0-memory/scripts/update-memory.py \
+  --memory-id "mem_abc123" \
+  --text "Updated decision text" \
+  --metadata '{"updated":true}'
 ```
 
 ### Deleting Memories
 
-```python
-# mcp__mem0__delete_memory
-await mcp.mem0.delete_memory(memory_id="mem_abc123")
+```bash
+!bash skills/mem0-memory/scripts/delete-memory.py \
+  --memory-id "mem_abc123"
 ```
 
 **When to delete:**
+
 - Outdated decisions that were reversed
 - Incorrect information
 - Duplicate or redundant entries
@@ -84,6 +127,7 @@ await mcp.mem0.delete_memory(memory_id="mem_abc123")
 ## What to Remember
 
 **Good candidates:**
+
 - Architecture decisions with rationale
 - API contracts and interfaces
 - Naming conventions adopted
@@ -92,6 +136,7 @@ await mcp.mem0.delete_memory(memory_id="mem_abc123")
 - User preferences and style
 
 **Avoid storing:**
+
 - Temporary debugging context
 - Large code blocks (use Git)
 - Secrets or credentials
@@ -100,6 +145,7 @@ await mcp.mem0.delete_memory(memory_id="mem_abc123")
 ## Memory Patterns
 
 ### Decision Memory
+
 ```
 "Decision: Use cursor-based pagination for all list endpoints.
 Rationale: Better performance for large datasets, consistent UX.
@@ -107,6 +153,7 @@ Date: 2026-01-12. Scope: API design."
 ```
 
 ### Pattern Memory
+
 ```
 "Pattern: All React components export default function.
 Convention: Use named exports only for utilities.
@@ -114,52 +161,128 @@ Applies to: frontend/src/components/**"
 ```
 
 ### Continuity Memory
+
 ```
 "Session handoff: Completed hybrid search implementation.
 Next steps: Add metadata boosting, write integration tests.
 PR #456 ready for review. Blocked on: DB migration approval."
 ```
 
+## Advanced Operations (Pro Features)
+
+### Batch Operations
+
+**Batch update up to 1000 memories:**
+
+```bash
+!bash skills/mem0-memory/scripts/batch-update.py \
+  --memories '[{"memory_id":"mem_123","text":"updated"},{"memory_id":"mem_456","metadata":{"updated":true}}]'
+```
+
+**Batch delete:**
+
+```bash
+!bash skills/mem0-memory/scripts/batch-delete.py \
+  --memory-ids '["mem_123","mem_456","mem_789"]'
+```
+
+### Memory History (Audit Trail)
+
+```bash
+!bash skills/mem0-memory/scripts/memory-history.py \
+  --memory-id "mem_abc123"
+```
+
+### Exports (Data Portability)
+
+**Create export:**
+
+```bash
+!bash skills/mem0-memory/scripts/export-memories.py \
+  --user-id "project-decisions" \
+  --schema "json"
+```
+
+**Retrieve export:**
+
+```bash
+!bash skills/mem0-memory/scripts/get-export.py \
+  --user-id "project-decisions"
+```
+
+### Analytics
+
+**Get memory statistics:**
+
+```bash
+!bash skills/mem0-memory/scripts/memory-summary.py \
+  --filters '{"user_id":"project-decisions"}'
+```
+
+**List all users:**
+
+```bash
+!bash skills/mem0-memory/scripts/get-users.py
+```
+
+### Webhooks (Automation)
+
+```bash
+!bash skills/mem0-memory/scripts/create-webhook.py \
+  --url "https://example.com/webhook" \
+  --name "Memory Webhook" \
+  --event-types '["memory.created","memory.updated"]'
+```
+
 ## Integration with SkillForge
 
 Use memories to maintain context across plugin sessions:
 
-```python
+```bash
 # At session start - recall project context
-memories = await mcp.mem0.search_memories(
-    query="current sprint priorities"
-)
+!bash skills/mem0-memory/scripts/search-memories.py \
+  --query "current sprint priorities" \
+  --user-id "project-continuity"
 
 # During work - persist decisions
-await mcp.mem0.add_memory(
-    content=f"Implemented {feature} using {approach} because {reason}",
-    metadata={"scope": "project-decisions"}
-)
+!bash skills/mem0-memory/scripts/add-memory.py \
+  --text "Implemented feature using approach because reason" \
+  --user-id "project-decisions" \
+  --metadata '{"scope":"project-decisions"}'
 
 # At session end - save continuity
-await mcp.mem0.add_memory(
-    content=f"Session end: {summary}. Next: {next_steps}",
-    metadata={"scope": "project-continuity"}
-)
+!bash skills/mem0-memory/scripts/add-memory.py \
+  --text "Session end: summary. Next: next_steps" \
+  --user-id "project-continuity" \
+  --metadata '{"scope":"project-continuity"}'
 ```
 
-## MCP Requirements
+## Scripts Available
 
-This skill requires the Mem0 MCP server configured in Claude Desktop:
+All scripts are located in `skills/mem0-memory/scripts/`:
 
-```json
-{
-  "mcpServers": {
-    "mem0": {
-      "command": "npx",
-      "args": ["-y", "@mem0/mcp-server"],
-      "env": {
-        "MEM0_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
-```
+**Core Scripts:**
+
+- `add-memory.py` - Store new memory
+- `search-memories.py` - Semantic search
+- `get-memories.py` - List all memories (with filters)
+- `get-memory.py` - Get single memory by ID
+- `update-memory.py` - Update memory content/metadata
+- `delete-memory.py` - Remove memory
+
+**Advanced Scripts (Pro Features):**
+
+- `batch-update.py` - Bulk update up to 1000 memories
+- `batch-delete.py` - Bulk delete multiple memories
+- `memory-history.py` - Get audit trail for a memory
+- `export-memories.py` - Create structured export
+- `get-export.py` - Retrieve export data
+- `memory-summary.py` - Get statistics/analytics
+- `get-events.py` - Track async operations
+- `get-users.py` - List all users (analytics)
+- `create-webhook.py` - Setup webhooks for automation
+
+**Note:** MCP integration is deprecated. Use scripts instead for better control, versioning, and access to all 30+ API methods.
 
 ## Related Skills
 
@@ -170,39 +293,50 @@ This skill requires the Mem0 MCP server configured in Claude Desktop:
 
 ## Key Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Memory scope | project-decisions, project-patterns, project-continuity | Clear separation of memory types |
-| Storage format | Natural language with metadata | Semantic search works best with descriptive text |
-| MCP integration | Mem0 MCP server | Native Claude Desktop integration |
-| What to avoid | Secrets, large code blocks, volatile info | Keep memories clean and safe |
+
+| Decision        | Choice                                                  | Rationale                                        |
+| --------------- | ------------------------------------------------------- | ------------------------------------------------ |
+| Memory scope    | project-decisions, project-patterns, project-continuity | Clear separation of memory types                 |
+| Storage format  | Natural language with metadata                          | Semantic search works best with descriptive text |
+| MCP integration | Mem0 MCP server                                         | Native Claude Desktop integration                |
+| What to avoid   | Secrets, large code blocks, volatile info               | Keep memories clean and safe                     |
+
 
 ## Capability Details
 
 ### memory-add
+
 **Keywords:** add memory, remember, store, persist, save context
 **Solves:**
+
 - How do I save information for later sessions?
 - Persist a decision or pattern
 - Store project context across sessions
 
 ### memory-search
+
 **Keywords:** search memory, recall, find, retrieve, what did we
 **Solves:**
+
 - How do I find previous decisions?
 - Recall context from past sessions
 - Search for specific patterns or conventions
 
 ### memory-list
+
 **Keywords:** list memories, show all, get memories, view stored
 **Solves:**
+
 - How do I see all stored memories?
 - List project decisions
 - Review stored patterns
 
 ### memory-delete
+
 **Keywords:** delete memory, forget, remove, clear
 **Solves:**
+
 - How do I remove outdated memories?
 - Delete incorrect information
 - Clean up duplicate entries
+

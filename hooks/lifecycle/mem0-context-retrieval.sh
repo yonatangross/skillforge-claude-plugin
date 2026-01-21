@@ -182,12 +182,14 @@ Execute /recall to load memories from knowledge graph (and mem0 if configured wi
         user_id_decisions=$(mem0_user_id "$MEM0_SCOPE_DECISIONS")
         local user_id_continuity
         user_id_continuity=$(mem0_user_id "$MEM0_SCOPE_CONTINUITY")
+        
+        local script_path="${CLAUDE_PLUGIN_ROOT:-${SCRIPT_DIR}/../..}/skills/mem0-memory/scripts/search-memories.py"
 
         msg="${msg}
 
 Optional mem0 cloud enhancement:
-• mcp__mem0__search_memories({query: 'recent session', filters: {AND: [{user_id: '${user_id_continuity}'}]}, limit: 5})
-• mcp__mem0__search_memories({query: 'architecture decisions', filters: {AND: [{user_id: '${user_id_decisions}'}]}, limit: 5})"
+• bash $script_path --query 'recent session' --user-id '${user_id_continuity}' --limit 5 --enable-graph
+• bash $script_path --query 'architecture decisions' --user-id '${user_id_decisions}' --limit 5 --enable-graph"
     fi
 
     # Add time-filtered search hint if available

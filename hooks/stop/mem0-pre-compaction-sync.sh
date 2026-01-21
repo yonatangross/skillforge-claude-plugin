@@ -197,8 +197,8 @@ SYNC_CONTEXT=$(jq -n \
 # Build concise skill invocation message
 SKILL_MSG="[Mem0 Sync] $SUMMARY - Execute /mem0-sync to persist session context"
 
-# Build the ready-to-execute MCP calls for the skill
-MCP_CALLS=""
+# Build script path
+SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/add-memory.py"
 
 # Determine boolean values for has_blockers and has_next_steps
 HAS_BLOCKERS="false"
@@ -206,33 +206,34 @@ HAS_NEXT_STEPS="false"
 [[ -n "${BLOCKERS:-}" ]] && HAS_BLOCKERS="true"
 [[ -n "${NEXT_STEPS:-}" ]] && HAS_NEXT_STEPS="true"
 
-# Session summary MCP call (always include)
-SESSION_MCP=$(jq -n \
-    --arg text "Session Summary: ${SUMMARY_TEXT:-Session work}${BLOCKERS:+ | Blockers: $BLOCKERS}${NEXT_STEPS:+ | Next: $NEXT_STEPS}" \
-    --arg user_id "$CONTINUITY_USER_ID" \
+# Build metadata JSON for session summary
+SESSION_METADATA=$(jq -n \
     --arg project "$PROJECT_ID" \
     --arg status "${SESSION_STATUS:-in_progress}" \
     --argjson has_blockers "$HAS_BLOCKERS" \
     --argjson has_next_steps "$HAS_NEXT_STEPS" \
     '{
-        tool: "mcp__mem0__add_memory",
-        args: {
-            text: $text,
-            user_id: $user_id,
-            metadata: {
-                type: "session_summary",
-                status: $status,
-                project: $project,
-                has_blockers: $has_blockers,
-                has_next_steps: $has_next_steps,
-                source: "skillforge-plugin"
-            },
-            enable_graph: true
-        }
+        type: "session_summary",
+        status: $status,
+        project: $project,
+        has_blockers: $has_blockers,
+        has_next_steps: $has_next_steps,
+        source: "skillforge-plugin"
     }')
 
+# Build session summary text
+SESSION_TEXT="Session Summary: ${SUMMARY_TEXT:-Session work}"
+[[ -n "${BLOCKERS:-}" ]] && SESSION_TEXT="${SESSION_TEXT} | Blockers: $BLOCKERS"
+[[ -n "${NEXT_STEPS:-}" ]] && SESSION_TEXT="${SESSION_TEXT} | Next: $NEXT_STEPS"
+
+# Build script command for session summary
+SESSION_CMD="bash $SCRIPT_PATH --text \"$SESSION_TEXT\" --user-id \"$CONTINUITY_USER_ID\" --metadata '$SESSION_METADATA' --enable-graph"
+
+# Update skill message to include script command
+SKILL_MSG="[Mem0 Sync] $SUMMARY - Execute: $SESSION_CMD"
+
 # Output Stop hook compliant JSON (no hookSpecificOutput for Stop events)
-# The systemMessage provides all context needed for Claude to run /mem0-sync
+# The systemMessage provides all context needed for Claude to run the script
 jq -n \
     --arg msg "$SKILL_MSG" \
     '{
