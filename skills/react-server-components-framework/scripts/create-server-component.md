@@ -35,7 +35,10 @@ interface $ARGUMENTSProps {
 
 export default async function $ARGUMENTS({}: $ARGUMENTSProps) {
   // ✅ Server-only: Direct database access
-  !`grep -q "prisma" package.json 2>/dev/null && echo "const data = await db.$ARGUMENTS.findMany();" || echo "// const data = await fetchData();"`
+  // If using Prisma, replace $ARGUMENTS with your model name:
+  // const data = await db.$ARGUMENTS.findMany();
+  // Otherwise, use your data fetching method:
+  // const data = await fetchData();
 
   return (
     <div>
@@ -49,5 +52,6 @@ export default async function $ARGUMENTS({}: $ARGUMENTSProps) {
 ## Usage
 
 1. Review detected setup above
-2. Save to: `app/$ARGUMENTS/page.tsx` or `components/$ARGUMENTS.tsx`
-3. No 'use client' directive - runs on server
+2. Update database query if using Prisma (replace $ARGUMENTS with actual model name)
+3. Save to: `app/$ARGUMENTS/page.tsx` or `components/$ARGUMENTS.tsx`
+4. No 'use client' directive - runs on server

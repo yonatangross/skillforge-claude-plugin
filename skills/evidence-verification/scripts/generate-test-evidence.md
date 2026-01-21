@@ -14,39 +14,49 @@ Generate test evidence for: $ARGUMENTS
 **Task/Feature:** $ARGUMENTS
 **Agent:** Evidence Verification Agent
 **Timestamp:** !`date "+%Y-%m-%d %H:%M:%S"`
+**Test Command Available**: !`which pytest >/dev/null 2>&1 && echo "pytest" || (which npm >/dev/null 2>&1 && echo "npm test" || echo "Unknown")`
+
+## Your Task
+
+Run the test command: **$ARGUMENTS**
+
+Then document the results below. If no command provided, use the detected test command above.
 
 ### Test Command
 
 ```bash
-!`echo "$ARGUMENTS" || echo "pytest --cov" || echo "npm test"`
+$ARGUMENTS
 ```
 
-### Test Results (Auto-Fetched)
+### Test Results
 
-**Exit Code:** !`$ARGUMENTS 2>&1; echo $? | tail -1 || echo "Unknown"` ✅/❌
+Run the command and capture:
+
+**Exit Code:** [0 for success, non-zero for failure] ✅/❌
 
 **Summary:**
-- Tests Passed: !`$ARGUMENTS 2>&1 | grep -oE '[0-9]+ passed' | head -1 | grep -oE '[0-9]+' || echo "Unknown"`
-- Tests Failed: !`$ARGUMENTS 2>&1 | grep -oE '[0-9]+ failed' | head -1 | grep -oE '[0-9]+' || echo "0"`
-- Tests Skipped: !`$ARGUMENTS 2>&1 | grep -oE '[0-9]+ skipped' | head -1 | grep -oE '[0-9]+' || echo "0"`
-- Total Tests: !`$ARGUMENTS 2>&1 | grep -oE '[0-9]+ total' | head -1 | grep -oE '[0-9]+' || echo "Unknown"`
+- Tests Passed: [number]
+- Tests Failed: [number]
+- Tests Skipped: [number]
+- Total Tests: [number]
 
-**Duration:** !`$ARGUMENTS 2>&1 | grep -oE 'Time:.*[0-9.]+s' | tail -1 || echo "Unknown"`
+**Duration:** [time in seconds or MM:SS format]
 
 ### Coverage (if available)
 
-**Overall Coverage:** !`$ARGUMENTS --coverage 2>&1 | grep -oE '[0-9]+%' | head -1 || echo "Not available"`
+**Overall Coverage:** [percentage]%
 
 **Detailed Coverage:**
-- Statements: !`$ARGUMENTS --coverage 2>&1 | grep -i "statements" | grep -oE '[0-9]+%' | head -1 || echo "N/A"`
-- Branches: !`$ARGUMENTS --coverage 2>&1 | grep -i "branches" | grep -oE '[0-9]+%' | head -1 || echo "N/A"`
-- Functions: !`$ARGUMENTS --coverage 2>&1 | grep -i "functions" | grep -oE '[0-9]+%' | head -1 || echo "N/A"`
-- Lines: !`$ARGUMENTS --coverage 2>&1 | grep -i "lines" | grep -oE '[0-9]+%' | head -1 || echo "N/A"`
+- Statements: [percentage]%
+- Branches: [percentage]%
+- Functions: [percentage]%
+- Lines: [percentage]%
 
 ### Test Output
 
 ```
-!`$ARGUMENTS 2>&1 | head -30 || echo "Unable to fetch test output"`
+[Paste first 10-20 lines of test output here]
+[Include key information: which tests ran, any errors, summary]
 ```
 
 ### Environment
@@ -69,8 +79,6 @@ Generate test evidence for: $ARGUMENTS
 
 [✅ All tests passed / ❌ X tests failed - needs fixing]
 
-**Status:** !`$ARGUMENTS 2>&1 | grep -q "passed\|PASS" && echo "✅ All tests passed" || echo "❌ Some tests failed"`
-
 ---
 
 ## Quick Evidence Template
@@ -79,12 +87,12 @@ Generate test evidence for: $ARGUMENTS
 ## Test Evidence
 
 **Task:** $ARGUMENTS
-**Command:** `!`echo "$ARGUMENTS" || echo "test command"`
-**Exit Code:** !`$ARGUMENTS 2>&1; echo $? | tail -1` [✅/❌]
-**Results:** !`$ARGUMENTS 2>&1 | grep -oE '[0-9]+ passed.*[0-9]+ failed' || echo "See output above"`
-**Coverage:** !`$ARGUMENTS --coverage 2>&1 | grep -oE '[0-9]+%' | head -1 || echo "N/A"`%
-**Duration:** !`$ARGUMENTS 2>&1 | grep -oE 'Time:.*[0-9.]+s' || echo "Unknown"`
+**Command:** `$ARGUMENTS`
+**Exit Code:** [0/non-zero] [✅/❌]
+**Results:** [X passed, X failed, X skipped]
+**Coverage:** [X]%
+**Duration:** [X]s
 **Timestamp:** !`date "+%Y-%m-%d %H:%M:%S"`
 
-**Status:** !`$ARGUMENTS 2>&1 | grep -q "passed\|PASS" && echo "All passed ✅" || echo "Some failed ❌"`
+**Status:** [All passed ✅ / X failed ❌]
 ```

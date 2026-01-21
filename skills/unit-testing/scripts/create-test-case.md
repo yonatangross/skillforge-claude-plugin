@@ -12,7 +12,13 @@ Create test case for: $ARGUMENTS
 - **Test Framework**: !`grep -r "jest\|vitest\|@testing-library" package.json 2>/dev/null | head -1 | grep -oE 'jest|vitest|@testing-library' || echo "jest (recommended)"`
 - **Test Directory**: !`find . -type d \( -name "__tests__" -o -name "tests" -o -name "*.test.*" -o -name "*.spec.*" \) 2>/dev/null | head -1 || echo "__tests__"`
 - **Existing Tests**: !`find . -name "*test*.ts" -o -name "*test*.tsx" -o -name "*.spec.*" 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
-- **Component Location**: !`find . -name "$ARGUMENTS.tsx" -o -name "$ARGUMENTS.ts" 2>/dev/null | head -1 || echo "components/$ARGUMENTS.tsx"`
+- **Component Files**: !`find . -name "*.tsx" -o -name "*.ts" 2>/dev/null | grep -E "(component|Component)" | head -3 || echo "No component files found"`
+
+## Your Task
+
+Create a test case for component: **$ARGUMENTS**
+
+Locate the component file first, then create the corresponding test file.
 
 ## Test Case Template
 
@@ -39,5 +45,6 @@ describe('$ARGUMENTS', () => {
 ## Usage
 
 1. Review detected framework above
-2. Save to: `__tests__/$ARGUMENTS.test.tsx`
-3. Run: `npm test $ARGUMENTS`
+2. Locate component file: `components/$ARGUMENTS.tsx` or similar
+3. Save test to: `__tests__/$ARGUMENTS.test.tsx`
+4. Run: `npm test $ARGUMENTS`

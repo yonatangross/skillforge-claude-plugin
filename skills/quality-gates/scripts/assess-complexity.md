@@ -9,12 +9,22 @@ Assess complexity for: $ARGUMENTS
 
 ## Codebase Context (Auto-Analyzed)
 
-- **Target Location**: !`echo "$ARGUMENTS" || echo "Current directory"`
-- **Files in Target**: !`find "$ARGUMENTS" -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
-- **Lines of Code**: !`find "$ARGUMENTS" -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" \) 2>/dev/null | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}' || echo "0"`
-- **Test Files**: !`find "$ARGUMENTS" -type f \( -name "*test*.py" -o -name "*test*.ts" -o -name "*.spec.*" \) 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
-- **Recent Changes**: !`git log --oneline --since="1 week ago" -- "$ARGUMENTS" 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
-- **Dependencies**: !`grep -r "import\|from" "$ARGUMENTS" 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
+- **Current Directory**: !`pwd`
+- **Project Root**: !`basename $(git rev-parse --show-toplevel 2>/dev/null) || echo "Unknown"`
+- **Total Files**: !`find . -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" \) 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
+- **Total LOC**: !`find . -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" \) 2>/dev/null | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}' || echo "0"`
+- **Test Files**: !`find . -type f \( -name "*test*.py" -o -name "*test*.ts" -o -name "*.spec.*" \) 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
+- **Recent Changes**: !`git log --oneline --since="1 week ago" 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
+
+## Your Task
+
+Analyze complexity for target: **$ARGUMENTS**
+
+Use the following commands to gather metrics:
+- Files: `find "$ARGUMENTS" -type f | wc -l`
+- Lines of code: `find "$ARGUMENTS" -type f -name "*.py" -o -name "*.ts" | xargs wc -l`
+- Test files: `find "$ARGUMENTS" -name "*test*" | wc -l`
+- Recent changes: `git log --oneline --since="1 week ago" -- "$ARGUMENTS"`
 
 ## Complexity Assessment
 
@@ -37,7 +47,7 @@ Score each criterion, then sum for total complexity assessment:
 - [ ] **500-1500 lines** = 4 points
 - [ ] **1500+ lines** = 5 points
 
-**Estimated LOC**: !`find "$ARGUMENTS" -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" \) 2>/dev/null | xargs wc -l 2>/dev/null | tail -1 | awk '{print $1}' || echo "Unknown"`
+**Estimated LOC**: [Run: `find "$ARGUMENTS" -type f -name "*.py" -o -name "*.ts" | xargs wc -l`]
 **Score:** _____ / 5
 
 ---
@@ -62,7 +72,7 @@ Score each criterion, then sum for total complexity assessment:
 - [ ] **11-25 files** = 4 points
 - [ ] **26+ files** = 5 points
 
-**Files Affected**: !`find "$ARGUMENTS" -type f \( -name "*.py" -o -name "*.ts" -o -name "*.tsx" -o -name "*.js" \) 2>/dev/null | wc -l | tr -d ' ' || echo "Unknown"`
+**Files Affected**: [Run: `find "$ARGUMENTS" -type f | wc -l`]
 **Score:** _____ / 5
 
 ---
@@ -75,7 +85,7 @@ Score each criterion, then sum for total complexity assessment:
 - [ ] **4-6 dependencies** = 4 points
 - [ ] **7+ dependencies** = 5 points
 
-**Imports Found**: !`grep -r "import\|from" "$ARGUMENTS" 2>/dev/null | wc -l | tr -d ' ' || echo "0"`
+**Imports Found**: [Run: `grep -r "import\|from" "$ARGUMENTS" | wc -l`]
 **Score:** _____ / 5
 
 ---
