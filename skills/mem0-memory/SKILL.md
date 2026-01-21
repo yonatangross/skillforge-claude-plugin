@@ -38,10 +38,29 @@ pip install -r skills/mem0-memory/scripts/requirements.txt
 
 **Set environment variables:**
 
+**Option 1: Using `.env` file (Recommended)**
+
+Create a `.env` file in your project root:
+
+```bash
+# Copy the example file
+cp .env.example .env
+
+# Edit .env and add your API key
+MEM0_API_KEY=sk-your-api-key-here
+MEM0_ORG_ID=org_...      # Optional (Pro feature)
+MEM0_PROJECT_ID=proj_... # Optional (Pro feature)
+MEM0_WEBHOOK_URL=https://your-domain.com/webhook/mem0  # Optional
+```
+
+The scripts automatically load from `.env` if it exists.
+
+**Option 2: Shell environment variables**
+
 ```bash
 export MEM0_API_KEY="sk-..."
-export MEM0_ORG_ID="org_..."  # Optional (Pro feature)
-export MEM0_PROJECT_ID="proj_..."  # Optional (Pro feature)
+export MEM0_ORG_ID="org_..."      # Optional (Pro feature)
+export MEM0_PROJECT_ID="proj_..." # Optional (Pro feature)
 ```
 
 **Verify installation:**

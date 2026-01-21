@@ -221,12 +221,14 @@ SYSTEM_MSG="[Memory Context] For relevant past $SCOPE_DESC decisions, use mcp__m
 
 # Add relationship hint if graph-related query
 if [[ "$USE_GRAPH" == "true" ]]; then
-    SYSTEM_MSG="$SYSTEM_MSG | For relationships, also use mcp__memory__open_nodes on found entities"
+    local script_path="${CLAUDE_PLUGIN_ROOT:-${SCRIPT_DIR}/../..}/skills/mem0-memory/scripts"
+    SYSTEM_MSG="$SYSTEM_MSG | For relationships: mcp__memory__open_nodes on found entities | Graph traversal: bash $script_path/traverse-graph.py --memory-id <id> --depth 2"
 fi
 
 # OPTIONAL: mem0 semantic search (if configured)
 if [[ "$MEM0_AVAILABLE" == "true" && -n "$USER_ID_DECISIONS" ]]; then
-    SYSTEM_MSG="$SYSTEM_MSG | [Enhanced] For semantic search: mcp__mem0__search_memories query=\"$SEARCH_TERMS\" user_id=\"$USER_ID_DECISIONS\""
+    local script_path="${CLAUDE_PLUGIN_ROOT:-${SCRIPT_DIR}/../..}/skills/mem0-memory/scripts"
+    SYSTEM_MSG="$SYSTEM_MSG | [Enhanced] For semantic search: mcp__mem0__search_memories query=\"$SEARCH_TERMS\" user_id=\"$USER_ID_DECISIONS\" enable_graph=true | Graph relationships: bash $script_path/get-related-memories.py --memory-id <id> --depth 2"
 
     # Add global search hint if not already global
     if [[ "$USE_GLOBAL" != "true" && -n "$GLOBAL_USER_ID" ]]; then

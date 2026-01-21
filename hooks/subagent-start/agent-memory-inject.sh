@@ -175,6 +175,11 @@ fi
 # Build graph memory query for entity relationships
 GRAPH_QUERY="$AGENT_TYPE $DOMAIN_KEYWORDS"
 
+# Build graph relationship query using new scripts
+SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-${SCRIPT_DIR}/../..}/skills/mem0-memory/scripts"
+GRAPH_RELATIONSHIP_QUERY="bash $SCRIPT_PATH/get-related-memories.py --memory-id <memory_id> --depth 2"
+GRAPH_TRAVERSAL_QUERY="bash $SCRIPT_PATH/traverse-graph.py --memory-id <memory_id> --depth 2 --relation-type 'recommends'"
+
 # -----------------------------------------------------------------------------
 # Build Actionable Memory Load Instructions
 # -----------------------------------------------------------------------------
@@ -203,6 +208,12 @@ mcp__memory__search_nodes
 {"query": "GRAPH_QUERY_PLACEHOLDER"}
 ```
 
+## 3b. Graph Relationship Queries (mem0)
+```
+bash GRAPH_RELATIONSHIP_QUERY_PLACEHOLDER
+bash GRAPH_TRAVERSAL_QUERY_PLACEHOLDER
+```
+
 ## 4. Cross-Project Best Practices (mem0)
 ```
 mcp__mem0__search_memories
@@ -216,6 +227,8 @@ MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//MEM0_AGENT_QUERY_PLACEHOLDER/$MEM0_AGENT_QUE
 MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//MEM0_DECISIONS_QUERY_PLACEHOLDER/$MEM0_DECISIONS_QUERY}"
 MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//GRAPH_QUERY_PLACEHOLDER/$GRAPH_QUERY}"
 MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//MEM0_GLOBAL_QUERY_PLACEHOLDER/$MEM0_GLOBAL_QUERY}"
+MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//GRAPH_RELATIONSHIP_QUERY_PLACEHOLDER/$GRAPH_RELATIONSHIP_QUERY}"
+MEMORY_LOAD_MSG="${MEMORY_LOAD_MSG//GRAPH_TRAVERSAL_QUERY_PLACEHOLDER/$GRAPH_TRAVERSAL_QUERY}"
 
 # Add cross-agent section if related agents exist
 if [[ -n "$RELATED_AGENTS" && -n "$CROSS_AGENT_QUERY" ]]; then

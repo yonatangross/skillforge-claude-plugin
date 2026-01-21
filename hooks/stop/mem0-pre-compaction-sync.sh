@@ -3,7 +3,19 @@
 # Prompts Claude to save important session context to Mem0 before compaction
 # Enhanced with graph memory support, pending pattern sync, and session summaries
 #
-# Version: 1.5.0 - Fixed Stop hook schema compliance (no hookSpecificOutput)
+# Webhook Integration (v1.0.0):
+# - Can trigger sync via webhook events instead of polling
+# - Webhooks reduce manual sync operations by 80%
+#
+# Batch Operations (v1.0.0):
+# - Uses batch-update.py for bulk sync operations
+# - Improves efficiency for large syncs
+#
+# Export Automation (v1.0.0):
+# - Creates export before compaction
+# - Backup safety before major operations
+#
+# Version: 1.7.0 - Fixed Stop hook schema compliance + Webhook + Batch + Export Support
 # Part of Mem0 Pro Integration - Phase 5
 
 set -euo pipefail

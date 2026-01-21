@@ -4,7 +4,26 @@ Shared mem0 client initialization for skill scripts.
 Extracted from bin/mem0-migrate.py pattern.
 """
 import os
+from pathlib import Path
 from mem0 import MemoryClient
+
+# Try to load .env file if it exists (optional dependency)
+try:
+    from dotenv import load_dotenv
+    # Load .env from project root (where .claude/ or plugin is)
+    # Try multiple common locations
+    env_paths = [
+        Path.cwd() / ".env",
+        Path(__file__).parent.parent.parent.parent / ".env",  # From scripts/lib/ to project root
+        Path.home() / ".mem0.env",  # User-level config
+    ]
+    for env_path in env_paths:
+        if env_path.exists():
+            load_dotenv(env_path, override=True)  # override=True ensures .env values take precedence
+            break
+except ImportError:
+    # python-dotenv not installed, skip .env loading
+    pass
 
 
 def get_mem0_client(api_key: str | None = None, org_id: str | None = None, project_id: str | None = None) -> MemoryClient:

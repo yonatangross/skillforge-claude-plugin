@@ -11,7 +11,11 @@
 # - mcp__mem0__add_memory → Extract entities, sync to graph
 # - mcp__memory__create_entities → No action needed (already in primary)
 #
-# Version: 2.1.0 - CC 2.1.9/2.1.11 compliant, Graph-First Architecture
+# Webhook Integration (v1.0.0):
+# - Webhooks can trigger auto-sync on memory.created events
+# - Reduces need for manual sync operations
+#
+# Version: 2.1.1 - CC 2.1.9/2.1.11 compliant, Graph-First Architecture + Webhook Support
 # CC 2.1.9: Uses systemMessage for actionable sync suggestions
 # CC 2.1.11: Session ID guaranteed available (no fallback needed)
 #

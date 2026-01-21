@@ -3,7 +3,7 @@
 # Part of SkillForge Claude Plugin test suite
 #
 # Tests:
-# 1. Script structure (all 15 scripts + lib files exist)
+# 1. Script structure (all 23 scripts + lib files exist)
 # 2. Script execution (--help works, can be executed)
 # 3. Import pattern (lib/mem0_client can be imported)
 # 4. Script functionality (JSON output, error handling)
@@ -169,6 +169,31 @@ test_all_advanced_scripts_exist() {
     fi
 }
 
+test_all_new_scripts_exist() {
+    test_start "all 8 new enhancement scripts exist"
+    local new_scripts=(
+        "get-related-memories.py"
+        "traverse-graph.py"
+        "list-webhooks.py"
+        "update-webhook.py"
+        "delete-webhook.py"
+        "webhook-receiver.py"
+        "migrate-metadata.py"
+        "bulk-export.py"
+    )
+    local missing=()
+    for script in "${new_scripts[@]}"; do
+        if [[ ! -f "$SCRIPTS_DIR/$script" ]]; then
+            missing+=("$script")
+        fi
+    done
+    if [[ ${#missing[@]} -eq 0 ]]; then
+        test_pass
+    else
+        test_fail "Missing scripts: ${missing[*]}"
+    fi
+}
+
 test_scripts_directory_exists
 test_lib_directory_exists
 test_mem0_client_exists
@@ -176,6 +201,7 @@ test_lib_init_exists
 test_requirements_exists
 test_all_core_scripts_exist
 test_all_advanced_scripts_exist
+test_all_new_scripts_exist
 
 echo ""
 
@@ -248,10 +274,27 @@ test_advanced_scripts_show_help() {
     fi
 }
 
+test_new_scripts_show_help() {
+    test_start "new enhancement scripts show --help"
+    local new_scripts=("get-related-memories.py" "traverse-graph.py" "list-webhooks.py" "webhook-receiver.py")
+    local failed=()
+    for script in "${new_scripts[@]}"; do
+        if ! python3 "$SCRIPTS_DIR/$script" --help >/dev/null 2>&1; then
+            failed+=("$script")
+        fi
+    done
+    if [[ ${#failed[@]} -eq 0 ]]; then
+        test_pass
+    else
+        test_fail "Scripts failed --help: ${failed[*]}"
+    fi
+}
+
 test_scripts_are_executable
 test_scripts_have_shebang
 test_core_scripts_show_help
 test_advanced_scripts_show_help
+test_new_scripts_show_help
 
 echo ""
 
