@@ -6,7 +6,7 @@ set -euo pipefail
 
 # Read stdin (the hook input JSON)
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 

@@ -13,7 +13,7 @@ set -eo pipefail
 
 # Read stdin BEFORE sourcing common.sh to avoid race conditions
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# NOTE: Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HOOKS_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

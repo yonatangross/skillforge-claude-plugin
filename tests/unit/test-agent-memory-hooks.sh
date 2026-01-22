@@ -227,14 +227,9 @@ it "extracts patterns from output" test_post_agent_extracts_patterns_from_output
 
 describe "Integration: Hook Registration"
 
-test_post_agent_in_dispatcher() {
-    # CC 2.1.7: Hooks registered directly in settings.json, not dispatcher
-    # Check if hook is registered OR if it's a subagent-stop hook (auto-registered)
-    local dispatcher="$PROJECT_ROOT/hooks/posttool/dispatcher.sh"
-    if [[ -f "$dispatcher" ]] && grep -q "agent-memory-store.sh" "$dispatcher"; then
-        return 0
-    fi
-    # Also valid: hook exists in subagent-stop directory (CC 2.1.7 native registration)
+test_post_agent_in_native_location() {
+    # CC 2.1.7: Hooks registered directly in settings.json (no dispatchers)
+    # Check if hook exists in subagent-stop directory (CC 2.1.7 native registration)
     [[ -f "$PROJECT_ROOT/hooks/subagent-stop/agent-memory-store.sh" ]]
 }
 

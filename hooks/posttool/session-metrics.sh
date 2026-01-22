@@ -5,8 +5,8 @@
 set -euo pipefail
 
 # Read stdin BEFORE sourcing common.sh
+# NOTE: Don't export - large inputs overflow environment causing "Argument list too long"
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
 
 source "$(dirname "$0")/../_lib/common.sh"
 

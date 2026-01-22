@@ -5,7 +5,7 @@ set -euo pipefail
 # CC 2.1.9: Uses additionalContext to guide issue creation
 
 INPUT=$(cat)
-export _HOOK_INPUT="$INPUT"
+_HOOK_INPUT="$INPUT"  # Dont export
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../_lib/common.sh"

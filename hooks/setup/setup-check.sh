@@ -24,7 +24,7 @@ if [[ -n "${HOOK_INPUT:-}" ]]; then
 else
   _HOOK_INPUT=""
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 source "$(dirname "$0")/../_lib/common.sh"
 

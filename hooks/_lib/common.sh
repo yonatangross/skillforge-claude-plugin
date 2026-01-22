@@ -44,7 +44,7 @@ init_hook_input() {
     # This prevents hanging during hook execution
     _HOOK_INPUT=""
   fi
-  export _HOOK_INPUT
+  # Dont export - can overflow with large inputs
 }
 
 # Legacy function - now just returns cached input

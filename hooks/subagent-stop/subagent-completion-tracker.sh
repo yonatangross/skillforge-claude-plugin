@@ -11,7 +11,7 @@ set -euo pipefail
 
 # Read stdin BEFORE sourcing common.sh to avoid subshell issues
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 source "$(dirname "$0")/../_lib/common.sh"
 

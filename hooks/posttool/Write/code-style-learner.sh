@@ -16,7 +16,7 @@ set -euo pipefail
 
 # Read hook input first
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 # Source common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

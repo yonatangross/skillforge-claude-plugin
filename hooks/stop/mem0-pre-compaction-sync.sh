@@ -7,22 +7,22 @@
 # - Can trigger sync via webhook events instead of polling
 # - Webhooks reduce manual sync operations by 80%
 #
-# Batch Operations (v1.0.0):
-# - Uses batch-update.py for bulk sync operations
+# Batch Operations (v2.0.0):
+# - Uses batch-update.py for bulk pattern sync (implemented)
 # - Improves efficiency for large syncs
 #
 # Export Automation (v1.0.0):
 # - Creates export before compaction
 # - Backup safety before major operations
 #
-# Version: 1.7.0 - Fixed Stop hook schema compliance + Webhook + Batch + Export Support
+# Version: 2.0.0 - Implemented real batch-update.py integration for bulk pattern sync
 # Part of Mem0 Pro Integration - Phase 5
 
 set -euo pipefail
 
 # Read and discard stdin to prevent broken pipe errors in hook chain
 _HOOK_INPUT=$(cat 2>/dev/null || true)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
@@ -259,31 +259,57 @@ if [[ -f "$SCRIPT_PATH" ]] && [[ -n "${MEM0_API_KEY:-}" ]]; then
         --metadata "$SESSION_METADATA" \
         --enable-graph >> "$LOG_FILE" 2>&1 &)
 
-    # Also sync pending patterns if any
+    # Sync pending patterns using batch-update for efficiency (v2.0.0)
     if [[ "$PATTERN_COUNT" -gt 0 ]] && [[ -f "$PATTERNS_LOG" ]]; then
         AGENTS_USER_ID=$(mem0_user_id "$MEM0_SCOPE_AGENTS")
+        BATCH_UPDATE_SCRIPT="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/batch/batch-update.py"
 
-        # Sync each pending pattern
-        jq -c 'select(.pending_sync == true)' "$PATTERNS_LOG" 2>/dev/null | while read -r pattern_json; do
-            PATTERN_TEXT=$(echo "$pattern_json" | jq -r '.pattern // ""')
-            PATTERN_AGENT=$(echo "$pattern_json" | jq -r '.agent_id // ""')
-            PATTERN_CATEGORY=$(echo "$pattern_json" | jq -r '.category // "pattern"')
+        if [[ -f "$BATCH_UPDATE_SCRIPT" ]] && [[ "$PATTERN_COUNT" -gt 3 ]]; then
+            # Use batch-update.py for 4+ patterns (more efficient)
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Using batch-update for $PATTERN_COUNT patterns" >> "$LOG_FILE"
 
-            if [[ -n "$PATTERN_TEXT" ]]; then
-                PATTERN_META=$(jq -n \
-                    --arg agent "$PATTERN_AGENT" \
-                    --arg category "$PATTERN_CATEGORY" \
-                    --arg project "$PROJECT_ID" \
-                    '{type: "agent_pattern", agent_id: $agent, category: $category, project: $project, source: "orchestkit-plugin"}')
+            # Build batch update array from pending patterns
+            BATCH_UPDATES=$(jq -s '
+                [.[] | select(.pending_sync == true) | {
+                    text: (.pattern // .text // ""),
+                    user_id: "'"$AGENTS_USER_ID"'",
+                    metadata: {
+                        type: "agent_pattern",
+                        agent_id: (.agent_id // ""),
+                        category: (.category // "pattern"),
+                        project: "'"$PROJECT_ID"'",
+                        source: "orchestkit-plugin"
+                    }
+                }] | map(select(.text != ""))
+            ' "$PATTERNS_LOG" 2>/dev/null || echo "[]")
 
-                (python3 "$SCRIPT_PATH" \
-                    --text "$PATTERN_TEXT" \
-                    --user-id "$AGENTS_USER_ID" \
-                    --agent-id "$PATTERN_AGENT" \
-                    --metadata "$PATTERN_META" \
-                    --enable-graph >> "$LOG_FILE" 2>&1 &)
+            if [[ "$BATCH_UPDATES" != "[]" ]]; then
+                (python3 "$BATCH_UPDATE_SCRIPT" \
+                    --memories "$BATCH_UPDATES" >> "$LOG_FILE" 2>&1 &)
             fi
-        done
+        else
+            # Fallback to individual syncs for small batches
+            jq -c 'select(.pending_sync == true)' "$PATTERNS_LOG" 2>/dev/null | while read -r pattern_json; do
+                PATTERN_TEXT=$(echo "$pattern_json" | jq -r '.pattern // ""')
+                PATTERN_AGENT=$(echo "$pattern_json" | jq -r '.agent_id // ""')
+                PATTERN_CATEGORY=$(echo "$pattern_json" | jq -r '.category // "pattern"')
+
+                if [[ -n "$PATTERN_TEXT" ]]; then
+                    PATTERN_META=$(jq -n \
+                        --arg agent "$PATTERN_AGENT" \
+                        --arg category "$PATTERN_CATEGORY" \
+                        --arg project "$PROJECT_ID" \
+                        '{type: "agent_pattern", agent_id: $agent, category: $category, project: $project, source: "orchestkit-plugin"}')
+
+                    (python3 "$SCRIPT_PATH" \
+                        --text "$PATTERN_TEXT" \
+                        --user-id "$AGENTS_USER_ID" \
+                        --agent-id "$PATTERN_AGENT" \
+                        --metadata "$PATTERN_META" \
+                        --enable-graph >> "$LOG_FILE" 2>&1 &)
+                fi
+            done
+        fi
 
         # Mark patterns as synced by removing pending_sync flag
         if [[ -f "$PATTERNS_LOG" ]]; then

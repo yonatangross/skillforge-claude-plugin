@@ -9,7 +9,7 @@ set -euo pipefail
 
 # Read stdin BEFORE sourcing libraries
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

@@ -12,7 +12,7 @@ set -euo pipefail
 
 # Read and discard stdin to prevent broken pipe errors in hook chain
 _HOOK_INPUT=$(cat 2>/dev/null || true)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(dirname "$(dirname "$SCRIPT_DIR")")}"

@@ -15,7 +15,7 @@ else
   # If HOOK_INPUT is needed, it will be provided via environment variable
   _HOOK_INPUT=""
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 source "$(dirname "$0")/../_lib/common.sh"
 

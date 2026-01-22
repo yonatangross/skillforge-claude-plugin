@@ -16,7 +16,7 @@ When you opt in, we collect only aggregated, non-identifiable metrics:
 | Skill success rates | "92% success" | Improve underperforming skills |
 | Agent spawn counts | "backend-architect: 8 spawns" | Agent utilization |
 | Agent success rates | "88% tasks completed" | Agent effectiveness |
-| Hook trigger counts | "bash-dispatcher: 120 triggers" | Hook tuning |
+| Hook trigger counts | "git-branch-protection: 120 triggers" | Hook tuning |
 | Hook block counts | "5 commands blocked" | Security effectiveness |
 | Plugin version | "4.12.0" | Version adoption |
 | Report date | "2026-01-14" | Trend analysis |

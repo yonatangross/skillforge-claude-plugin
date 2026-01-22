@@ -12,7 +12,7 @@ if [[ -t 0 ]]; then
 else
     _HOOK_INPUT=$(cat 2>/dev/null || true)
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 # =============================================================================
 # SELF-GUARD: Only run when multi-instance mode is enabled

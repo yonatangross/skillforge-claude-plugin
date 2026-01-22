@@ -17,7 +17,7 @@ set -euo pipefail
 if [[ -n "${HOOK_INPUT:-}" ]]; then
   _HOOK_INPUT="$HOOK_INPUT"
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 source "$(dirname "$0")/../_lib/common.sh"
 

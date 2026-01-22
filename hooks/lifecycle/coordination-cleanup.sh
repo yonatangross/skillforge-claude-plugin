@@ -11,7 +11,7 @@ if [[ -t 0 ]]; then
 else
   _HOOK_INPUT=$(cat 2>/dev/null || true)
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 # Ensure JSON output on any exit (trap for safety)
 trap 'echo "{\"continue\":true,\"suppressOutput\":true}"' EXIT

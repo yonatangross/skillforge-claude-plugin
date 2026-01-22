@@ -252,10 +252,10 @@ Lifecycle hooks use CC 2.1.7 native parallel execution with output aggregation:
 - **SessionEnd**: 4 hooks registered directly (cleanup, metrics, sync)
 - **Stop**: 10 hooks registered directly (auto-save, compaction, cleanup)
 
-Tool-based hooks still use dispatchers for routing:
-- `pretool/bash-dispatcher.sh` → routes to branch-protection, etc.
-- `pretool/write-dispatcher.sh` → routes to file-guard, lock-check
-- `posttool/dispatcher.sh` → routes by file-type to validators
+Tool-based hooks use CC 2.1.7 native registration (direct hooks, no dispatchers):
+- `pretool/bash/*` → git-branch-protection, dangerous-command-blocker, etc.
+- `pretool/write-edit/*` → file-guard, file-lock-check, multi-instance-lock
+- `posttool/*` → audit-logger, error-tracker, memory-bridge, etc.
 
 **All hooks output CC 2.1.7 compliant JSON**: `{"continue":true,"suppressOutput":true}`
 
@@ -540,8 +540,8 @@ exit 0  # 0=approve, 1=reject
 EOF
 chmod +x hooks/pretool/bash/my-security-hook.sh
 
-# Step 2: Add to bash-dispatcher.sh
-# Source and call hook in dispatcher
+# Step 2: Register hook in .claude/settings.json
+# CC 2.1.7 uses direct registration, no dispatchers
 
 # Step 3: Write test
 cat > tests/security/test-my-hook.sh

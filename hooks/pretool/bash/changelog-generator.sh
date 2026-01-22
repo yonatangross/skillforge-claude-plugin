@@ -6,7 +6,7 @@ set -euo pipefail
 # Version: 1.0.1 - Fixed Bash 3.2 compatibility (no associative arrays)
 
 INPUT=$(cat)
-export _HOOK_INPUT="$INPUT"
+_HOOK_INPUT="$INPUT"  # Dont export
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../_lib/common.sh"

@@ -72,9 +72,9 @@ Verifies all 93 hooks are properly configured:
 
 **Output:**
 ```
-Hooks: 93/93 valid
-- pretool/bash-dispatcher.sh: executable, 87 lines
-- posttool/dispatcher.sh: executable, 89 lines
+Hooks: 147/147 valid
+- pretool/bash/git-branch-protection.sh: executable, 73 lines
+- posttool/audit-logger.sh: executable, 89 lines
 - stop/context-compressor.sh: executable, 207 lines
 ```
 

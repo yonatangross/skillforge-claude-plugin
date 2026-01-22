@@ -13,7 +13,7 @@
 set -euo pipefail
 
 _HOOK_INPUT=$(cat 2>/dev/null || true)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../_lib/common.sh" 2>/dev/null || true

@@ -92,7 +92,7 @@ test_clean_agent_metrics() {
 }
 
 test_clean_hook_metrics() {
-    local data='{"bash-dispatcher": {"triggered": 120, "blocked": 5}}'
+    local data='{"git-branch-protection": {"triggered": 120, "blocked": 5}}'
 
     if validate_no_pii "$data" 2>/dev/null; then
         log_test "Clean data: hook metrics" "PASS"
@@ -107,7 +107,7 @@ test_clean_full_report() {
         "plugin_version": "4.12.0",
         "skill_usage": {"api-design": {"uses": 12, "success_rate": 0.92}},
         "agent_performance": {"backend-architect": {"spawns": 8, "success_rate": 0.88}},
-        "hook_metrics": {"bash-dispatcher": {"triggered": 45, "blocked": 3}}
+        "hook_metrics": {"git-branch-protection": {"triggered": 45, "blocked": 3}}
     }'
 
     if validate_no_pii "$data" 2>/dev/null; then

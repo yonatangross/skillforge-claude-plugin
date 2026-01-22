@@ -27,7 +27,7 @@ log_pass() { echo -e "${GREEN}[PASS]${NC} $1"; ((PASSED++)) || true; }
 log_fail() { echo -e "${RED}[FAIL]${NC} $1"; ((FAILED++)) || true; }
 log_info() { echo -e "${YELLOW}[INFO]${NC} $1"; }
 
-# Test normalization function (same as bash-dispatcher uses)
+# Test normalization function (same as dangerous-command-blocker uses)
 normalize_command() {
   local result
   result=$(printf '%s' "$1" | sed -E 's/\\[[:space:]]*[\r\n]+//g' | tr '\n' ' ' | tr -s ' ')

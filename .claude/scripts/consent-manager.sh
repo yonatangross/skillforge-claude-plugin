@@ -362,7 +362,7 @@ WHAT WE COLLECT (only with your consent)
   ✓ Skill success rates       - e.g., "92% success rate"
   ✓ Agent spawn counts        - e.g., "backend-architect spawned 8 times"
   ✓ Agent success rates       - e.g., "88% tasks completed successfully"
-  ✓ Hook trigger counts       - e.g., "bash-dispatcher triggered 120 times"
+  ✓ Hook trigger counts       - e.g., "git-branch-protection triggered 120 times"
   ✓ Hook block counts         - e.g., "blocked 5 potentially unsafe commands"
   ✓ Plugin version            - e.g., "4.12.0"
   ✓ Report date               - e.g., "2026-01-14" (date only, no time)

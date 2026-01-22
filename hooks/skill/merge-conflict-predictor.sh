@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Read stdin BEFORE sourcing common.sh to avoid race conditions
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 # Source common utilities (includes safe grep functions)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

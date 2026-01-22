@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Read hook input
 INPUT=$(cat)
-export _HOOK_INPUT="$INPUT"
+_HOOK_INPUT="$INPUT"  # Dont export
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/../../_lib/common.sh"

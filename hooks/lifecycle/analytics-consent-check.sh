@@ -14,7 +14,7 @@ if [[ -t 0 ]]; then
 else
     _HOOK_INPUT=$(cat 2>/dev/null || true)
 fi
-export _HOOK_INPUT
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
