@@ -5,6 +5,81 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Modular Plugin Marketplace**: 33 domain-specific plugins for selective installation
+  - **Core Infrastructure (3)**:
+    - `ork-core`: Foundation plugin with quality gates, ADRs, brainstorming, error handling
+    - `ork-context`: Context management, compression, engineering, evidence verification
+    - `ork-memory`: Memory fabric, mem0 integration, knowledge graph persistence
+  - **AI/LLM (7)**:
+    - `ork-rag`: Core RAG patterns, retrieval, contextual retrieval, query decomposition
+    - `ork-rag-advanced`: Agentic RAG, advanced retrieval patterns
+    - `ork-langgraph-core`: LangGraph state management, routing, checkpoints
+    - `ork-langgraph-advanced`: Human-in-loop, parallel execution, workflow orchestration
+    - `ork-llm-core`: LLM integration, function calling, streaming, embeddings
+    - `ork-llm-advanced`: Fine-tuning, high-performance inference, multimodal
+    - `ork-ai-observability`: Langfuse tracing, LLM evaluation, semantic caching
+  - **Backend (5)**:
+    - `ork-fastapi`: FastAPI patterns, API design, error handling (RFC9457), versioning
+    - `ork-database`: SQLAlchemy 2.0 async, Alembic migrations, connection pooling
+    - `ork-async`: asyncio patterns, Celery, background jobs, distributed locks
+    - `ork-architecture`: Clean architecture, DDD, CQRS, event sourcing, saga patterns
+    - `ork-backend-advanced`: gRPC, caching strategies, idempotency, outbox pattern
+  - **Frontend (4)**:
+    - `ork-react-core`: React 19 patterns, server components, TanStack Query, forms
+    - `ork-ui-design`: Design systems, Radix primitives, shadcn, Recharts, dashboards
+    - `ork-frontend-performance`: Core Web Vitals, lazy loading, view transitions, PWA
+    - `ork-frontend-advanced`: Zustand state, animations, i18n, scroll-driven animations
+  - **Testing (2)**:
+    - `ork-testing-core`: Unit testing, MSW mocking, property-based testing, test data
+    - `ork-testing-e2e`: E2E patterns, Playwright, contract testing, LLM testing
+  - **Security (1)**:
+    - `ork-security`: OWASP Top 10, auth patterns, input validation, AI safety auditing
+  - **DevOps & CI/CD (2)**:
+    - `ork-cicd`: GitHub Actions, deployment strategies, observability, performance testing
+    - `ork-infrastructure`: Terraform, Kubernetes, cloud architecture (AWS/GCP/Azure)
+  - **Git & Release (1)**:
+    - `ork-git`: Git workflows, stacked PRs, release management, recovery operations
+  - **Accessibility (1)**:
+    - `ork-accessibility`: WCAG compliance, focus management, React ARIA patterns, a11y testing
+  - **Workflows (2)**:
+    - `ork-workflows-core`: Core workflow patterns, implementation workflows
+    - `ork-workflows-advanced`: Multi-agent workflows, alternative agent frameworks
+  - **API & Integration (2)**:
+    - `ork-mcp`: MCP server building, tool composition, advanced MCP patterns
+    - `ork-graphql`: Strawberry GraphQL, schema design, DataLoader patterns
+  - **Product & Data (3)**:
+    - `ork-product`: Product strategy, requirements translation, UX research, metrics
+    - `ork-evaluation`: Golden dataset management, LLM evaluation, quality scoring
+    - `ork-data-engineering`: Data pipelines, embeddings, pgvector search, test data
+
+- **Plugin Validation Suite**: `tests/plugins/validate-all.sh` with 403 checks
+  - Layer 1: Marketplace schema validation
+  - Layer 2: Plugin directory structure
+  - Layer 3: Plugin.json schema compliance
+  - Layer 4: Skills validation (SKILL.md format)
+  - Layer 5: Agents validation (frontmatter)
+  - Layer 6: Commands validation
+  - Layer 7: Scripts validation (shebang, executable)
+  - Layer 8: Cross-reference validation
+
+- **Migration Scripts**: `bin/restructure-plugins.sh`, `bin/migrate-to-plugins.sh`
+
+### Changed
+
+- **Plugin Structure**: Restructured to Claude Code marketplace standards (code.claude.com/docs/en/plugins-reference)
+  - `.claude-plugin/plugin.json` at plugin root
+  - `commands/`, `agents/`, `skills/` at plugin root (not under `.claude/`)
+  - `scripts/` for hook executables (flattened from `hooks/`)
+  - Each plugin is self-contained with its own skills, agents, commands
+
+- **Documentation**: Updated README.md and CLAUDE.md with modular plugin structure
+
+---
+
 ## [4.28.3] - 2026-01-21
 
 ### Changed
