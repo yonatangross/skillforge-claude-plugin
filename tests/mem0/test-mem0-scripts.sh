@@ -217,6 +217,8 @@ test_scripts_are_executable() {
     local non_executable=()
     while IFS= read -r script; do
         if [[ -f "$script" ]] && [[ ! -x "$script" ]]; then
+            # Exclude setup.py (package setup file, not executable script)
+            [[ "$(basename "$script")" == "setup.py" ]] && continue
             non_executable+=("${script#$SCRIPTS_DIR/}")
         fi
     done < <(find "$SCRIPTS_DIR" -name "*.py" -type f ! -path "*/lib/*" ! -path "*/__pycache__/*")
@@ -318,6 +320,8 @@ test_import_pattern_in_scripts() {
     while IFS= read -r script; do
         if [[ -f "$script" ]]; then
             local rel_path="${script#$SCRIPTS_DIR/}"
+            # Skip setup.py (package setup file, not a script)
+            [[ "$(basename "$script")" == "setup.py" ]] && continue
             # Skip utility scripts
             local is_utility=false
             for util in "${utility_scripts[@]}"; do
@@ -332,7 +336,7 @@ test_import_pattern_in_scripts() {
             # Must have: Path(__file__).parent, LIB_DIR reference, and mem0_client import
             if ! grep -q "Path(__file__).parent" "$script" || \
                ! grep -q "LIB_DIR\|lib" "$script" || \
-               ! grep -q "from mem0_client import get_mem0_client" "$script"; then
+               ! grep -q "from mem0_client import get_mem0_client\|from lib.mem0_client import get_mem0_client" "$script"; then
                 scripts_missing_pattern+=("$rel_path")
             fi
         fi
