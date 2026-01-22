@@ -1,0 +1,37 @@
+{
+  "name": "ork-context",
+  "version": "5.0.0",
+  "description": "Context window management and engineering — compression, context optimization, system design interrogation",
+  "author": {
+    "name": "Yonatan Gross",
+    "email": "yonatan2gross@gmail.com"
+  },
+  "keywords": ["context", "compression", "engineering", "system-design"],
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/prompt-context-injector.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/prompt-context-pruning-advisor.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/posttool-context-budget-monitor.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

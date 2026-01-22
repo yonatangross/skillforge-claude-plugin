@@ -1,0 +1,9 @@
+{
+  "name": "ork-cicd",
+  "version": "5.0.0",
+  "description": "OrchestKit plugin",
+  "author": {
+    "name": "Yonatan Gross",
+    "email": "yonatan2gross@gmail.com"
+  }
+}

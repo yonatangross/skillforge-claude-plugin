@@ -170,6 +170,39 @@ You should see:
 
 ---
 
+## Modular Plugins
+
+**33 domain-specific plugins** — install only what you need:
+
+### Installation Options
+
+```bash
+# Full toolkit (all 33 plugins)
+/plugin install ork@orchestkit
+
+# Individual domains
+/plugin install ork-core@orchestkit           # Core foundation (required)
+/plugin install ork-rag@orchestkit            # RAG & retrieval
+/plugin install ork-fastapi@orchestkit        # FastAPI backend
+/plugin install ork-react-core@orchestkit     # React frontend
+/plugin install ork-testing-core@orchestkit   # Testing patterns
+```
+
+### Plugin Categories
+
+| Category | Plugins | Description |
+|----------|---------|-------------|
+| **Core** | `ork-core`, `ork-context`, `ork-memory` | Foundation, context management, persistence |
+| **AI/LLM** | `ork-rag`, `ork-rag-advanced`, `ork-langgraph-*`, `ork-llm-*`, `ork-ai-observability` | RAG, agents, LLM patterns (7 plugins) |
+| **Backend** | `ork-fastapi`, `ork-database`, `ork-async`, `ork-architecture`, `ork-backend-advanced` | APIs, databases, async (5 plugins) |
+| **Frontend** | `ork-react-core`, `ork-ui-design`, `ork-frontend-*` | React, UI, performance (4 plugins) |
+| **Testing** | `ork-testing-core`, `ork-testing-e2e` | Unit, integration, E2E (2 plugins) |
+| **Security** | `ork-security` | OWASP, auth, validation |
+| **DevOps** | `ork-cicd`, `ork-infrastructure`, `ork-git` | CI/CD, infra, git workflows |
+| **Other** | `ork-accessibility`, `ork-workflows-*`, `ork-mcp`, `ork-graphql`, `ork-product`, `ork-evaluation` | Specialized domains |
+
+---
+
 ## Commands
 
 **20 slash commands** organized by workflow:
@@ -429,24 +462,26 @@ flowchart TB
 
 ```
 orchestkit/
-├── skills/                  # 159 knowledge modules
+├── .claude-plugin/
+│   └── marketplace.json     # 33 modular plugins
+├── plugins/                 # Modular plugin bundles
+│   └── ork-<domain>/        # Domain-specific plugin
+│       ├── .claude-plugin/
+│       │   └── plugin.json  # Plugin manifest
+│       ├── commands/        # Slash commands
+│       ├── agents/          # Specialized agents
+│       ├── skills/          # Knowledge modules
+│       └── scripts/         # Hook executables
+├── skills/                  # 161 knowledge modules (full)
 │   └── <skill-name>/
 │       ├── SKILL.md         # Overview + patterns (~500 tokens)
 │       ├── references/      # Deep-dive guides (~200 tokens)
 │       ├── scripts/         # Executable code and generators
 │       └── assets/          # Templates and copyable files
 ├── agents/                  # 34 specialized agents
-│   └── <agent-name>.md      # Agent definition + skills
-├── hooks/                   # 144 lifecycle hooks
-│   ├── pretool/             # Security gates
-│   ├── posttool/            # Quality checks
-│   ├── lifecycle/           # Session management
-│   └── permission/          # Auto-approval rules
-├── .claude/
-│   ├── commands/            # 20 slash commands
-│   ├── context/             # Session state
-│   └── coordination/        # Multi-instance locks
-└── tests/                   # 88 tests, ~96% coverage
+├── commands/                # 21 slash commands
+├── hooks/                   # 147 lifecycle hooks
+└── tests/                   # Validation suite
 ```
 
 ---

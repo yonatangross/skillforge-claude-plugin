@@ -142,11 +142,11 @@ test_count_sanity() {
         log_fail "Agents count out of range: $agents (expected 15-40)"
     fi
 
-    # Commands should be 8-20
-    if [[ "$commands" -ge 0 && "$commands" -le 20 ]]; then
-        log_pass "Commands count in expected range (8-20): $commands"
+    # Commands should be 15-30
+    if [[ "$commands" -ge 15 && "$commands" -le 30 ]]; then
+        log_pass "Commands count in expected range (15-30): $commands"
     else
-        log_fail "Commands count out of range: $commands (expected 8-20)"
+        log_fail "Commands count out of range: $commands (expected 15-30)"
     fi
 
     # Hooks should be 80-160 (updated for version-sync hook)
@@ -216,7 +216,7 @@ test_count_accuracy() {
     fi
 
     # Count commands manually
-    local actual_commands=$(find "${PROJECT_ROOT}/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+    local actual_commands=$(find "${PROJECT_ROOT}/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
     local reported_commands=$("${PROJECT_ROOT}/bin/count-components.sh" --json | jq '.commands')
 
     if [[ "$actual_commands" -eq "$reported_commands" ]]; then

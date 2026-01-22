@@ -22,28 +22,39 @@ This document provides essential context for Claude Code when working with the O
 ## Key Directories
 
 ```
-.claude/
-├── agents/              # 34 specialized AI agent personas (CC 2.1.6 native format)
-├── commands/            # User-invocable skill workflows (CC 2.1.3+ unified)
-├── context/             # Session state, knowledge base, and shared context
-├── coordination/        # Multi-worktree coordination system (locks, registries)
-├── hooks/               # 144 lifecycle hooks for automation
+# MODULAR PLUGINS (33 domain-specific bundles)
+.claude-plugin/
+└── marketplace.json     # Marketplace manifest with all plugins
+
+plugins/                 # Modular plugin bundles
+└── ork-<domain>/        # Domain-specific plugin (e.g., ork-core, ork-rag)
+    ├── .claude-plugin/
+    │   └── plugin.json  # Plugin manifest (hooks, metadata)
+    ├── commands/        # Slash commands (/commit, /verify, etc.)
+    ├── agents/          # AI agent personas
+    ├── skills/          # Knowledge modules with SKILL.md
+    └── scripts/         # Hook executables
+
+# FULL TOOLKIT (root level - for development/reference)
+skills/                  # 161 skills (all domains)
+agents/                  # 34 agents (all domains)
+commands/                # 21 commands (all domains)
+hooks/                   # 147 lifecycle hooks
 │   ├── setup/           # CC 2.1.11 Setup hooks (--init, --maintenance)
 │   ├── lifecycle/       # Session start/end hooks
 │   ├── permission/      # Auto-approval for safe operations
-│   ├── pretool/         # Pre-execution validation (bash, write, skill, MCP)
+│   ├── pretool/         # Pre-execution validation
 │   ├── posttool/        # Post-execution logging and metrics
 │   ├── prompt/          # Prompt enhancement and context injection
-│   ├── notification/    # Desktop and sound notifications
 │   └── stop/            # Conversation stop handlers
-├── instructions/        # Initialization and onboarding guides
-├── policies/            # Security policies and compliance rules
-├── schemas/             # JSON schemas for validation
-├── scripts/             # Helper utilities (coordination, metrics, validation)
-├── templates/           # Shared templates (ADR, commits, PRs)
-└── workflows/           # Multi-agent workflow orchestrations
 
-# Skills use CC 2.1.7 native flat structure (159 skills):
+.claude/
+├── context/             # Session state, knowledge base
+├── coordination/        # Multi-worktree coordination (locks, registries)
+├── schemas/             # JSON schemas for validation
+└── scripts/             # Helper utilities
+
+# Skills use CC 2.1.7 native flat structure:
 skills/<skill-name>/
 ├── SKILL.md            # Required: Overview and patterns (~500 tokens)
 ├── references/         # Optional: Specific implementations (~200 tokens)
@@ -52,9 +63,8 @@ skills/<skill-name>/
 └── checklists/         # Optional: Implementation checklists
 
 tests/
-├── fixtures/            # Test data and golden datasets
+├── plugins/             # Plugin validation suite
 ├── integration/         # Integration test suites
-├── schemas/             # Schema validation tests
 ├── security/            # Security testing framework
 └── unit/                # Unit test suites
 

@@ -34,8 +34,8 @@ count_agents() {
 
 # Count commands (markdown files in commands dir)
 count_commands() {
-    if [[ -d "$PROJECT_ROOT/.claude/commands" ]]; then
-        find "$PROJECT_ROOT/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
+    if [[ -d "$PROJECT_ROOT/commands" ]]; then
+        find "$PROJECT_ROOT/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' '
     else
         echo "0"
     fi
