@@ -4,7 +4,7 @@ description: HyDE (Hypothetical Document Embeddings) for improved semantic retri
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

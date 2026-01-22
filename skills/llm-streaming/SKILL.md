@@ -4,7 +4,7 @@ description: LLM streaming response patterns. Use when implementing real-time to
 context: fork
 agent: llm-integrator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

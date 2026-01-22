@@ -239,7 +239,7 @@ main() {
 
   # Output result
   if [[ "$NOTIFY_USER" == "true" ]]; then
-    local ctx="SkillForge auto-repair: $repair_summary"
+    local ctx="OrchestKit auto-repair: $repair_summary"
     jq -nc --arg ctx "$ctx" \
       '{continue:true,hookSpecificOutput:{additionalContext:$ctx}}'
   else

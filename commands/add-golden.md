@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Write, Glob, Grep, Task, WebFetch, AskUserQuestion
 
 Load and follow the skill instructions from the `skills/add-golden/SKILL.md` file.
 
-Execute the `/skf:add-golden` workflow to:
+Execute the `/ork:add-golden` workflow to:
 1. Collect input URL and detect content type
 2. Fetch and extract document structure
 3. Launch 4 parallel analysis agents (quality, difficulty, domain, queries)

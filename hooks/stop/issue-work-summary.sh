@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # issue-work-summary.sh - Post consolidated progress comments to GitHub issues
-# Part of SkillForge Plugin - Issue Progress Tracking
+# Part of OrchestKit Plugin - Issue Progress Tracking
 #
 # Triggers: Session ends (Stop hook)
 # Function: Reads queued progress from session temp file and posts a single
@@ -154,7 +154,7 @@ $files_section
 $(if [[ -n "$tasks_section" ]]; then echo "### Sub-tasks Completed"; echo "$tasks_section"; fi)
 $(if [[ -n "$pr_section" ]]; then echo "$pr_section"; fi)
 ---
-*Automated by [SkillForge](https://github.com/yonatangross/skillforge-claude-plugin)*
+*Automated by [OrchestKit](https://github.com/yonatangross/orchestkit)*
 EOF
 }
 

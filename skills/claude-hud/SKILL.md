@@ -3,7 +3,7 @@ name: claude-hud
 description: Configure Claude Code statusline with context window monitoring using CC 2.1.6 fields. Use when configuring statusline, monitoring context, displaying HUD.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [statusline, hud, context, monitoring, cc216]
 user-invocable: true
 ---
@@ -143,22 +143,22 @@ Context usage thresholds help you know when to act:
 }
 ```
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 ### Automatic Context Management
 
-SkillForge's hooks can automatically suggest compression when context gets high:
+OrchestKit's hooks can automatically suggest compression when context gets high:
 
 ```bash
 # In hooks/posttool/context-monitor.sh
 if [ "$CONTEXT_USED_PCT" -gt 80 ]; then
-  echo "SUGGESTION: Consider using /skf:context-compression"
+  echo "SUGGESTION: Consider using /ork:context-compression"
 fi
 ```
 
 ### Progressive Loading Optimization
 
-When context is above 60%, SkillForge automatically:
+When context is above 60%, OrchestKit automatically:
 1. Uses Tier 1 discovery more aggressively
 2. Loads smaller reference files
 3. Suggests skill completion before loading new skills

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create memories for all custom categories in SkillForge plugin.
+Create memories for all custom categories in OrchestKit plugin.
 Creates category entity memories that group related skills, agents, and technologies.
 """
 import sys
@@ -13,7 +13,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent.parent
 sys.path.insert(0, str(SCRIPT_DIR.parent / "lib"))
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 
 # Category definitions (matching setup-categories.py)
@@ -118,7 +118,7 @@ def create_category_memory(client, category: Dict[str, Any]) -> bool:
     description = category["description"]
     
     # Build memory text
-    text = f"{name} category: {description} The {name} category groups related entities in the SkillForge plugin structure."
+    text = f"{name} category: {description} The {name} category groups related entities in the OrchestKit plugin structure."
     
     # Build metadata
     metadata = {

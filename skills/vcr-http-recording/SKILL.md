@@ -4,7 +4,7 @@ description: VCR.py HTTP recording for Python tests. Use when testing Python cod
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -83,7 +83,7 @@ quantile_over_time(0.95,
 {app="backend"} | json | correlation_id="abc-123-def"
 ```
 
-## SkillForge Logging Example
+## OrchestKit Logging Example
 
 ```python
 import structlog

@@ -1,8 +1,8 @@
-# SkillForge Design System
+# OrchestKit Design System
 
 ## Overview
 
-SkillForge uses a modern design system built on **Tailwind CSS v4** with **OKLCH color space** for perceptual uniformity and **CSS custom properties** for theme switching.
+OrchestKit uses a modern design system built on **Tailwind CSS v4** with **OKLCH color space** for perceptual uniformity and **CSS custom properties** for theme switching.
 
 **Key Features:**
 - OKLCH colors (perceptually uniform, wider gamut)
@@ -140,7 +140,7 @@ rounded-xl   /* 12px */
 
 ### Base Components (shadcn/ui)
 
-SkillForge uses **shadcn/ui** components as primitives:
+OrchestKit uses **shadcn/ui** components as primitives:
 
 ```
 frontend/src/components/ui/
@@ -196,7 +196,7 @@ export function Button({ variant = "default", size = "default", className, ...pr
 
 ### Feature Components
 
-Domain-specific components for SkillForge features:
+Domain-specific components for OrchestKit features:
 
 ```
 frontend/src/features/
@@ -368,7 +368,7 @@ Use semantic HTML and ARIA labels:
 
 ## Code Block Styling
 
-SkillForge uses **dark code blocks** in both light and dark modes:
+OrchestKit uses **dark code blocks** in both light and dark modes:
 
 ```css
 /* frontend/src/index.css */
@@ -489,7 +489,7 @@ function EmptyLibrary() {
 
 ### CSS-in-JS vs. Tailwind
 
-SkillForge uses **Tailwind utility classes** for:
+OrchestKit uses **Tailwind utility classes** for:
 - Zero runtime cost (pre-compiled CSS)
 - Automatic tree-shaking (only used utilities)
 - Predictable bundle size (~10-20KB gzipped)
@@ -532,5 +532,5 @@ function AnalysisDetail() {
 - **Tailwind CSS v4 Docs**: https://tailwindcss.com/docs
 - **OKLCH Color Picker**: https://oklch.com/
 - **shadcn/ui Components**: https://ui.shadcn.com/
-- **SkillForge Styles**: `frontend/src/index.css`
+- **OrchestKit Styles**: `frontend/src/index.css`
 - **Component Library**: `frontend/src/components/ui/`

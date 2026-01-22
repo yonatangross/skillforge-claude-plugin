@@ -1,10 +1,10 @@
 # React 19 + TanStack Router Patterns
 
-> **SkillForge Supplement** (Dec 2025) - Patterns for React 19 applications using TanStack Router instead of Next.js App Router.
+> **OrchestKit Supplement** (Dec 2025) - Patterns for React 19 applications using TanStack Router instead of Next.js App Router.
 
 ## Overview
 
-While the main skill covers Next.js 15 + React Server Components, **SkillForge uses React 19 with TanStack Router**. This supplement documents the equivalent patterns for client-rendered SPAs with React 19's new features.
+While the main skill covers Next.js 15 + React Server Components, **OrchestKit uses React 19 with TanStack Router**. This supplement documents the equivalent patterns for client-rendered SPAs with React 19's new features.
 
 ## Key Differences from Next.js RSC
 
@@ -293,7 +293,7 @@ function StatusBadge({ status }: { status: AnalysisStatus }) {
 
 ---
 
-## SkillForge-Specific Patterns
+## OrchestKit-Specific Patterns
 
 ### 1. SSE Event Handling with Zustand
 

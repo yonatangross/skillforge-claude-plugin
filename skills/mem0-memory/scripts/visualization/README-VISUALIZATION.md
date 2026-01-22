@@ -161,7 +161,7 @@ All graphs are saved in `outputs/` directory:
 ### No Graphs Generated
 - Check `MEM0_API_KEY` is set
 - Verify mem0 connection: `python3 -c "from mem0 import MemoryClient; print('OK')"`
-- Check user_id matches: should be `skillforge:all-agents`
+- Check user_id matches: should be `orchestkit:all-agents`
 
 ### Empty Graphs
 - Verify memories exist: `python3 skills/mem0-memory/scripts/crud/search-memories.py --query "test"`

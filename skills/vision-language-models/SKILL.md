@@ -4,7 +4,7 @@ description: GPT-5/4o, Claude 4.5, Gemini 2.5/3, Grok 4 vision patterns for imag
 context: fork
 agent: multimodal-specialist
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 tags: [vision, multimodal, image, gpt-5, claude-4, gemini, grok, vlm, 2026]
 ---

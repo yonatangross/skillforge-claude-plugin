@@ -4,7 +4,7 @@ description: Provider-native prompt caching for Claude and OpenAI. Use when opti
 context: fork
 agent: llm-integrator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

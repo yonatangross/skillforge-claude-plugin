@@ -4,7 +4,7 @@ description: Test data management with fixtures and factories. Use when creating
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

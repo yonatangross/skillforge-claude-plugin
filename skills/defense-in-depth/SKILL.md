@@ -8,7 +8,7 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -183,7 +183,7 @@ Before deploying any AI feature, verify:
 | Least Privilege | AWS IAM | Minimal permissions |
 | Complete Mediation | Saltzer & Schroeder | Every access checked |
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 This skill integrates with:
 - `llm-safety-patterns` - Layer 5 details

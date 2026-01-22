@@ -20,7 +20,7 @@ def search_agent_specific(
     query: str,
     agent_name: str,
     limit: int = 10,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     enable_graph: bool = True
 ) -> Dict[str, Any]:
     """
@@ -30,7 +30,7 @@ def search_agent_specific(
         query: Search query text
         agent_name: Name of the agent (e.g., "backend-system-architect")
         limit: Maximum number of results
-        user_id: Mem0 user_id (default: "skillforge:all-agents")
+        user_id: Mem0 user_id (default: "orchestkit:all-agents")
         enable_graph: Enable graph relationships in results
     
     Returns:
@@ -58,7 +58,7 @@ def search_agent_specific(
 def search_cross_agent(
     query: str,
     limit: int = 10,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     enable_graph: bool = True
 ) -> Dict[str, Any]:
     """
@@ -68,7 +68,7 @@ def search_cross_agent(
     Args:
         query: Search query text
         limit: Maximum number of results
-        user_id: Mem0 user_id (default: "skillforge:all-agents")
+        user_id: Mem0 user_id (default: "orchestkit:all-agents")
         enable_graph: Enable graph relationships in results
     
     Returns:
@@ -93,7 +93,7 @@ def search_cross_agent(
 def search_shared_knowledge(
     query: str,
     limit: int = 10,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     enable_graph: bool = True
 ) -> Dict[str, Any]:
     """
@@ -103,7 +103,7 @@ def search_shared_knowledge(
     Args:
         query: Search query text
         limit: Maximum number of results
-        user_id: Mem0 user_id (default: "skillforge:all-agents")
+        user_id: Mem0 user_id (default: "orchestkit:all-agents")
         enable_graph: Enable graph relationships in results
     
     Returns:
@@ -132,7 +132,7 @@ def search_by_category(
     query: str,
     category: str,
     limit: int = 10,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     enable_graph: bool = True
 ) -> Dict[str, Any]:
     """
@@ -142,7 +142,7 @@ def search_by_category(
         query: Search query text
         category: Category name to filter by
         limit: Maximum number of results
-        user_id: Mem0 user_id (default: "skillforge:all-agents")
+        user_id: Mem0 user_id (default: "orchestkit:all-agents")
         enable_graph: Enable graph relationships in results
     
     Returns:
@@ -171,7 +171,7 @@ def search_agent_and_shared(
     query: str,
     agent_name: str,
     limit: int = 10,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     enable_graph: bool = True
 ) -> Dict[str, Any]:
     """
@@ -182,7 +182,7 @@ def search_agent_and_shared(
         query: Search query text
         agent_name: Name of the agent
         limit: Maximum number of results per query (total may be up to 2*limit)
-        user_id: Mem0 user_id (default: "skillforge:all-agents")
+        user_id: Mem0 user_id (default: "orchestkit:all-agents")
         enable_graph: Enable graph relationships in results
     
     Returns:
@@ -244,7 +244,7 @@ def main():
     parser.add_argument("--category", help="Filter by category")
     parser.add_argument("--agent-and-shared", action="store_true", help="Search both agent-specific and shared (requires --agent-name)")
     parser.add_argument("--limit", type=int, default=10, help="Max results")
-    parser.add_argument("--user-id", default="skillforge:all-agents", help="Mem0 user_id")
+    parser.add_argument("--user-id", default="orchestkit:all-agents", help="Mem0 user_id")
     parser.add_argument("--enable-graph", action="store_true", help="Enable graph relationships")
     args = parser.parse_args()
     

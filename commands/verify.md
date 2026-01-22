@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep, Task
 
 Load and follow the skill instructions from the `skills/verify/SKILL.md` file.
 
-Execute the `/skf:verify` workflow to:
+Execute the `/ork:verify` workflow to:
 1. Gather context (git diff, recent changes)
 2. Auto-load relevant skills (code-review-playbook, security-scanning)
 3. Launch 5 parallel verification agents (code-quality, security, tests, backend, frontend)

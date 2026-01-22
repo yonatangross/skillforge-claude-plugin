@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep
 
 Load and follow the skill instructions from the `skills/assess-complexity/SKILL.md` file.
 
-Execute the `/skf:assess-complexity` workflow to:
+Execute the `/ork:assess-complexity` workflow to:
 1. Analyze codebase metrics for the target file or directory
 2. Calculate complexity scores based on size, dependencies, and patterns
 3. Determine if task needs breakdown before implementation

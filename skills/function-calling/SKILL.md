@@ -4,7 +4,7 @@ description: LLM function calling and tool use patterns. Use when enabling LLMs 
 context: fork
 agent: llm-integrator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

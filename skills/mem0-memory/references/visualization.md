@@ -1,10 +1,10 @@
 # Mem0 Graph Visualization Reference
 
-Complete guide to Mem0 graph visualization for SkillForge plugin structure, including setup, usage, best practices, and troubleshooting.
+Complete guide to Mem0 graph visualization for OrchestKit plugin structure, including setup, usage, best practices, and troubleshooting.
 
 ## Overview
 
-This system provides colorized graph visualization of the SkillForge plugin structure stored in Mem0. Since Mem0 does not natively support multi-color node visualization, we use external tools (Plotly, NetworkX) to create custom visualizations.
+This system provides colorized graph visualization of the OrchestKit plugin structure stored in Mem0. Since Mem0 does not natively support multi-color node visualization, we use external tools (Plotly, NetworkX) to create custom visualizations.
 
 ## Research Findings (January 2026)
 
@@ -148,7 +148,7 @@ python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py --forma
 ```bash
 # Interactive Plotly HTML (recommended)
 python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
-  --user-id "skillforge:all-agents" \
+  --user-id "orchestkit:all-agents" \
   --format plotly \
   --output mem0-graph.html
 
@@ -210,7 +210,7 @@ Complete technology stack chains connecting agents through skills to technologie
 ```bash
 python3 skills/mem0-memory/scripts/crud/search-memories.py \
   --query "backend-system-architect uses fastapi-advanced" \
-  --user-id "skillforge:all-agents" \
+  --user-id "orchestkit:all-agents" \
   --enable-graph
 ```
 
@@ -219,14 +219,14 @@ python3 skills/mem0-memory/scripts/crud/search-memories.py \
 # Get memory ID first
 MEMORY_ID=$(python3 skills/mem0-memory/scripts/crud/search-memories.py \
   --query "backend-system-architect" \
-  --user-id "skillforge:all-agents" \
+  --user-id "orchestkit:all-agents" \
   --limit 1 | jq -r '.results[0].id')
 
 # Traverse relationships
 python3 skills/mem0-memory/scripts/graph/get-related-memories.py \
   --memory-id "$MEMORY_ID" \
   --depth 3 \
-  --user-id "skillforge:all-agents"
+  --user-id "orchestkit:all-agents"
 ```
 
 ## Scripts Reference
@@ -291,7 +291,7 @@ All scripts are located in `skills/mem0-memory/scripts/`:
    ```bash
    python3 skills/mem0-memory/scripts/crud/search-memories.py \
      --query "backend-system-architect" \
-     --user-id "skillforge:all-agents" \
+     --user-id "orchestkit:all-agents" \
      --enable-graph
    ```
 

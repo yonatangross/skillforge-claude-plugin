@@ -187,7 +187,7 @@ async def prepare_for_llm(
     )
 ```
 
-## SkillForge Integration
+## OrchestKit Integration
 
 ### In Content Analysis Workflow
 

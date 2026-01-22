@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Write, Bash, AskUserQuestion
 
 Load and follow the skill instructions from the `skills/configure/SKILL.md` file.
 
-Execute the `/skf:configure` workflow to:
+Execute the `/ork:configure` workflow to:
 1. Choose configuration preset (Complete, Standard, Lite, Hooks-only)
 2. Customize skill categories (AI/ML, Backend, Frontend, Testing, Security, DevOps)
 3. Toggle agents on/off (Product, Technical)

@@ -5,7 +5,7 @@ context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [api, versioning, rest, fastapi, backward-compatibility, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -251,14 +251,14 @@ from fastapi.openapi.utils import get_openapi
 
 def custom_openapi_v1():
     return get_openapi(
-        title="SkillForge API",
+        title="OrchestKit API",
         version="1.0.0",
         routes=v1_router.routes,
     )
 
 def custom_openapi_v2():
     return get_openapi(
-        title="SkillForge API",
+        title="OrchestKit API",
         version="2.0.0",
         routes=v2_router.routes,
     )

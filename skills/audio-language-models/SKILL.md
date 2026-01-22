@@ -4,7 +4,7 @@ description: Gemini Live API, Grok Voice Agent, GPT-4o-Transcribe, AssemblyAI pa
 context: fork
 agent: multimodal-specialist
 version: 1.1.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 tags: [audio, multimodal, gemini-live, grok-voice, whisper, tts, speech, voice-agent, 2026]
 ---

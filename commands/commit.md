@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Edit, Glob, Grep
 
 Load and follow the skill instructions from the `skills/commit/SKILL.md` file.
 
-Execute the `/skf:commit` workflow to:
+Execute the `/ork:commit` workflow to:
 1. Verify we're not on a protected branch (dev/main)
 2. Run local validation (lint, format, type checks)
 3. Review staged and unstaged changes

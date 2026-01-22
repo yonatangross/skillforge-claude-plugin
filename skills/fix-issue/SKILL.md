@@ -3,7 +3,7 @@ name: fix-issue
 description: Fix GitHub issue with parallel analysis and implementation. Use when fixing issues, resolving bugs, closing GitHub issues.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [issue, bug-fix, github, debugging]
 user-invocable: true
 ---

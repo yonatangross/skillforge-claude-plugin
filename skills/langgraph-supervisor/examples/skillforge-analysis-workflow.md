@@ -1,8 +1,8 @@
-# SkillForge Content Analysis Workflow
+# OrchestKit Content Analysis Workflow
 
 ## Overview
 
-SkillForge's content analysis workflow is a production LangGraph pipeline that coordinates 8 specialist agents to analyze technical content (URLs, documents, repositories).
+OrchestKit's content analysis workflow is a production LangGraph pipeline that coordinates 8 specialist agents to analyze technical content (URLs, documents, repositories).
 
 **Architecture:**
 ```
@@ -610,6 +610,6 @@ def agent_with_compression(state):
 
 ## References
 
-- SkillForge Backend: `backend/app/workflows/`
+- OrchestKit Backend: `backend/app/workflows/`
 - LangGraph Docs: [Multi-Agent Systems](https://langchain-ai.github.io/langgraph/tutorials/multi_agent/)
 - Langfuse Docs: [LangGraph Integration](https://langfuse.com/docs/integrations/langgraph)

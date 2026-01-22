@@ -7,7 +7,7 @@ allowed-tools: Read, Edit, Write, Bash, AskUserQuestion
 
 Load and follow the skill instructions from the `skills/feedback/SKILL.md` file.
 
-Execute the `/skf:feedback` workflow to manage the learning system:
+Execute the `/ork:feedback` workflow to manage the learning system:
 - `status` - Show current feedback system state
 - `pause` - Temporarily pause learning
 - `resume` - Resume paused learning

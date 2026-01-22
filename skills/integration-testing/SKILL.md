@@ -4,7 +4,7 @@ description: Integration testing patterns for APIs and components. Use when test
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

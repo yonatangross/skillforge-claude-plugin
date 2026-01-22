@@ -44,7 +44,7 @@ Coherence questions ensure consistency across the entire stack - from database t
 
 ### Contract Questions
 
-| Question | Why Ask | SkillForge Example |
+| Question | Why Ask | OrchestKit Example |
 |----------|---------|-------------------|
 | What API endpoints change? | Frontend updates | GET /analyses returns new field |
 | Is this a breaking change? | Client compatibility | Adding field = non-breaking |
@@ -62,7 +62,7 @@ Coherence questions ensure consistency across the entire stack - from database t
 | What's the optimistic update strategy? | UX responsiveness | Rollback on failure |
 | Are there race conditions? | Concurrent updates | Locking strategy |
 
-## SkillForge Layer Alignment
+## OrchestKit Layer Alignment
 
 ### Adding a New Field
 

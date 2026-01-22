@@ -4,7 +4,7 @@ description: LangGraph human-in-the-loop patterns. Use when implementing approva
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

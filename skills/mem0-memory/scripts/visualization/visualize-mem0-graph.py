@@ -170,7 +170,7 @@ def extract_entity_name(memory: Dict[str, Any]) -> str:
         r'\b([a-z0-9][a-z0-9-]{2,})\s+(?:skill|agent|technology|category)\b',
         # Pattern: "agent/skill/technology skill-name"
         r'\b(?:agent|skill|technology|category)\s+([a-z0-9][a-z0-9-]{2,})\b',
-        # Pattern: "SkillForge Plugin: ..." or named entities
+        # Pattern: "OrchestKit Plugin: ..." or named entities
         r'\b([A-Z][a-zA-Z0-9\s-]{3,})\s+(?:is|provides|implements|uses|extends)',
         # Pattern: "name implements/extends/uses"
         r'\b([a-z0-9][a-z0-9-]{2,})\s+(?:implements|extends|uses|belongs_to)',
@@ -245,7 +245,7 @@ def export_graph_data(
     try:
         # Use a broad query to get all memories (empty query not allowed)
         result = client.search(
-            query="SkillForge Plugin structure agent skill technology",
+            query="OrchestKit Plugin structure agent skill technology",
             filters=filters if filters else None,
             limit=limit or 1000,
             enable_graph=True
@@ -382,7 +382,7 @@ def build_graph_structure(graph_data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def create_plotly_visualization(graph_structure: Dict[str, Any], output_file: str, title: str = "SkillForge Plugin Structure - Mem0 Graph Visualization"):
+def create_plotly_visualization(graph_structure: Dict[str, Any], output_file: str, title: str = "OrchestKit Plugin Structure - Mem0 Graph Visualization"):
     """Create interactive Plotly visualization."""
     try:
         import plotly.graph_objects as go
@@ -803,7 +803,7 @@ def create_networkx_visualization(graph_structure: Dict[str, Any], output_file: 
         title_fontsize=11
     )
     
-    plt.title("SkillForge Plugin Structure - Mem0 Graph Visualization", size=18, pad=20)
+    plt.title("OrchestKit Plugin Structure - Mem0 Graph Visualization", size=18, pad=20)
     plt.axis('off')
     
     # Save with high DPI
@@ -977,7 +977,7 @@ def main():
     import time
     
     parser = argparse.ArgumentParser(description="Visualize Mem0 graph with colorized nodes")
-    parser.add_argument("--user-id", default="skillforge:all-agents", help="Mem0 user ID")
+    parser.add_argument("--user-id", default="orchestkit:all-agents", help="Mem0 user ID")
     parser.add_argument("--agent-filter", help="Filter graph to show only memories for specific agent (metadata.agent_name)")
     parser.add_argument("--show-shared", action="store_true", default=True, help="Include shared knowledge (skills, tech, categories) in graph (default: True)")
     parser.add_argument("--no-shared", dest="show_shared", action="store_false", help="Exclude shared knowledge, show only agent-specific memories")
@@ -1054,7 +1054,7 @@ def main():
             print("  Consider using --sample 0.5 for faster rendering")
         
         # Build title with filter info
-        title_text = "SkillForge Plugin Structure - Mem0 Graph Visualization"
+        title_text = "OrchestKit Plugin Structure - Mem0 Graph Visualization"
         if args.agent_filter:
             title_text += f" (Agent: {args.agent_filter})"
         elif not args.show_shared:

@@ -7,7 +7,7 @@ version: 1.0.0
 category: Operations & Reliability
 agents: [backend-system-architect, code-quality-reviewer, ai-ml-engineer]
 keywords: [observability, monitoring, logging, metrics, tracing, alerts, Prometheus, OpenTelemetry]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -45,7 +45,7 @@ Key topics covered:
 - Correlation IDs for cross-service request tracking
 - Log sampling strategies for high-traffic systems
 - LogQL queries for Loki log aggregation
-- SkillForge structlog configuration example
+- OrchestKit structlog configuration example
 
 ### Metrics Collection
 **See: `references/metrics-collection.md`**

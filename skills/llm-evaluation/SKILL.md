@@ -5,7 +5,7 @@ context: fork
 agent: llm-integrator
 version: 2.0.0
 tags: [evaluation, llm, quality, ragas, langfuse, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

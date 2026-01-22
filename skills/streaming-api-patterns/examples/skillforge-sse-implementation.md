@@ -1,10 +1,10 @@
-# SkillForge SSE Implementation
+# OrchestKit SSE Implementation
 
-Real-world Server-Sent Events implementation from SkillForge, documenting the EventBroadcaster service, SSE endpoint handler, event buffering, and workflow integration.
+Real-world Server-Sent Events implementation from OrchestKit, documenting the EventBroadcaster service, SSE endpoint handler, event buffering, and workflow integration.
 
 ## Project Context
 
-**SkillForge**: Multi-agent analysis workflow with real-time progress streaming
+**OrchestKit**: Multi-agent analysis workflow with real-time progress streaming
 
 **Tech Stack**:
 - Backend: FastAPI + sse-starlette 3.0.3
@@ -722,7 +722,7 @@ async def test_event_buffering():
 ### 1. Always Buffer Events
 
 **Lesson**: Even with "fast" workflows, race conditions happen
-**Solution**: Always buffer recent events (SkillForge: 100 events, 5-minute TTL)
+**Solution**: Always buffer recent events (OrchestKit: 100 events, 5-minute TTL)
 
 ### 2. Use aclosing() for Generators
 

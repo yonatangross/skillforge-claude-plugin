@@ -1,5 +1,5 @@
 #!/bin/bash
-# Memory Fabric Orchestration Library for SkillForge Plugin
+# Memory Fabric Orchestration Library for OrchestKit Plugin
 # Graph-First Architecture: mcp__memory (local graph) as PRIMARY,
 # mem0 (semantic cloud) as OPTIONAL enhancement
 #
@@ -49,7 +49,7 @@ fi
 # Known entity types for extraction
 readonly FABRIC_ENTITY_TYPES=("agent" "technology" "pattern" "decision" "blocker")
 
-# Known SkillForge agents
+# Known OrchestKit agents
 readonly FABRIC_KNOWN_AGENTS=(
     "database-engineer"
     "backend-system-architect"
@@ -158,7 +158,7 @@ fabric_get_project_context() {
         --arg continuity "${project_id}-continuity" \
         --arg agents "${project_id}-agents" \
         --arg best_practices "${project_id}-best-practices" \
-        --arg global_prefix "skillforge-global" \
+        --arg global_prefix "orchestkit-global" \
         '{
             project_id: $project_id,
             user_ids: {
@@ -251,7 +251,7 @@ fabric_unified_search_agent() {
     project_id=$(mem0_get_project_id 2>/dev/null || echo "default-project")
 
     local user_id="${project_id}-agents"
-    local formatted_agent_id="skf:${agent_id#skf:}"
+    local formatted_agent_id="ork:${agent_id#ork:}"
 
     # Build mem0 search with agent filter
     local mem0_query

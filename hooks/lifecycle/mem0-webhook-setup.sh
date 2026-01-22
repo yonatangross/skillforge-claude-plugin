@@ -37,7 +37,7 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$SCRIPT_DIR/../..}"
 WEBHOOK_SCRIPT="$PLUGIN_ROOT/skills/mem0-memory/scripts"
 
 # Webhook configuration
-WEBHOOK_NAME="skillforge-auto-sync"
+WEBHOOK_NAME="orchestkit-auto-sync"
 WEBHOOK_EVENTS='["memory.created","memory.updated","memory.deleted"]'
 
 # Determine webhook URL (placeholder - should be configured)

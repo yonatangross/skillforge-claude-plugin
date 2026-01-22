@@ -4,7 +4,7 @@ description: Enforces FastAPI Clean Architecture with blocking validation. Use w
 context: fork
 agent: backend-system-architect
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [backend, fastapi, architecture, enforcement, blocking, clean-architecture, di]
 user-invocable: false
 ---

@@ -4,7 +4,7 @@ description: Use when backing up, restoring, or validating golden datasets. Prev
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [golden-dataset, backup, data-protection, testing, regression, 2025]
 allowed-tools:
   - Read
@@ -34,7 +34,7 @@ A **golden dataset** is a curated collection of high-quality examples used for:
 
 ---
 
-## SkillForge's Golden Dataset
+## OrchestKit's Golden Dataset
 
 **Stats (Production):**
 - **98 analyses** (completed content analyses)
@@ -79,7 +79,7 @@ analysis.url = "https://docs.python.org/3/library/asyncio.html"
 | **JSON** (recommended) | Yes | Slower (regen embeddings) | High | Easy |
 | **SQL Dump** | No (binary) | Fast | DB-version dependent | Hard |
 
-**SkillForge uses JSON backup** for version control and portability.
+**OrchestKit uses JSON backup** for version control and portability.
 
 ---
 
@@ -189,7 +189,7 @@ For detailed implementation patterns, see:
 ---
 
 **Version:** 1.0.0 (December 2025)
-**Status:** Production-ready patterns from SkillForge's 98-analysis golden dataset
+**Status:** Production-ready patterns from OrchestKit's 98-analysis golden dataset
 
 ## Capability Details
 
@@ -236,7 +236,7 @@ For detailed implementation patterns, see:
 ### skillforge-golden-dataset
 **Keywords:** skillforge, 98 analyses, 415 chunks, retrieval evaluation, real world
 **Solves:**
-- What is SkillForge's golden dataset?
-- How does SkillForge protect test data?
+- What is OrchestKit's golden dataset?
+- How does OrchestKit protect test data?
 - Real-world backup/restore examples
 - Production golden dataset stats

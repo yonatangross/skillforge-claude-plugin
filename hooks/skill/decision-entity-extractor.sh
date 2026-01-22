@@ -7,7 +7,7 @@
 # CC 2.1.7 Compliant: includes continue field in all outputs
 #
 # Entity Types:
-# - Agent: SkillForge agents (database-engineer, security-auditor, etc.)
+# - Agent: OrchestKit agents (database-engineer, security-auditor, etc.)
 # - Technology: Tech stack choices (PostgreSQL, FastAPI, pgvector, etc.)
 # - Pattern: Design patterns (cursor-pagination, repository-pattern, etc.)
 # - Constraint: Business/technical constraints
@@ -40,7 +40,7 @@ source "$SCRIPT_DIR/../_lib/common.sh" 2>/dev/null || true
 # Configuration
 # -----------------------------------------------------------------------------
 
-# Known SkillForge agents
+# Known OrchestKit agents
 KNOWN_AGENTS=(
     "database-engineer"
     "backend-system-architect"
@@ -232,7 +232,7 @@ build_entities_json() {
             entity=$(jq -n \
                 --arg name "$agent" \
                 --arg type "Agent" \
-                --arg obs "SkillForge agent: $agent" \
+                --arg obs "OrchestKit agent: $agent" \
                 '{name: $name, entityType: $type, observations: [$obs]}')
             entities=$(echo "$entities" | jq --argjson e "$entity" '. += [$e]')
         fi

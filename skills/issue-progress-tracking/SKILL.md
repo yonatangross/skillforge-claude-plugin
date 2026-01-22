@@ -99,7 +99,7 @@ Commit messages are matched against issue checkboxes using:
 https://github.com/owner/repo/pull/42
 
 ---
-*Automated by SkillForge*
+*Automated by OrchestKit*
 ```
 
 ## Requirements

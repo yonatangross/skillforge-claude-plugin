@@ -287,7 +287,7 @@ Comprehensive checklist for planning, creating, and maintaining ASCII diagrams i
 - [ ] Document what's intentionally omitted
 - [ ] Plan for additional views (security, data, etc.)
 
-## SkillForge-Specific Considerations
+## OrchestKit-Specific Considerations
 
 ### Multi-Agent Architecture
 - [ ] Show all 8 worker agents clearly
@@ -396,7 +396,7 @@ Comprehensive checklist for planning, creating, and maintaining ASCII diagrams i
 
 **Remember:** The best diagram is the one that clearly communicates the intended message to the target audience. Clarity trumps complexity every time.
 
-**SkillForge Priority Diagrams:**
+**OrchestKit Priority Diagrams:**
 1. System overview (all layers)
 2. LangGraph multi-agent workflow
 3. SSE real-time update flow

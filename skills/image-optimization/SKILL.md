@@ -6,7 +6,7 @@ context: fork
 agent: frontend-ui-developer
 version: 1.0.0
 allowed-tools: [Read, Write, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

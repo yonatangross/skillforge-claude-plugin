@@ -1,10 +1,10 @@
-# SkillForge API Design Decisions
+# OrchestKit API Design Decisions
 
-Real-world API design decisions from the SkillForge project, documenting endpoint structure, versioning strategy, and architectural choices.
+Real-world API design decisions from the OrchestKit project, documenting endpoint structure, versioning strategy, and architectural choices.
 
 ## Project Context
 
-**SkillForge**: Intelligent Learning Integration Platform - Multi-agent system for analyzing technical content.
+**OrchestKit**: Intelligent Learning Integration Platform - Multi-agent system for analyzing technical content.
 
 **Stack**: FastAPI (Python) + React 19 frontend
 **API Base**: `http://localhost:8500/api/v1`

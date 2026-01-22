@@ -1,10 +1,10 @@
-# SkillForge Monitoring Dashboard - Real Implementation
+# OrchestKit Monitoring Dashboard - Real Implementation
 
-This document shows SkillForge's actual monitoring setup including metrics, dashboards, and alerting rules.
+This document shows OrchestKit's actual monitoring setup including metrics, dashboards, and alerting rules.
 
 ## Overview
 
-**SkillForge Monitoring Stack:**
+**OrchestKit Monitoring Stack:**
 - **Logs**: Structlog (JSON) → Loki
 - **Metrics**: Prometheus (RED + business metrics)
 - **Traces**: Langfuse (LLM observability)
@@ -217,7 +217,7 @@ histogram_quantile(0.95,
 
 ### Log Format
 
-**SkillForge uses structlog with JSON output:**
+**OrchestKit uses structlog with JSON output:**
 ```json
 {
   "event": "supervisor_routing",
@@ -578,5 +578,5 @@ async def readiness_check():
 - Template: `../scripts/structured-logging.ts`
 - Template: `../scripts/prometheus-metrics.ts`
 - Template: `../scripts/alerting-rules.yml`
-- [SkillForge Redis Connection](../../../../backend/app/shared/services/cache/redis_connection.py)
-- [SkillForge Quality Initiative](../../../../docs/QUALITY_INITIATIVE_FIXES.md)
+- [OrchestKit Redis Connection](../../../../backend/app/shared/services/cache/redis_connection.py)
+- [OrchestKit Quality Initiative](../../../../docs/QUALITY_INITIATIVE_FIXES.md)

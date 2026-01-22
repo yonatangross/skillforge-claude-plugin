@@ -12,7 +12,7 @@ The Metadata-Filtered Single Graph architecture uses a unified `user_id` with ri
 
 ```python
 # All memories use single unified user_id
-user_id = "skillforge:all-agents"
+user_id = "orchestkit:all-agents"
 ```
 
 ### Metadata Schema

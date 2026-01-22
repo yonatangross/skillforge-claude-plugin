@@ -4,7 +4,7 @@ description: CLIP, SigLIP 2, Voyage multimodal-3 patterns for image+text retriev
 context: fork
 agent: multimodal-specialist
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 tags: [rag, multimodal, image-retrieval, clip, embeddings, vector-search, 2026]
 ---

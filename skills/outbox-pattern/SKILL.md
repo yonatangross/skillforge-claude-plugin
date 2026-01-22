@@ -6,7 +6,7 @@ agent: event-driven-architect
 version: 2.0.0
 tags: [event-driven, outbox, transactions, reliability, microservices, cdc, idempotency, 2026]
 allowed-tools: [Read, Write, Grep, Glob, Bash]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

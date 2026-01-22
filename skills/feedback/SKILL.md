@@ -1,16 +1,16 @@
 ---
 name: feedback
-description: Manage the SkillForge feedback system that learns from your usage. Use when providing feedback, reporting issues, suggesting improvements.
+description: Manage the OrchestKit feedback system that learns from your usage. Use when providing feedback, reporting issues, suggesting improvements.
 context: inherit
 version: 1.2.0
-author: SkillForge
+author: OrchestKit
 tags: [feedback, learning, patterns, metrics, privacy, analytics, consent]
 user-invocable: true
 ---
 
 # Feedback - Manage Learning System
 
-View and manage the SkillForge feedback system that learns from your usage.
+View and manage the OrchestKit feedback system that learns from your usage.
 
 ## Overview
 

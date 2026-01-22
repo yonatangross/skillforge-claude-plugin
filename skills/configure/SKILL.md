@@ -1,16 +1,16 @@
 ---
 name: configure
-description: Interactive SkillForge configuration wizard. Use when you need to configure SkillForge settings, MCP servers, or plugin options.
+description: Interactive OrchestKit configuration wizard. Use when you need to configure OrchestKit settings, MCP servers, or plugin options.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [configuration, setup, wizard, customization]
 user-invocable: true
 ---
 
-# SkillForge Configuration
+# OrchestKit Configuration
 
-Interactive setup for customizing your SkillForge installation.
+Interactive setup for customizing your OrchestKit installation.
 
 ## Quick Start
 

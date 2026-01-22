@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [prompts, cot, few-shot, versioning, optimization, langfuse, dspy, 2026]
 context: fork
 agent: prompt-engineer
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -139,7 +139,7 @@ def classify_difficulty(document: dict) -> str:
 
 ### 4. Relevance (Weight: 0.30)
 
-**What it measures:** Alignment with SkillForge's technical domains
+**What it measures:** Alignment with OrchestKit's technical domains
 
 **Target domains:**
 - AI/ML (LangGraph, RAG, agents, embeddings)
@@ -151,7 +151,7 @@ def classify_difficulty(document: dict) -> str:
 **Thresholds:**
 - Perfect: 0.95-1.0 (core domain, highly relevant)
 - Acceptable: 0.70-0.94 (related domain)
-- Failing: <0.70 (off-topic for SkillForge)
+- Failing: <0.70 (off-topic for OrchestKit)
 
 ## Best Practices
 

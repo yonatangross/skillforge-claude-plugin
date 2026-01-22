@@ -4,7 +4,7 @@ description: Production hybrid search combining PGVector HNSW with BM25 using Re
 context: fork
 agent: database-engineer
 version: 1.2.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [pgvector-0.8, hybrid-search, bm25, rrf, semantic-search, retrieval, 2026]
 user-invocable: false
 ---

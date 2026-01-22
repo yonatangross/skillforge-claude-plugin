@@ -65,7 +65,7 @@ ALTER TABLE analyses
 ALTER COLUMN content_summary SET DEFAULT '';
 ```
 
-### Real-World Example: SkillForge's PII Columns
+### Real-World Example: OrchestKit's PII Columns
 
 **Migration:** `20251210_add_pii_columns.py`
 
@@ -193,7 +193,7 @@ async def backfill_tsvector():
             print(f"Backfilled {total_backfilled} total rows")
 ```
 
-**SkillForge Migration:** `20251218_backfill_chunks_tsvector.py` (actual example)
+**OrchestKit Migration:** `20251218_backfill_chunks_tsvector.py` (actual example)
 
 ---
 
@@ -260,7 +260,7 @@ poetry run alembic upgrade head
 ## Alembic Best Practices
 
 ### Migration File Naming
-SkillForge uses timestamp-based naming for clarity:
+OrchestKit uses timestamp-based naming for clarity:
 
 ```
 20251210_harden_embedding_pipeline.py
@@ -356,7 +356,7 @@ def upgrade() -> None:
     """))
 ```
 
-**SkillForge Example:** `20251210_add_cascade_delete.py`
+**OrchestKit Example:** `20251210_add_cascade_delete.py`
 
 ```python
 def upgrade() -> None:
@@ -415,7 +415,7 @@ poetry run alembic merge -m "merge sprint 12 migrations" abc123 def789
 # down_revision = ("abc123", "def789")
 ```
 
-**SkillForge Example:** `500313d1cac9_merge_sprint_12_migrations.py`
+**OrchestKit Example:** `500313d1cac9_merge_sprint_12_migrations.py`
 
 ---
 

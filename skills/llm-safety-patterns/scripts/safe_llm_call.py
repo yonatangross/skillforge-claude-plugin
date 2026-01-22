@@ -4,7 +4,7 @@ Safe LLM Call Template
 This template demonstrates the complete pattern for making
 LLM calls with proper context separation, filtering, and attribution.
 
-Copy and adapt for SkillForge workflows.
+Copy and adapt for OrchestKit workflows.
 """
 
 import re

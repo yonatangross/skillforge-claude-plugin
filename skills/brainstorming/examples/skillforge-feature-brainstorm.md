@@ -1,4 +1,4 @@
-# Example: SkillForge Feature Brainstorming Session
+# Example: OrchestKit Feature Brainstorming Session
 
 ## Feature Idea: Real-Time Collaborative Analysis Review
 
@@ -26,8 +26,8 @@
    - After completion (reviewing artifacts)?
    - During implementation (referencing analysis)?
 
-4. **How does this fit SkillForge's core value?**
-   - SkillForge generates implementation guides from technical content
+4. **How does this fit OrchestKit's core value?**
+   - OrchestKit generates implementation guides from technical content
    - Is collaboration about improving analysis inputs or outputs?
    - Does this enhance learning or just convenience?
 
@@ -35,12 +35,12 @@
 
 ## Phase 2: User Responses & Refinement
 
-**User:** "Mainly teams reviewing analyses after completion. Current workflow has devs analyzing content separately, then discussing in Slack. We lose context switching between SkillForge and Slack."
+**User:** "Mainly teams reviewing analyses after completion. Current workflow has devs analyzing content separately, then discussing in Slack. We lose context switching between OrchestKit and Slack."
 
 **Agent:** Excellent context! This narrows scope significantly. Let's refine:
 
 **Refined Problem Statement:**
-Teams using SkillForge lose context when discussing analyses outside the platform, leading to fragmented feedback and slower implementation decisions.
+Teams using OrchestKit lose context when discussing analyses outside the platform, leading to fragmented feedback and slower implementation decisions.
 
 **Next-Level Questions:**
 
@@ -64,7 +64,7 @@ Teams using SkillForge lose context when discussing analyses outside the platfor
 
 ## Phase 3: Constraint Analysis
 
-**Agent:** Let's check this against SkillForge's architecture:
+**Agent:** Let's check this against OrchestKit's architecture:
 
 **Technical Constraints:**
 - ✅ Backend: FastAPI supports WebSockets (for real-time)
@@ -166,7 +166,7 @@ Teams using SkillForge lose context when discussing analyses outside the platfor
 
 ## Phase 5: Decision Framework
 
-**Agent:** Let's evaluate against SkillForge's goals:
+**Agent:** Let's evaluate against OrchestKit's goals:
 
 | Criteria | Option A | Option B | Option C |
 |----------|----------|----------|----------|

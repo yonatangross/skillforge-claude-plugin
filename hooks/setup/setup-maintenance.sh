@@ -90,7 +90,7 @@ task_log_rotation() {
   log_hook "Task: Log rotation"
 
   local log_dir="${PLUGIN_ROOT}/.claude/logs"
-  local home_log_dir="${HOME}/.claude/logs/skf"
+  local home_log_dir="${HOME}/.claude/logs/ork"
   local rotated=0
 
   # Rotate plugin logs

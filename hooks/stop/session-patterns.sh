@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # session-patterns.sh - Unified pattern learning at session end
-# Part of SkillForge Plugin - Cross-Project Patterns (#48) + Best Practices (#49)
+# Part of OrchestKit Plugin - Cross-Project Patterns (#48) + Best Practices (#49)
 #
 # UNIFIED HOOK: Merges functionality from workflow-pattern-learner.sh
 #

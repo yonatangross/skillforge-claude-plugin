@@ -36,7 +36,7 @@ ISSUES=""
 CRITICAL_ERRORS=""
 CHECKS_RUN=""
 
-# ===== SkillForge Plugin Validation (CRITICAL - blocks commit) =====
+# ===== OrchestKit Plugin Validation (CRITICAL - blocks commit) =====
 if [[ -f ".claude-plugin/plugin.json" ]]; then
   CHECKS_RUN="${CHECKS_RUN}PluginValidation, "
 
@@ -63,7 +63,7 @@ if [[ -f ".claude-plugin/plugin.json" ]]; then
   fi
 fi
 
-# ===== Quick Unit Tests (for SkillForge plugin - CRITICAL) =====
+# ===== Quick Unit Tests (for OrchestKit plugin - CRITICAL) =====
 if [[ -f "tests/run-all-tests.sh" ]] && [[ -f ".claude-plugin/plugin.json" ]]; then
   # Only run quick tests if hooks/skills/agents are modified
   if echo "$STAGED_FILES" | grep -qE "^(hooks/|skills/|agents/|.claude-plugin/)"; then
@@ -80,7 +80,7 @@ if [[ -f "tests/run-all-tests.sh" ]] && [[ -f ".claude-plugin/plugin.json" ]]; t
   fi
 fi
 
-# ===== CHANGELOG Validation (for SkillForge plugin - CRITICAL) =====
+# ===== CHANGELOG Validation (for OrchestKit plugin - CRITICAL) =====
 if [[ -f "CHANGELOG.md" ]] && echo "$STAGED_FILES" | grep -q "plugin.json"; then
   CHECKS_RUN="${CHECKS_RUN}Changelog, "
 

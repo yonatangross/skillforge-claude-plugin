@@ -11,7 +11,7 @@ allowed-tools:
   - Glob
   - Write
   - Edit
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

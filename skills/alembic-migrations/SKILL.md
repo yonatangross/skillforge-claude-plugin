@@ -6,7 +6,7 @@ agent: database-engineer
 version: 2.0.0
 tags: [alembic, migrations, sqlalchemy, database, schema, python, async, 2026]
 allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -9,7 +9,7 @@ allowed-tools:
   - Glob
   - Bash  # For running security scanners only
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

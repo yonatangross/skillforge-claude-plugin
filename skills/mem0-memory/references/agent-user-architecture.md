@@ -2,7 +2,7 @@
 
 ## Overview
 
-Each SkillForge agent should be a separate `user_id` in mem0, creating isolated memory spaces per agent. This enables:
+Each OrchestKit agent should be a separate `user_id` in mem0, creating isolated memory spaces per agent. This enables:
 
 1. **Agent-specific knowledge graphs** - Each agent's memories form their own graph
 2. **Better querying** - "What does backend-system-architect know?" queries a specific user_id
@@ -12,7 +12,7 @@ Each SkillForge agent should be a separate `user_id` in mem0, creating isolated 
 ## Current Architecture
 
 ```
-All memories → user_id: "skillforge-plugin-structure"
+All memories → user_id: "orchestkit-plugin-structure"
 ├── Agent memories (backend-system-architect, frontend-ui-developer, etc.)
 ├── Skill memories
 ├── Technology memories
@@ -53,7 +53,7 @@ Each agent → Separate user_id
 
 ```python
 # OLD
-USER_ID = "skillforge-plugin-structure"
+USER_ID = "orchestkit-plugin-structure"
 
 # NEW
 def get_agent_user_id(agent_name: str) -> str:
@@ -119,7 +119,7 @@ skillforge:decisions       # Global decisions (if needed)
 
 ### Phase 1: Dual-Write (Backward Compatible)
 
-1. Keep writing to `skillforge-plugin-structure` for existing memories
+1. Keep writing to `orchestkit-plugin-structure` for existing memories
 2. Start writing new agent memories to `agent:{agent-name}`
 3. Update visualization to read from both
 
@@ -131,7 +131,7 @@ def migrate_agent_memories():
     # Read all memories from old user_id
     old_memories = client.search(
         query="agent specialized",
-        filters={"user_id": "skillforge-plugin-structure", "metadata.entity_type": "Agent"}
+        filters={"user_id": "orchestkit-plugin-structure", "metadata.entity_type": "Agent"}
     )
     
     for memory in old_memories['results']:
@@ -149,7 +149,7 @@ def migrate_agent_memories():
 
 ### Phase 3: Cleanup
 
-1. Archive old `skillforge-plugin-structure` memories
+1. Archive old `orchestkit-plugin-structure` memories
 2. Update all scripts to use new user_id pattern
 3. Update documentation
 

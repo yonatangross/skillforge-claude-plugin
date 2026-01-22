@@ -6,7 +6,7 @@ agent: test-generator
 version: 1.1.0
 tags: [accessibility, testing, axe-core, playwright, wcag, a11y, jest-axe]
 allowed-tools: [Read, Write, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

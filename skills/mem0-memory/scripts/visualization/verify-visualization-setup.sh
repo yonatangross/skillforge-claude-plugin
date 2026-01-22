@@ -119,7 +119,7 @@ fi
 
 # Test visualization export
 log "Testing visualization export (JSON format)..."
-if python3 "$SCRIPT_DIR/visualize-mem0-graph.py" --user-id "skillforge-plugin-structure" --format json --limit 5 --output test-export.json 2>&1 | grep -q "✓"; then
+if python3 "$SCRIPT_DIR/visualize-mem0-graph.py" --user-id "orchestkit-plugin-structure" --format json --limit 5 --output test-export.json 2>&1 | grep -q "✓"; then
     log_success "Visualization export working"
     # Cleanup test file
     rm -f "$PROJECT_ROOT/outputs/test-export.json" 2>/dev/null || true

@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [guardrails, nemo, safety, hallucination, factuality, red-teaming, colang, 2026]
 context: fork
 agent: ai-safety-auditor
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

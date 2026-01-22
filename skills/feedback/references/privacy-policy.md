@@ -1,10 +1,10 @@
 # Privacy Policy Reference
 
-> Anonymous analytics privacy documentation for SkillForge Claude Plugin
+> Anonymous analytics privacy documentation for OrchestKit Claude Plugin
 
 ## Overview
 
-SkillForge offers **optional** anonymous analytics to help improve the plugin. This is strictly **opt-in** - no data is collected without explicit user consent.
+OrchestKit offers **optional** anonymous analytics to help improve the plugin. This is strictly **opt-in** - no data is collected without explicit user consent.
 
 ## What We Collect
 
@@ -58,7 +58,7 @@ If **any** PII pattern is detected, the export is **aborted**.
 
 ```bash
 # Via command
-/skf:feedback opt-in
+/ork:feedback opt-in
 
 # What happens:
 # 1. consent-log.json records: {"action": "granted", "version": "1.0", "timestamp": "..."}
@@ -69,7 +69,7 @@ If **any** PII pattern is detected, the export is **aborted**.
 
 ```bash
 # Via command
-/skf:feedback opt-out
+/ork:feedback opt-out
 
 # What happens:
 # 1. consent-log.json records: {"action": "revoked", "timestamp": "..."}
@@ -80,7 +80,7 @@ If **any** PII pattern is detected, the export is **aborted**.
 ### Checking Status
 
 ```bash
-/skf:feedback status
+/ork:feedback status
 # Shows: consent state, timestamp, policy version
 ```
 
@@ -154,11 +154,11 @@ This implementation follows GDPR requirements:
 
 | Command | Description |
 |---------|-------------|
-| `/skf:feedback opt-in` | Enable anonymous sharing |
-| `/skf:feedback opt-out` | Disable sharing (revoke consent) |
-| `/skf:feedback status` | Show current consent status |
-| `/skf:feedback export` | Export data for review |
-| `/skf:feedback privacy` | Display full privacy policy |
+| `/ork:feedback opt-in` | Enable anonymous sharing |
+| `/ork:feedback opt-out` | Disable sharing (revoke consent) |
+| `/ork:feedback status` | Show current consent status |
+| `/ork:feedback export` | Export data for review |
+| `/ork:feedback privacy` | Display full privacy policy |
 
 ## Contact
 

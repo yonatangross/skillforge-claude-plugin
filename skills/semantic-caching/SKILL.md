@@ -4,7 +4,7 @@ description: Redis semantic caching for LLM applications. Use when implementing 
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -138,7 +138,7 @@ async def get_llm_response(query: str, agent_type: str) -> dict:
 ### skillforge-integration
 **Keywords:** skillforge, integration, roi, cost-savings
 **Solves:**
-- Integrate caching with SkillForge
+- Integrate caching with OrchestKit
 - Calculate ROI for caching
 - Production implementation guide
 

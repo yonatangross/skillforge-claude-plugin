@@ -4,7 +4,7 @@ description: LangGraph Functional API with @entrypoint and @task decorators. Use
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 # LangGraph Functional API

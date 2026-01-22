@@ -1,12 +1,12 @@
-# SkillForge Workflow Resilience Integration
+# OrchestKit Workflow Resilience Integration
 
-This example shows how to wire resilience patterns into the SkillForge analysis pipeline.
+This example shows how to wire resilience patterns into the OrchestKit analysis pipeline.
 
 ## Current Architecture
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                    SkillForge Analysis Pipeline                     │
+│                    OrchestKit Analysis Pipeline                     │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │   Content ─▶ [Supervisor] ─▶ [Agent Fan-Out] ─▶ [Aggregate] ─▶ ... │
@@ -429,7 +429,7 @@ RETRY_MAX_DELAY=30.0
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
-│                   SkillForge Resilience Dashboard                   │
+│                   OrchestKit Resilience Dashboard                   │
 ├────────────────────────────────────────────────────────────────────┤
 │                                                                     │
 │   CIRCUIT BREAKERS                                                 │

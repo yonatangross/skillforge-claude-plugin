@@ -59,7 +59,7 @@ Check:
 □ Does the response time stay acceptable?
 ```
 
-## SkillForge Scale Considerations
+## OrchestKit Scale Considerations
 
 ### Current Baseline
 

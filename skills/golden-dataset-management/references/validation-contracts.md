@@ -331,5 +331,5 @@ jobs:
 
 ## References
 
-- SkillForge: `backend/scripts/backup_golden_dataset.py`
-- SkillForge: `backend/tests/integration/test_retrieval_quality.py`
+- OrchestKit: `backend/scripts/backup_golden_dataset.py`
+- OrchestKit: `backend/tests/integration/test_retrieval_quality.py`

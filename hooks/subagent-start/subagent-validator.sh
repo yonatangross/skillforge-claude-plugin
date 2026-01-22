@@ -38,7 +38,7 @@ jq -n \
 # === VALIDATION: Build valid types from multiple sources ===
 BUILTIN_TYPES="general-purpose|Explore|Plan|claude-code-guide|statusline-setup|Bash"
 
-# Extract agent type (strip namespace prefix like "skf:")
+# Extract agent type (strip namespace prefix like "ork:")
 AGENT_TYPE_ONLY="${SUBAGENT_TYPE##*:}"
 
 # Source 1: Load from plugin.json agents array (if exists)

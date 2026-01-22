@@ -3,7 +3,7 @@ name: context-compression
 description: Use when conversation context is too long, hitting token limits, or responses are degrading. Compresses history while preserving critical information using anchored summarization and probe-based validation.
 context: fork
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [context, compression, summarization, memory, optimization, 2026]
 user-invocable: false
 ---
@@ -181,7 +181,7 @@ Calculate against **effective** context (after system overhead):
 For detailed implementation and patterns, see:
 
 - **[Compression Strategies](references/compression-strategies.md)**: Detailed comparison of all strategies (anchored, opaque, regenerative, sliding window), implementation patterns, and decision flowcharts
-- **[Priority Management](references/priority-management.md)**: Compression triggers, CC 2.1.7 effective context, probe-based evaluation, SkillForge integration
+- **[Priority Management](references/priority-management.md)**: Compression triggers, CC 2.1.7 effective context, probe-based evaluation, OrchestKit integration
 
 ## Bundled Resources
 

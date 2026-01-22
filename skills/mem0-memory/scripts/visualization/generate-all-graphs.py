@@ -28,7 +28,7 @@ def get_all_agents() -> List[str]:
         client = get_mem0_client()
         result = client.search(
             query="agent specialized AI persona",
-            filters={"user_id": "skillforge:all-agents", "metadata": {"entity_type": "Agent"}},
+            filters={"user_id": "orchestkit:all-agents", "metadata": {"entity_type": "Agent"}},
             limit=100
         )
         agents = []
@@ -50,7 +50,7 @@ def get_all_categories() -> List[str]:
         client = get_mem0_client()
         result = client.search(
             query="category groups related",
-            filters={"user_id": "skillforge:all-agents", "metadata": {"entity_type": "Category"}},
+            filters={"user_id": "orchestkit:all-agents", "metadata": {"entity_type": "Category"}},
             limit=50
         )
         categories = []
@@ -68,7 +68,7 @@ def get_all_categories() -> List[str]:
 
 def generate_graph(
     output_name: str,
-    user_id: str = "skillforge:all-agents",
+    user_id: str = "orchestkit:all-agents",
     agent_filter: Optional[str] = None,
     show_shared: bool = True,
     format: str = "plotly",
@@ -134,7 +134,7 @@ def create_dashboard_html(graphs: List[Dict[str, Any]]) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mem0 Graph Dashboard - SkillForge</title>
+    <title>Mem0 Graph Dashboard - OrchestKit</title>
     <style>
         * {{
             margin: 0;
@@ -428,7 +428,7 @@ def create_dashboard_html(graphs: List[Dict[str, Any]]) -> str:
         </div>
         
         <div class="footer">
-            <p>SkillForge Plugin - Mem0 Memory Architecture Visualization</p>
+            <p>OrchestKit Plugin - Mem0 Memory Architecture Visualization</p>
             <p>Metadata-Filtered Single Graph Architecture (9.0/10 rating)</p>
         </div>
     </div>
@@ -464,7 +464,7 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Generate all graph visualizations")
-    parser.add_argument("--user-id", default="skillforge:all-agents", help="Mem0 user ID")
+    parser.add_argument("--user-id", default="orchestkit:all-agents", help="Mem0 user ID")
     parser.add_argument("--limit", type=int, help="Limit memories per graph")
     parser.add_argument("--agents", nargs="+", help="Specific agents to visualize (default: all)")
     parser.add_argument("--categories", nargs="+", help="Specific categories to visualize (default: all)")
@@ -495,11 +495,11 @@ def main():
     )
     
     # If failed, try old user_id
-    if not full_graph_generated and args.user_id == "skillforge:all-agents":
+    if not full_graph_generated and args.user_id == "orchestkit:all-agents":
         print("   Trying legacy user_id...")
         full_graph_generated = generate_graph(
             "mem0-full-graph.html",
-            user_id="skillforge-plugin-structure",
+            user_id="skillforge:all-agents",
             show_shared=True,
             format=args.format,
             limit=args.limit
@@ -534,11 +534,11 @@ def main():
         )
         
         # If failed, try old user_id
-        if not shared_generated and args.user_id == "skillforge:all-agents":
+        if not shared_generated and args.user_id == "orchestkit:all-agents":
             print("   Trying legacy user_id...")
             shared_generated = generate_graph(
                 "mem0-shared-knowledge.html",
-                user_id="skillforge-plugin-structure",
+                user_id="skillforge:all-agents",
                 show_shared=True,
                 format=args.format,
                 limit=args.limit

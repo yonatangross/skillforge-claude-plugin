@@ -11,7 +11,7 @@ from setuptools import setup
 setup(
     name="mem0-skill-lib",
     version="1.0.0",
-    description="Shared mem0 client library for SkillForge mem0-memory scripts",
+    description="Shared mem0 client library for OrchestKit mem0-memory scripts",
     packages=["lib"],
     package_dir={"": "."},
     install_requires=[

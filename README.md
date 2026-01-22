@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-# SkillForge Claude Plugin
+# OrchestKit Claude Plugin
 
 ### Stop satisficing your codebase to Claude. Start shipping.
 
@@ -11,23 +11,23 @@
 [![Hooks](https://img.shields.io/badge/Hooks-144-orange?style=for-the-badge)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
-[Why SkillForge?](#why-skillforge) · [Quick Start](#quick-start) · [Commands](#commands) · [Skills](#skills) · [Agents](#agents) · [FAQ](#faq)
+[Why OrchestKit?](#why-skillforge) · [Quick Start](#quick-start) · [Commands](#commands) · [Skills](#skills) · [Agents](#agents) · [FAQ](#faq)
 
 </div>
 
 ---
 
-## Why SkillForge?
+## Why OrchestKit?
 
 **The Problem:** Every Claude Code session starts from zero. You explain your stack, your patterns, your preferences—again and again.
 
-**The Solution:** SkillForge gives Claude persistent knowledge of 159 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
+**The Solution:** OrchestKit gives Claude persistent knowledge of 159 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
 
 <table>
 <tr>
 <td width="50%">
 
-**Without SkillForge**
+**Without OrchestKit**
 ```
 😩 "Use FastAPI with async SQLAlchemy 2.0..."
 😩 "Remember cursor pagination, not offset..."
@@ -38,12 +38,12 @@
 </td>
 <td width="50%">
 
-**With SkillForge**
+**With OrchestKit**
 ```
 ✨ "Create an API endpoint" → Done right
 ✨ Agents know your patterns already
 ✨ Hooks block bad commits automatically
-✨ /skf:commit runs tests for you
+✨ /ork:commit runs tests for you
 ```
 
 </td>
@@ -142,14 +142,14 @@ flowchart LR
 
 ```bash
 # From Claude Code
-/plugin marketplace add yonatangross/skillforge-claude-plugin
-/plugin install skf
+/plugin marketplace add yonatangross/orchestkit
+/plugin install ork
 ```
 
 ### Verify It Works
 
 ```bash
-/skf:doctor
+/ork:doctor
 ```
 
 You should see:
@@ -163,9 +163,9 @@ You should see:
 ### Try These
 
 ```bash
-/skf:commit        # Commit with checks
-/skf:review-pr     # Code review checklist
-/skf:explore       # Analyze codebase
+/ork:commit        # Commit with checks
+/ork:review-pr     # Code review checklist
+/ork:explore       # Analyze codebase
 ```
 
 ---
@@ -178,46 +178,46 @@ You should see:
 
 | Command | Description |
 |---------|-------------|
-| `/skf:commit` | Conventional commit with pre-commit checks |
-| `/skf:create-pr` | Create PR with summary and test plan |
-| `/skf:review-pr` | Code review checklist |
-| `/skf:git-recovery-command` | Recover from git mistakes |
+| `/ork:commit` | Conventional commit with pre-commit checks |
+| `/ork:create-pr` | Create PR with summary and test plan |
+| `/ork:review-pr` | Code review checklist |
+| `/ork:git-recovery-command` | Recover from git mistakes |
 
 ### 🧠 Memory & Context
 
 | Command | Description |
 |---------|-------------|
-| `/skf:remember` | Save information to persistent memory |
-| `/skf:recall` | Retrieve from memory |
-| `/skf:load-context` | Load relevant memories at session start |
-| `/skf:mem0-sync` | Sync memories to Mem0 cloud |
+| `/ork:remember` | Save information to persistent memory |
+| `/ork:recall` | Retrieve from memory |
+| `/ork:load-context` | Load relevant memories at session start |
+| `/ork:mem0-sync` | Sync memories to Mem0 cloud |
 
 ### 🔍 Analysis & Implementation
 
 | Command | Description |
 |---------|-------------|
-| `/skf:explore` | Analyze codebase structure |
-| `/skf:implement` | Implement feature with agent guidance |
-| `/skf:verify` | Verify implementation correctness |
-| `/skf:fix-issue` | Fix a GitHub issue |
+| `/ork:explore` | Analyze codebase structure |
+| `/ork:implement` | Implement feature with agent guidance |
+| `/ork:verify` | Verify implementation correctness |
+| `/ork:fix-issue` | Fix a GitHub issue |
 
 ### ⚙️ Configuration & Health
 
 | Command | Description |
 |---------|-------------|
-| `/skf:doctor` | Check plugin health |
-| `/skf:configure` | Setup MCP servers |
-| `/skf:claude-hud` | Configure context window HUD |
+| `/ork:doctor` | Check plugin health |
+| `/ork:configure` | Setup MCP servers |
+| `/ork:claude-hud` | Configure context window HUD |
 
 ### 📋 Other Workflows
 
 | Command | Description |
 |---------|-------------|
-| `/skf:brainstorming` | Structured ideation session |
-| `/skf:feedback` | Submit feedback or suggestions |
-| `/skf:add-golden` | Add golden test dataset |
-| `/skf:skill-evolution` | Evolve skills based on usage |
-| `/skf:worktree-coordination` | Coordinate multiple Claude instances |
+| `/ork:brainstorming` | Structured ideation session |
+| `/ork:feedback` | Submit feedback or suggestions |
+| `/ork:add-golden` | Add golden test dataset |
+| `/ork:skill-evolution` | Evolve skills based on usage |
+| `/ork:worktree-coordination` | Coordinate multiple Claude instances |
 
 ---
 
@@ -371,7 +371,7 @@ flowchart TB
         P["Your Prompt"]
     end
 
-    subgraph SkillForge["🔷 SKILLFORGE PLUGIN"]
+    subgraph OrchestKit["🔷 SKILLFORGE PLUGIN"]
         direction TB
 
         subgraph Hooks["🛡️ 144 HOOKS"]
@@ -422,13 +422,13 @@ flowchart TB
     class S1,S2,S3,S4 skills
     class A1,A2,A3,A4 agents
     class C output
-    class SkillForge container
+    class OrchestKit container
 ```
 
 ### Directory Structure
 
 ```
-skillforge-claude-plugin/
+orchestkit/
 ├── skills/                  # 159 knowledge modules
 │   └── <skill-name>/
 │       ├── SKILL.md         # Overview + patterns (~500 tokens)
@@ -453,7 +453,7 @@ skillforge-claude-plugin/
 
 ## Comparison
 
-| Feature | SkillForge | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
+| Feature | OrchestKit | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
 |---------|:----------:|:--------------------:|:---------:|
 | **Skills/Patterns** | ✅ 159 | ⚠️ ~10 | ❌ 0 |
 | **Specialized Agents** | ✅ 34 | ⚠️ ~5 | ❌ 0 |
@@ -472,7 +472,7 @@ skillforge-claude-plugin/
 ### MCP Servers (Optional)
 
 ```bash
-/skf:configure
+/ork:configure
 ```
 
 | Server | Purpose | When Active |
@@ -506,8 +506,8 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 
 # Reinstall if needed
 /plugin uninstall skf
-/plugin marketplace add yonatangross/skillforge-claude-plugin
-/plugin install skf
+/plugin marketplace add yonatangross/orchestkit
+/plugin install ork
 ```
 
 </details>
@@ -517,7 +517,7 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 
 1. Check hook logs: `tail -f hooks/logs/*.log`
 2. Verify settings: Check `.claude/settings.json` exists
-3. Run diagnostics: `/skf:doctor`
+3. Run diagnostics: `/ork:doctor`
 
 </details>
 
@@ -546,7 +546,7 @@ EOF
 <details>
 <summary><strong>❓ Works with existing projects?</strong></summary>
 
-Yes! SkillForge is additive—it won't modify your files. Skills and agents activate automatically based on context.
+Yes! OrchestKit is additive—it won't modify your files. Skills and agents activate automatically based on context.
 
 </details>
 
@@ -613,7 +613,7 @@ MIT License — see [LICENSE](./LICENSE)
 
 <div align="center">
 
-**[Documentation](./CLAUDE.md)** · **[Issues](https://github.com/yonatangross/skillforge-claude-plugin/issues)** · **[Discussions](https://github.com/yonatangross/skillforge-claude-plugin/discussions)**
+**[Documentation](./CLAUDE.md)** · **[Issues](https://github.com/yonatangross/orchestkit/issues)** · **[Discussions](https://github.com/yonatangross/orchestkit/discussions)**
 
 Built with Claude Code · Maintained by [@yonatangross](https://github.com/yonatangross)
 

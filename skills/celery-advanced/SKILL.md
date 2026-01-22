@@ -5,7 +5,7 @@ context: fork
 agent: python-performance-engineer
 version: 1.0.0
 tags: [celery, canvas, workflow, priority-queue, rate-limiting, task-routing, flower, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

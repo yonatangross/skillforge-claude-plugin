@@ -4,7 +4,7 @@ description: Long-term semantic memory across sessions using Mem0. Use when you 
 context: fork
 agent: any
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -374,7 +374,7 @@ PR #456 ready for review. Blocked on: DB migration approval."
   --event-types '["memory.created","memory.updated"]'
 ```
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 Use memories to maintain context across plugin sessions:
 

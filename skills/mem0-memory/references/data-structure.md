@@ -1,6 +1,6 @@
 # Mem0 Data Structure Reference
 
-Complete reference for entity types, categories, relationships, metadata schema, and example queries for SkillForge plugin structure in Mem0.
+Complete reference for entity types, categories, relationships, metadata schema, and example queries for OrchestKit plugin structure in Mem0.
 
 ## Entity Types
 
@@ -74,7 +74,7 @@ Complete reference for entity types, categories, relationships, metadata schema,
   - `name: <decision-name>`
   - `version: <version>` (for plugin root)
 
-**Examples**: `SkillForge Plugin`, `Graph-First Memory Architecture`, `Progressive Loading Protocol`
+**Examples**: `OrchestKit Plugin`, `Graph-First Memory Architecture`, `Progressive Loading Protocol`
 
 ## Categories
 
@@ -176,7 +176,7 @@ Complete reference for entity types, categories, relationships, metadata schema,
 result = client.search(
     query="agent specialized AI persona",
     filters={
-        "user_id": "skillforge-plugin-structure",
+        "user_id": "orchestkit:all-agents",
         "metadata.entity_type": "Agent"
     },
     enable_graph=True
@@ -188,7 +188,7 @@ result = client.search(
 result = client.search(
     query="backend development patterns",
     filters={
-        "user_id": "skillforge-plugin-structure",
+        "user_id": "orchestkit:all-agents",
         "metadata.category": "backend-skills"
     },
     enable_graph=True
@@ -200,7 +200,7 @@ result = client.search(
 result = client.search(
     query="skill implements FastAPI",
     filters={
-        "user_id": "skillforge-plugin-structure",
+        "user_id": "orchestkit:all-agents",
         "metadata.implements": "FastAPI"
     },
     enable_graph=True
@@ -212,7 +212,7 @@ result = client.search(
 result = client.search(
     query="agent uses fastapi-advanced",
     filters={
-        "user_id": "skillforge-plugin-structure",
+        "user_id": "orchestkit:all-agents",
         "metadata.skill": "fastapi-advanced"
     },
     enable_graph=True
@@ -226,7 +226,7 @@ result = client.search(
 # Get agent memory
 AGENT_ID=$(python3 skills/mem0-memory/scripts/crud/search-memories.py \
   --query "backend-system-architect" \
-  --user-id "skillforge-plugin-structure" \
+  --user-id "orchestkit:all-agents" \
   --limit 1 | jq -r '.results[0].id')
 
 # Get related skills (1 hop)
@@ -307,7 +307,7 @@ valid_categories = [
 
 ### Querying
 1. Always use `enable_graph=True` for relationship queries
-2. Filter by `user_id: "skillforge-plugin-structure"` to scope to plugin
+2. Filter by `user_id: "skillforge:all-agents"` to scope to plugin
 3. Use metadata filters for precise queries
 4. Wait 2-5 minutes after creating memories before querying relationships
 

@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [vllm, quantization, inference, performance, edge, speculative, 2026]
 context: fork
 agent: llm-integrator
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

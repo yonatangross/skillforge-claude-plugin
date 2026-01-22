@@ -1,6 +1,6 @@
 # Langfuse Setup Checklist
 
-Complete guide for setting up Langfuse observability in your application, based on SkillForge's production implementation.
+Complete guide for setting up Langfuse observability in your application, based on OrchestKit's production implementation.
 
 ## Prerequisites
 

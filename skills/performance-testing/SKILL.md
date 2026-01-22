@@ -4,7 +4,7 @@ description: Performance and load testing with k6 and Locust. Use when validatin
 context: fork
 agent: metrics-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

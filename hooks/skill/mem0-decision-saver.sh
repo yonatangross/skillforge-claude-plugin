@@ -168,7 +168,7 @@ fi
 
 PROJECT_ID=$(mem0_get_project_id)
 # Use unified user_id for all agents (metadata-filtered architecture)
-DECISIONS_USER_ID="skillforge:all-agents"
+DECISIONS_USER_ID="orchestkit:all-agents"
 
 # Detect primary category from first decision
 FIRST_DECISION=$(echo "$EXTRACTED_DECISIONS" | head -1)
@@ -196,7 +196,7 @@ METADATA_JSON=$(jq -n \
     --arg agent "${AGENT_NAME:-}" \
     '{
         category: $category,
-        source: "skillforge-plugin",
+        source: "orchestkit-plugin",
         skill: $skill,
         shared: false
     } + (if $agent != "" then {agent_name: $agent} else {} end)')

@@ -1,8 +1,8 @@
-# SkillForge Database Schema
+# OrchestKit Database Schema
 
 ## Overview
 
-SkillForge uses **PostgreSQL with PGVector** for storing technical content analysis results, embeddings, and artifacts. The schema is optimized for:
+OrchestKit uses **PostgreSQL with PGVector** for storing technical content analysis results, embeddings, and artifacts. The schema is optimized for:
 
 - **Semantic search** (vector similarity with HNSW indexing)
 - **Full-text search** (PostgreSQL tsvector with GIN indexing)

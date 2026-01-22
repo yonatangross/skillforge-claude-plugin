@@ -20,8 +20,8 @@ export _HOOK_INPUT
 source "$(dirname "$0")/../_lib/common.sh"
 
 # Emergency bypass - useful for debugging setup issues
-if [[ "${SKILLFORGE_SKIP_SETUP:-0}" == "1" ]]; then
-  log_hook "Setup check bypassed via SKILLFORGE_SKIP_SETUP"
+if [[ "${ORCHESTKIT_SKIP_SETUP:-0}" == "1" ]]; then
+  log_hook "Setup check bypassed via ORCHESTKIT_SKIP_SETUP"
   echo '{"continue":true,"suppressOutput":true}'
   exit 0
 fi
@@ -181,7 +181,7 @@ if [[ ! -f "$MARKER_FILE" ]]; then
     fi
   else
     # SessionStart - inform user setup is needed but don't block
-    CTX="SkillForge setup not complete. Run 'claude --init' to configure the plugin."
+    CTX="OrchestKit setup not complete. Run 'claude --init' to configure the plugin."
     jq -nc --arg ctx "$CTX" \
       '{continue:true,hookSpecificOutput:{additionalContext:$ctx}}'
     exit 0
@@ -215,7 +215,7 @@ case $validation_result in
       exec "${SETUP_DIR}/setup-repair.sh"
     else
       # Fallback: continue with warning
-      CTX="SkillForge setup validation failed. Some features may not work correctly."
+      CTX="OrchestKit setup validation failed. Some features may not work correctly."
       jq -nc --arg ctx "$CTX" \
         '{continue:true,hookSpecificOutput:{additionalContext:$ctx}}'
     fi
@@ -231,7 +231,7 @@ case $validation_result in
     # Update marker version
     update_marker '.version' "$CURRENT_VERSION"
 
-    CTX="SkillForge upgraded to v$CURRENT_VERSION."
+    CTX="OrchestKit upgraded to v$CURRENT_VERSION."
     jq -nc --arg ctx "$CTX" \
       '{continue:true,hookSpecificOutput:{additionalContext:$ctx}}'
     ;;

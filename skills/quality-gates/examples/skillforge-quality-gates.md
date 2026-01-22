@@ -1,8 +1,8 @@
-# SkillForge Quality Gates - Real Implementation
+# OrchestKit Quality Gates - Real Implementation
 
 ## Overview
 
-SkillForge uses quality gates in its LangGraph content analysis pipeline to ensure AI-generated summaries meet production standards before compression and storage.
+OrchestKit uses quality gates in its LangGraph content analysis pipeline to ensure AI-generated summaries meet production standards before compression and storage.
 
 **Location**: `backend/app/workflows/nodes/quality_gate_node.py`
 
@@ -74,4 +74,4 @@ See full implementation in backend/app/workflows/nodes/quality_gate_node.py
 
 ---
 
-**Key Takeaway**: Quality gates in SkillForge prevent 15%+ of low-quality analysis from reaching users, with only 3.4% requiring human escalation.
+**Key Takeaway**: Quality gates in OrchestKit prevent 15%+ of low-quality analysis from reaching users, with only 3.4% requiring human escalation.

@@ -51,7 +51,7 @@ For each agent pattern that was learned:
 !bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "{pattern_description}" \
   --user-id "{project}-agents" \
-  --agent-id "skf:{agent_type}" \
+  --agent-id "ork:{agent_type}" \
   --metadata '{"category":"{category}","outcome":"{success|failed}"}' \
   --enable-graph
 ```
@@ -63,7 +63,7 @@ For patterns that apply across projects:
 ```bash
 !bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "{best_practice}" \
-  --user-id "skillforge-global-best-practices" \
+  --user-id "orchestkit-global-best-practices" \
   --metadata '{"project":"{project}","category":"{category}","outcome":"success"}' \
   --enable-graph
 ```
@@ -92,7 +92,7 @@ For patterns that apply across projects:
 - `{project}-continuity`: Session summaries
 - `{project}-decisions`: Architectural decisions
 - `{project}-agents`: Agent-specific patterns
-- `skillforge-global-best-practices`: Cross-project patterns
+- `orchestkit-global-best-practices`: Cross-project patterns
 
 ## Related Skills
 

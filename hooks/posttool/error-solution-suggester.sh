@@ -227,7 +227,7 @@ build_skills_section() {
         fi
     done <<< "$all_skills"
 
-    section+="\nUse \`/skf:<skill-name>\` or \`Read skills/<skill-name>/SKILL.md\`"
+    section+="\nUse \`/ork:<skill-name>\` or \`Read skills/<skill-name>/SKILL.md\`"
 
     printf "%b" "$section"
 }

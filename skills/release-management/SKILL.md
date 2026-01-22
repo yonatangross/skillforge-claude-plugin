@@ -3,7 +3,7 @@ name: release-management
 description: GitHub release workflow with semantic versioning, changelogs, and release automation using gh CLI. Use when creating releases, tagging versions, or publishing changelogs.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [git, github, releases, versioning, changelog, automation]
 user-invocable: false
 ---

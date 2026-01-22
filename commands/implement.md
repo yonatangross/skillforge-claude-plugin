@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Task, WebSearch, WebFetch
 
 Load and follow the skill instructions from the `skills/implement/SKILL.md` file.
 
-Execute the `/skf:implement` workflow to:
+Execute the `/ork:implement` workflow to:
 1. Create task list and research best practices
 2. Query Context7 for library documentation
 3. Launch 5 parallel architecture agents (Plan, backend, frontend, LLM, UX)

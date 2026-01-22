@@ -109,9 +109,9 @@ async def create_analysis(
     return result
 ```
 
-## SkillForge Parameters
+## OrchestKit Parameters
 
-In SkillForge, these identifiers should be in RequestContext:
+In OrchestKit, these identifiers should be in RequestContext:
 
 | Parameter | Type | Source | Purpose |
 |-----------|------|--------|---------|

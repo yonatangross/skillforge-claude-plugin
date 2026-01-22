@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Grep
 
 Load and follow the skill instructions from the `skills/git-recovery-command/SKILL.md` file.
 
-Execute the `/skf:git-recovery` workflow to:
+Execute the `/ork:git-recovery` workflow to:
 1. Show current git state (status and recent log)
 2. Present interactive recovery options
 3. Guide through safe recovery operations

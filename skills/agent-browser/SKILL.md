@@ -4,7 +4,7 @@ description: Vercel agent-browser CLI for headless browser automation. 93% less 
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [browser, automation, headless, scraping, vercel, agent-browser, 2026]
 user-invocable: false
 allowed-tools: Bash, Read, Write

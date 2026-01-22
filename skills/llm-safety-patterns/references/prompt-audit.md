@@ -36,7 +36,7 @@ Before any prompt is sent to an LLM, audit it for forbidden content:
 └────────────────────────────────────────────────────────────┘
 ```
 
-## SkillForge Forbidden Patterns
+## OrchestKit Forbidden Patterns
 
 ### Critical (Block Immediately)
 
@@ -79,7 +79,7 @@ class AuditViolation:
     match: str
     position: int
 
-# SkillForge-specific patterns
+# OrchestKit-specific patterns
 CRITICAL_PATTERNS = [
     # UUIDs
     (r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', "UUID"),
@@ -92,7 +92,7 @@ CRITICAL_PATTERNS = [
 ]
 
 WARNING_PATTERNS = [
-    # SkillForge identifiers
+    # OrchestKit identifiers
     (r'\buser[_-]?id\b', "USER_ID_FIELD"),
     (r'\btenant[_-]?id\b', "TENANT_ID_FIELD"),
     (r'\banalysis[_-]?id\b', "ANALYSIS_ID_FIELD"),
@@ -275,7 +275,7 @@ prompt, context = (
 )
 ```
 
-## SkillForge Integration
+## OrchestKit Integration
 
 ### Workflow Integration
 

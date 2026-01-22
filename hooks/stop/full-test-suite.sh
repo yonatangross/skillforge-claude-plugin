@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SkillForge Quality Gate: Full Test Suite Runner
+# OrchestKit Quality Gate: Full Test Suite Runner
 # Timeout: 600000ms (10 minutes) - CC 2.1.3 feature
 #
 # Runs the complete test suite on conversation stop.

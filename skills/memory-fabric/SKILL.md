@@ -3,7 +3,7 @@ name: memory-fabric
 description: Graph-first memory orchestration - knowledge graph (PRIMARY, always available) with optional mem0 cloud enhancement for semantic search. Use when designing memory orchestration or combining graph and mem0.
 context: inherit
 version: 2.1.0
-author: SkillForge
+author: OrchestKit
 tags: [memory, orchestration, graph-first, graph, mem0, unified-search, deduplication, cross-reference]
 user-invocable: false
 ---

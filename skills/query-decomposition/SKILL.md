@@ -4,7 +4,7 @@ description: Query decomposition for multi-concept retrieval. Use when handling 
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

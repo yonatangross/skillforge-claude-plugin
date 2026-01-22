@@ -105,7 +105,7 @@ fi
 
 # Build agent_id in skf format if not already set
 if [[ -z "$AGENT_ID" ]]; then
-    AGENT_ID="skf:$AGENT_TYPE"
+    AGENT_ID="ork:$AGENT_TYPE"
 fi
 
 log_hook "Detected agent type: $AGENT_TYPE (agent_id: $AGENT_ID)"

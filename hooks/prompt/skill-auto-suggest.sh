@@ -331,7 +331,7 @@ Based on your prompt, the following skills may be helpful:
     done <<< "$matches"
 
     message+="
-Use \`/skf:<skill-name>\` to invoke a user-invocable skill, or read the skill with \`Read skills/<skill-name>/SKILL.md\` for patterns and guidance."
+Use \`/ork:<skill-name>\` to invoke a user-invocable skill, or read the skill with \`Read skills/<skill-name>/SKILL.md\` for patterns and guidance."
 
     echo "$message"
 }

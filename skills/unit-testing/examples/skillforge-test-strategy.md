@@ -1,8 +1,8 @@
-# SkillForge Testing Strategy
+# OrchestKit Testing Strategy
 
 ## Overview
 
-SkillForge uses a comprehensive testing strategy with a focus on **unit tests** for fast feedback, **integration tests** for API contracts, and **golden dataset testing** for retrieval quality.
+OrchestKit uses a comprehensive testing strategy with a focus on **unit tests** for fast feedback, **integration tests** for API contracts, and **golden dataset testing** for retrieval quality.
 
 **Testing Pyramid:**
 ```
@@ -274,7 +274,7 @@ async def test_cache_get_miss(mock_redis):
 
 ## Golden Dataset Testing
 
-SkillForge uses a **golden dataset** of 98 curated documents for retrieval quality testing.
+OrchestKit uses a **golden dataset** of 98 curated documents for retrieval quality testing.
 
 ### Dataset Composition
 

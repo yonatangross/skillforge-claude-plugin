@@ -25,16 +25,16 @@ def check_user_id_in_file(file_path: Path) -> Tuple[bool, List[str]]:
         content = file_path.read_text()
         
         # Check for old user_id
-        if 'skillforge-plugin-structure' in content:
-            issues.append(f"Found old user_id 'skillforge-plugin-structure'")
+        if 'orchestkit-plugin-structure' in content:
+            issues.append(f"Found old user_id 'orchestkit-plugin-structure'")
         
         # Check for new user_id
-        if 'skillforge:all-agents' in content:
+        if 'orchestkit:all-agents' in content:
             return (True, issues)
         else:
             # Some files might not have user_id (like utilities)
             if 'USER_ID' in content or 'user_id' in content:
-                issues.append("No 'skillforge:all-agents' user_id found")
+                issues.append("No 'orchestkit:all-agents' user_id found")
                 return (False, issues)
     except Exception as e:
         issues.append(f"Error reading file: {e}")
@@ -84,8 +84,8 @@ def check_hook_agent_detection() -> Tuple[bool, List[str]]:
             issues.append("Hook doesn't check CLAUDE_AGENT_ID")
         if 'agent_name' not in content:
             issues.append("Hook doesn't add agent_name to metadata")
-        if 'skillforge:all-agents' not in content:
-            issues.append("Hook doesn't use 'skillforge:all-agents' user_id")
+        if 'orchestkit:all-agents' not in content:
+            issues.append("Hook doesn't use 'orchestkit:all-agents' user_id")
     except Exception as e:
         issues.append(f"Error reading hook: {e}")
         return (False, issues)

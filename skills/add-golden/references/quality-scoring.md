@@ -7,7 +7,7 @@
 | Accuracy | 0.25 | Technical correctness, valid code, current info |
 | Coherence | 0.20 | Logical structure, clear transitions |
 | Depth | 0.25 | Comprehensive coverage, edge cases |
-| Relevance | 0.30 | Alignment with SkillForge domains |
+| Relevance | 0.30 | Alignment with OrchestKit domains |
 
 ## Scoring Formula
 
@@ -61,7 +61,7 @@ quality_score = (
 
 | Score | Criteria |
 |-------|----------|
-| 0.9-1.0 | Core SkillForge domain, high value |
+| 0.9-1.0 | Core OrchestKit domain, high value |
 | 0.7-0.89 | Related domain, useful |
 | 0.5-0.69 | Tangentially related |
 | < 0.5 | Not relevant to target domains |

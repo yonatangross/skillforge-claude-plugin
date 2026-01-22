@@ -4,7 +4,7 @@ description: LangGraph state management patterns. Use when designing workflow st
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

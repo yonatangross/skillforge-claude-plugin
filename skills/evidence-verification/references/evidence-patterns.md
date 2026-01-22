@@ -549,7 +549,7 @@ echo "[$DATE] Tests: $?, Lint: $?" >> .claude/evidence/daily-log.txt
 
 ---
 
-## SkillForge Examples
+## OrchestKit Examples
 
 ### Example 1: Backend API Endpoint
 
@@ -790,7 +790,7 @@ Store evidence in `.claude/context/session/state.json (Context Protocol 2.0)`:
 
 ## Quick Reference
 
-### Evidence Collection Commands (SkillForge)
+### Evidence Collection Commands (OrchestKit)
 
 **Backend (Python):**
 ```bash

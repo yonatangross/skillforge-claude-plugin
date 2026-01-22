@@ -4,7 +4,7 @@ description: Unit testing patterns and best practices. Use when writing isolated
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -202,7 +202,7 @@ def test_access_matrix(role, status):
 ### skillforge-strategy
 **Keywords:** skillforge, strategy, coverage, pyramid
 **Solves:**
-- SkillForge test strategy example
+- OrchestKit test strategy example
 - Test coverage targets
 - Testing pyramid ratios
 

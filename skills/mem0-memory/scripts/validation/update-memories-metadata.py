@@ -17,7 +17,7 @@ if str(MEM0_LIB_DIR) not in sys.path:
 
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 
 def extract_entity_type_from_memory(memory: Dict[str, Any]) -> tuple[str, str, str]:
@@ -162,7 +162,7 @@ def main():
         
         # Get all memories (use broad query since empty query not allowed)
         result = client.search(
-            query="SkillForge Plugin structure agent skill technology",
+            query="OrchestKit Plugin structure agent skill technology",
             filters={"user_id": args.user_id} if args.user_id else None,
             limit=args.limit or 1000,
             enable_graph=True

@@ -1,8 +1,8 @@
-# SkillForge Integration Example
+# OrchestKit Integration Example
 
-## Integrating LLM Caching into SkillForge
+## Integrating LLM Caching into OrchestKit
 
-This example shows how to integrate multi-level caching into SkillForge's analysis workflow.
+This example shows how to integrate multi-level caching into OrchestKit's analysis workflow.
 
 ## Current Architecture (Before Caching)
 
@@ -292,7 +292,7 @@ Month 1 avg hit rate: 75%
 
 ## Monitoring Dashboard
 
-Grafana panel for SkillForge cache performance:
+Grafana panel for OrchestKit cache performance:
 
 ```promql
 # Combined cache hit rate

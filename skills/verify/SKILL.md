@@ -3,7 +3,7 @@ name: verify
 description: Comprehensive feature verification with parallel analysis agents. Use when verifying implementations, testing changes, validating features, or checking correctness.
 context: fork
 version: 1.1.0
-author: SkillForge
+author: OrchestKit
 tags: [verification, testing, quality, validation]
 user-invocable: true
 ---

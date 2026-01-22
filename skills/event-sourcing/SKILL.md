@@ -12,7 +12,7 @@ allowed-tools:
   - Write
   - Edit
   - Bash
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

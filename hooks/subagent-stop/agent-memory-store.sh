@@ -96,7 +96,7 @@ fi
 
 # Build agent_id if not set
 if [[ -z "$AGENT_ID" ]]; then
-    AGENT_ID="skf:$AGENT_TYPE"
+    AGENT_ID="ork:$AGENT_TYPE"
 fi
 
 log_hook "Processing completion for agent: $AGENT_TYPE (agent_id: $AGENT_ID, success: $SUCCESS)"

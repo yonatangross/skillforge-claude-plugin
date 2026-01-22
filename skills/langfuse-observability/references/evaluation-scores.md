@@ -135,7 +135,7 @@ Common score types:
 6. **Track scores by prompt version** to measure improvements
 7. **Alert on quality drops** (e.g., avg_score < 0.6 for 3 days)
 
-## Integration with SkillForge Quality Gate
+## Integration with OrchestKit Quality Gate
 
 ```python
 # backend/app/workflows/nodes/quality_gate_node.py

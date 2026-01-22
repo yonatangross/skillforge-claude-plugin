@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # pattern-extractor.sh - Automatic pattern extraction from bash events
-# Part of SkillForge Plugin - Cross-Project Patterns (#48) + Best Practices (#49)
+# Part of OrchestKit Plugin - Cross-Project Patterns (#48) + Best Practices (#49)
 #
 # Automatically extracts patterns from:
 # - git commit messages

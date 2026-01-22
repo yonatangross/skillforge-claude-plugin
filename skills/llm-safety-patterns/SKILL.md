@@ -4,7 +4,7 @@ description: Security patterns for LLM integrations including prompt injection d
 context: fork
 agent: security-auditor
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -52,7 +52,7 @@ When identifiers appear in prompts, bad things happen:
 
 ## What NEVER Goes in Prompts
 
-### SkillForge Forbidden Parameters
+### OrchestKit Forbidden Parameters
 
 | Parameter | Type | Why Forbidden |
 |-----------|------|---------------|
@@ -232,7 +232,7 @@ async def validate_output(
     return ValidationResult(valid=True)
 ```
 
-## Integration Points in SkillForge
+## Integration Points in OrchestKit
 
 ### Content Analysis Workflow
 

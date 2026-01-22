@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [rag, self-rag, crag, knowledge-graph, langgraph, agentic, 2026]
 context: fork
 agent: data-pipeline-engineer
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

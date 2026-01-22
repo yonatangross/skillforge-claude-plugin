@@ -4,7 +4,7 @@ description: Text embeddings for semantic search and similarity. Use when conver
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

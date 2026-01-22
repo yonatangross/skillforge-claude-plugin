@@ -5,7 +5,7 @@ tags: [responsive, container-queries, fluid-typography, mobile-first, css-grid, 
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

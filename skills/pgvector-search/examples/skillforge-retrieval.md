@@ -1,8 +1,8 @@
-# SkillForge Retrieval System
+# OrchestKit Retrieval System
 
 ## Overview
 
-SkillForge's hybrid retrieval system combines vector embeddings (Voyage AI) with PostgreSQL full-text search (BM25) using Reciprocal Rank Fusion for optimal search quality.
+OrchestKit's hybrid retrieval system combines vector embeddings (Voyage AI) with PostgreSQL full-text search (BM25) using Reciprocal Rank Fusion for optimal search quality.
 
 **Key Stats (Production):**
 - **415 chunks** across 98 analyses
@@ -273,7 +273,7 @@ fetch_limit = top_k * FETCH_MULTIPLIER  # 30 for top_k=10
 # Results:
 1x multiplier: 87.2% pass rate
 2x multiplier: 89.5% pass rate (+2.3%)
-3x multiplier: 91.1% pass rate (+1.6%)  ← SkillForge uses this
+3x multiplier: 91.1% pass rate (+1.6%)  ← OrchestKit uses this
 4x multiplier: 91.3% pass rate (+0.2%, diminishing returns)
 ```
 
@@ -370,6 +370,6 @@ async def search(request: SearchQuery):
 
 ## References
 
-- SkillForge Backend: `backend/app/shared/services/search/`
+- OrchestKit Backend: `backend/app/shared/services/search/`
 - PGVector Docs: [https://github.com/pgvector/pgvector](https://github.com/pgvector/pgvector)
 - Voyage AI Docs: [https://docs.voyageai.com](https://docs.voyageai.com)

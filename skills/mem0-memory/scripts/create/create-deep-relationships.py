@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Create Deep Multi-Hop Relationships in Mem0
-Uses SkillForge agents and skills to build comprehensive relationship chains
+Uses OrchestKit agents and skills to build comprehensive relationship chains
 """
 import json
 import re
@@ -18,7 +18,7 @@ SKILLS_DIR = PROJECT_ROOT / "skills"
 sys.path.insert(0, str(SCRIPT_DIR.parent / "lib"))
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 def extract_agent_skills(agent_file: Path) -> list[str]:
     """Extract skills list from agent markdown file."""
@@ -104,7 +104,7 @@ def create_agent_skill_memories(client, agent_name: str, skills: list[str]):
         
         if technology:
             text_parts.append(f"The {skill} skill implements {technology} technology")
-            text_parts.append(f"{technology} is a core technology used in SkillForge plugin patterns")
+            text_parts.append(f"{technology} is a core technology used in OrchestKit plugin patterns")
         
         # Add context about what the skill does
         if 'api' in skill:
@@ -164,7 +164,7 @@ def create_skill_technology_memories(client, skill_name: str, technology: str, c
     text = (
         f"{skill_name} skill implements {technology} technology. "
         f"The {skill_name} skill belongs to {category} category. "
-        f"{technology} is a core technology used in SkillForge plugin patterns. "
+        f"{technology} is a core technology used in OrchestKit plugin patterns. "
         f"Skills that implement {technology} provide patterns and best practices for working with {technology}."
     )
     
@@ -381,7 +381,7 @@ def create_technology_dependencies(client):
         text = (
             f"{tech_from} technology {rel_type} {tech_to} technology. "
             f"{tech_from} depends on {tech_to} for core functionality. "
-            f"Both {tech_from} and {tech_to} are core technologies in SkillForge plugin patterns."
+            f"Both {tech_from} and {tech_to} are core technologies in OrchestKit plugin patterns."
         )
         
         metadata = {

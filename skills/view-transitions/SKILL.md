@@ -5,7 +5,7 @@ tags: [view-transitions, page-transition, shared-element, navigation, react-rout
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

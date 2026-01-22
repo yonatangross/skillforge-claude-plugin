@@ -161,7 +161,7 @@ langfuse.trace(
 6. **Track business metrics** in metadata (conversion, revenue, user_tier)
 7. **Filter by tags** in dashboards for environment-specific views
 
-## SkillForge Session Pattern
+## OrchestKit Session Pattern
 
 ```python
 # backend/app/workflows/content_analysis.py

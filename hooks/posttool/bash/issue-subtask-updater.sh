@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # issue-subtask-updater.sh - Auto-update issue checkboxes based on commit messages
-# Part of SkillForge Plugin - Issue Progress Tracking
+# Part of OrchestKit Plugin - Issue Progress Tracking
 #
 # Triggers: After successful git commit commands
 # Function: Parses commit message for task completion keywords and updates

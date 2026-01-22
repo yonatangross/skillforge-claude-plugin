@@ -1,5 +1,5 @@
 #!/bin/bash
-# Memory Operations Library for SkillForge Plugin
+# Memory Operations Library for OrchestKit Plugin
 # Provides helper functions for both Knowledge Graph (primary) and Mem0 (optional)
 #
 # Graph-First Architecture (v2.1):
@@ -36,7 +36,7 @@ set -euo pipefail
 [[ -z "${MEM0_SCOPE_BEST_PRACTICES:-}" ]] && readonly MEM0_SCOPE_BEST_PRACTICES="best-practices"  # Success/failure patterns (#49)
 
 # Global scope prefix for cross-project memories
-[[ -z "${MEM0_GLOBAL_PREFIX:-}" ]] && readonly MEM0_GLOBAL_PREFIX="skillforge-global"
+[[ -z "${MEM0_GLOBAL_PREFIX:-}" ]] && readonly MEM0_GLOBAL_PREFIX="orchestkit-global"
 
 # Organization ID for organization-level scoping (optional)
 [[ -z "${MEM0_ORG_ID:-}" ]] && readonly MEM0_ORG_ID=""
@@ -149,7 +149,7 @@ mem0_user_id() {
 
 # Generate global user_id for cross-project memories
 # Usage: mem0_global_user_id "best-practices"
-# Output: skillforge-global-best-practices (or {org-id}-global-best-practices if MEM0_ORG_ID set)
+# Output: orchestkit-global-best-practices (or {org-id}-global-best-practices if MEM0_ORG_ID set)
 mem0_global_user_id() {
     local scope="${1:-best-practices}"
     local org_id_raw="${MEM0_ORG_ID:-}"
@@ -174,14 +174,14 @@ mem0_global_user_id() {
     echo "$user_id"
 }
 
-# Format agent_id with skf: prefix
+# Format agent_id with ork: prefix
 # Usage: mem0_format_agent_id "database-engineer"
-# Output: skf:database-engineer
+# Output: ork:database-engineer
 mem0_format_agent_id() {
     local agent_id="$1"
-    # Remove skf: prefix if already present, then add it
-    agent_id="${agent_id#skf:}"
-    echo "skf:${agent_id}"
+    # Remove ork: prefix if already present, then add it
+    agent_id="${agent_id#ork:}"
+    echo "ork:${agent_id}"
 }
 
 # -----------------------------------------------------------------------------
@@ -344,12 +344,12 @@ mem0_add_memory_json() {
         --arg project "$project_id" \
         --arg scope "$scope" \
         --arg timestamp "$timestamp" \
-        --arg source_tool "skillforge-claude" \
+        --arg source_tool "orchestkit-claude" \
         '. + {
             project: $project,
             scope: $scope,
             stored_at: $timestamp,
-            source: "skillforge-plugin",
+            source: "orchestkit-plugin",
             source_tool: $source_tool
         }')
 
@@ -730,8 +730,8 @@ validate_user_id_format() {
 validate_agent_id() {
     local agent_id="$1"
 
-    # Remove skf: prefix if present for validation
-    agent_id="${agent_id#skf:}"
+    # Remove ork: prefix if present for validation
+    agent_id="${agent_id#ork:}"
 
     # Known valid agents
     local valid_agents=("database-engineer" "backend-system-architect" "frontend-ui-developer" "security-auditor" "test-generator" "workflow-architect" "llm-integrator" "data-pipeline-engineer" "system-design-reviewer" "metrics-architect" "debug-investigator" "security-layer-auditor" "ux-researcher" "product-strategist" "code-quality-reviewer" "requirements-translator" "prioritization-analyst" "rapid-ui-designer" "market-intelligence" "business-case-builder")
@@ -835,14 +835,14 @@ build_best_practice_json() {
             --arg project "$project_id" \
             --arg timestamp "$timestamp" \
             --arg lesson "$lesson" \
-            --arg source_tool "skillforge-claude" \
+            --arg source_tool "orchestkit-claude" \
             '{
                 category: $category,
                 outcome: $outcome,
                 project: $project,
                 stored_at: $timestamp,
                 lesson: $lesson,
-                source: "skillforge-plugin",
+                source: "orchestkit-plugin",
                 source_tool: $source_tool
             }')
     else
@@ -851,13 +851,13 @@ build_best_practice_json() {
             --arg outcome "$outcome" \
             --arg project "$project_id" \
             --arg timestamp "$timestamp" \
-            --arg source_tool "skillforge-claude" \
+            --arg source_tool "orchestkit-claude" \
             '{
                 category: $category,
                 outcome: $outcome,
                 project: $project,
                 stored_at: $timestamp,
-                source: "skillforge-plugin",
+                source: "orchestkit-plugin",
                 source_tool: $source_tool
             }')
     fi
@@ -1054,12 +1054,12 @@ mem0_cross_agent_search_json() {
     local agent_filters='[]'
 
     # Add primary agent
-    agent_filters=$(echo "$agent_filters" | jq --arg aid "skf:$agent_type" '. += [{"agent_id": $aid}]')
+    agent_filters=$(echo "$agent_filters" | jq --arg aid "ork:$agent_type" '. += [{"agent_id": $aid}]')
 
     # Add related agents
     for related in $related_agents; do
         if [[ -n "$related" ]]; then
-            agent_filters=$(echo "$agent_filters" | jq --arg aid "skf:$related" '. += [{"agent_id": $aid}]')
+            agent_filters=$(echo "$agent_filters" | jq --arg aid "ork:$related" '. += [{"agent_id": $aid}]')
         fi
     done
 
@@ -1349,7 +1349,7 @@ build_session_summary_json() {
             stored_at: $timestamp,
             has_blockers: ($blockers != ""),
             has_next_steps: ($next_steps != ""),
-            source: "skillforge-plugin"
+            source: "orchestkit-plugin"
         }')
 
     # Build result

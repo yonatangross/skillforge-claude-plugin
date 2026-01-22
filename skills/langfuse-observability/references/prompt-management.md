@@ -114,9 +114,9 @@ prod_prompt = langfuse.get_prompt("analyzer", label="production")
 6. **A/B test** new prompts before full rollout
 7. **Document changes** in version notes
 
-## SkillForge 4-Level Prompt Caching Architecture
+## OrchestKit 4-Level Prompt Caching Architecture
 
-SkillForge uses a multi-level caching strategy with Jinja2 templates as L4 fallback:
+OrchestKit uses a multi-level caching strategy with Jinja2 templates as L4 fallback:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -140,7 +140,7 @@ SkillForge uses a multi-level caching strategy with Jinja2 templates as L4 fallb
 
 ### L4 Jinja2 Template Fallback (Issue #414)
 
-When Langfuse is unavailable, SkillForge falls back to Jinja2 templates:
+When Langfuse is unavailable, OrchestKit falls back to Jinja2 templates:
 
 ```python
 from app.shared.services.prompts.template_loader import render_template

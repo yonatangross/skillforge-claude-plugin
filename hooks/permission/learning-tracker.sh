@@ -9,7 +9,7 @@
 # 3. Frequency of command types
 #
 # Data is stored in .claude/feedback/learned-patterns.json
-# Users can manage this via /skf:feedback command
+# Users can manage this via /ork:feedback command
 
 set -euo pipefail
 

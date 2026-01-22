@@ -293,12 +293,12 @@ def compare_experiments(experiment_ids: dict[str, str]) -> dict:
     return comparison
 ```
 
-## SkillForge Integration
+## OrchestKit Integration
 
 ### Golden Dataset Experiment
 
 ```python
-# Run experiment on SkillForge's golden dataset
+# Run experiment on OrchestKit's golden dataset
 async def run_golden_experiment():
     """Run quality experiment on golden dataset."""
 

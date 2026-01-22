@@ -4,7 +4,7 @@ description: Local LLM inference with Ollama. Use when setting up local models f
 context: fork
 agent: llm-integrator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -4,7 +4,7 @@ description: Use when testing web applications with AI-assisted Playwright. Weba
 context: fork
 agent: test-generator
 version: 1.2.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [playwright, testing, e2e, automation, agents, 2026]
 user-invocable: false
 ---

@@ -3,7 +3,7 @@
 # Provides functions for file locking, heartbeat, and instance management
 #
 # Version: 1.0.0
-# Part of SkillForge Multi-Worktree Coordination System
+# Part of OrchestKit Multi-Worktree Coordination System
 
 # Get the coordination directory
 get_coordination_dir() {

@@ -4,7 +4,7 @@ description: Anthropic's Contextual Retrieval technique for improved RAG. Use wh
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 # Contextual Retrieval

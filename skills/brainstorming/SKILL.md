@@ -4,7 +4,7 @@ description: Use when creating or developing anything, before writing code or im
 context: fork
 agent: product-strategist
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: true
 ---
 
@@ -299,7 +299,7 @@ that pattern with a new route handler..."
 ---
 
 **Version:** 2.0.0 (January 2026)
-**Status:** Production patterns from SkillForge brainstorming sessions
+**Status:** Production patterns from OrchestKit brainstorming sessions
 
 ## Related Skills
 
@@ -370,7 +370,7 @@ that pattern with a new route handler..."
 **Keywords:** example, skillforge, caching, dashboard, authentication
 **Solves:**
 - Show me real examples of brainstorming sessions
-- How was SkillForge designed?
+- How was OrchestKit designed?
 - Caching strategy examples
 - Real-time dashboard design decisions
 

@@ -4,7 +4,7 @@ description: Use when planning system architecture to ensure nothing is missed. 
 context: fork
 agent: system-design-reviewer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -77,7 +77,7 @@ Rushing to implementation without systematic design thinking leads to:
 - Does complexity grow linearly or exponentially with data?
 - What happens at 10x current load? 100x?
 
-**SkillForge Example:**
+**OrchestKit Example:**
 ```
 Feature: "Add document tagging"
 - Users: 1000 active users
@@ -97,7 +97,7 @@ Feature: "Add document tagging"
 - What's the retention policy?
 - Does it need to be searchable? How?
 
-**SkillForge Example:**
+**OrchestKit Example:**
 ```
 Feature: "Add document tagging"
 - Data: Tags belong WITH documents (denormalized) or separate table?
@@ -116,7 +116,7 @@ Feature: "Add document tagging"
 - What attack vectors does this introduce?
 - Is there PII involved?
 
-**SkillForge Example:**
+**OrchestKit Example:**
 ```
 Feature: "Add document tagging"
 - Access: User can only see/manage their own tags
@@ -135,7 +135,7 @@ Feature: "Add document tagging"
 - Is there optimistic UI possible?
 - How does this affect the overall workflow?
 
-**SkillForge Example:**
+**OrchestKit Example:**
 ```
 Feature: "Add document tagging"
 - Latency: < 100ms for add/remove tag
@@ -154,7 +154,7 @@ Feature: "Add document tagging"
 - Does this break existing clients?
 - How does this affect the API?
 
-**SkillForge Example:**
+**OrchestKit Example:**
 ```
 Feature: "Add document tagging"
 - Layers: DB → Backend API → Frontend UI → State
@@ -213,7 +213,7 @@ Feature: "Add document tagging"
 [Final approach with rationale]
 ```
 
-## Integration with SkillForge Workflow
+## Integration with OrchestKit Workflow
 
 ### In Brainstorming Phase
 

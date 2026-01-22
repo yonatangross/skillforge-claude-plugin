@@ -4,7 +4,7 @@ description: Agentic workflow patterns for autonomous LLM reasoning. Use when bu
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [fine-tuning, lora, qlora, dpo, synthetic-data, rlhf, 2026]
 context: fork
 agent: llm-integrator
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

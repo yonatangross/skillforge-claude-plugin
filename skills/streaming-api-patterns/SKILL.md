@@ -450,7 +450,7 @@ async def test_stream_cleanup_on_error():
 ### skillforge-sse
 **Keywords:** skillforge sse, event broadcaster, workflow events, analysis progress
 **Solves:**
-- How does SkillForge SSE work?
+- How does OrchestKit SSE work?
 - EventBroadcaster implementation
 - Real-world SSE example
 

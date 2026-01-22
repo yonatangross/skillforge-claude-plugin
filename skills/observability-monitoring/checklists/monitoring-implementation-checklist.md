@@ -1,6 +1,6 @@
 # Monitoring Implementation Checklist
 
-Complete guide for implementing production-grade monitoring, based on SkillForge's real setup.
+Complete guide for implementing production-grade monitoring, based on OrchestKit's real setup.
 
 ## Prerequisites
 

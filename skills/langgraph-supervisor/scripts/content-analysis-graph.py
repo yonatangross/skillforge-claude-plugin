@@ -1,5 +1,5 @@
 """
-SkillForge-style content analysis workflow template.
+OrchestKit-style content analysis workflow template.
 
 8-agent pipeline with supervisor coordination, quality gate, and compression.
 

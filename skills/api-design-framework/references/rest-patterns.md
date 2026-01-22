@@ -191,7 +191,7 @@ except Exception as e:
 
 ### Strategy 1: URI Versioning (Recommended for Public APIs)
 
-**SkillForge uses this approach:**
+**OrchestKit uses this approach:**
 ```python
 # app/core/config.py
 API_V1_PREFIX = "/api/v1"
@@ -603,5 +603,5 @@ async def get_analysis(
 ## Related Files
 
 - See `assets/openapi-template.yaml` for full OpenAPI specification example
-- See `examples/skillforge-api-design.md` for SkillForge-specific patterns
+- See `examples/skillforge-api-design.md` for OrchestKit-specific patterns
 - See SKILL.md for GraphQL and gRPC patterns

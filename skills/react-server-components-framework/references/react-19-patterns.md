@@ -738,4 +738,4 @@ Add these ESLint rules to enforce React 19 patterns:
 
 **Last Updated**: 2025-12-27
 **React Version**: 19.2.3
-**SkillForge Implementation**: Issue #547 (bf43ad5a, 96d9a0e8)
+**OrchestKit Implementation**: Issue #547 (bf43ad5a, 96d9a0e8)

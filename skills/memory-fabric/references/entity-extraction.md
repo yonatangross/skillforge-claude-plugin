@@ -6,7 +6,7 @@ Extract entities from natural language for graph memory storage.
 
 | Type | Pattern | Examples |
 |------|---------|----------|
-| agent | SkillForge agent names | database-engineer, backend-system-architect |
+| agent | OrchestKit agent names | database-engineer, backend-system-architect |
 | technology | Known tech keywords | pgvector, FastAPI, PostgreSQL, React |
 | pattern | Design/architecture patterns | cursor-pagination, CQRS, event-sourcing |
 | decision | "decided", "chose", "will use" | Architecture choices |

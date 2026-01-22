@@ -8,7 +8,7 @@ allowed-tools:
   - Grep
   - Glob
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

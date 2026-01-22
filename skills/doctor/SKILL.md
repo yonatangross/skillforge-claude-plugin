@@ -1,18 +1,18 @@
 ---
 name: doctor
-description: SkillForge health diagnostics command that validates plugin configuration and reports issues. Use when running doctor checks or troubleshooting plugin health.
+description: OrchestKit health diagnostics command that validates plugin configuration and reports issues. Use when running doctor checks or troubleshooting plugin health.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [health-check, diagnostics, validation, permissions, hooks]
 user-invocable: true
 ---
 
-# SkillForge Health Diagnostics
+# OrchestKit Health Diagnostics
 
 ## Overview
 
-The `/skf:doctor` command performs comprehensive health checks on your SkillForge installation. It validates:
+The `/ork:doctor` command performs comprehensive health checks on your OrchestKit installation. It validates:
 
 1. **Permission Rules** - Detects unreachable rules (CC 2.1.3 feature)
 2. **Hook Health** - Verifies executability and references
@@ -22,7 +22,7 @@ The `/skf:doctor` command performs comprehensive health checks on your SkillForg
 
 ## Overview
 
-- After installing or updating SkillForge
+- After installing or updating OrchestKit
 - When hooks aren't firing as expected
 - When permission rules seem to have no effect
 - Before deploying to a team environment
@@ -31,7 +31,7 @@ The `/skf:doctor` command performs comprehensive health checks on your SkillForg
 ## Quick Start
 
 ```bash
-/skf:doctor
+/ork:doctor
 ```
 
 ## Health Check Categories
@@ -141,7 +141,7 @@ Context Budget: 1850/2200 tokens (84%)
 
 ```
 +==================================================================+
-|                    SkillForge Health Report                       |
+|                    OrchestKit Health Report                       |
 +==================================================================+
 | Version: 4.7.2  |  CC: 2.1.4  |  Channel: stable                 |
 +==================================================================+

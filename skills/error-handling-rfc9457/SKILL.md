@@ -5,7 +5,7 @@ context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [error-handling, rfc9457, problem-details, fastapi, api, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

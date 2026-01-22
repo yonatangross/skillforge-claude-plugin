@@ -85,7 +85,7 @@ from mem0_client import get_mem0_client
 client = get_mem0_client()
 result = client.search(
     query='category groups related',
-    filters={'user_id': 'skillforge-plugin-structure', 'metadata.entity_type': 'Category'},
+    filters={'user_id': 'orchestkit-plugin-structure', 'metadata.entity_type': 'Category'},
     limit=20
 )
 categories = [m.get('metadata', {}).get('category_slug') or m.get('metadata', {}).get('category') for m in result.get('results', [])]

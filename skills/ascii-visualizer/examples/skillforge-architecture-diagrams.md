@@ -1,6 +1,6 @@
-# SkillForge Architecture Diagrams
+# OrchestKit Architecture Diagrams
 
-Complete ASCII architecture visualizations for the SkillForge platform, showcasing the multi-agent learning integration system.
+Complete ASCII architecture visualizations for the OrchestKit platform, showcasing the multi-agent learning integration system.
 
 ## System Overview
 
@@ -395,7 +395,7 @@ User         Frontend          API Gateway       LangGraph       PostgreSQL
  │               │                  │                │               │
 ```
 
-## Database Schema (SkillForge)
+## Database Schema (OrchestKit)
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐

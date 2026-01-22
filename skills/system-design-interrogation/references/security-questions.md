@@ -39,7 +39,7 @@ Security questions prevent authorization bypasses, data leaks, and tenant isolat
 
 ### Authorization
 
-| Question | Why Ask | SkillForge Example |
+| Question | Why Ask | OrchestKit Example |
 |----------|---------|-------------------|
 | Who can access this? | Define authZ rules | Owner only, or shared? |
 | What roles have access? | RBAC implementation | admin, user, viewer |
@@ -49,7 +49,7 @@ Security questions prevent authorization bypasses, data leaks, and tenant isolat
 
 ### Data Sensitivity
 
-| Question | Why Ask | SkillForge Example |
+| Question | Why Ask | OrchestKit Example |
 |----------|---------|-------------------|
 | Does this involve PII? | Compliance (GDPR) | User email in analysis? |
 | What's the sensitivity level? | Encryption needs | API keys = highest |
@@ -67,7 +67,7 @@ Security questions prevent authorization bypasses, data leaks, and tenant isolat
 | CSRF | State-changing action? | CSRF tokens |
 | Privilege escalation | Role in request? | Server-side role check |
 
-## SkillForge-Specific Checks
+## OrchestKit-Specific Checks
 
 ### Multi-Tenant Isolation
 

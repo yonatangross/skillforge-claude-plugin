@@ -5,7 +5,7 @@ tags: [scroll-animation, scroll-timeline, view-timeline, parallax, css-animation
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

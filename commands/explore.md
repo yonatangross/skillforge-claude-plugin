@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep, Task
 
 Load and follow the skill instructions from the `skills/explore/SKILL.md` file.
 
-Execute the `/skf:explore` workflow to:
+Execute the `/ork:explore` workflow to:
 1. Perform initial searches (grep patterns, glob files)
 2. Check memory for existing knowledge
 3. Launch 4 parallel explorers (structure, data flow, backend, frontend)

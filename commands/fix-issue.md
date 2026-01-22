@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Edit, Write, Glob, Grep, Task
 
 Load and follow the skill instructions from the `skills/fix-issue/SKILL.md` file.
 
-Execute the `/skf:fix-issue` workflow to:
+Execute the `/ork:fix-issue` workflow to:
 1. Understand the issue via `gh issue view`
 2. Create feature branch (`issue/<number>-fix`)
 3. Check memory for related context

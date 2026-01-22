@@ -3,7 +3,7 @@ name: recall
 description: Search and retrieve decisions and patterns from knowledge graph. Use when recalling patterns, retrieving memories, finding past decisions.
 context: inherit
 version: 2.1.0
-author: SkillForge
+author: OrchestKit
 tags: [memory, search, decisions, patterns, graph-memory, mem0, unified-memory]
 user-invocable: true
 ---
@@ -102,7 +102,7 @@ Use `mcp__memory__search_nodes`:
 
 **Entity Types to Look For:**
 - `Technology`: Tools, frameworks, databases (pgvector, PostgreSQL, React)
-- `Agent`: SkillForge agents (database-engineer, backend-system-architect)
+- `Agent`: OrchestKit agents (database-engineer, backend-system-architect)
 - `Pattern`: Named patterns (cursor-pagination, connection-pooling)
 - `Decision`: Architectural decisions
 - `Project`: Project-specific context
@@ -117,19 +117,19 @@ Execute the script IN PARALLEL with step 2:
 ```bash
 !bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "user's search query" \
-  --user-id "skillforge-{project-name}-decisions" \
+  --user-id "orchestkit-{project-name}-decisions" \
   --limit 10 \
   --enable-graph
 ```
 
 **User ID Selection:**
-- Default: `skillforge-{project-name}-decisions`
-- With `--global`: `skillforge-global-best-practices`
+- Default: `orchestkit-{project-name}-decisions`
+- With `--global`: `orchestkit-global-best-practices`
 
 **Filter Construction:**
 - Always include `user_id` filter
 - With `--category`: Add `{ "metadata.category": "{category}" }` to AND array
-- With `--agent`: Add `{ "agent_id": "skf:{agent-id}" }` to AND array
+- With `--agent`: Add `{ "agent_id": "ork:{agent-id}" }` to AND array
 
 ### 4. Merge and Deduplicate Results (if --mem0)
 

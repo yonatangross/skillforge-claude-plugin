@@ -1,10 +1,10 @@
-# SkillForge Langfuse Traces - Real Implementation
+# OrchestKit Langfuse Traces - Real Implementation
 
-This document shows how SkillForge uses Langfuse for end-to-end LLM observability across its 8-agent LangGraph workflow.
+This document shows how OrchestKit uses Langfuse for end-to-end LLM observability across its 8-agent LangGraph workflow.
 
 ## Overview
 
-**SkillForge Analysis Pipeline:**
+**OrchestKit Analysis Pipeline:**
 - 8 specialized agents (Tech Comparator, Security Auditor, Implementation Planner, etc.)
 - LangGraph supervisor pattern for orchestration
 - Langfuse traces for cost tracking, performance monitoring, and debugging
@@ -414,7 +414,7 @@ ORDER BY t.latency_seconds DESC
 LIMIT 20;
 ```
 
-## Best Practices from SkillForge
+## Best Practices from OrchestKit
 
 1. **Always use @observe decorator** - Automatic parent-child span relationships
 2. **Set session_id for multi-step workflows** - Group related traces together
@@ -430,4 +430,4 @@ LIMIT 20;
 - [Langfuse Self-Hosting Guide](https://langfuse.com/docs/deployment/self-host)
 - [Python SDK Decorators](https://langfuse.com/docs/sdk/python/decorators)
 - [Cost Tracking](https://langfuse.com/docs/model-usage-and-cost)
-- [SkillForge QUALITY_INITIATIVE_FIXES.md](../../../docs/QUALITY_INITIATIVE_FIXES.md)
+- [OrchestKit QUALITY_INITIATIVE_FIXES.md](../../../docs/QUALITY_INITIATIVE_FIXES.md)

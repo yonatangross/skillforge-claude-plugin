@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # issue-progress-commenter.sh - Queue commit progress for GitHub issue updates
-# Part of SkillForge Plugin - Issue Progress Tracking
+# Part of OrchestKit Plugin - Issue Progress Tracking
 #
 # Triggers: After successful git commit commands
 # Function: Extracts issue number from branch name or commit message and queues

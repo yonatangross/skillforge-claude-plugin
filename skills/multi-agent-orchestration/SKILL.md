@@ -4,7 +4,7 @@ description: Multi-agent coordination and synthesis patterns. Use when orchestra
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

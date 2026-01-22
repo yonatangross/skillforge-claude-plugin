@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Setup custom Mem0 categories for SkillForge plugin structure.
+Setup custom Mem0 categories for OrchestKit plugin structure.
 Defines project-level categories that Mem0 will use for auto-categorization.
 """
 import json
@@ -18,7 +18,7 @@ from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
 
 def setup_custom_categories():
-    """Define and set custom categories for SkillForge plugin structure."""
+    """Define and set custom categories for OrchestKit plugin structure."""
     
     custom_categories = [
         {

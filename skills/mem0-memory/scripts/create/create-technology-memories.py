@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create comprehensive technology memories for SkillForge plugin.
+Create comprehensive technology memories for OrchestKit plugin.
 Creates memories for all key technologies used in the plugin.
 """
 import sys
@@ -13,20 +13,20 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent.parent
 sys.path.insert(0, str(SCRIPT_DIR.parent / "lib"))
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 
 # Technology definitions with descriptions
 TECHNOLOGIES = [
     {
         "name": "FastAPI",
-        "description": "Modern, fast web framework for building APIs with Python 3.11+. Used extensively in SkillForge plugin patterns for async Python backends.",
+        "description": "Modern, fast web framework for building APIs with Python 3.11+. Used extensively in OrchestKit plugin patterns for async Python backends.",
         "version": "0.115.0+",
         "category": "Backend Framework"
     },
     {
         "name": "React 19",
-        "description": "Frontend framework with Server Components, concurrent features, and React Compiler. Core technology for frontend skills in SkillForge.",
+        "description": "Frontend framework with Server Components, concurrent features, and React Compiler. Core technology for frontend skills in OrchestKit.",
         "version": "19.0.0+",
         "category": "Frontend Framework"
     },
@@ -56,13 +56,13 @@ TECHNOLOGIES = [
     },
     {
         "name": "Python",
-        "description": "Python programming language. SkillForge requires Python 3.11+ for modern async features and type hints.",
+        "description": "Python programming language. OrchestKit requires Python 3.11+ for modern async features and type hints.",
         "version": "3.11+",
         "category": "Language"
     },
     {
         "name": "Claude Code",
-        "description": "Claude Code IDE and plugin system. SkillForge requires CC 2.1.11+ for Setup hooks, native parallel execution, and agent features.",
+        "description": "Claude Code IDE and plugin system. OrchestKit requires CC 2.1.11+ for Setup hooks, native parallel execution, and agent features.",
         "version": "2.1.11+",
         "category": "IDE/Platform"
     },
@@ -140,7 +140,7 @@ TECHNOLOGIES = [
     },
     {
         "name": "SQLAlchemy",
-        "description": "Python SQL toolkit and ORM. SkillForge uses SQLAlchemy 2.0+ with async support for database operations.",
+        "description": "Python SQL toolkit and ORM. OrchestKit uses SQLAlchemy 2.0+ with async support for database operations.",
         "version": "2.0+",
         "category": "ORM"
     },
@@ -176,7 +176,7 @@ def create_technology_memory(client, tech: Dict[str, Any]) -> bool:
     text = f"{name} technology: {description}"
     if version:
         text += f" Version {version}."
-    text += f" {name} is a core technology used in SkillForge plugin patterns."
+    text += f" {name} is a core technology used in OrchestKit plugin patterns."
     
     # Build metadata
     metadata = {

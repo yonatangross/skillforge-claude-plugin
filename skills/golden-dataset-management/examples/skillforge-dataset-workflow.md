@@ -1,12 +1,12 @@
-# SkillForge Golden Dataset Workflow
+# OrchestKit Golden Dataset Workflow
 
-**Complete backup/restore/validation workflow for SkillForge's 98-document golden dataset**
+**Complete backup/restore/validation workflow for OrchestKit's 98-document golden dataset**
 
 ---
 
 ## Overview
 
-SkillForge maintains a **golden dataset** of 98 curated technical documents with embeddings for testing retrieval quality. This dataset is the source of truth for:
+OrchestKit maintains a **golden dataset** of 98 curated technical documents with embeddings for testing retrieval quality. This dataset is the source of truth for:
 
 - Regression testing (ensure new code doesn't break retrieval)
 - Retrieval evaluation (measure precision, recall, MRR)
@@ -14,10 +14,10 @@ SkillForge maintains a **golden dataset** of 98 curated technical documents with
 - Environment seeding (new dev environments, CI/CD)
 
 **Key Files:**
-- **Backup Script:** `/Users/yonatangross/coding/SkillForge/backend/scripts/backup_golden_dataset.py`
-- **JSON Backup:** `/Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json` (version controlled)
-- **Metadata:** `/Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_metadata.json` (quick stats)
-- **Fixtures:** `/Users/yonatangross/coding/SkillForge/backend/tests/smoke/retrieval/fixtures/` (source documents, queries)
+- **Backup Script:** `/Users/yonatangross/coding/OrchestKit/backend/scripts/backup_golden_dataset.py`
+- **JSON Backup:** `/Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json` (version controlled)
+- **Metadata:** `/Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_metadata.json` (quick stats)
+- **Fixtures:** `/Users/yonatangross/coding/OrchestKit/backend/tests/smoke/retrieval/fixtures/` (source documents, queries)
 
 ---
 
@@ -57,7 +57,7 @@ SkillForge maintains a **golden dataset** of 98 curated technical documents with
 
 **Validation:**
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 
 # Check for placeholder URLs (should return 0)
 poetry run python scripts/backup_golden_dataset.py verify | grep "placeholder URLs"
@@ -87,7 +87,7 @@ poetry run python scripts/backup_golden_dataset.py verify | grep "placeholder UR
 ### Step 1: Pre-Backup Validation
 
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 
 # Check database connection
 psql -h localhost -p 5437 -U skillforge -c "SELECT COUNT(*) FROM analyses WHERE status = 'completed';"
@@ -102,7 +102,7 @@ psql -h localhost -p 5437 -U skillforge -c \
 ### Step 2: Run Backup
 
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 
 # Create backup (includes fixtures in v2.0)
 poetry run python scripts/backup_golden_dataset.py backup
@@ -117,7 +117,7 @@ poetry run python scripts/backup_golden_dataset.py backup
 #    Fixtures:  98 documents
 #    URL Maps:  98 mappings
 #    Queries:   203 test queries
-#    Location:  /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json
+#    Location:  /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json
 # ============================================================
 ```
 
@@ -131,7 +131,7 @@ poetry run python scripts/backup_golden_dataset.py verify
 # ============================================================
 # BACKUP VERIFICATION
 # ============================================================
-#    File: /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json
+#    File: /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json
 #    Created: 2025-12-21T10:30:00Z
 #    Version: 2.0
 #
@@ -184,7 +184,7 @@ git push origin main
 ### Step 1: Pre-Restore Checks
 
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 
 # Ensure backup exists
 ls -lh data/golden_dataset_backup.json
@@ -229,7 +229,7 @@ poetry run python scripts/backup_golden_dataset.py restore --replace
 
 ```bash
 # Restore output:
-# Loaded backup from: /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json
+# Loaded backup from: /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json
 # Backup version: 2.0
 # Backup created: 2025-12-19T10:30:00Z
 # Restoring 98 analyses...
@@ -296,7 +296,7 @@ poetry run pytest tests/smoke/retrieval/test_retrieval_quality.py -v
 ### Step 1: Prepare Source Documents
 
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend/tests/smoke/retrieval/fixtures
+cd /Users/yonatangross/coding/OrchestKit/backend/tests/smoke/retrieval/fixtures
 
 # Edit documents_expanded.json to add new documents
 # Example:
@@ -342,7 +342,7 @@ cd /Users/yonatangross/coding/SkillForge/backend/tests/smoke/retrieval/fixtures
 ### Step 3: Run Fixture Loader
 
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 
 # Load new fixtures into database
 poetry run python tests/smoke/retrieval/load_fixtures.py
@@ -405,7 +405,7 @@ git commit -m "feat: expand golden dataset with LangGraph streaming guide
 
 ### GitHub Actions Workflow
 
-**File:** `/Users/yonatangross/coding/SkillForge/.github/workflows/backup-golden-dataset.yml`
+**File:** `/Users/yonatangross/coding/OrchestKit/.github/workflows/backup-golden-dataset.yml`
 
 ```yaml
 name: Backup Golden Dataset
@@ -511,7 +511,7 @@ gh run view --log
 docker compose stop backend
 
 # Step 2: Verify backup exists
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 ls -lh data/golden_dataset_backup.json
 # Expected: ~2.5 MB file modified recently
 
@@ -543,7 +543,7 @@ curl -f http://localhost:8500/health
 
 ## Workflow 6: New Dev Environment Setup
 
-**Scenario: Fresh MacBook, setting up SkillForge for first time**
+**Scenario: Fresh MacBook, setting up OrchestKit for first time**
 
 ### Setup Steps
 
@@ -672,7 +672,7 @@ BUT EXPECTED: 203 passed (100% pass rate)
 **Solution:**
 ```bash
 # This is EXPECTED! Retrieval quality is not 100%.
-# 91.6% is the BASELINE pass rate for SkillForge golden dataset.
+# 91.6% is the BASELINE pass rate for OrchestKit golden dataset.
 
 # Check if pass rate DECREASED (regression):
 # Before restore: 186/203 (91.6%)
@@ -692,7 +692,7 @@ poetry run python scripts/backup_golden_dataset.py verify
 
 ### Backup
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 poetry run python scripts/backup_golden_dataset.py backup
 poetry run python scripts/backup_golden_dataset.py verify
 git add data/golden_dataset_backup.json
@@ -701,7 +701,7 @@ git commit -m "chore: golden dataset backup"
 
 ### Restore (New Environment)
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 docker compose up -d postgres
 poetry run alembic upgrade head
 poetry run python scripts/backup_golden_dataset.py restore
@@ -710,13 +710,13 @@ poetry run pytest tests/smoke/retrieval/test_retrieval_quality.py -v
 
 ### Restore (Replace Existing)
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 poetry run python scripts/backup_golden_dataset.py restore --replace
 ```
 
 ### Verify Backup Integrity
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 poetry run python scripts/backup_golden_dataset.py verify
 ```
 

@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep, Task, WebFetch
 
 Load and follow the skill instructions from the `skills/review-pr/SKILL.md` file.
 
-Execute the `/skf:review-pr` workflow to:
+Execute the `/ork:review-pr` workflow to:
 1. Gather PR information using `gh pr view`
 2. Auto-load relevant skills (code-review-playbook, security-scanning)
 3. Launch 6 parallel review agents (code-quality, security, tests, backend, frontend)

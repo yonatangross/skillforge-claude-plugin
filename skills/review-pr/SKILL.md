@@ -3,7 +3,7 @@ name: review-pr
 description: Comprehensive PR review with 6-7 parallel specialized agents. Use when reviewing pull requests, checking PRs, code review.
 context: fork
 version: 1.1.0
-author: SkillForge
+author: OrchestKit
 tags: [code-review, pull-request, quality, security, testing]
 user-invocable: true
 ---

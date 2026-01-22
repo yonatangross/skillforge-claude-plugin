@@ -3,7 +3,7 @@ name: errors
 description: Error pattern analysis and troubleshooting for Claude Code sessions. Use when handling errors, fixing failures, troubleshooting issues.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [errors, debugging, troubleshooting, patterns]
 user-invocable: false
 ---

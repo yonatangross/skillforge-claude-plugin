@@ -4,7 +4,7 @@ description: Building MCP (Model Context Protocol) servers for Claude extensibil
 context: fork
 agent: backend-system-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 # MCP Server Building

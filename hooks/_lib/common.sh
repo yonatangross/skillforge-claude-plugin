@@ -20,7 +20,7 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}"
 
 # Log directory
 if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]]; then
-  HOOK_LOG_DIR="${HOME}/.claude/logs/skf"
+  HOOK_LOG_DIR="${HOME}/.claude/logs/ork"
 else
   HOOK_LOG_DIR="${CLAUDE_PROJECT_DIR:-.}/.claude/logs"
 fi

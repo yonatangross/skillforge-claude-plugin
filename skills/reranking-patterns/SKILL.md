@@ -4,7 +4,7 @@ description: Reranking patterns for improving search precision. Use when impleme
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

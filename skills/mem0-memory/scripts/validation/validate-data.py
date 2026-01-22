@@ -14,7 +14,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent.parent
 sys.path.insert(0, str(SCRIPT_DIR.parent / "lib"))
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 # Valid entity types
 VALID_ENTITY_TYPES = {"Agent", "Skill", "Technology", "Category", "Architecture", "Unknown"}
@@ -148,7 +148,7 @@ def main():
         
         # Get all memories
         result = client.search(
-            query="SkillForge Plugin structure agent skill technology",
+            query="OrchestKit Plugin structure agent skill technology",
             filters={"user_id": args.user_id} if args.user_id else None,
             limit=args.limit or 1000,
             enable_graph=True

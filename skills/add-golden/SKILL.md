@@ -3,7 +3,7 @@ name: add-golden
 description: Curate and add documents to the golden dataset with multi-agent validation. Use when adding test data, creating golden datasets, saving examples.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [curation, golden-dataset, evaluation, testing]
 user-invocable: true
 ---

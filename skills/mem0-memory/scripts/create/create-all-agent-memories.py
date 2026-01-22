@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Create memories for all agents in the SkillForge plugin.
+Create memories for all agents in the OrchestKit plugin.
 Scans agents/ directory and creates Mem0 memories with skill relationships.
 """
 import json
@@ -18,7 +18,7 @@ AGENTS_DIR = PROJECT_ROOT / "agents"
 sys.path.insert(0, str(SCRIPT_DIR.parent / "lib"))
 from mem0_client import get_mem0_client  # type: ignore  # noqa: E402
 
-USER_ID = "skillforge:all-agents"
+USER_ID = "orchestkit:all-agents"
 
 
 def extract_agent_skills(agent_file: Path) -> List[str]:
@@ -74,7 +74,7 @@ def create_agent_memory(client, agent_file: Path, agent_name: str) -> Optional[D
     # Build memory text
     text_parts = [
         f"{name} agent: {description}",
-        f"The {name} agent is a specialized AI persona in the SkillForge plugin."
+        f"The {name} agent is a specialized AI persona in the OrchestKit plugin."
     ]
     
     if skills:

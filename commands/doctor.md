@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep
 
 Load and follow the skill instructions from the `skills/doctor/SKILL.md` file.
 
-Execute the `/skf:doctor` workflow to:
+Execute the `/ork:doctor` workflow to:
 1. Analyze permission rules (detect unreachable rules)
 2. Validate hook health (executability, references)
 3. Check schema compliance (plugin.json, SKILL.md files, context)

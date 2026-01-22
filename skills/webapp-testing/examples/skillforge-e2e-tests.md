@@ -1,6 +1,6 @@
-# SkillForge E2E Test Examples
+# OrchestKit E2E Test Examples
 
-Complete E2E test suite examples for SkillForge's analysis workflow using Playwright + TypeScript.
+Complete E2E test suite examples for OrchestKit's analysis workflow using Playwright + TypeScript.
 
 ## Test Configuration
 

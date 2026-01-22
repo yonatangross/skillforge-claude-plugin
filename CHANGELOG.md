@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the SkillForge Claude Code Plugin will be documented in this file.
+All notable changes to the OrchestKit Claude Code Plugin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -250,7 +250,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 
 - Removed non-existent `mcp__langfuse__*` tool references from prompt-engineer agent
 - Fixed unused import warnings in template files
-- Added missing Error Handling sections to agents per SkillForge agent standards
+- Added missing Error Handling sections to agents per OrchestKit agent standards
 
 - **Complete Skill-Agent Integration Audit** - Fixed 32 missing bidirectional references across 13 agents
   - `backend-system-architect`: +5 skills (api-versioning, architecture-decision-record, backend-architecture-enforcer, error-handling-rfc9457, rate-limiting)
@@ -388,7 +388,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
   - Update `pre-commit-simulation.sh` to v2.0.0 with BLOCKING on critical errors
   - Add plugin.json validation (JSON syntax, required fields, semver)
   - Add CHANGELOG version check
-  - Add quick unit tests for SkillForge plugin modifications
+  - Add quick unit tests for OrchestKit plugin modifications
   - Install actual git pre-commit hook (`.git/hooks/pre-commit`)
 
 ### Changed
@@ -420,7 +420,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
     - Auth: JWT errors, 401/403 responses
     - Docker: Container exit, port conflicts
     - Build: Webpack/Vite errors, memory issues, React hydration
-  - Automatic skill linking: Suggests relevant SkillForge skills based on error category
+  - Automatic skill linking: Suggests relevant OrchestKit skills based on error category
   - Deduplication: Prevents repeated suggestions for same error within session
   - CC 2.1.9 compliant: Injects solutions via `hookSpecificOutput.additionalContext`
   - `.claude/rules/error_solutions.json`: Comprehensive error→solution database
@@ -637,8 +637,8 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 
 ### Fixed
 
-- **Commands Autocomplete**: Added `commands/` directory with 17 command files to enable autocomplete for `/skf:*` commands (#68)
-  - Commands now appear in Claude Code autocomplete when typing `/skf:`
+- **Commands Autocomplete**: Added `commands/` directory with 17 command files to enable autocomplete for `/ork:*` commands (#68)
+  - Commands now appear in Claude Code autocomplete when typing `/ork:`
   - Each command file has YAML frontmatter (`description`, `allowed-tools`) and references corresponding skill
 
 ### Added
@@ -673,7 +673,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 **CC 2.1.3 User-Invocable Skills**
 - Added `user-invocable: true` to 17 command skills (commit, review-pr, explore, implement, verify, configure, doctor, feedback, recall, remember, add-golden, skill-evolution, claude-hud, create-pr, fix-issue, brainstorming, worktree-coordination)
 - Added `user-invocable: false` to 80 internal knowledge skills
-- Only user-invocable skills appear in `/skf:*` slash command menu
+- Only user-invocable skills appear in `/ork:*` slash command menu
 
 **Test Coverage**
 - New Test 10 in `tests/skills/structure/test-skill-md.sh`: validates user-invocable field presence and counts (17 commands, 80 internal)
@@ -847,7 +847,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 - Moved `skills/`, `agents/`, `hooks/` from `.claude/` to root level (official Anthropic standard)
 - Removed root-level symlinks - directories are now actual content, not symlinks
 - Updated all hook paths in `settings.json` from `/.claude/hooks/` to `/hooks/`
-- SkillForge extensions (`context/`, `coordination/`, `settings.json`) remain in `.claude/`
+- OrchestKit extensions (`context/`, `coordination/`, `settings.json`) remain in `.claude/`
 
 **Path Updates**
 - Updated 5 bin/ scripts to use root-level paths
@@ -857,7 +857,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 ### New Structure
 
 ```
-skillforge-claude-plugin/
+orchestkit/
 ├── skills/                  # 90 skills (moved from .claude/skills/)
 ├── agents/                  # 20 agents (moved from .claude/agents/)
 ├── hooks/                   # 96 hooks (moved from .claude/hooks/)
@@ -878,7 +878,7 @@ skillforge-claude-plugin/
 - Fixed plugin installation commands in README.md and CLAUDE.md
   - Removed non-existent tier-specific install commands (`@skillforge/standard`, etc.)
   - Use correct plugin name: `/plugin install skf`
-  - Direct users to `/skf:configure` for tier selection after installation
+  - Direct users to `/ork:configure` for tier selection after installation
 
 **Skill Version Consistency**
 - brainstorming: Fixed version mismatch (1.0.0 → 2.0.0), corrected template path reference
@@ -952,7 +952,7 @@ skillforge-claude-plugin/
 This release fully leverages Claude Code 2.1.3 features for a comprehensive upgrade.
 
 **New Health Diagnostics Skill**
-- `/skf:doctor` - Comprehensive health check command
+- `/ork:doctor` - Comprehensive health check command
 - Permission rules analysis (unreachable rules detection - CC 2.1.3 feature)
 - Hook health validation (executable permissions, dispatcher references)
 - Schema compliance checks
@@ -970,7 +970,7 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 - `secure.json` - Minimal permissions for solo development
 - `team.json` - Standard team permissions
 - `enterprise.json` - Strict enterprise permissions
-- `/skf:apply-permissions` - Apply profiles to settings.json
+- `/ork:apply-permissions` - Apply profiles to settings.json
 
 **Release Channel Documentation**
 - `.claude/docs/release-channels.md` - Stable vs latest channel guidance
@@ -1012,7 +1012,7 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 
 **MCP Integrations Now Opt-in**
 - All MCPs disabled by default in `.mcp.json` (`"disabled": true`)
-- Added Step 5 to `/skf:configure` for MCP selection
+- Added Step 5 to `/ork:configure` for MCP selection
 - Users explicitly choose which MCPs to enable via interactive wizard
 - No surprise package downloads on plugin install
 
@@ -1050,7 +1050,7 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 
 **Plugin Namespace Rename**
 - Renamed plugin from `skillforge-complete` to `skf` for shorter agent prefixes
-- Agents now appear as `skf:debug-investigator` instead of `skillforge-complete:debug-investigator`
+- Agents now appear as `ork:debug-investigator` instead of `skillforge-complete:debug-investigator`
 
 **Silent Hooks on Success**
 - PreToolUse Task hooks now silent on success (no stderr output)
@@ -1059,10 +1059,10 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 
 **Improved Agent Discovery**
 - Subagent validator now scans `.claude/agents/` directory for valid types
-- Handles namespaced agent types (e.g., `skf:agent-name`)
+- Handles namespaced agent types (e.g., `ork:agent-name`)
 
 - Updated author email to `yonatan2gross@gmail.com`
-- Changed author from "SkillForge Team" to "Yonatan Gross"
+- Changed author from "OrchestKit Team" to "Yonatan Gross"
 
 ---
 
@@ -1343,7 +1343,7 @@ This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugi
 - New `frontend-animation-patterns.md` context pattern
 
 ### Fixed
-- Removed project-specific references, now uses generic "SkillForge Team" branding
+- Removed project-specific references, now uses generic "OrchestKit Team" branding
 
 ---
 
@@ -1351,7 +1351,7 @@ This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugi
 
 ### Initial Release
 
-The first public release of the SkillForge plugin for Claude Code, providing comprehensive AI-native development capabilities.
+The first public release of the OrchestKit plugin for Claude Code, providing comprehensive AI-native development capabilities.
 
 ### Added
 
@@ -1459,4 +1459,4 @@ Planned enhancements for future versions:
 - Enhanced testing automation capabilities
 - Community-contributed skills and agents
 
-[1.0.0]: https://github.com/SkillForge/claude-plugin/releases/tag/v1.0.0
+[1.0.0]: https://github.com/OrchestKit/claude-plugin/releases/tag/v1.0.0

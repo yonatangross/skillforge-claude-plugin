@@ -1,6 +1,6 @@
 # Performance Audit Checklist
 
-Comprehensive guide for identifying and fixing performance bottlenecks, based on SkillForge's real optimization process.
+Comprehensive guide for identifying and fixing performance bottlenecks, based on OrchestKit's real optimization process.
 
 ## Prerequisites
 

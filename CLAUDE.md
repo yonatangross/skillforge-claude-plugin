@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This document provides essential context for Claude Code when working with the SkillForge Claude Plugin project.
+This document provides essential context for Claude Code when working with the OrchestKit Claude Plugin project.
 
 ## Project Overview
 
-**SkillForge Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
+**OrchestKit Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
 
 - **159 skills**: Reusable knowledge modules in flat structure (including 7 new frontend performance skills)
 - **34 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
@@ -69,7 +69,7 @@ bin/                     # CLI utilities and scripts
 ### Core Plugin Technology
 - **Language**: Bash (hooks), JSON (schemas, config), Markdown (skills, agents)
 - **Claude Code**: >= 2.1.11 (CC 2.1.11 Setup hooks, CC 2.1.9 additionalContext, auto:N MCP, plansDirectory, session ID substitution)
-- **MCP Integration**: Optional - Context7, Sequential Thinking, Memory (configure via /skf:configure, auto-enable via auto:N thresholds)
+- **MCP Integration**: Optional - Context7, Sequential Thinking, Memory (configure via /ork:configure, auto-enable via auto:N thresholds)
 - **Browser Automation**: agent-browser CLI (Vercel) - 93% less context vs Playwright MCP, Snapshot + Refs workflow
 
 ### Expected Application Stack (Skills Support)
@@ -92,14 +92,14 @@ bin/                     # CLI utilities and scripts
 ### Installation & Setup
 ```bash
 # Install from marketplace
-/plugin marketplace add yonatangross/skillforge-claude-plugin
+/plugin marketplace add yonatangross/orchestkit
 /plugin install skf
 
 # Or clone manually
-git clone https://github.com/yonatangross/skillforge-claude-plugin ~/.claude/plugins/skillforge
+git clone https://github.com/yonatangross/orchestkit ~/.claude/plugins/orchestkit
 
 # Verify installation - check nested structure
-ls ~/.claude/plugins/skillforge/skills/
+ls ~/.claude/plugins/orchestkit/skills/
 ```
 
 ### Testing
@@ -363,7 +363,7 @@ Use the statusline to monitor context usage:
 [CTX: 97%] ██████████████████ - RED: COMPACT NOW
 ```
 
-Use `/skf:claude-hud` to configure statusline display.
+Use `/ork:claude-hud` to configure statusline display.
 
 ### 10. Automatic Pattern Extraction (#48, #49)
 The plugin automatically extracts and learns from development patterns without manual intervention:

@@ -71,7 +71,7 @@ WITH (m = 16, ef_construction = 64);
 - **Query-heavy workloads** (reads >> writes)
 - **Production systems** (need fast queries)
 
-**SkillForge uses HNSW.**
+**OrchestKit uses HNSW.**
 
 ### Performance
 
@@ -96,7 +96,7 @@ Query time: ~3ms (top 10)  <- 17x faster than IVFFlat!
 | **Recall@10** | 0.85-0.95 | 0.95-0.99 |
 | **Best for** | < 100k vectors | 100k+ vectors |
 
-**SkillForge:** 415 vectors now, planning for 100k+ -> **HNSW**
+**OrchestKit:** 415 vectors now, planning for 100k+ -> **HNSW**
 
 ---
 
@@ -113,7 +113,7 @@ USING hnsw (embedding vector_l2_ops)
 USING hnsw (embedding vector_ip_ops)
 ```
 
-**SkillForge uses cosine** (standard for embeddings).
+**OrchestKit uses cosine** (standard for embeddings).
 
 ---
 
@@ -167,7 +167,7 @@ LIMIT 10;
 
 **Default ef_search = 40.**
 
-**SkillForge uses default** (sufficient for 415 vectors).
+**OrchestKit uses default** (sufficient for 415 vectors).
 
 ---
 
@@ -254,7 +254,7 @@ WHERE indexname = 'idx_chunks_embedding';
 
 ---
 
-## SkillForge Production Setup
+## OrchestKit Production Setup
 
 ```sql
 -- backend/app/db/migrations/versions/xxx_add_vector_indexes.py
@@ -320,4 +320,4 @@ WHERE indexname = 'idx_chunks_embedding';
 
 - [PGVector Indexing Guide](https://github.com/pgvector/pgvector#indexing)
 - [HNSW Algorithm Paper](https://arxiv.org/abs/1603.09320)
-- SkillForge: `backend/app/db/migrations/` (index definitions)
+- OrchestKit: `backend/app/db/migrations/` (index definitions)

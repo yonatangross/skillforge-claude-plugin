@@ -4,7 +4,7 @@ description: Capture content from JavaScript-rendered pages, login-protected sit
 context: fork
 agent: data-pipeline-engineer
 version: 2.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [browser, agent-browser, scraping, spa, authentication, 2026]
 user-invocable: false
 allowed-tools: Bash, Read, Write

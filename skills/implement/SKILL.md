@@ -3,7 +3,7 @@ name: implement
 description: Full-power feature implementation with parallel subagents, skills, and MCPs. Use when implementing features, building features, creating features, or developing features.
 context: fork
 version: 1.1.0
-author: SkillForge
+author: OrchestKit
 tags: [implementation, feature, full-stack, parallel-agents]
 user-invocable: true
 ---

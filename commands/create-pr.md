@@ -7,7 +7,7 @@ allowed-tools: Bash, Read, Glob, Grep
 
 Load and follow the skill instructions from the `skills/create-pr/SKILL.md` file.
 
-Execute the `/skf:create-pr` workflow to:
+Execute the `/ork:create-pr` workflow to:
 1. Run pre-flight checks (verify branch, uncommitted changes, push if needed)
 2. Run local validation (lint, format, type checks, tests)
 3. Gather context (issue number, commits, diff stats)

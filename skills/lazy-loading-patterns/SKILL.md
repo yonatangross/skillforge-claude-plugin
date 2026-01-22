@@ -5,7 +5,7 @@ tags: [lazy-loading, code-splitting, suspense, dynamic-import, intersection-obse
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

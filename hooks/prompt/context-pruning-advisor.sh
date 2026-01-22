@@ -366,7 +366,7 @@ main() {
     # Critical path: Context usage at critical level (>95%)
     if (( $(echo "$context_usage >= $CONTEXT_CRITICAL" | bc -l) )); then
         log "CRITICAL: Context usage at ${context_usage}% (>95%)"
-        local critical_msg="🚨 CRITICAL: Context usage at ${context_usage}% (>95%). Use /skf:context-compression immediately or manually archive old decisions and patterns."
+        local critical_msg="🚨 CRITICAL: Context usage at ${context_usage}% (>95%). Use /ork:context-compression immediately or manually archive old decisions and patterns."
         output_with_context "$critical_msg"
         exit 0
     fi

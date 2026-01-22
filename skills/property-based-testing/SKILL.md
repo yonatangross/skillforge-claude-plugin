@@ -5,7 +5,7 @@ context: fork
 agent: test-generator
 version: 1.0.0
 tags: [hypothesis, property-testing, fuzzing, python, testing, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -4,7 +4,7 @@ description: LangGraph supervisor-worker pattern. Use when building central coor
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -208,7 +208,7 @@ def agent_node_factory(agent_name: str):
 ### skillforge-workflow
 **Keywords:** skillforge, analysis, content, workflow
 **Solves:**
-- SkillForge analysis workflow example
+- OrchestKit analysis workflow example
 - Production supervisor implementation
 - Real-world orchestration pattern
 
@@ -223,5 +223,5 @@ def agent_node_factory(agent_name: str):
 **Keywords:** content, analysis, graph, multi-agent
 **Solves:**
 - Content analysis graph template
-- SkillForge-specific workflow
+- OrchestKit-specific workflow
 - Multi-agent content processing

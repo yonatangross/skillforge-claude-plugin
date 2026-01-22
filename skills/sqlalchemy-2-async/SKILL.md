@@ -6,7 +6,7 @@ agent: backend-system-architect
 version: 1.0.0
 tags: [sqlalchemy, async, database, orm, fastapi, python, 2026]
 allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

@@ -7,7 +7,7 @@ version: 1.0.0
 category: Infrastructure & Deployment
 agents: [backend-system-architect, code-quality-reviewer, studio-coach]
 keywords: [CI/CD, deployment, Docker, Kubernetes, pipeline, infrastructure, GitOps, container, automation, release]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

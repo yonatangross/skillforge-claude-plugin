@@ -230,7 +230,7 @@ SESSION_METADATA=$(jq -n \
         project: $project,
         has_blockers: $has_blockers,
         has_next_steps: $has_next_steps,
-        source: "skillforge-plugin"
+        source: "orchestkit-plugin"
     }')
 
 # Build session summary text

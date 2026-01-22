@@ -114,7 +114,7 @@ validate_dependencies() {
   if command -v python3 >/dev/null 2>&1; then
     if ! python3 -c "import anthropic" 2>/dev/null; then
       warnings+=("anthropic SDK not found - Memory Fabric Agent will use fallback mode")
-      warnings+=("  Install with: pip install 'skillforge-claude-plugin[memory]'")
+      warnings+=("  Install with: pip install 'orchestkit[memory]'")
     else
       log_hook "Anthropic SDK: available (Memory Fabric Agent enabled)"
     fi
@@ -339,7 +339,7 @@ main() {
   # Phase 2: Dependency validation
   if ! validate_dependencies; then
     log_hook "ERROR: Dependency validation failed"
-    CTX="SkillForge setup failed: Missing required dependencies. Install jq and ensure bash 4.0+."
+    CTX="OrchestKit setup failed: Missing required dependencies. Install jq and ensure bash 4.0+."
     output_with_context "$CTX"
     exit 1
   fi
@@ -374,9 +374,9 @@ main() {
   log_hook "Setup complete: $skill_count skills, $agent_count agents, $hook_count hooks"
 
   if [[ "$MODE" == "--interactive" ]]; then
-    CTX="SkillForge v$CURRENT_VERSION setup complete! Loaded $skill_count skills, $agent_count agents, and $hook_count hooks. Use /skf:configure to customize settings."
+    CTX="OrchestKit v$CURRENT_VERSION setup complete! Loaded $skill_count skills, $agent_count agents, and $hook_count hooks. Use /ork:configure to customize settings."
   else
-    CTX="SkillForge v$CURRENT_VERSION initialized (silent mode)."
+    CTX="OrchestKit v$CURRENT_VERSION initialized (silent mode)."
   fi
 
   output_with_context "$CTX"

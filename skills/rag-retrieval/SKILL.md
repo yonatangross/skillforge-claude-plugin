@@ -4,7 +4,7 @@ description: Retrieval-Augmented Generation patterns for grounded LLM responses.
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

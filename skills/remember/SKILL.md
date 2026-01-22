@@ -3,7 +3,7 @@ name: remember
 description: Store decisions and patterns in knowledge graph with optional cloud sync. Use when saving patterns, storing decisions, remembering approaches that worked.
 context: inherit
 version: 2.1.0
-author: SkillForge
+author: OrchestKit
 tags: [memory, decisions, patterns, best-practices, graph-memory, mem0, unified-memory]
 user-invocable: true
 ---
@@ -93,7 +93,7 @@ Check for --success flag → outcome: success
 Check for --failed flag → outcome: failed
 Check for --category <category> flag
 Check for --mem0 flag → sync_to_mem0: true
-Check for --agent <agent-id> flag → agent_id: "skf:{agent-id}"
+Check for --agent <agent-id> flag → agent_id: "ork:{agent-id}"
 Check for --global flag → use global user_id
 Extract the text to remember
 If no category specified, auto-detect from content
@@ -202,15 +202,15 @@ Execute the script:
 ```bash
 !bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "The user's text" \
-  --user-id "skillforge-{project-name}-decisions" \
-  --agent-id "skf:{agent-id}" \
+  --user-id "orchestkit-{project-name}-decisions" \
+  --agent-id "ork:{agent-id}" \
   --metadata '{"category":"detected_category","outcome":"success|failed|neutral","timestamp":"current_datetime","project":"current_project_name","source":"user","lesson":"extracted_lesson_if_failed"}' \
   --enable-graph
 ```
 
 **User ID Selection:**
-- Default: `skillforge-{project-name}-decisions`
-- With `--global`: `skillforge-global-best-practices`
+- Default: `orchestkit-{project-name}-decisions`
+- With `--global`: `orchestkit-global-best-practices`
 - With `--agent`: Include `agent_id` field for agent-scoped retrieval
 
 ### 8. Confirm Storage

@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [mcp, security, prompt-injection, tool-poisoning, allowlist, zero-trust, 2026]
 context: fork
 agent: security-auditor
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
