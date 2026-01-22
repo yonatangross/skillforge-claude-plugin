@@ -146,6 +146,21 @@ flowchart LR
 /plugin install ork
 ```
 
+> **⚠️ NPM Deprecation Notice (CC 2.1.15)**
+>
+> As of Claude Code 2.1.15, npm-based plugin installations are **deprecated**.
+> If you previously installed OrchestKit via npm, please migrate:
+>
+> ```bash
+> # Remove npm installation (if applicable)
+> npm uninstall -g @anthropic/claude-plugin-orchestkit
+>
+> # Install via native plugin system
+> /plugin install ork@orchestkit
+> ```
+>
+> The native `/plugin install` system provides better version control with git SHA/tag pinning.
+
 ### Verify It Works
 
 ```bash

@@ -79,7 +79,11 @@ Your Usage:     45,000 tokens (28% of effective)
 
 ## Visual States
 
-Context usage thresholds help you know when to act:
+Context usage thresholds help you know when to act.
+
+> **CC 2.1.14 Context Window Fix**: Claude Code now uses **98%** of the context window
+> (previously capped at ~65%). Thresholds below are calculated against the **effective
+> window** (160K tokens for 200K max after ~20% system overhead).
 
 ```
 [CTX: 45%] ████████░░░░░░░░ - GREEN:  Plenty of room, work freely
@@ -87,6 +91,9 @@ Context usage thresholds help you know when to act:
 [CTX: 89%] █████████████████ - ORANGE: Consider compacting soon
 [CTX: 97%] ██████████████████ - RED:    COMPACT NOW or lose context
 ```
+
+**Note**: These percentages are of the effective window (~160K tokens), not the static
+200K max. A 50% reading means ~80K tokens used.
 
 ### Recommended Actions by State
 

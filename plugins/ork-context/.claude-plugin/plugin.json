@@ -1,10 +1,16 @@
 {
   "name": "ork-context",
   "version": "5.0.0",
+  "engine": ">=2.1.15",
   "description": "Context window management and engineering — compression, context optimization, system design interrogation",
   "author": {
     "name": "Yonatan Gross",
     "email": "yonatan2gross@gmail.com"
   },
-  "keywords": ["context", "compression", "engineering", "system-design"]
+  "keywords": [
+    "context",
+    "compression",
+    "engineering",
+    "system-design"
+  ]
 }
