@@ -200,7 +200,7 @@ Use `mcp__memory__create_relations`:
 Execute the script:
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "The user's text" \
   --user-id "skillforge-{project-name}-decisions" \
   --agent-id "skf:{agent-id}" \

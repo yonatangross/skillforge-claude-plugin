@@ -86,7 +86,7 @@ Parsed:
 **Query Mem0 (semantic search):**
 
 ```bash
-!bash skills/mem0-memory/scripts/search-memories.py \
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "pagination approach recommend" \
   --user-id "{project}-decisions" \
   --limit 10 \
@@ -220,7 +220,7 @@ Memory Fabric supports multi-hop graph traversal for complex relationship querie
 When searching with `--enable-graph`, results include relationship context:
 
 ```bash
-!bash skills/mem0-memory/scripts/search-memories.py \
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "pagination approach" \
   --user-id "project-decisions" \
   --enable-graph \

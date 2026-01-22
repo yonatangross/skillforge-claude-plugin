@@ -115,7 +115,7 @@ Use `mcp__memory__search_nodes`:
 Execute the script IN PARALLEL with step 2:
 
 ```bash
-!bash skills/mem0-memory/scripts/search-memories.py \
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "user's search query" \
   --user-id "skillforge-{project-name}-decisions" \
   --limit 10 \

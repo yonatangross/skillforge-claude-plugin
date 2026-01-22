@@ -24,7 +24,7 @@ Execute these script commands based on the sync context provided:
 ### 1. Session Summary (Always)
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "Session Summary: {task_summary}" \
   --user-id "{project}-continuity" \
   --metadata '{"type":"session_summary","status":"{status}","has_blockers":{has_blockers},"has_next_steps":{has_next_steps}}' \
@@ -36,7 +36,7 @@ Execute these script commands based on the sync context provided:
 For each decision in the decision log that hasn't been synced:
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "{decision_content}" \
   --user-id "{project}-decisions" \
   --metadata '{"category":"{category}","outcome":"success"}' \
@@ -48,7 +48,7 @@ For each decision in the decision log that hasn't been synced:
 For each agent pattern that was learned:
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "{pattern_description}" \
   --user-id "{project}-agents" \
   --agent-id "skf:{agent_type}" \
@@ -61,7 +61,7 @@ For each agent pattern that was learned:
 For patterns that apply across projects:
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "{best_practice}" \
   --user-id "skillforge-global-best-practices" \
   --metadata '{"project":"{project}","category":"{category}","outcome":"success"}' \

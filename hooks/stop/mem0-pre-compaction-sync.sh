@@ -210,7 +210,7 @@ SYNC_CONTEXT=$(jq -n \
 SKILL_MSG="[Mem0 Sync] $SUMMARY - Execute /mem0-sync to persist session context"
 
 # Build script path
-SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/add-memory.py"
+SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/crud/add-memory.py"
 
 # Determine boolean values for has_blockers and has_next_steps
 HAS_BLOCKERS="false"

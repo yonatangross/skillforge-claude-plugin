@@ -135,45 +135,45 @@ python3 skills/mem0-memory/scripts/create/create-all-skill-memories.py
 python3 skills/mem0-memory/scripts/create/create-deep-relationships.py
 
 # 6. Generate visualization
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py --format plotly
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py --format plotly
 ```
 
 ## Visualization Tool
 
 ### Location
-`skills/mem0-memory/scripts/visualize-mem0-graph.py`
+`skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py`
 
 ### Usage
 
 ```bash
 # Interactive Plotly HTML (recommended)
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
-  --user-id "skillforge-plugin-structure" \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
+  --user-id "skillforge:all-agents" \
   --format plotly \
   --output mem0-graph.html
 
 # Static NetworkX image
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
   --format networkx \
   --output mem0-graph.png
 
 # JSON export (for custom visualizations)
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
   --format json \
   --output mem0-graph.json
 
 # Mermaid diagram (text-based, version-controllable)
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
   --format mermaid \
   --output mem0-graph.mmd
 
 # GraphML export (for Cytoscape, Gephi)
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
   --format graphml \
   --output mem0-graph.graphml
 
 # CSV export (nodes.csv, edges.csv)
-python3 skills/mem0-memory/scripts/visualize-mem0-graph.py \
+python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py \
   --format csv \
   --output mem0-graph.csv
 ```
@@ -210,7 +210,7 @@ Complete technology stack chains connecting agents through skills to technologie
 ```bash
 python3 skills/mem0-memory/scripts/crud/search-memories.py \
   --query "backend-system-architect uses fastapi-advanced" \
-  --user-id "skillforge-plugin-structure" \
+  --user-id "skillforge:all-agents" \
   --enable-graph
 ```
 
@@ -219,14 +219,14 @@ python3 skills/mem0-memory/scripts/crud/search-memories.py \
 # Get memory ID first
 MEMORY_ID=$(python3 skills/mem0-memory/scripts/crud/search-memories.py \
   --query "backend-system-architect" \
-  --user-id "skillforge-plugin-structure" \
+  --user-id "skillforge:all-agents" \
   --limit 1 | jq -r '.results[0].id')
 
 # Traverse relationships
 python3 skills/mem0-memory/scripts/graph/get-related-memories.py \
   --memory-id "$MEMORY_ID" \
   --depth 3 \
-  --user-id "skillforge-plugin-structure"
+  --user-id "skillforge:all-agents"
 ```
 
 ## Scripts Reference
@@ -280,7 +280,7 @@ All scripts are located in `skills/mem0-memory/scripts/`:
 
 3. **Regenerate visualization**:
    ```bash
-   python3 skills/mem0-memory/scripts/visualize-mem0-graph.py --format plotly
+   python3 skills/mem0-memory/scripts/visualization/visualize-mem0-graph.py --format plotly
    ```
 
 ### No Relationships in Visualization
@@ -291,7 +291,7 @@ All scripts are located in `skills/mem0-memory/scripts/`:
    ```bash
    python3 skills/mem0-memory/scripts/crud/search-memories.py \
      --query "backend-system-architect" \
-     --user-id "skillforge-plugin-structure" \
+     --user-id "skillforge:all-agents" \
      --enable-graph
    ```
 
