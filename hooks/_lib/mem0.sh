@@ -924,12 +924,12 @@ detect_best_practice_category() {
         echo "observability"
     elif [[ "$text_lower" =~ performance|slow|fast|cache|optimize|latency ]]; then
         echo "performance"
-    elif [[ "$text_lower" =~ llm|rag|embedding|vector|semantic|ai|ml|langchain|langgraph|mem0|openai|anthropic ]]; then
+    elif [[ "$text_lower" =~ database|sql|postgres|query|schema|migration ]]; then
+        echo "database"
+    elif [[ "$text_lower" =~ (^|[^a-z])(llm|rag|embeddings?|vectors?|semantic|langchain|langgraph|mem0|openai|anthropic|gpt|claude)([^a-z]|$) ]]; then
         echo "ai-ml"
     elif [[ "$text_lower" =~ etl|data.*pipeline|streaming|batch.*processing|dataflow|spark ]]; then
         echo "data-pipeline"
-    elif [[ "$text_lower" =~ database|sql|postgres|query|schema|migration ]]; then
-        echo "database"
     elif [[ "$text_lower" =~ api|endpoint|rest|graphql|route ]]; then
         echo "api"
     elif [[ "$text_lower" =~ react|component|frontend|ui|css|style ]]; then
