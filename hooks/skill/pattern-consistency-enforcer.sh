@@ -27,6 +27,7 @@ PATTERNS_FILE="$PROJECT_ROOT/.claude/context/knowledge/patterns/established.json
 
 if [[ ! -f "$PATTERNS_FILE" ]]; then
     # No patterns file, skip validation
+    output_silent_success
     exit 0
 fi
 
