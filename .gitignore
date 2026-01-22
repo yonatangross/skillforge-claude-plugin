@@ -21,6 +21,9 @@ logs/
 *.temp
 .cache/
 
+# Generated visualization outputs
+outputs/
+
 # Environment files
 .env
 .env.local

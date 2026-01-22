@@ -167,7 +167,8 @@ fi
 # -----------------------------------------------------------------------------
 
 PROJECT_ID=$(mem0_get_project_id)
-DECISIONS_USER_ID=$(mem0_user_id "$MEM0_SCOPE_DECISIONS")
+# Use unified user_id for all agents (metadata-filtered architecture)
+DECISIONS_USER_ID="skillforge:all-agents"
 
 # Detect primary category from first decision
 FIRST_DECISION=$(echo "$EXTRACTED_DECISIONS" | head -1)
@@ -179,17 +180,26 @@ DECISION_COUNT=$(echo "$EXTRACTED_DECISIONS" | grep -c . || echo "0")
 ENTITY_HINTS=$(mem0_extract_entities_hint "$FIRST_DECISION")
 
 # Build script path
-SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/add-memory.py"
+SCRIPT_PATH="${CLAUDE_PLUGIN_ROOT:-$PLUGIN_ROOT}/skills/mem0-memory/scripts/crud/add-memory.py"
+
+# Detect agent context from environment
+AGENT_NAME="${CLAUDE_AGENT_ID:-}"
+if [[ -z "$AGENT_NAME" ]]; then
+    # Try to extract from hook input if available
+    AGENT_NAME=$(echo "$_HOOK_INPUT" | jq -r '.subagent_type // .agent_type // ""' 2>/dev/null || echo "")
+fi
 
 # Build metadata JSON
 METADATA_JSON=$(jq -n \
     --arg category "$CATEGORY" \
     --arg skill "${SKILL_NAME:-unknown}" \
+    --arg agent "${AGENT_NAME:-}" \
     '{
         category: $category,
         source: "skillforge-plugin",
-        skill: $skill
-    }')
+        skill: $skill,
+        shared: false
+    } + (if $agent != "" then {agent_name: $agent} else {} end)')
 
 # Build system message with script command
 MSG=$(cat <<EOF

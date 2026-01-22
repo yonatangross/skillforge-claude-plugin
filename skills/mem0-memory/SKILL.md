@@ -85,12 +85,23 @@ filters={"AND": [{"user_id": "my-project-decisions"}]}
 **Install mem0 Python SDK:**
 
 ```bash
-# Install the mem0ai package
-pip install mem0ai
+# Install the mem0ai package and dependencies
+pip install mem0ai python-dotenv
 
 # Or install from requirements file
 pip install -r skills/mem0-memory/scripts/requirements.txt
 ```
+
+**Optional - Install mem0-skill-lib package (recommended for development):**
+
+```bash
+# Install as editable package for proper type checking
+pip install -e skills/mem0-memory/scripts/
+```
+
+**Note:** Scripts work in both modes:
+- **Standalone mode** (default): Scripts dynamically add `lib/` to sys.path. Type checkers require `# type: ignore` comments for these dynamic imports.
+- **Installed mode**: If `mem0-skill-lib` is installed, scripts import from the installed package without type ignore comments.
 
 **Set environment variables:**
 
@@ -132,7 +143,7 @@ python3 -c "from mem0 import MemoryClient; print('✓ mem0ai installed successfu
 Execute the script via Bash tool:
 
 ```bash
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "Decided to use FastAPI over Flask for async support" \
   --user-id "project-decisions" \
   --metadata '{"scope":"project-decisions","category":"backend","date":"2026-01-12"}' \
@@ -149,7 +160,7 @@ Execute the script via Bash tool:
 ### Searching Memories
 
 ```bash
-!bash skills/mem0-memory/scripts/search-memories.py \
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "authentication approach" \
   --user-id "project-decisions" \
   --limit 5 \
@@ -177,7 +188,7 @@ When `--enable-graph` is enabled, search results include:
 Query memories related to a given memory via graph traversal:
 
 ```bash
-!bash skills/mem0-memory/scripts/get-related-memories.py \
+!bash skills/mem0-memory/scripts/graph/get-related-memories.py \
   --memory-id "mem_abc123" \
   --depth 2 \
   --relation-type "recommends"
@@ -188,7 +199,7 @@ Query memories related to a given memory via graph traversal:
 Multi-hop graph traversal for complex relationship queries:
 
 ```bash
-!bash skills/mem0-memory/scripts/traverse-graph.py \
+!bash skills/mem0-memory/scripts/graph/traverse-graph.py \
   --memory-id "mem_abc123" \
   --depth 2 \
   --relation-type "recommends"
@@ -219,7 +230,7 @@ Multi-hop graph traversal for complex relationship queries:
 ### Listing Memories
 
 ```bash
-!bash skills/mem0-memory/scripts/get-memories.py \
+!bash skills/mem0-memory/scripts/crud/get-memories.py \
   --user-id "project-skillforge" \
   --filters '{"limit":100}'
 ```
@@ -227,14 +238,14 @@ Multi-hop graph traversal for complex relationship queries:
 ### Getting Single Memory
 
 ```bash
-!bash skills/mem0-memory/scripts/get-memory.py \
+!bash skills/mem0-memory/scripts/crud/get-memory.py \
   --memory-id "mem_abc123"
 ```
 
 ### Updating Memories
 
 ```bash
-!bash skills/mem0-memory/scripts/update-memory.py \
+!bash skills/mem0-memory/scripts/crud/update-memory.py \
   --memory-id "mem_abc123" \
   --text "Updated decision text" \
   --metadata '{"updated":true}'
@@ -243,7 +254,7 @@ Multi-hop graph traversal for complex relationship queries:
 ### Deleting Memories
 
 ```bash
-!bash skills/mem0-memory/scripts/delete-memory.py \
+!bash skills/mem0-memory/scripts/crud/delete-memory.py \
   --memory-id "mem_abc123"
 ```
 
@@ -304,21 +315,21 @@ PR #456 ready for review. Blocked on: DB migration approval."
 **Batch update up to 1000 memories:**
 
 ```bash
-!bash skills/mem0-memory/scripts/batch-update.py \
+!bash skills/mem0-memory/scripts/batch/batch-update.py \
   --memories '[{"memory_id":"mem_123","text":"updated"},{"memory_id":"mem_456","metadata":{"updated":true}}]'
 ```
 
 **Batch delete:**
 
 ```bash
-!bash skills/mem0-memory/scripts/batch-delete.py \
+!bash skills/mem0-memory/scripts/batch/batch-delete.py \
   --memory-ids '["mem_123","mem_456","mem_789"]'
 ```
 
 ### Memory History (Audit Trail)
 
 ```bash
-!bash skills/mem0-memory/scripts/memory-history.py \
+!bash skills/mem0-memory/scripts/utils/memory-history.py \
   --memory-id "mem_abc123"
 ```
 
@@ -327,7 +338,7 @@ PR #456 ready for review. Blocked on: DB migration approval."
 **Create export:**
 
 ```bash
-!bash skills/mem0-memory/scripts/export-memories.py \
+!bash skills/mem0-memory/scripts/export/export-memories.py \
   --filters '{"user_id":"project-decisions"}' \
   --schema '{"format":"json"}'
 ```
@@ -335,7 +346,7 @@ PR #456 ready for review. Blocked on: DB migration approval."
 **Retrieve export:**
 
 ```bash
-!bash skills/mem0-memory/scripts/get-export.py \
+!bash skills/mem0-memory/scripts/export/get-export.py \
   --user-id "project-decisions"
 ```
 
@@ -344,20 +355,20 @@ PR #456 ready for review. Blocked on: DB migration approval."
 **Get memory statistics:**
 
 ```bash
-!bash skills/mem0-memory/scripts/memory-summary.py \
+!bash skills/mem0-memory/scripts/utils/memory-summary.py \
   --filters '{"user_id":"project-decisions"}'
 ```
 
 **List all users:**
 
 ```bash
-!bash skills/mem0-memory/scripts/get-users.py
+!bash skills/mem0-memory/scripts/utils/get-users.py
 ```
 
 ### Webhooks (Automation)
 
 ```bash
-!bash skills/mem0-memory/scripts/create-webhook.py \
+!bash skills/mem0-memory/scripts/webhooks/create-webhook.py \
   --url "https://example.com/webhook" \
   --name "Memory Webhook" \
   --event-types '["memory.created","memory.updated"]'
@@ -369,18 +380,18 @@ Use memories to maintain context across plugin sessions:
 
 ```bash
 # At session start - recall project context
-!bash skills/mem0-memory/scripts/search-memories.py \
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
   --query "current sprint priorities" \
   --user-id "project-continuity"
 
 # During work - persist decisions
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "Implemented feature using approach because reason" \
   --user-id "project-decisions" \
   --metadata '{"scope":"project-decisions"}'
 
 # At session end - save continuity
-!bash skills/mem0-memory/scripts/add-memory.py \
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
   --text "Session end: summary. Next: next_steps" \
   --user-id "project-continuity" \
   --metadata '{"scope":"project-continuity"}'
