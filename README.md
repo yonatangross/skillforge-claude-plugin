@@ -6,9 +6,9 @@
 ### Stop satisficing your codebase to Claude. Start shipping.
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.11-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
-[![Skills](https://img.shields.io/badge/Skills-159-blue?style=for-the-badge)](./skills)
+[![Skills](https://img.shields.io/badge/Skills-161-blue?style=for-the-badge)](./skills)
 [![Agents](https://img.shields.io/badge/Agents-34-green?style=for-the-badge)](./agents)
-[![Hooks](https://img.shields.io/badge/Hooks-144-orange?style=for-the-badge)](./hooks)
+[![Hooks](https://img.shields.io/badge/Hooks-151-orange?style=for-the-badge)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
 [Why OrchestKit?](#why-orchestkit) · [Quick Start](#quick-start) · [Commands](#commands) · [Skills](#skills) · [Agents](#agents) · [FAQ](#faq)
@@ -21,7 +21,7 @@
 
 **The Problem:** Every Claude Code session starts from zero. You explain your stack, your patterns, your preferences—again and again.
 
-**The Solution:** OrchestKit gives Claude persistent knowledge of 159 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
+**The Solution:** OrchestKit gives Claude persistent knowledge of 161 production patterns, 34 specialized agents, and 151 security/quality hooks that work automatically.
 
 <table>
 <tr>
@@ -67,7 +67,7 @@
         │ Git protect   │    │ Best practice │    │ Auto-activate │
         │ Quality check │    │ Code templates│    │ Domain expert │
         │               │    │               │    │               │
-        │    144 hooks  │    │  159 skills   │    │   34 agents   │
+        │    151 hooks  │    │  161 skills   │    │   34 agents   │
         └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
                 │                    │                    │
                 │    ┌───────────────┴───────────────┐    │
@@ -155,9 +155,9 @@ flowchart LR
 You should see:
 ```
 ✅ Plugin loaded successfully
-✅ 159 skills available
+✅ 161 skills available
 ✅ 34 agents ready
-✅ 144 hooks active
+✅ 151 hooks active
 ```
 
 ### Try These
@@ -205,7 +205,7 @@ You should see:
 
 ## Commands
 
-**20 slash commands** organized by workflow:
+**21 slash commands** organized by workflow:
 
 ### 🔧 Git & Development
 
@@ -256,7 +256,7 @@ You should see:
 
 ## Skills
 
-**159 skills** with progressive loading (~70% token savings):
+**161 skills** with progressive loading (~70% token savings):
 
 ### 🤖 AI & ML — 27 skills
 
@@ -304,7 +304,7 @@ You should see:
 `github-operations` · `git-workflow` · `stacked-prs` · `release-management` · `observability-monitoring` · `devops-deployment` · `zero-downtime-migration` · `database-versioning` · `alembic-migrations`
 
 <details>
-<summary><strong>📁 View all 159 skills</strong></summary>
+<summary><strong>📁 View all 161 skills</strong></summary>
 
 ```bash
 ls skills/
@@ -407,7 +407,7 @@ flowchart TB
     subgraph OrchestKit["🔷 ORCHESTKIT PLUGIN"]
         direction TB
 
-        subgraph Hooks["🛡️ 144 HOOKS"]
+        subgraph Hooks["🛡️ 151 HOOKS"]
             direction LR
             H1["PreToolUse"]
             H2["PostToolUse"]
@@ -415,7 +415,7 @@ flowchart TB
             H4["Lifecycle"]
         end
 
-        subgraph Skills["📚 159 SKILLS"]
+        subgraph Skills["📚 161 SKILLS"]
             direction LR
             S1["Backend"]
             S2["Frontend"]
@@ -480,7 +480,7 @@ orchestkit/
 │       └── assets/          # Templates and copyable files
 ├── agents/                  # 34 specialized agents
 ├── commands/                # 21 slash commands
-├── hooks/                   # 147 lifecycle hooks
+├── hooks/                   # 151 lifecycle hooks
 └── tests/                   # Validation suite
 ```
 
@@ -490,7 +490,7 @@ orchestkit/
 
 | Feature | OrchestKit | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
 |---------|:----------:|:--------------------:|:---------:|
-| **Skills/Patterns** | ✅ 159 | ⚠️ ~10 | ❌ 0 |
+| **Skills/Patterns** | ✅ 161 | ⚠️ ~10 | ❌ 0 |
 | **Specialized Agents** | ✅ 34 | ⚠️ ~5 | ❌ 0 |
 | **Security Layers** | ✅ 8-layer | ⚠️ Basic | ❌ Manual |
 | **AI/ML Patterns** | ✅ 27 | ⚠️ Limited | ❌ None |
