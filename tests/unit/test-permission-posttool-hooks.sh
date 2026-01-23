@@ -475,9 +475,18 @@ test_error_collector_exists_and_has_correct_structure() {
     fi
 
     # Verify the hook contains expected structure
-    assert_file_contains "$hook" "set -euo pipefail"
-    assert_file_contains "$hook" "Error Collector"
-    assert_file_contains "$hook" "exit 0"
+    # Note: Since v5.1.0, hooks may delegate to TypeScript via run-hook.mjs
+    # Accept either bash patterns OR TypeScript delegation
+    if grep -q "run-hook.mjs" "$hook" 2>/dev/null; then
+        # TypeScript delegation - check for node/exec
+        assert_file_contains "$hook" "node"
+        assert_file_contains "$hook" "Error Collector"
+    else
+        # Legacy bash hook
+        assert_file_contains "$hook" "set -euo pipefail"
+        assert_file_contains "$hook" "Error Collector"
+        assert_file_contains "$hook" "exit 0"
+    fi
 }
 
 test_error_collector_sources_common_lib() {
@@ -486,6 +495,13 @@ test_error_collector_sources_common_lib() {
         skip "error-collector.sh not found"
     fi
 
+    # Since v5.1.0, hooks may delegate to TypeScript instead of sourcing common.sh
+    if grep -q "run-hook.mjs" "$hook" 2>/dev/null; then
+        # TypeScript delegation - this is valid
+        return 0
+    fi
+
+    # Legacy bash hook should source common.sh
     assert_file_contains "$hook" "source"
     assert_file_contains "$hook" "common.sh"
 }

@@ -54,9 +54,14 @@ test_pretool_context_gate() {
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
-    local input='{"subagent_type":"test-agent","prompt":"Do something"}'
+    # Create required directories for context-gate state
+    mkdir -p "$PROJECT_ROOT/.claude/logs"
+
+    # Input format for SubagentStart hooks (tool_input wrapper for TS hooks)
+    local input='{"tool_input":{"subagent_type":"test-agent","prompt":"Do something"}}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    # Use perl for cross-platform timeout (works on macOS and Linux)
+    output=$(echo "$input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -73,10 +78,10 @@ test_pretool_subagent_validator() {
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
-    # Test with valid agent
-    local input='{"subagent_type":"backend-system-architect","prompt":"Design API"}'
+    # Test with valid agent (tool_input wrapper for TS hooks)
+    local input='{"tool_input":{"subagent_type":"backend-system-architect","prompt":"Design API"}}'
     local output
-    output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -111,12 +116,16 @@ test_pretool_chain_order() {
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
-    local input='{"subagent_type":"database-engineer","prompt":"Design schema"}'
+    # Create required directories
+    mkdir -p "$PROJECT_ROOT/.claude/logs"
 
-    # Run all three hooks in order
+    # Input with tool_input wrapper for TS hooks
+    local input='{"tool_input":{"subagent_type":"database-engineer","prompt":"Design schema"}}'
+
+    # Run all three hooks in order (use perl for cross-platform timeout)
     local gate_output validator_output memory_output
 
-    gate_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    gate_output=$(echo "$input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local gate_ok
     gate_ok=$(echo "$gate_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -126,7 +135,7 @@ test_pretool_chain_order() {
         return
     fi
 
-    validator_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    validator_output=$(echo "$input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local validator_ok
     validator_ok=$(echo "$validator_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -136,7 +145,7 @@ test_pretool_chain_order() {
         return
     fi
 
-    memory_output=$(echo "$input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    memory_output=$(echo "$input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     local memory_ok
     memory_ok=$(echo "$memory_output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -247,16 +256,17 @@ test_full_agent_lifecycle() {
 
     # Phase 1: PreToolUse
     echo "    [1/4] PreToolUse..."
-    local pretool_input='{"subagent_type":"'$agent_type'","prompt":"Design REST API"}'
+    # Input with tool_input wrapper for TS hooks
+    local pretool_input='{"tool_input":{"subagent_type":"'$agent_type'","prompt":"Design REST API"}}'
 
     local gate_result
-    gate_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
+    gate_result=$(echo "$pretool_input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/context-gate.sh" 2>/dev/null || echo '{"continue":true}')
 
     local validator_result
-    validator_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
+    validator_result=$(echo "$pretool_input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/subagent-validator.sh" 2>/dev/null || echo '{"continue":true}')
 
     local memory_inject_result
-    memory_inject_result=$(echo "$pretool_input" | bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
+    memory_inject_result=$(echo "$pretool_input" | perl -e 'alarm 10; exec @ARGV' bash "$PROJECT_ROOT/hooks/subagent-start/agent-memory-inject.sh" 2>/dev/null || echo '{"continue":true}')
 
     # Phase 2: SubagentStart
     echo "    [2/4] SubagentStart..."

@@ -1222,3 +1222,15 @@ check_for_antipattern_query() {
             }
         }'
 }
+
+# ============================================================================
+# SQLITE HELPERS (moved from hooks/_lib/common.sh after TS migration v5.1.0)
+# ============================================================================
+
+# Escape single quotes for SQLite
+# Usage: sqlite_escape "value"
+sqlite_escape() {
+    local input="${1:-}"
+    # Double all single quotes for SQLite escaping
+    echo "${input//\'/\'\'}"
+}
