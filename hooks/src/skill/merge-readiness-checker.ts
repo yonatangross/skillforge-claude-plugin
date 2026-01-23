@@ -30,6 +30,13 @@ function gitExec(command: string, cwd?: string): string {
  * Check merge readiness for branch
  */
 export function mergeReadinessChecker(input: HookInput): HookResult {
+  const command = input.tool_input?.command || '';
+
+  // Only run for merge-related commands
+  if (!/\b(gh\s+pr\s+merge|git\s+merge|git\s+rebase)\b/i.test(command)) {
+    return outputSilentSuccess();
+  }
+
   const targetBranch = (input.tool_input as any).target_branch || 'main';
   const currentBranch = getCurrentBranch();
 

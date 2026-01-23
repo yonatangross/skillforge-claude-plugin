@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-01-23T14:36:57.124Z",
-  "buildTimeMs": 42,
-  "size": 250070,
-  "sizeKB": "244.21",
-  "inputs": 135,
+  "generatedAt": "2026-01-23T15:02:47.213Z",
+  "buildTimeMs": 21,
+  "size": 279319,
+  "sizeKB": "272.77",
+  "inputs": 153,
   "exports": [
     "createGuard",
     "escapeRegex",
