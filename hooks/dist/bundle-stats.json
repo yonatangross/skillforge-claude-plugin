@@ -1,71 +1,71 @@
 {
-  "generatedAt": "2026-01-23T16:47:06.497Z",
-  "buildTimeMs": 62,
+  "generatedAt": "2026-01-23T16:51:05.445Z",
+  "buildTimeMs": 60,
   "mode": "split",
   "bundles": {
     "permission": {
-      "size": 8513,
-      "sizeKB": "8.31",
+      "size": 8554,
+      "sizeKB": "8.35",
       "exports": 41
     },
     "pretool": {
-      "size": 48730,
-      "sizeKB": "47.59",
+      "size": 48771,
+      "sizeKB": "47.63",
       "exports": 50
     },
     "posttool": {
-      "size": 59478,
-      "sizeKB": "58.08",
+      "size": 59551,
+      "sizeKB": "58.16",
       "exports": 35
     },
     "prompt": {
-      "size": 58237,
-      "sizeKB": "56.87",
+      "size": 58278,
+      "sizeKB": "56.91",
       "exports": 89
     },
     "lifecycle": {
-      "size": 32166,
-      "sizeKB": "31.41",
+      "size": 32207,
+      "sizeKB": "31.45",
       "exports": 35
     },
     "stop": {
-      "size": 33986,
-      "sizeKB": "33.19",
+      "size": 34027,
+      "sizeKB": "33.23",
       "exports": 35
     },
     "subagent": {
-      "size": 57464,
-      "sizeKB": "56.12",
+      "size": 57505,
+      "sizeKB": "56.16",
       "exports": 66
     },
     "notification": {
-      "size": 5033,
-      "sizeKB": "4.92",
+      "size": 5074,
+      "sizeKB": "4.96",
       "exports": 26
     },
     "setup": {
-      "size": 24782,
-      "sizeKB": "24.20",
+      "size": 24823,
+      "sizeKB": "24.24",
       "exports": 26
     },
     "skill": {
-      "size": 52833,
-      "sizeKB": "51.59",
+      "size": 52874,
+      "sizeKB": "51.63",
       "exports": 35
     },
     "agent": {
-      "size": 8464,
-      "sizeKB": "8.27",
+      "size": 8505,
+      "sizeKB": "8.31",
       "exports": 41
     },
     "hooks": {
-      "size": 318190,
-      "sizeKB": "310.73",
+      "size": 318263,
+      "sizeKB": "310.80",
       "exports": 114,
       "unified": true
     }
   },
-  "totalSize": 389686,
-  "totalSizeKB": "380.55",
+  "totalSize": 390169,
+  "totalSizeKB": "381.02",
   "inputs": 38
 }

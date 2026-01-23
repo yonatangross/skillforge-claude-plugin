@@ -39,11 +39,12 @@ export function getPluginRoot(): string {
 
 /**
  * Get the session ID
- * CC 2.1.9+ guarantees CLAUDE_SESSION_ID availability - no fallback needed
- * Read dynamically to support testing
+ * CC 2.1.9+ should guarantee CLAUDE_SESSION_ID availability, but we add
+ * a defensive fallback to prevent hook crashes during edge cases.
+ * Read dynamically to support testing.
  */
 export function getSessionId(): string {
-  return process.env.CLAUDE_SESSION_ID!;
+  return process.env.CLAUDE_SESSION_ID || `fallback-${process.pid}-${Date.now()}`;
 }
 
 // -----------------------------------------------------------------------------
