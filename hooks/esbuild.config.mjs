@@ -40,6 +40,7 @@ const commonBuildOptions = {
   sourcemap: true,
   metafile: true,
   external: [],
+  drop: isWatch ? [] : ['debugger'],
   define: {
     'process.env.NODE_ENV': isWatch ? '"development"' : '"production"',
   },
