@@ -114,9 +114,9 @@ prod_prompt = langfuse.get_prompt("analyzer", label="production")
 6. **A/B test** new prompts before full rollout
 7. **Document changes** in version notes
 
-## SkillForge 4-Level Prompt Caching Architecture
+## OrchestKit 4-Level Prompt Caching Architecture
 
-SkillForge uses a multi-level caching strategy with Jinja2 templates as L4 fallback:
+OrchestKit uses a multi-level caching strategy with Jinja2 templates as L4 fallback:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -134,13 +134,13 @@ SkillForge uses a multi-level caching strategy with Jinja2 templates as L4 fallb
 │  L4: Jinja2 Templates (local fallback)                      │
 │  └─► Uses TRUE Jinja2 {{ var }} syntax                      │
 │  └─► Variables passed at render time                        │
-│  └─► Located in: templates/*.j2                             │
+│  └─► Located in: scripts/*.j2                             │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### L4 Jinja2 Template Fallback (Issue #414)
 
-When Langfuse is unavailable, SkillForge falls back to Jinja2 templates:
+When Langfuse is unavailable, OrchestKit falls back to Jinja2 templates:
 
 ```python
 from app.shared.services.prompts.template_loader import render_template
@@ -150,7 +150,7 @@ from app.shared.services.prompts.template_loader import render_template
 prompt = render_template("supervisor/routing.j2", agent_list=agent_list)
 ```
 
-**Template location:** `backend/app/shared/services/prompts/templates/`
+**Template location:** `backend/app/shared/services/prompts/scripts/`
 - `supervisor/routing.j2` - Supervisor routing prompt
 - `agents/tier1/*.j2` - Tier 1 universal agents
 - `agents/tier2/*.j2` - Tier 2 validation agents

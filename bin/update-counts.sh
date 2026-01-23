@@ -38,8 +38,8 @@ else
     AGENTS=0
 fi
 
-if [[ -d "$PROJECT_ROOT/.claude/commands" ]]; then
-    COMMANDS=$(find "$PROJECT_ROOT/.claude/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+if [[ -d "$PROJECT_ROOT/commands" ]]; then
+    COMMANDS=$(find "$PROJECT_ROOT/commands" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 else
     COMMANDS=0
 fi

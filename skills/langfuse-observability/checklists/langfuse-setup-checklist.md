@@ -1,6 +1,6 @@
 # Langfuse Setup Checklist
 
-Complete guide for setting up Langfuse observability in your application, based on SkillForge's production implementation.
+Complete guide for setting up Langfuse observability in your application, based on OrchestKit's production implementation.
 
 ## Prerequisites
 
@@ -454,4 +454,4 @@ HAVING SUM(calculated_total_cost) > 100;
 - [Python SDK Guide](https://langfuse.com/docs/sdk/python)
 - [Self-Hosting Guide](https://langfuse.com/docs/deployment/self-host)
 - [Cost Tracking](https://langfuse.com/docs/model-usage-and-cost)
-- Template: `../templates/langfuse-decorator-pattern.py`
+- Template: `../scripts/langfuse-decorator-pattern.py`

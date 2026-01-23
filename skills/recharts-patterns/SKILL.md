@@ -5,7 +5,7 @@ tags: [recharts, charts, data-visualization, react, svg, accessibility, responsi
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

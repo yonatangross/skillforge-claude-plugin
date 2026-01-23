@@ -3,7 +3,7 @@ name: commit
 description: Creates git commits with conventional format, branch protection, and pre-commit validation. Use when committing changes, staging files, generating commit messages, saving changes, or pushing changes.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [git, commit, version-control, conventional-commits]
 user-invocable: true
 ---

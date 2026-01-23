@@ -1,11 +1,184 @@
 # Changelog
 
-All notable changes to the SkillForge Claude Code Plugin will be documented in this file.
+All notable changes to the OrchestKit Claude Code Plugin will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Modular Plugin Marketplace**: 33 domain-specific plugins for selective installation
+  - **Core Infrastructure (3)**:
+    - `ork-core`: Foundation plugin with quality gates, ADRs, brainstorming, error handling
+    - `ork-context`: Context management, compression, engineering, evidence verification
+    - `ork-memory`: Memory fabric, mem0 integration, knowledge graph persistence
+  - **AI/LLM (7)**:
+    - `ork-rag`: Core RAG patterns, retrieval, contextual retrieval, query decomposition
+    - `ork-rag-advanced`: Agentic RAG, advanced retrieval patterns
+    - `ork-langgraph-core`: LangGraph state management, routing, checkpoints
+    - `ork-langgraph-advanced`: Human-in-loop, parallel execution, workflow orchestration
+    - `ork-llm-core`: LLM integration, function calling, streaming, embeddings
+    - `ork-llm-advanced`: Fine-tuning, high-performance inference, multimodal
+    - `ork-ai-observability`: Langfuse tracing, LLM evaluation, semantic caching
+  - **Backend (5)**:
+    - `ork-fastapi`: FastAPI patterns, API design, error handling (RFC9457), versioning
+    - `ork-database`: SQLAlchemy 2.0 async, Alembic migrations, connection pooling
+    - `ork-async`: asyncio patterns, Celery, background jobs, distributed locks
+    - `ork-architecture`: Clean architecture, DDD, CQRS, event sourcing, saga patterns
+    - `ork-backend-advanced`: gRPC, caching strategies, idempotency, outbox pattern
+  - **Frontend (4)**:
+    - `ork-react-core`: React 19 patterns, server components, TanStack Query, forms
+    - `ork-ui-design`: Design systems, Radix primitives, shadcn, Recharts, dashboards
+    - `ork-frontend-performance`: Core Web Vitals, lazy loading, view transitions, PWA
+    - `ork-frontend-advanced`: Zustand state, animations, i18n, scroll-driven animations
+  - **Testing (2)**:
+    - `ork-testing-core`: Unit testing, MSW mocking, property-based testing, test data
+    - `ork-testing-e2e`: E2E patterns, Playwright, contract testing, LLM testing
+  - **Security (1)**:
+    - `ork-security`: OWASP Top 10, auth patterns, input validation, AI safety auditing
+  - **DevOps & CI/CD (2)**:
+    - `ork-cicd`: GitHub Actions, deployment strategies, observability, performance testing
+    - `ork-infrastructure`: Terraform, Kubernetes, cloud architecture (AWS/GCP/Azure)
+  - **Git & Release (1)**:
+    - `ork-git`: Git workflows, stacked PRs, release management, recovery operations
+  - **Accessibility (1)**:
+    - `ork-accessibility`: WCAG compliance, focus management, React ARIA patterns, a11y testing
+  - **Workflows (2)**:
+    - `ork-workflows-core`: Core workflow patterns, implementation workflows
+    - `ork-workflows-advanced`: Multi-agent workflows, alternative agent frameworks
+  - **API & Integration (2)**:
+    - `ork-mcp`: MCP server building, tool composition, advanced MCP patterns
+    - `ork-graphql`: Strawberry GraphQL, schema design, DataLoader patterns
+  - **Product & Data (3)**:
+    - `ork-product`: Product strategy, requirements translation, UX research, metrics
+    - `ork-evaluation`: Golden dataset management, LLM evaluation, quality scoring
+    - `ork-data-engineering`: Data pipelines, embeddings, pgvector search, test data
+
+- **Plugin Validation Suite**: `tests/plugins/validate-all.sh` with 403 checks
+  - Layer 1: Marketplace schema validation
+  - Layer 2: Plugin directory structure
+  - Layer 3: Plugin.json schema compliance
+  - Layer 4: Skills validation (SKILL.md format)
+  - Layer 5: Agents validation (frontmatter)
+  - Layer 6: Commands validation
+  - Layer 7: Scripts validation (shebang, executable)
+  - Layer 8: Cross-reference validation
+
+- **Migration Scripts**: `bin/restructure-plugins.sh`, `bin/migrate-to-plugins.sh`
+
+- **CC 2.1.16 Support**: Full Claude Code 2.1.16 integration
+  - **Task Management System**: Native task tracking with TaskCreate, TaskUpdate, TaskGet, TaskList
+  - **New Skill**: `task-dependency-patterns` - Comprehensive patterns for task decomposition, dependency chains, status workflow, multi-agent coordination
+  - **Doctor Enhancement**: Added 6th health check for CC version validation (>= 2.1.16)
+  - **workflow-architect Agent**: Added task-dependency-patterns skill
+  - **Engine Field Updates**: All 33 plugin manifests updated to `engine: ">=2.1.16"`
+  - **VSCode Plugin Support**: Documentation for native plugin management in VSCode extension
+
+### Changed
+
+- **Plugin Structure**: Restructured to Claude Code marketplace standards (code.claude.com/docs/en/plugins-reference)
+  - `.claude-plugin/plugin.json` at plugin root
+  - `commands/`, `agents/`, `skills/` at plugin root (not under `.claude/`)
+  - `scripts/` for hook executables (flattened from `hooks/`)
+  - Each plugin is self-contained with its own skills, agents, commands
+
+- **Documentation**: Updated README.md and CLAUDE.md with modular plugin structure
+
+- **Skills Count**: 161 → 162 (added task-dependency-patterns)
+
+- **Doctor Skill**: Version bumped to 2.0.0 with 6 health checks (was 5)
+
+---
+
+## [4.28.3] - 2026-01-21
+
+### Changed
+
+- **Repository Rename**: Complete rebrand from "SkillForge" to "OrchestKit"
+  - Repository renamed from `skillforge-claude-plugin` to `orchestkit`
+  - Plugin command prefix changed from `/skf:` to `/ork:`
+  - All branding references updated: "SkillForge" → "OrchestKit"
+  - Package name updated: `skillforge-claude-plugin` → `orchestkit`
+  - All file names with "skillforge" renamed to "orchestkit" (18 example files)
+  - Updated all repository URLs, installation paths, and documentation references
+  - Environment variables renamed: `SKILLFORGE_*` → `ORCHESTKIT_*`
+  - Mem0 user IDs and source identifiers updated: `skf:` → `ork:`, `skillforge-*` → `orchestkit-*`
+  - JSON schema `$id` URLs and patterns updated
+  - Copyright year updated to 2026
+  - All skill author fields updated to "OrchestKit"
+  - All agent ID prefixes updated from `skf:` to `ork:`
+
+### Fixed
+
+- Updated year references from 2025 to 2026 where appropriate (current year tags, thresholds, compliance names)
+
+---
+
+## [4.28.4] - 2026-01-21
+
+### Added
+
+- **Mem0 Enhancements** - Complete implementation of all Pro features
+  - **Graph Relationship Queries**: `get-related-memories.py` and `traverse-graph.py` scripts for multi-hop graph traversal
+  - **Webhook Automation**: Full webhook management with `list-webhooks.py`, `update-webhook.py`, `delete-webhook.py`, `webhook-receiver.py`
+  - **Analytics Tracking**: `mem0-analytics-tracker.sh` hook for continuous usage monitoring and `mem0-analytics-dashboard.sh` for reports
+  - **Batch Operations**: `migrate-metadata.py` for bulk metadata updates and `bulk-export.py` for multi-user exports
+  - **Export Automation**: `mem0-backup-setup.sh` hook for scheduled backups and export integration in compaction sync
+  - **Hook Integration**: 6 new hooks registered in plugin.json (SessionStart, PostToolUse, Setup events)
+  - Total: 23 Python scripts in `skills/mem0-memory/scripts/` (8 new enhancement scripts)
+
+### Changed
+
+- **Mem0 Integration**: Utilization score improved from 7.5/10 to 9.5/10
+  - Graph relationships integrated into `mem0-context-retrieval.sh`, `memory-context.sh`, `agent-memory-inject.sh`
+  - Webhook support added to `memory-bridge.sh` and `mem0-pre-compaction-sync.sh`
+  - Batch operations integrated into `mem0-pre-compaction-sync.sh` and `mem0-cleanup.sh`
+  - All hooks output CC 2.1.7 compliant JSON with graceful degradation
+
+### Testing
+
+- **Test Suite Updates**: Enhanced mem0 test coverage
+  - Updated `test-mem0-scripts.sh` to test all 23 scripts (added 8 new scripts)
+  - Created `test-mem0-enhancements.sh` integration test for graph, webhook, batch, and export flows
+  - Created `test-mem0-hooks.sh` unit test for hook structure, compliance, and graceful degradation
+
+---
+
 ## [4.28.2] - 2026-01-20
+
+### Added
+
+- **Mem0 Python SDK Scripts** - Direct API integration replacing MCP layer
+  - 15 Python scripts in `skills/mem0-memory/scripts/` for all mem0 operations
+  - Core scripts: add-memory.py, search-memories.py, get-memories.py, get-memory.py, update-memory.py, delete-memory.py
+  - Advanced scripts: batch-update.py, batch-delete.py, memory-history.py, export-memories.py, get-export.py, memory-summary.py, get-events.py, get-users.py, create-webhook.py
+  - Shared library: `lib/mem0_client.py` for centralized client initialization
+  - Requirements: `requirements.txt` with mem0ai>=1.0.0 dependency
+
+- **Comprehensive Test Suite** - `tests/mem0/test-mem0-scripts.sh` with 22 test cases
+  - Script structure validation (7 tests)
+  - Script execution verification (4 tests)
+  - Import pattern validation (3 tests)
+  - Script functionality testing (4 tests)
+  - Integration testing (2 tests)
+  - Error handling validation (2 tests)
+
+### Changed
+
+- **Mem0 Integration Architecture** - Migrated from MCP to direct Python SDK calls
+  - Updated `mem0-memory`, `mem0-sync`, `memory-fabric`, `remember`, `recall` skills to use scripts
+  - Updated hooks: `mem0-pre-compaction-sync.sh`, `mem0-decision-saver.sh`, `mem0-context-retrieval.sh`
+  - All MCP references replaced with script invocations via Bash tool
+
+- **Test Suite Updates** - Updated 6 test files to reflect script-based approach
+  - `tests/unit/test-memory-commands.sh` - Checks for script references
+  - `tests/mem0/test-mem0-sync-skill.sh` - Validates script examples
+  - `tests/mem0/test-mem0-integration.sh` - Checks script paths in hooks
+  - `tests/skills/test-remember-recall-integration.sh` - Validates script integration
+  - `tests/unit/test-decision-sync.sh` - Checks script commands
+  - `tests/mem0/test-memory-fabric.sh` - Uses script pattern
 
 ### Fixed
 
@@ -157,7 +330,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 
 - Removed non-existent `mcp__langfuse__*` tool references from prompt-engineer agent
 - Fixed unused import warnings in template files
-- Added missing Error Handling sections to agents per SkillForge agent standards
+- Added missing Error Handling sections to agents per OrchestKit agent standards
 
 - **Complete Skill-Agent Integration Audit** - Fixed 32 missing bidirectional references across 13 agents
   - `backend-system-architect`: +5 skills (api-versioning, architecture-decision-record, backend-architecture-enforcer, error-handling-rfc9457, rate-limiting)
@@ -273,7 +446,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 ### Added
 
 - **CC 2.1.x Compliance & Hook Optimizations**
-  - Ensure 100% CC 2.1.7 JSON output compliance across all 140 hooks
+  - Ensure 100% CC 2.1.7 JSON output compliance across all 147 hooks
   - Add `output_silent_success`, `output_with_context`, `output_block` functions
   - Configure MCP auto:N thresholds (context7:75, memory:90, mem0:85, playwright:50)
   - Add statusline context_window config for CC 2.1.6
@@ -295,7 +468,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
   - Update `pre-commit-simulation.sh` to v2.0.0 with BLOCKING on critical errors
   - Add plugin.json validation (JSON syntax, required fields, semver)
   - Add CHANGELOG version check
-  - Add quick unit tests for SkillForge plugin modifications
+  - Add quick unit tests for OrchestKit plugin modifications
   - Install actual git pre-commit hook (`.git/hooks/pre-commit`)
 
 ### Changed
@@ -327,7 +500,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
     - Auth: JWT errors, 401/403 responses
     - Docker: Container exit, port conflicts
     - Build: Webpack/Vite errors, memory issues, React hydration
-  - Automatic skill linking: Suggests relevant SkillForge skills based on error category
+  - Automatic skill linking: Suggests relevant OrchestKit skills based on error category
   - Deduplication: Prevents repeated suggestions for same error within session
   - CC 2.1.9 compliant: Injects solutions via `hookSpecificOutput.additionalContext`
   - `.claude/rules/error_solutions.json`: Comprehensive error→solution database
@@ -415,7 +588,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
   - `zustand-patterns`: Zustand 5.x state management with slices, middleware, Immer
   - `tanstack-query-advanced`: TanStack Query v5 patterns for infinite queries, optimistic updates
   - `form-state-patterns`: React Hook Form v7 with Zod validation, React 19 useActionState
-  - `core-web-vitals`: LCP, INP, CLS optimization with 2025/2026 thresholds
+  - `core-web-vitals`: LCP, INP, CLS optimization with 2026 thresholds
   - `image-optimization`: Next.js 15 Image, AVIF/WebP, blur placeholders, CDN loaders
   - `render-optimization`: React Compiler, memoization, TanStack Virtual
   - `shadcn-patterns`: CVA variants, OKLCH theming, cn() utility
@@ -544,8 +717,8 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 
 ### Fixed
 
-- **Commands Autocomplete**: Added `commands/` directory with 17 command files to enable autocomplete for `/skf:*` commands (#68)
-  - Commands now appear in Claude Code autocomplete when typing `/skf:`
+- **Commands Autocomplete**: Added `commands/` directory with 17 command files to enable autocomplete for `/ork:*` commands (#68)
+  - Commands now appear in Claude Code autocomplete when typing `/ork:`
   - Each command file has YAML frontmatter (`description`, `allowed-tools`) and references corresponding skill
 
 ### Added
@@ -580,7 +753,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 **CC 2.1.3 User-Invocable Skills**
 - Added `user-invocable: true` to 17 command skills (commit, review-pr, explore, implement, verify, configure, doctor, feedback, recall, remember, add-golden, skill-evolution, claude-hud, create-pr, fix-issue, brainstorming, worktree-coordination)
 - Added `user-invocable: false` to 80 internal knowledge skills
-- Only user-invocable skills appear in `/skf:*` slash command menu
+- Only user-invocable skills appear in `/ork:*` slash command menu
 
 **Test Coverage**
 - New Test 10 in `tests/skills/structure/test-skill-md.sh`: validates user-invocable field presence and counts (17 commands, 80 internal)
@@ -754,7 +927,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 - Moved `skills/`, `agents/`, `hooks/` from `.claude/` to root level (official Anthropic standard)
 - Removed root-level symlinks - directories are now actual content, not symlinks
 - Updated all hook paths in `settings.json` from `/.claude/hooks/` to `/hooks/`
-- SkillForge extensions (`context/`, `coordination/`, `settings.json`) remain in `.claude/`
+- OrchestKit extensions (`context/`, `coordination/`, `settings.json`) remain in `.claude/`
 
 **Path Updates**
 - Updated 5 bin/ scripts to use root-level paths
@@ -764,7 +937,7 @@ See `skills/agent-browser/checklists/migration-checklist.md` for complete migrat
 ### New Structure
 
 ```
-skillforge-claude-plugin/
+orchestkit/
 ├── skills/                  # 90 skills (moved from .claude/skills/)
 ├── agents/                  # 20 agents (moved from .claude/agents/)
 ├── hooks/                   # 96 hooks (moved from .claude/hooks/)
@@ -783,9 +956,9 @@ skillforge-claude-plugin/
 
 **Documentation**
 - Fixed plugin installation commands in README.md and CLAUDE.md
-  - Removed non-existent tier-specific install commands (`@skillforge/standard`, etc.)
+  - Removed non-existent tier-specific install commands (`@orchestkit/standard`, etc.)
   - Use correct plugin name: `/plugin install skf`
-  - Direct users to `/skf:configure` for tier selection after installation
+  - Direct users to `/ork:configure` for tier selection after installation
 
 **Skill Version Consistency**
 - brainstorming: Fixed version mismatch (1.0.0 → 2.0.0), corrected template path reference
@@ -859,7 +1032,7 @@ skillforge-claude-plugin/
 This release fully leverages Claude Code 2.1.3 features for a comprehensive upgrade.
 
 **New Health Diagnostics Skill**
-- `/skf:doctor` - Comprehensive health check command
+- `/ork:doctor` - Comprehensive health check command
 - Permission rules analysis (unreachable rules detection - CC 2.1.3 feature)
 - Hook health validation (executable permissions, dispatcher references)
 - Schema compliance checks
@@ -877,7 +1050,7 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 - `secure.json` - Minimal permissions for solo development
 - `team.json` - Standard team permissions
 - `enterprise.json` - Strict enterprise permissions
-- `/skf:apply-permissions` - Apply profiles to settings.json
+- `/ork:apply-permissions` - Apply profiles to settings.json
 
 **Release Channel Documentation**
 - `.claude/docs/release-channels.md` - Stable vs latest channel guidance
@@ -919,7 +1092,7 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 
 **MCP Integrations Now Opt-in**
 - All MCPs disabled by default in `.mcp.json` (`"disabled": true`)
-- Added Step 5 to `/skf:configure` for MCP selection
+- Added Step 5 to `/ork:configure` for MCP selection
 - Users explicitly choose which MCPs to enable via interactive wizard
 - No surprise package downloads on plugin install
 
@@ -956,8 +1129,8 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 ### Changed
 
 **Plugin Namespace Rename**
-- Renamed plugin from `skillforge-complete` to `skf` for shorter agent prefixes
-- Agents now appear as `skf:debug-investigator` instead of `skillforge-complete:debug-investigator`
+- Renamed plugin from `orchestkit-complete` to `ork` for shorter agent prefixes
+- Agents now appear as `ork:debug-investigator` instead of `orchestkit-complete:debug-investigator`
 
 **Silent Hooks on Success**
 - PreToolUse Task hooks now silent on success (no stderr output)
@@ -966,10 +1139,10 @@ This release fully leverages Claude Code 2.1.3 features for a comprehensive upgr
 
 **Improved Agent Discovery**
 - Subagent validator now scans `.claude/agents/` directory for valid types
-- Handles namespaced agent types (e.g., `skf:agent-name`)
+- Handles namespaced agent types (e.g., `ork:agent-name`)
 
 - Updated author email to `yonatan2gross@gmail.com`
-- Changed author from "SkillForge Team" to "Yonatan Gross"
+- Changed author from "OrchestKit Team" to "Yonatan Gross"
 
 ---
 
@@ -1142,7 +1315,7 @@ This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugi
 **Workflow Auto-Triggers** (all 5 workflows)
 - Keyword detection with 0.8 confidence threshold
 - Auto-launch capability for matching patterns
-- Keywords for: frontend-2025-compliance, api-design-compliance, security-audit-workflow, data-pipeline-workflow, ai-integration-workflow
+- Keywords for: frontend-2026-compliance, api-design-compliance, security-audit-workflow, data-pipeline-workflow, ai-integration-workflow
 
 **Dependency Graph**
 - 42 skill-to-agent mappings across 8 domains
@@ -1244,13 +1417,13 @@ This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugi
 - `design-system-starter` - Added animation-tokens to provides
 
 #### Workflow Updates
-- `frontend-2025-compliance` - Added Motion and i18n skills, updated checklist with skeleton pulse, AnimatePresence, i18n dates
+- `frontend-2026-compliance` - Added Motion and i18n skills, updated checklist with skeleton pulse, AnimatePresence, i18n dates
 
 #### Pattern Updates
 - New `frontend-animation-patterns.md` context pattern
 
 ### Fixed
-- Removed project-specific references, now uses generic "SkillForge Team" branding
+- Removed project-specific references, now uses generic "OrchestKit Team" branding
 
 ---
 
@@ -1258,7 +1431,7 @@ This release fully leverages Claude Code 2.1.1 capabilities, upgrading the plugi
 
 ### Initial Release
 
-The first public release of the SkillForge plugin for Claude Code, providing comprehensive AI-native development capabilities.
+The first public release of the OrchestKit plugin for Claude Code, providing comprehensive AI-native development capabilities.
 
 ### Added
 
@@ -1366,4 +1539,4 @@ Planned enhancements for future versions:
 - Enhanced testing automation capabilities
 - Community-contributed skills and agents
 
-[1.0.0]: https://github.com/SkillForge/claude-plugin/releases/tag/v1.0.0
+[1.0.0]: https://github.com/OrchestKit/claude-plugin/releases/tag/v1.0.0

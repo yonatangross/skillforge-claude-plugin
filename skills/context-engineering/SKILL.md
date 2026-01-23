@@ -3,7 +3,7 @@ name: context-engineering
 description: Use when designing agent system prompts, optimizing RAG retrieval, or when context is too expensive or slow. Reduces tokens while maintaining quality through strategic positioning and attention-aware design.
 context: fork
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [context, attention, optimization, llm, performance, 2026]
 user-invocable: false
 ---
@@ -318,7 +318,7 @@ class TaskMetrics:
 
 ---
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 ### Agent System Prompts
 

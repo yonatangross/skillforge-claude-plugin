@@ -5,7 +5,7 @@ context: fork
 agent: test-generator
 version: 1.0.0
 tags: [pact, contract, consumer-driven, api, microservices, testing, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

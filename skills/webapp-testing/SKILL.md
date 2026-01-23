@@ -4,7 +4,7 @@ description: Use when testing web applications with AI-assisted Playwright. Weba
 context: fork
 agent: test-generator
 version: 1.2.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [playwright, testing, e2e, automation, agents, 2026]
 user-invocable: false
 ---
@@ -83,6 +83,12 @@ your-project/
 **Healer auto-fixes** - When UI changes break tests, Healer replays, finds new selectors, patches tests.
 
 See `references/` for detailed agent patterns and commands.
+
+## Bundled Resources
+
+- `assets/playwright-test-template.ts` - Playwright test template with BasePage, ApiMocker, and CustomAssertions
+- `references/playwright-setup.md` - Playwright setup and configuration
+- `references/visual-regression.md` - Visual regression testing patterns
 
 ## Related Skills
 

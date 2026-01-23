@@ -180,7 +180,7 @@ Comprehensive checklist for planning, implementing, and maintaining E2E tests wi
 - [ ] Set up dashboard for test metrics
 - [ ] Alert on sustained test failures
 
-## SkillForge-Specific
+## OrchestKit-Specific
 
 ### Analysis Flow Tests
 - [ ] Test URL submission with validation
@@ -346,7 +346,7 @@ Comprehensive checklist for planning, implementing, and maintaining E2E tests wi
 
 **Note:** This checklist is comprehensive but should be adapted to your project's specific needs. Not all items apply to every project. Prioritize based on risk, criticality, and available resources.
 
-**SkillForge Priority:**
+**OrchestKit Priority:**
 1. Analysis flow (URL → Progress → Artifact)
 2. SSE real-time updates
 3. Error handling and recovery

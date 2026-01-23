@@ -4,7 +4,7 @@ description: Use when assessing task complexity, before starting complex tasks, 
 context: fork
 agent: code-quality-reviewer
 version: 1.1.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [quality, complexity, planning, escalation, blocking]
 user-invocable: false
 ---

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Memory Operations Library for SkillForge Plugin
+# Memory Operations Library for OrchestKit Plugin
 # Provides helper functions for both Knowledge Graph (primary) and Mem0 (optional)
 #
 # Graph-First Architecture (v2.1):
@@ -36,7 +36,13 @@ set -euo pipefail
 [[ -z "${MEM0_SCOPE_BEST_PRACTICES:-}" ]] && readonly MEM0_SCOPE_BEST_PRACTICES="best-practices"  # Success/failure patterns (#49)
 
 # Global scope prefix for cross-project memories
-[[ -z "${MEM0_GLOBAL_PREFIX:-}" ]] && readonly MEM0_GLOBAL_PREFIX="skillforge-global"
+[[ -z "${MEM0_GLOBAL_PREFIX:-}" ]] && readonly MEM0_GLOBAL_PREFIX="orchestkit-global"
+
+# Organization ID for organization-level scoping (optional)
+# Don't make readonly if already set (e.g., from .env) to avoid double-readonly errors
+if [[ -z "${MEM0_ORG_ID:-}" ]]; then
+    MEM0_ORG_ID=""
+fi
 
 # Valid scopes array for validation
 [[ -z "${MEM0_VALID_SCOPES:-}" ]] && readonly MEM0_VALID_SCOPES=("$MEM0_SCOPE_DECISIONS" "$MEM0_SCOPE_PATTERNS" "$MEM0_SCOPE_CONTINUITY" "$MEM0_SCOPE_AGENTS" "$MEM0_SCOPE_BEST_PRACTICES")
@@ -75,6 +81,28 @@ mem0_get_project_id() {
     echo "$project_name"
 }
 
+# Sanitize organization ID for safe use in user_id generation
+# Output: lowercase, alphanumeric and dashes only, max 50 chars
+# Example: "My Org 123!" -> "my-org-123"
+mem0_sanitize_org_id() {
+    local org_id="${1:-}"
+    if [[ -z "$org_id" ]]; then
+        echo ""
+        return 0
+    fi
+    
+    # Sanitize: lowercase, replace spaces and special chars with dashes
+    # Remove leading/trailing dashes, collapse multiple dashes, limit length
+    org_id=$(echo "$org_id" | \
+        tr '[:upper:]' '[:lower:]' | \
+        tr ' ' '-' | \
+        tr -c '[:alnum:]-' '-' | \
+        sed -e 's/^-*//' -e 's/-*$//' -e 's/--*/-/g' | \
+        cut -c1-50)
+    
+    echo "$org_id"
+}
+
 # Generate scoped user_id for Mem0
 # Usage: mem0_user_id "decisions"
 # Output: myproject-decisions
@@ -98,25 +126,65 @@ mem0_user_id() {
         scope="continuity"
     fi
 
-    echo "${project_id}-${scope}"
+    # Check for organization ID (optional) - sanitize for security
+    local org_id_raw="${MEM0_ORG_ID:-}"
+    local org_id=""
+    if [[ -n "$org_id_raw" ]]; then
+        org_id=$(mem0_sanitize_org_id "$org_id_raw")
+    fi
+    
+    # Build user_id with optional org prefix
+    local user_id
+    if [[ -n "$org_id" ]]; then
+        user_id="${org_id}-${project_id}-${scope}"
+    else
+        user_id="${project_id}-${scope}"
+    fi
+    
+    # Validate format before returning (fail secure)
+    if ! validate_user_id_format "$user_id" 2>/dev/null; then
+        # Fallback to safe default if validation fails
+        user_id="${project_id}-${scope}"
+    fi
+    
+    echo "$user_id"
 }
 
 # Generate global user_id for cross-project memories
 # Usage: mem0_global_user_id "best-practices"
-# Output: skillforge-global-best-practices
+# Output: orchestkit-global-best-practices (or {org-id}-global-best-practices if MEM0_ORG_ID set)
 mem0_global_user_id() {
     local scope="${1:-best-practices}"
-    echo "${MEM0_GLOBAL_PREFIX}-${scope}"
+    local org_id_raw="${MEM0_ORG_ID:-}"
+    local org_id=""
+    if [[ -n "$org_id_raw" ]]; then
+        org_id=$(mem0_sanitize_org_id "$org_id_raw")
+    fi
+    
+    local user_id
+    if [[ -n "$org_id" ]]; then
+        user_id="${org_id}-global-${scope}"
+    else
+        user_id="${MEM0_GLOBAL_PREFIX}-${scope}"
+    fi
+    
+    # Validate format before returning (fail secure)
+    if ! validate_user_id_format "$user_id" 2>/dev/null; then
+        # Fallback to safe default if validation fails
+        user_id="${MEM0_GLOBAL_PREFIX}-${scope}"
+    fi
+    
+    echo "$user_id"
 }
 
-# Format agent_id with skf: prefix
+# Format agent_id with ork: prefix
 # Usage: mem0_format_agent_id "database-engineer"
-# Output: skf:database-engineer
+# Output: ork:database-engineer
 mem0_format_agent_id() {
     local agent_id="$1"
-    # Remove skf: prefix if already present, then add it
-    agent_id="${agent_id#skf:}"
-    echo "skf:${agent_id}"
+    # Remove ork: prefix if already present, then add it
+    agent_id="${agent_id#ork:}"
+    echo "ork:${agent_id}"
 }
 
 # -----------------------------------------------------------------------------
@@ -279,11 +347,13 @@ mem0_add_memory_json() {
         --arg project "$project_id" \
         --arg scope "$scope" \
         --arg timestamp "$timestamp" \
+        --arg source_tool "orchestkit-claude" \
         '. + {
             project: $project,
             scope: $scope,
             stored_at: $timestamp,
-            source: "skillforge-plugin"
+            source: "orchestkit-plugin",
+            source_tool: $source_tool
         }')
 
     # Build base JSON
@@ -626,14 +696,45 @@ validate_memory_content() {
     return 0
 }
 
+# Standardized error handling helper
+# Usage: mem0_error "message" [exit_code]
+# Returns exit_code (default 1)
+mem0_error() {
+    local message="$1"
+    local code="${2:-1}"
+    echo "Error: $message" >&2
+    return "$code"
+}
+
+# Validate user_id format before use
+# Usage: validate_user_id_format "user-id-string"
+# Returns 0 if valid, 1 if invalid
+validate_user_id_format() {
+    local user_id="$1"
+    
+    # Check length (mem0 API likely has limits)
+    if [[ ${#user_id} -gt 200 ]]; then
+        mem0_error "user_id too long (max 200 chars, got ${#user_id})" 1
+        return 1
+    fi
+    
+    # Check format: lowercase alphanumeric, dashes, underscores only
+    if [[ ! "$user_id" =~ ^[a-z0-9_-]+$ ]]; then
+        mem0_error "user_id contains invalid characters (must be lowercase alphanumeric, dashes, underscores only)" 1
+        return 1
+    fi
+    
+    return 0
+}
+
 # Validate agent_id format
 # Usage: validate_agent_id "database-engineer"
 # Returns 0 if valid, 1 if invalid
 validate_agent_id() {
     local agent_id="$1"
 
-    # Remove skf: prefix if present for validation
-    agent_id="${agent_id#skf:}"
+    # Remove ork: prefix if present for validation
+    agent_id="${agent_id#ork:}"
 
     # Known valid agents
     local valid_agents=("database-engineer" "backend-system-architect" "frontend-ui-developer" "security-auditor" "test-generator" "workflow-architect" "llm-integrator" "data-pipeline-engineer" "system-design-reviewer" "metrics-architect" "debug-investigator" "security-layer-auditor" "ux-researcher" "product-strategist" "code-quality-reviewer" "requirements-translator" "prioritization-analyst" "rapid-ui-designer" "market-intelligence" "business-case-builder")
@@ -658,8 +759,11 @@ validate_agent_id() {
 # -----------------------------------------------------------------------------
 
 export -f mem0_get_project_id
+export -f mem0_sanitize_org_id
 export -f mem0_user_id
 export -f mem0_global_user_id
+export -f validate_user_id_format
+export -f mem0_error
 export -f mem0_format_agent_id
 export -f has_context_dir
 export -f get_context_dir
@@ -691,6 +795,7 @@ export MEM0_SCOPE_CONTINUITY
 export MEM0_SCOPE_AGENTS
 export MEM0_SCOPE_BEST_PRACTICES
 export MEM0_GLOBAL_PREFIX
+export MEM0_ORG_ID
 
 # Export graph memory default (v1.2.0)
 export MEM0_ENABLE_GRAPH_DEFAULT
@@ -733,13 +838,15 @@ build_best_practice_json() {
             --arg project "$project_id" \
             --arg timestamp "$timestamp" \
             --arg lesson "$lesson" \
+            --arg source_tool "orchestkit-claude" \
             '{
                 category: $category,
                 outcome: $outcome,
                 project: $project,
                 stored_at: $timestamp,
                 lesson: $lesson,
-                source: "skillforge-plugin"
+                source: "orchestkit-plugin",
+                source_tool: $source_tool
             }')
     else
         metadata=$(jq -n \
@@ -747,12 +854,14 @@ build_best_practice_json() {
             --arg outcome "$outcome" \
             --arg project "$project_id" \
             --arg timestamp "$timestamp" \
+            --arg source_tool "orchestkit-claude" \
             '{
                 category: $category,
                 outcome: $outcome,
                 project: $project,
                 stored_at: $timestamp,
-                source: "skillforge-plugin"
+                source: "orchestkit-plugin",
+                source_tool: $source_tool
             }')
     fi
 
@@ -786,8 +895,16 @@ build_best_practice_json() {
 # Auto-detect category from text content
 # Usage: detect_best_practice_category "text content"
 # Output: category name (lowercase)
+# Security: Input length limited to prevent ReDoS attacks
 detect_best_practice_category() {
     local text="$1"
+    
+    # Security: Limit input length to prevent ReDoS (max 10KB)
+    local max_length=10240
+    if [[ ${#text} -gt $max_length ]]; then
+        text="${text:0:$max_length}"
+    fi
+    
     local text_lower
     text_lower=$(echo "$text" | tr '[:upper:]' '[:lower:]')
 
@@ -795,12 +912,24 @@ detect_best_practice_category() {
     # Performance should come before database because "query was slow" should match performance
     if [[ "$text_lower" =~ pagination|cursor|offset|page ]]; then
         echo "pagination"
+    elif [[ "$text_lower" =~ security|vulnerability|exploit|injection|xss|csrf|owasp|safety|guardrail ]]; then
+        echo "security"
     elif [[ "$text_lower" =~ auth|jwt|oauth|token|session|login ]]; then
         echo "authentication"
+    elif [[ "$text_lower" =~ test|testing|pytest|jest|vitest|coverage|mock|fixture|spec ]]; then
+        echo "testing"
+    elif [[ "$text_lower" =~ deploy|ci|cd|pipeline|github.*actions|docker|kubernetes|helm|terraform ]]; then
+        echo "deployment"
+    elif [[ "$text_lower" =~ observability|monitoring|logging|tracing|metrics|prometheus|grafana|langfuse ]]; then
+        echo "observability"
     elif [[ "$text_lower" =~ performance|slow|fast|cache|optimize|latency ]]; then
         echo "performance"
     elif [[ "$text_lower" =~ database|sql|postgres|query|schema|migration ]]; then
         echo "database"
+    elif [[ "$text_lower" =~ (^|[^a-z])(llm|rag|embeddings?|vectors?|semantic|langchain|langgraph|mem0|openai|anthropic|gpt|claude)([^a-z]|$) ]]; then
+        echo "ai-ml"
+    elif [[ "$text_lower" =~ etl|data.*pipeline|streaming|batch.*processing|dataflow|spark ]]; then
+        echo "data-pipeline"
     elif [[ "$text_lower" =~ api|endpoint|rest|graphql|route ]]; then
         echo "api"
     elif [[ "$text_lower" =~ react|component|frontend|ui|css|style ]]; then
@@ -928,12 +1057,12 @@ mem0_cross_agent_search_json() {
     local agent_filters='[]'
 
     # Add primary agent
-    agent_filters=$(echo "$agent_filters" | jq --arg aid "skf:$agent_type" '. += [{"agent_id": $aid}]')
+    agent_filters=$(echo "$agent_filters" | jq --arg aid "ork:$agent_type" '. += [{"agent_id": $aid}]')
 
     # Add related agents
     for related in $related_agents; do
         if [[ -n "$related" ]]; then
-            agent_filters=$(echo "$agent_filters" | jq --arg aid "skf:$related" '. += [{"agent_id": $aid}]')
+            agent_filters=$(echo "$agent_filters" | jq --arg aid "ork:$related" '. += [{"agent_id": $aid}]')
         fi
     done
 
@@ -1223,7 +1352,7 @@ build_session_summary_json() {
             stored_at: $timestamp,
             has_blockers: ($blockers != ""),
             has_next_steps: ($next_steps != ""),
-            source: "skillforge-plugin"
+            source: "orchestkit-plugin"
         }')
 
     # Build result

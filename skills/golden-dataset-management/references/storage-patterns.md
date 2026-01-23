@@ -16,7 +16,7 @@ Backup strategies and storage formats for golden datasets.
 - Must regenerate embeddings on restore
 - Larger file size than SQL dump
 
-**SkillForge uses JSON backup.**
+**OrchestKit uses JSON backup.**
 
 ### Strategy 2: SQL Dump
 

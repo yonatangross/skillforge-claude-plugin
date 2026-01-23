@@ -151,7 +151,7 @@ FOR EACH ROW EXECUTE FUNCTION update_artifact_count();
 ```
 
 ### Computed Aggregates
-**SkillForge Example:** Download counts on artifacts table.
+**OrchestKit Example:** Download counts on artifacts table.
 
 ```sql
 -- Denormalized counter (fast reads, eventual consistency)
@@ -179,7 +179,7 @@ UPDATE artifacts SET download_count = download_count + 1 WHERE id = :artifact_id
 2. **Data is rarely queried individually** (stored as opaque blob)
 3. **Structure varies per row** (e.g., different content types)
 
-**SkillForge Examples:**
+**OrchestKit Examples:**
 
 ```sql
 -- extraction_metadata: Flexible schema, rarely queried
@@ -208,7 +208,7 @@ CREATE INDEX idx_artifact_metadata_gin ON artifacts USING GIN (artifact_metadata
 2. **Frequent filtering/sorting** on individual fields
 3. **Complex queries** (joins, aggregations)
 
-**SkillForge Example:**
+**OrchestKit Example:**
 
 ```sql
 -- agent_findings: Structured data with foreign key
@@ -275,7 +275,7 @@ ON articles USING GIN(tags);
 **Use for:** Approximate nearest neighbor search (embeddings).
 
 ```sql
--- SkillForge: Semantic search on chunks
+-- OrchestKit: Semantic search on chunks
 CREATE INDEX idx_chunks_vector_hnsw
 ON analysis_chunks
 USING hnsw (vector vector_cosine_ops)

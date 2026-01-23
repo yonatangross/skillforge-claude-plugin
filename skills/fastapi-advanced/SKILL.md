@@ -5,7 +5,7 @@ context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [fastapi, python, async, middleware, dependencies, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -420,6 +420,16 @@ async def lifespan(app: FastAPI):
 | Response | ORJSONResponse for performance |
 | Middleware | Order: CORS → RequestID → Timing → Logging |
 | Health | Check all critical dependencies |
+
+## Available Scripts
+
+- **`scripts/create-fastapi-app.md`** - Context-aware FastAPI application generator
+  - Auto-detects: Python version, database type, Redis usage, project structure
+  - Usage: `/create-fastapi-app [app-name]`
+  - Uses `$ARGUMENTS` and `!command` for project-specific configuration
+  - Generates production-ready app with detected dependencies
+  
+- **`assets/fastapi-app-template.py`** - Static FastAPI application template
 
 ## Related Skills
 

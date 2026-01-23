@@ -5,7 +5,7 @@ tags: [lazy-loading, code-splitting, suspense, dynamic-import, intersection-obse
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -404,4 +404,4 @@ const Hero = lazy(() => import('./Hero')); // Delays LCP!
 
 - `references/route-splitting.md` - Route-based code splitting patterns
 - `references/intersection-observer.md` - Scroll-triggered lazy loading
-- `templates/lazy-component.tsx` - Lazy component template
+- `scripts/lazy-component.tsx` - Lazy component template

@@ -68,7 +68,7 @@ STATIC CONTEXT WINDOW (Theoretical Maximum)
 EFFECTIVE CONTEXT WINDOW (Actual Usable)
   ~160,000 tokens (after system overhead)
 
-YOUR CONTEXT BUDGET (SkillForge Managed)
+YOUR CONTEXT BUDGET (OrchestKit Managed)
   2,200 tokens (for context layer files)
 ```
 
@@ -202,7 +202,7 @@ class CompressionProbes:
 
 ---
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 ### In session/state.json (Context Protocol 2.0)
 
@@ -268,5 +268,5 @@ def compress_and_update_todos(
 ## Related References
 
 - `compression-strategies.md` - Detailed strategy comparisons
-- `../templates/anchored-summary-template.md` - Template for structured summaries
+- `../assets/anchored-summary-template.md` - Template for structured summaries
 - `../checklists/compression-checklist.md` - When and how to compress

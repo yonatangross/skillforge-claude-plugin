@@ -71,36 +71,36 @@ echo ""
 echo "▶ Test 1: PreToolUse Hook Latency"
 echo "────────────────────────────────────────"
 
-# Test bash dispatcher
-if [[ -f "$HOOKS_DIR/pretool/bash-dispatcher.sh" ]]; then
+# Test git-branch-protection hook (CC 2.1.7 native - no dispatchers)
+if [[ -f "$HOOKS_DIR/pretool/bash/git-branch-protection.sh" ]]; then
     test_input='{"tool_name":"Bash","tool_input":{"command":"echo test"}}'
-    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/pretool/bash-dispatcher.sh'")
+    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/pretool/bash/git-branch-protection.sh'")
 
     if [[ "$duration" -lt "$HOOK_LATENCY_TARGET" ]]; then
-        pass "bash-dispatcher: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
+        pass "git-branch-protection: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
     elif [[ "$duration" -lt "$DISPATCHER_TARGET" ]]; then
-        warn "bash-dispatcher: ${duration}ms (acceptable but >target)"
+        warn "git-branch-protection: ${duration}ms (acceptable but >target)"
     else
-        fail "bash-dispatcher: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
+        fail "git-branch-protection: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
     fi
 else
-    info "bash-dispatcher not found (skipping)"
+    info "git-branch-protection not found (skipping)"
 fi
 
-# Test write dispatcher
-if [[ -f "$HOOKS_DIR/pretool/write-dispatcher.sh" ]]; then
+# Test file-guard hook (CC 2.1.7 native - no dispatchers)
+if [[ -f "$HOOKS_DIR/pretool/write-edit/file-guard.sh" ]]; then
     test_input='{"tool_name":"Write","tool_input":{"file_path":"/tmp/test.txt","content":"test"}}'
-    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/pretool/write-dispatcher.sh'")
+    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/pretool/write-edit/file-guard.sh'")
 
     if [[ "$duration" -lt "$HOOK_LATENCY_TARGET" ]]; then
-        pass "write-dispatcher: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
+        pass "file-guard: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
     elif [[ "$duration" -lt "$DISPATCHER_TARGET" ]]; then
-        warn "write-dispatcher: ${duration}ms (acceptable but >target)"
+        warn "file-guard: ${duration}ms (acceptable but >target)"
     else
-        fail "write-dispatcher: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
+        fail "file-guard: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
     fi
 else
-    info "write-dispatcher not found (skipping)"
+    info "file-guard not found (skipping)"
 fi
 
 # Test path normalizer
@@ -125,20 +125,20 @@ echo ""
 echo "▶ Test 2: PostToolUse Hook Latency"
 echo "────────────────────────────────────────"
 
-# Test posttool dispatcher
-if [[ -f "$HOOKS_DIR/posttool/dispatcher.sh" ]]; then
+# Test audit-logger hook (CC 2.1.7 native - no dispatchers)
+if [[ -f "$HOOKS_DIR/posttool/audit-logger.sh" ]]; then
     test_input='{"tool_name":"Bash","tool_input":{"command":"echo test"},"tool_result":"test"}'
-    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/posttool/dispatcher.sh'")
+    duration=$(time_command bash -c "echo '$test_input' | '$HOOKS_DIR/posttool/audit-logger.sh'")
 
     if [[ "$duration" -lt "$HOOK_LATENCY_TARGET" ]]; then
-        pass "posttool-dispatcher: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
+        pass "audit-logger: ${duration}ms (<${HOOK_LATENCY_TARGET}ms)"
     elif [[ "$duration" -lt "$DISPATCHER_TARGET" ]]; then
-        warn "posttool-dispatcher: ${duration}ms (acceptable but >target)"
+        warn "audit-logger: ${duration}ms (acceptable but >target)"
     else
-        fail "posttool-dispatcher: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
+        fail "audit-logger: ${duration}ms (exceeds ${DISPATCHER_TARGET}ms)"
     fi
 else
-    info "posttool dispatcher not found (skipping)"
+    info "audit-logger not found (skipping)"
 fi
 
 # Test audit logger

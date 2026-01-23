@@ -4,7 +4,7 @@
 name: evidence-verification
 description: Use when completing tasks, code reviews, or deployments to verify work with evidence. Collects test results, build outputs, coverage metrics, and exit codes to prove work is complete.
 version: 2.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [quality, verification, testing, evidence, completion]
 context: fork
 agent: code-quality-reviewer

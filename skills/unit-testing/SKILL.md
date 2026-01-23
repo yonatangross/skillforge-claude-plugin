@@ -1,10 +1,11 @@
 ---
 name: unit-testing
 description: Unit testing patterns and best practices. Use when writing isolated unit tests, implementing AAA pattern, designing test isolation, or setting coverage targets for business logic.
+tags: [testing, unit, tdd, coverage]
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -199,10 +200,10 @@ def test_access_matrix(role, status):
 - Mock dependencies
 - Test React components
 
-### skillforge-strategy
-**Keywords:** skillforge, strategy, coverage, pyramid
+### orchestkit-strategy
+**Keywords:** orchestkit, strategy, coverage, pyramid
 **Solves:**
-- SkillForge test strategy example
+- OrchestKit test strategy example
 - Test coverage targets
 - Testing pyramid ratios
 

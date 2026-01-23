@@ -5,7 +5,7 @@ tags: [view-transitions, page-transition, shared-element, navigation, react-rout
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -422,4 +422,4 @@ window.addEventListener('scroll', () => {
 
 - `references/react-router-integration.md` - React Router 7.x patterns
 - `references/mpa-transitions.md` - Cross-document transitions
-- `templates/view-transition-wrapper.tsx` - Transition wrapper component
+- `scripts/view-transition-wrapper.tsx` - Transition wrapper component

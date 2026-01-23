@@ -3,7 +3,7 @@ name: stacked-prs
 description: Multi-PR development for large features. Stack dependent PRs, manage rebases, and get faster reviews on smaller changes. Use when creating stacked PRs.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [git, pull-request, stacked, workflow, code-review]
 user-invocable: false
 ---

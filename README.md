@@ -1,33 +1,54 @@
 <!-- markdownlint-disable MD033 MD041 -->
 <div align="center">
 
-# SkillForge Claude Plugin
+# OrchestKit Claude Plugin
 
-### Stop satisficing your codebase to Claude. Start shipping.
+### Stop explaining your stack. Start shipping.
 
-[![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.11-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
-[![Skills](https://img.shields.io/badge/Skills-159-blue?style=for-the-badge)](./skills)
+**162 skills · 34 agents · 147 hooks · 33 modular plugins**
+
+[![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.16-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
+[![Skills](https://img.shields.io/badge/Skills-162-blue?style=for-the-badge)](./skills)
 [![Agents](https://img.shields.io/badge/Agents-34-green?style=for-the-badge)](./agents)
-[![Hooks](https://img.shields.io/badge/Hooks-144-orange?style=for-the-badge)](./hooks)
+[![Hooks](https://img.shields.io/badge/Hooks-147-orange?style=for-the-badge)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/yonatangross/orchestkit?style=for-the-badge&logo=github)](https://github.com/yonatangross/orchestkit)
 
-[Why SkillForge?](#why-skillforge) · [Quick Start](#quick-start) · [Commands](#commands) · [Skills](#skills) · [Agents](#agents) · [FAQ](#faq)
+[Why OrchestKit?](#why-orchestkit) · [Quick Start](#quick-start) · [Commands](#commands) · [Skills](#skills) · [Agents](#agents) · [FAQ](#faq)
 
 </div>
 
 ---
 
-## Why SkillForge?
+<!-- Demo GIF placeholder - see issue #187 -->
+<!-- <p align="center"><img src="assets/demo.gif" alt="OrchestKit Demo" width="600"></p> -->
+
+## Quick Start
+
+```bash
+# Install in 30 seconds
+/plugin marketplace add yonatangross/orchestkit
+/plugin install ork
+
+# Verify installation
+/ork:doctor
+```
+
+**That's it.** Skills auto-activate based on your prompts. Hooks protect your code automatically.
+
+---
+
+## Why OrchestKit?
 
 **The Problem:** Every Claude Code session starts from zero. You explain your stack, your patterns, your preferences—again and again.
 
-**The Solution:** SkillForge gives Claude persistent knowledge of 159 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
+**The Solution:** OrchestKit gives Claude persistent knowledge of 162 production patterns, 34 specialized agents, and 147 security/quality hooks that work automatically.
 
 <table>
 <tr>
 <td width="50%">
 
-**Without SkillForge**
+**Without OrchestKit**
 ```
 😩 "Use FastAPI with async SQLAlchemy 2.0..."
 😩 "Remember cursor pagination, not offset..."
@@ -38,12 +59,12 @@
 </td>
 <td width="50%">
 
-**With SkillForge**
+**With OrchestKit**
 ```
 ✨ "Create an API endpoint" → Done right
 ✨ Agents know your patterns already
 ✨ Hooks block bad commits automatically
-✨ /skf:commit runs tests for you
+✨ /ork:commit runs tests for you
 ```
 
 </td>
@@ -67,7 +88,7 @@
         │ Git protect   │    │ Best practice │    │ Auto-activate │
         │ Quality check │    │ Code templates│    │ Domain expert │
         │               │    │               │    │               │
-        │    144 hooks  │    │  159 skills   │    │   34 agents   │
+        │   147 hooks   │    │  162 skills   │    │   34 agents   │
         └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
                 │                    │                    │
                 │    ┌───────────────┴───────────────┐    │
@@ -136,94 +157,168 @@ flowchart LR
 
 ---
 
-## Quick Start
-
-### Installation (30 seconds)
+## See It In Action
 
 ```bash
-# From Claude Code
-/plugin marketplace add yonatangross/skillforge-claude-plugin
-/plugin install skf
+# Commit with automatic validation
+/ork:commit
 ```
-
-### Verify It Works
+```
+✓ Pre-commit checks passed
+✓ Tests: 42 passed
+✓ Security scan: clean
+✓ Commit created: feat(api): add user endpoint
+```
 
 ```bash
-/skf:doctor
+# Verify your implementation works
+/ork:verify
 ```
-
-You should see:
 ```
-✅ Plugin loaded successfully
-✅ 159 skills available
-✅ 34 agents ready
-✅ 144 hooks active
+Running 3 verification agents in parallel...
+├─ test-generator: 4 tests added, coverage 67% → 82%
+├─ security-auditor: No vulnerabilities found
+└─ code-quality-reviewer: LGTM, minor suggestions noted
 ```
-
-### Try These
 
 ```bash
-/skf:commit        # Commit with checks
-/skf:review-pr     # Code review checklist
-/skf:explore       # Analyze codebase
+# Explore unfamiliar codebase
+/ork:explore
 ```
+```
+Codebase Analysis:
+├─ Backend: FastAPI + SQLAlchemy 2.0 (12 endpoints)
+├─ Frontend: React 19 + Vite (23 components)
+├─ Database: PostgreSQL + pgvector
+└─ Key patterns: Cursor pagination, JWT auth, SSE events
+```
+
+---
+
+## Modular Plugins
+
+**33 domain-specific plugins** — install only what you need:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         PLUGIN ARCHITECTURE                                 │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────────────────────────────────────────────────────────────────┐   │
+│   │                    orchestkit-complete                              │   │
+│   │              Full toolkit: all 33 plugins                           │   │
+│   └─────────────────────────────────────────────────────────────────────┘   │
+│                                    │                                        │
+│            ┌───────────────────────┼───────────────────────┐                │
+│            ▼                       ▼                       ▼                │
+│   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐        │
+│   │   🧠 AI/LLM     │    │   ⚡ Backend    │    │   🎨 Frontend   │        │
+│   │   7 plugins     │    │   6 plugins     │    │   4 plugins     │        │
+│   │                 │    │                 │    │                 │        │
+│   │ • ork-rag       │    │ • ork-fastapi   │    │ • ork-react-core│        │
+│   │ • ork-langgraph │    │ • ork-database  │    │ • ork-ui-design │        │
+│   │ • ork-llm-*     │    │ • ork-async     │    │ • ork-frontend-*│        │
+│   └─────────────────┘    └─────────────────┘    └─────────────────┘        │
+│                                                                             │
+│   ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐        │
+│   │   🧪 Testing    │    │   🔒 Security   │    │   🚀 DevOps     │        │
+│   │   2 plugins     │    │   1 plugin      │    │   3 plugins     │        │
+│   │                 │    │                 │    │                 │        │
+│   │ • ork-testing-* │    │ • ork-security  │    │ • ork-cicd      │        │
+│   │ • ork-e2e       │    │                 │    │ • ork-git       │        │
+│   └─────────────────┘    └─────────────────┘    └─────────────────┘        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Installation Options
+
+```bash
+# Full toolkit (recommended for new users)
+/plugin install ork@orchestkit
+
+# Individual domains (advanced)
+/plugin install ork-core@orchestkit           # Core foundation (required)
+/plugin install ork-rag@orchestkit            # RAG & retrieval
+/plugin install ork-fastapi@orchestkit        # FastAPI backend
+/plugin install ork-react-core@orchestkit     # React frontend
+/plugin install ork-testing-core@orchestkit   # Testing patterns
+```
+
+<details>
+<summary><strong>📦 All 33 Plugins by Category</strong></summary>
+
+| Category | Plugins | Description |
+|----------|---------|-------------|
+| **Core** | `ork-core`, `ork-context`, `ork-memory` | Foundation, context management, persistence |
+| **AI/LLM** | `ork-rag`, `ork-rag-advanced`, `ork-langgraph-core`, `ork-langgraph-advanced`, `ork-llm-core`, `ork-llm-advanced`, `ork-ai-observability` | RAG, agents, LLM patterns (7 plugins) |
+| **Backend** | `ork-fastapi`, `ork-database`, `ork-async`, `ork-architecture`, `ork-backend-advanced`, `ork-graphql` | APIs, databases, async (6 plugins) |
+| **Frontend** | `ork-react-core`, `ork-ui-design`, `ork-frontend-performance`, `ork-frontend-advanced` | React, UI, performance (4 plugins) |
+| **Testing** | `ork-testing-core`, `ork-testing-e2e` | Unit, integration, E2E (2 plugins) |
+| **Security** | `ork-security` | OWASP, auth, validation, guardrails |
+| **DevOps** | `ork-cicd`, `ork-infrastructure`, `ork-git` | CI/CD, infra, git workflows (3 plugins) |
+| **Data** | `ork-data-engineering`, `ork-evaluation` | ETL, embeddings, golden datasets (2 plugins) |
+| **Workflows** | `ork-workflows-core`, `ork-workflows-advanced` | Implementation, verification flows (2 plugins) |
+| **Other** | `ork-accessibility`, `ork-mcp`, `ork-product` | A11y, MCP servers, product management (3 plugins) |
+
+</details>
 
 ---
 
 ## Commands
 
-**20 slash commands** organized by workflow:
+**21 slash commands** organized by workflow:
 
 ### 🔧 Git & Development
 
 | Command | Description |
 |---------|-------------|
-| `/skf:commit` | Conventional commit with pre-commit checks |
-| `/skf:create-pr` | Create PR with summary and test plan |
-| `/skf:review-pr` | Code review checklist |
-| `/skf:git-recovery-command` | Recover from git mistakes |
+| `/ork:commit` | Conventional commit with pre-commit checks |
+| `/ork:create-pr` | Create PR with summary and test plan |
+| `/ork:review-pr` | Code review checklist |
+| `/ork:git-recovery-command` | Recover from git mistakes |
 
 ### 🧠 Memory & Context
 
 | Command | Description |
 |---------|-------------|
-| `/skf:remember` | Save information to persistent memory |
-| `/skf:recall` | Retrieve from memory |
-| `/skf:load-context` | Load relevant memories at session start |
-| `/skf:mem0-sync` | Sync memories to Mem0 cloud |
+| `/ork:remember` | Save information to persistent memory |
+| `/ork:recall` | Retrieve from memory |
+| `/ork:load-context` | Load relevant memories at session start |
+| `/ork:mem0-sync` | Sync memories to Mem0 cloud |
 
 ### 🔍 Analysis & Implementation
 
 | Command | Description |
 |---------|-------------|
-| `/skf:explore` | Analyze codebase structure |
-| `/skf:implement` | Implement feature with agent guidance |
-| `/skf:verify` | Verify implementation correctness |
-| `/skf:fix-issue` | Fix a GitHub issue |
+| `/ork:explore` | Analyze codebase structure |
+| `/ork:implement` | Implement feature with agent guidance |
+| `/ork:verify` | Verify implementation correctness |
+| `/ork:fix-issue` | Fix a GitHub issue |
 
 ### ⚙️ Configuration & Health
 
 | Command | Description |
 |---------|-------------|
-| `/skf:doctor` | Check plugin health |
-| `/skf:configure` | Setup MCP servers |
-| `/skf:claude-hud` | Configure context window HUD |
+| `/ork:doctor` | Check plugin health |
+| `/ork:configure` | Setup MCP servers |
+| `/ork:claude-hud` | Configure context window HUD |
 
 ### 📋 Other Workflows
 
 | Command | Description |
 |---------|-------------|
-| `/skf:brainstorming` | Structured ideation session |
-| `/skf:feedback` | Submit feedback or suggestions |
-| `/skf:add-golden` | Add golden test dataset |
-| `/skf:skill-evolution` | Evolve skills based on usage |
-| `/skf:worktree-coordination` | Coordinate multiple Claude instances |
+| `/ork:brainstorming` | Structured ideation session |
+| `/ork:feedback` | Submit feedback or suggestions |
+| `/ork:add-golden` | Add golden test dataset |
+| `/ork:skill-evolution` | Evolve skills based on usage |
+| `/ork:worktree-coordination` | Coordinate multiple Claude instances |
 
 ---
 
 ## Skills
 
-**159 skills** with progressive loading (~70% token savings):
+**162 skills** with progressive loading (~70% token savings):
 
 ### 🤖 AI & ML — 27 skills
 
@@ -271,7 +366,7 @@ You should see:
 `github-operations` · `git-workflow` · `stacked-prs` · `release-management` · `observability-monitoring` · `devops-deployment` · `zero-downtime-migration` · `database-versioning` · `alembic-migrations`
 
 <details>
-<summary><strong>📁 View all 159 skills</strong></summary>
+<summary><strong>📁 View all 162 skills</strong></summary>
 
 ```bash
 ls skills/
@@ -371,10 +466,10 @@ flowchart TB
         P["Your Prompt"]
     end
 
-    subgraph SkillForge["🔷 SKILLFORGE PLUGIN"]
+    subgraph OrchestKit["🔷 ORCHESTKIT PLUGIN"]
         direction TB
 
-        subgraph Hooks["🛡️ 144 HOOKS"]
+        subgraph Hooks["🛡️ 147 HOOKS"]
             direction LR
             H1["PreToolUse"]
             H2["PostToolUse"]
@@ -382,7 +477,7 @@ flowchart TB
             H4["Lifecycle"]
         end
 
-        subgraph Skills["📚 159 SKILLS"]
+        subgraph Skills["📚 161 SKILLS"]
             direction LR
             S1["Backend"]
             S2["Frontend"]
@@ -422,39 +517,42 @@ flowchart TB
     class S1,S2,S3,S4 skills
     class A1,A2,A3,A4 agents
     class C output
-    class SkillForge container
+    class OrchestKit container
 ```
 
 ### Directory Structure
 
 ```
-skillforge-claude-plugin/
-├── skills/                  # 159 knowledge modules
+orchestkit/
+├── .claude-plugin/
+│   └── marketplace.json     # 33 modular plugins
+├── plugins/                 # Modular plugin bundles
+│   └── ork-<domain>/        # Domain-specific plugin
+│       ├── .claude-plugin/
+│       │   └── plugin.json  # Plugin manifest
+│       ├── commands/        # Slash commands
+│       ├── agents/          # Specialized agents
+│       ├── skills/          # Knowledge modules
+│       └── scripts/         # Hook executables
+├── skills/                  # 161 knowledge modules (full)
 │   └── <skill-name>/
 │       ├── SKILL.md         # Overview + patterns (~500 tokens)
 │       ├── references/      # Deep-dive guides (~200 tokens)
-│       └── templates/       # Code generation (~300 tokens)
+│       ├── scripts/         # Executable code and generators
+│       └── assets/          # Templates and copyable files
 ├── agents/                  # 34 specialized agents
-│   └── <agent-name>.md      # Agent definition + skills
-├── hooks/                   # 144 lifecycle hooks
-│   ├── pretool/             # Security gates
-│   ├── posttool/            # Quality checks
-│   ├── lifecycle/           # Session management
-│   └── permission/          # Auto-approval rules
-├── .claude/
-│   ├── commands/            # 20 slash commands
-│   ├── context/             # Session state
-│   └── coordination/        # Multi-instance locks
-└── tests/                   # 88 tests, ~96% coverage
+├── commands/                # 21 slash commands
+├── hooks/                   # 147 lifecycle hooks
+└── tests/                   # Validation suite
 ```
 
 ---
 
 ## Comparison
 
-| Feature | SkillForge | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
+| Feature | OrchestKit | [claude-code-showcase](https://github.com/ChrisWiles/claude-code-showcase) | DIY Hooks |
 |---------|:----------:|:--------------------:|:---------:|
-| **Skills/Patterns** | ✅ 159 | ⚠️ ~10 | ❌ 0 |
+| **Skills/Patterns** | ✅ 161 | ⚠️ ~10 | ❌ 0 |
 | **Specialized Agents** | ✅ 34 | ⚠️ ~5 | ❌ 0 |
 | **Security Layers** | ✅ 8-layer | ⚠️ Basic | ❌ Manual |
 | **AI/ML Patterns** | ✅ 27 | ⚠️ Limited | ❌ None |
@@ -471,7 +569,7 @@ skillforge-claude-plugin/
 ### MCP Servers (Optional)
 
 ```bash
-/skf:configure
+/ork:configure
 ```
 
 | Server | Purpose | When Active |
@@ -505,8 +603,8 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 
 # Reinstall if needed
 /plugin uninstall skf
-/plugin marketplace add yonatangross/skillforge-claude-plugin
-/plugin install skf
+/plugin marketplace add yonatangross/orchestkit
+/plugin install ork
 ```
 
 </details>
@@ -516,7 +614,7 @@ MEM0_API_KEY            # Optional: Mem0 cloud integration
 
 1. Check hook logs: `tail -f hooks/logs/*.log`
 2. Verify settings: Check `.claude/settings.json` exists
-3. Run diagnostics: `/skf:doctor`
+3. Run diagnostics: `/ork:doctor`
 
 </details>
 
@@ -545,7 +643,7 @@ EOF
 <details>
 <summary><strong>❓ Works with existing projects?</strong></summary>
 
-Yes! SkillForge is additive—it won't modify your files. Skills and agents activate automatically based on context.
+Yes! OrchestKit is additive—it won't modify your files. Skills and agents activate automatically based on context.
 
 </details>
 
@@ -567,11 +665,14 @@ Yes! SkillForge is additive—it won't modify your files. Skills and agents acti
 <details>
 <summary><strong>❓ Claude Code version requirements?</strong></summary>
 
-Requires **Claude Code ≥2.1.11** for full features:
+Requires **Claude Code ≥2.1.16** for full features:
 - CC 2.1.6: Agent skill injection
 - CC 2.1.7: Parallel hook execution
 - CC 2.1.9: additionalContext injection
 - CC 2.1.11: Setup hooks
+- CC 2.1.14: Plugin versioning (git SHA/tag pinning)
+- CC 2.1.15: Engine field, plugin search
+- CC 2.1.16: Task dependencies, VSCode native plugins
 
 </details>
 
@@ -598,7 +699,13 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ## What's New
 
-**v4.27.4** — README overhaul with improved visualizations, grouped commands/agents/skills, Mermaid diagrams
+**v4.28.x** — CC 2.1.16 support, README marketplace alignment, subagent compatibility
+
+**Recent:**
+- CC 2.1.16: Task dependencies, VSCode native plugins
+- agent-browser CLI integration (93% less context vs Playwright MCP)
+- 33 modular plugins for selective installation
+- AI safety skills (guardrails, prompt injection defense)
 
 [Full Changelog →](./CHANGELOG.md)
 
@@ -612,7 +719,7 @@ MIT License — see [LICENSE](./LICENSE)
 
 <div align="center">
 
-**[Documentation](./CLAUDE.md)** · **[Issues](https://github.com/yonatangross/skillforge-claude-plugin/issues)** · **[Discussions](https://github.com/yonatangross/skillforge-claude-plugin/discussions)**
+**[Documentation](./CLAUDE.md)** · **[Issues](https://github.com/yonatangross/orchestkit/issues)** · **[Discussions](https://github.com/yonatangross/orchestkit/discussions)**
 
 Built with Claude Code · Maintained by [@yonatangross](https://github.com/yonatangross)
 

@@ -5,7 +5,7 @@ context: fork
 agent: event-driven-architect
 version: 1.0.0
 tags: [cqrs, command-query, read-model, write-model, projection, event-sourcing, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

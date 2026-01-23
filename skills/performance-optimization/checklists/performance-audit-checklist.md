@@ -1,6 +1,6 @@
 # Performance Audit Checklist
 
-Comprehensive guide for identifying and fixing performance bottlenecks, based on SkillForge's real optimization process.
+Comprehensive guide for identifying and fixing performance bottlenecks, based on OrchestKit's real optimization process.
 
 ## Prerequisites
 
@@ -646,9 +646,9 @@ speedup = before_latency / after_latency  # 17x
 
 ## References
 
-- Example: `../examples/skillforge-performance-wins.md`
-- Template: `../templates/caching-patterns.ts`
-- Template: `../templates/database-optimization.ts`
+- Example: `../examples/orchestkit-performance-wins.md`
+- Template: `../scripts/caching-patterns.ts`
+- Template: `../scripts/database-optimization.ts`
 - [Chrome DevTools Performance](https://developer.chrome.com/docs/devtools/performance/)
 - [Lighthouse Documentation](https://developer.chrome.com/docs/lighthouse/)
 - [PostgreSQL EXPLAIN](https://www.postgresql.org/docs/current/using-explain.html)

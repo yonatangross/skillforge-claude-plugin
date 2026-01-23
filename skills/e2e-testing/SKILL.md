@@ -5,7 +5,7 @@ version: 2.0.0
 tags: [playwright, e2e, testing, ai-agents, 2026]
 context: fork
 agent: test-generator
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -121,7 +121,7 @@ await expect(page.getByRole('alert')).toBeVisible();
 | [references/playwright-1.57-api.md](references/playwright-1.57-api.md) | Complete Playwright 1.57+ API reference |
 | [examples/test-patterns.md](examples/test-patterns.md) | User flows, page objects, visual tests |
 | [checklists/e2e-checklist.md](checklists/e2e-checklist.md) | Test selection and review checklists |
-| [templates/page-object-template.ts](templates/page-object-template.ts) | Page object model template |
+| [scripts/page-object-template.ts](scripts/page-object-template.ts) | Page object model template |
 
 ## Related Skills
 

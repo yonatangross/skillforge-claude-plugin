@@ -1,12 +1,13 @@
 ---
 name: Performance Optimization
 description: Use when application is slow, bundle is too large, or investigating performance issues. Performance optimization covers profiling, React concurrent features, bundle analysis, and optimization patterns.
+tags: [performance, optimization, profiling, caching]
 context: fork
 version: 1.2.0
 category: Quality & Optimization
 agents: [backend-system-architect, frontend-ui-developer, code-quality-reviewer]
 keywords: [performance, optimization, speed, latency, throughput, caching, profiling, bundle, Core Web Vitals, react-19, virtualization, code-splitting, tree-shaking]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

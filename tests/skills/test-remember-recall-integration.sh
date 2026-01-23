@@ -47,13 +47,13 @@ echo ""
 
 # Test 2: test_remember_recall_user_id_alignment
 echo "Test 2: User ID Alignment"
-echo "   Verifying both skills use 'skillforge-{project}-decisions' format..."
+echo "   Verifying both skills use 'orchestkit-{project}-decisions' format..."
 
-remember_has_project_user_id=$(grep -c "skillforge-{project-name}-decisions" "$REMEMBER_SKILL" || echo "0")
-recall_has_project_user_id=$(grep -c "skillforge-{project-name}-decisions" "$RECALL_SKILL" || echo "0")
+remember_has_project_user_id=$(grep -c "orchestkit-{project-name}-decisions" "$REMEMBER_SKILL" || echo "0")
+recall_has_project_user_id=$(grep -c "orchestkit-{project-name}-decisions" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_project_user_id -gt 0 && $recall_has_project_user_id -gt 0 ]]; then
-  pass_test "Both skills use project-scoped user_id: skillforge-{project-name}-decisions"
+  pass_test "Both skills use project-scoped user_id: orchestkit-{project-name}-decisions"
 else
   fail_test "User ID mismatch" "remember: $remember_has_project_user_id occurrences, recall: $recall_has_project_user_id occurrences"
 fi
@@ -76,8 +76,8 @@ echo ""
 echo "Test 4: Graph Flag Propagation"
 echo "   Verifying --graph flag adds enable_graph=true..."
 
-remember_has_graph=$(grep -c "enable_graph.*true" "$REMEMBER_SKILL" || echo "0")
-recall_has_graph=$(grep -c "enable_graph.*true" "$RECALL_SKILL" || echo "0")
+remember_has_graph=$(grep -c "enable_graph\|--enable-graph" "$REMEMBER_SKILL" || echo "0")
+recall_has_graph=$(grep -c "enable_graph\|--enable-graph" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_graph -gt 0 && $recall_has_graph -gt 0 ]]; then
   pass_test "Both skills support graph flag with enable_graph=true"
@@ -90,11 +90,11 @@ echo ""
 echo "Test 5: Agent Scoping"
 echo "   Verifying --agent flag adds agent_id to requests..."
 
-remember_has_agent_id=$(grep -c "agent_id.*skf:" "$REMEMBER_SKILL" || echo "0")
-recall_has_agent_filter=$(grep -c "agent_id.*skf:" "$RECALL_SKILL" || echo "0")
+remember_has_agent_id=$(grep -c "agent_id.*ork:" "$REMEMBER_SKILL" || echo "0")
+recall_has_agent_filter=$(grep -c "agent_id.*ork:" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_agent_id -gt 0 && $recall_has_agent_filter -gt 0 ]]; then
-  pass_test "Both skills implement agent scoping with skf:{agent-id} format"
+  pass_test "Both skills implement agent scoping with ork:{agent-id} format"
 else
   fail_test "Agent scoping incomplete" "remember: $remember_has_agent_id occurrences, recall: $recall_has_agent_filter occurrences"
 fi
@@ -102,29 +102,29 @@ echo ""
 
 # Test 6: test_global_flag_uses_correct_user_id
 echo "Test 6: Global Flag User ID"
-echo "   Verifying --global uses skillforge-global-best-practices..."
+echo "   Verifying --global uses orchestkit-global-best-practices..."
 
-remember_has_global_user_id=$(grep -c "skillforge-global-best-practices" "$REMEMBER_SKILL" || echo "0")
-recall_has_global_user_id=$(grep -c "skillforge-global-best-practices" "$RECALL_SKILL" || echo "0")
+remember_has_global_user_id=$(grep -c "orchestkit-global-best-practices" "$REMEMBER_SKILL" || echo "0")
+recall_has_global_user_id=$(grep -c "orchestkit-global-best-practices" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_global_user_id -gt 0 && $recall_has_global_user_id -gt 0 ]]; then
-  pass_test "Both skills use global user_id: skillforge-global-best-practices"
+  pass_test "Both skills use global user_id: orchestkit-global-best-practices"
 else
   fail_test "Global user_id missing" "remember: $remember_has_global_user_id occurrences, recall: $recall_has_global_user_id occurrences"
 fi
 echo ""
 
-# Test 7: mem0 MCP integration references
-echo "Test 7: mem0 MCP Integration"
-echo "   Verifying both skills reference correct mem0 MCP tools..."
+# Test 7: mem0 script integration references
+echo "Test 7: mem0 Script Integration"
+echo "   Verifying both skills reference correct mem0 scripts..."
 
-remember_has_add_memory=$(grep -c "mcp__mem0__add_memory" "$REMEMBER_SKILL" || echo "0")
-recall_has_search_memories=$(grep -c "mcp__mem0__search_memories" "$RECALL_SKILL" || echo "0")
+remember_has_add_memory=$(grep -c "add-memory.py" "$REMEMBER_SKILL" || echo "0")
+recall_has_search_memories=$(grep -c "search-memories.py" "$RECALL_SKILL" || echo "0")
 
 if [[ $remember_has_add_memory -gt 0 && $recall_has_search_memories -gt 0 ]]; then
-  pass_test "Both skills reference correct mem0 MCP tools"
+  pass_test "Both skills reference correct mem0 scripts"
 else
-  fail_test "mem0 MCP integration incomplete" "remember (add): $remember_has_add_memory, recall (search): $recall_has_search_memories"
+  fail_test "mem0 script integration incomplete" "remember (add): $remember_has_add_memory, recall (search): $recall_has_search_memories"
 fi
 echo ""
 
@@ -165,6 +165,6 @@ else
   echo "  - Consistent category filtering"
   echo "  - Proper graph flag propagation"
   echo "  - Agent scoping support"
-  echo "  - Proper mem0 MCP integration"
+  echo "  - Proper mem0 script integration"
   exit 0
 fi

@@ -1,15 +1,15 @@
 # CLAUDE.md
 
-This document provides essential context for Claude Code when working with the SkillForge Claude Plugin project.
+This document provides essential context for Claude Code when working with the OrchestKit Claude Plugin project.
 
 ## Project Overview
 
-**SkillForge Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
+**OrchestKit Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
 
-- **159 skills**: Reusable knowledge modules in flat structure (including 7 new frontend performance skills)
+- **162 skills**: Reusable knowledge modules in flat structure (including task-dependency-patterns for CC 2.1.16)
 - **34 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **20 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **141 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
+- **21 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
+- **147 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -22,38 +22,65 @@ This document provides essential context for Claude Code when working with the S
 ## Key Directories
 
 ```
-.claude/
-├── agents/              # 34 specialized AI agent personas (CC 2.1.6 native format)
-├── commands/            # User-invocable skill workflows (CC 2.1.3+ unified)
-├── context/             # Session state, knowledge base, and shared context
-├── coordination/        # Multi-worktree coordination system (locks, registries)
-├── hooks/               # 144 lifecycle hooks for automation
+# MODULAR PLUGINS (33 domain-specific bundles)
+.claude-plugin/
+└── marketplace.json     # Marketplace manifest with all plugins
+
+plugins/                 # Modular plugin bundles
+└── ork-<domain>/        # Domain-specific plugin (e.g., ork-core, ork-rag)
+    ├── .claude-plugin/
+    │   └── plugin.json  # Plugin manifest (hooks, metadata)
+    ├── agents/          # AI agent personas
+    ├── skills/          # Knowledge modules with SKILL.md
+    └── scripts/         # Hook executables
+
+# FULL TOOLKIT (root level - for development/reference)
+skills/                  # 162 skills (21 user-invocable, 141 internal)
+agents/                  # 34 agents (all domains)
+hooks/                   # 147 lifecycle hooks (27 TypeScript, 120 Bash)
+│   ├── src/             # TypeScript source (NEW - Phase 1: 27 hooks)
+│   │   ├── index.ts     # Hook registry + exports
+│   │   ├── types.ts     # HookInput, HookResult interfaces
+│   │   ├── lib/         # Shared utilities
+│   │   │   ├── common.ts   # Logging, output builders
+│   │   │   ├── git.ts      # Git operations
+│   │   │   └── guards.ts   # Hook guards
+│   │   ├── permission/  # Permission hooks (4)
+│   │   └── pretool/     # PreTool hooks (23)
+│   │       ├── bash/    # Bash command hooks (20)
+│   │       └── write-edit/  # File operation hooks (3)
+│   ├── dist/            # Compiled ESM bundle
+│   │   └── hooks.mjs    # Single bundled file (35.60 KB)
+│   ├── bin/
+│   │   └── run-hook.mjs # CLI runner
+│   ├── package.json     # NPM package config
+│   ├── tsconfig.json    # TypeScript config
+│   ├── esbuild.config.mjs  # Bundle config
 │   ├── setup/           # CC 2.1.11 Setup hooks (--init, --maintenance)
 │   ├── lifecycle/       # Session start/end hooks
-│   ├── permission/      # Auto-approval for safe operations
-│   ├── pretool/         # Pre-execution validation (bash, write, skill, MCP)
+│   ├── permission/      # Auto-approval for safe operations (deprecated - migrated to src/)
+│   ├── pretool/         # Pre-execution validation (deprecated - migrated to src/)
 │   ├── posttool/        # Post-execution logging and metrics
 │   ├── prompt/          # Prompt enhancement and context injection
-│   ├── notification/    # Desktop and sound notifications
 │   └── stop/            # Conversation stop handlers
-├── instructions/        # Initialization and onboarding guides
-├── policies/            # Security policies and compliance rules
-├── schemas/             # JSON schemas for validation
-├── scripts/             # Helper utilities (coordination, metrics, validation)
-├── templates/           # Shared templates (ADR, commits, PRs)
-└── workflows/           # Multi-agent workflow orchestrations
 
-# Skills use CC 2.1.7 native flat structure (159 skills):
+.claude/
+├── context/             # Session state, knowledge base
+├── coordination/        # Multi-worktree coordination (locks, registries)
+├── schemas/             # JSON schemas for validation
+└── scripts/             # Helper utilities
+
+# Skills use CC 2.1.7 native flat structure:
 skills/<skill-name>/
 ├── SKILL.md            # Required: Overview and patterns (~500 tokens)
 ├── references/         # Optional: Specific implementations (~200 tokens)
-├── templates/          # Optional: Code generation templates (~300 tokens)
+├── scripts/            # Optional: Executable code and generators
+├── assets/             # Optional: Templates and copyable files
 └── checklists/         # Optional: Implementation checklists
 
 tests/
-├── fixtures/            # Test data and golden datasets
+├── plugins/             # Plugin validation suite
 ├── integration/         # Integration test suites
-├── schemas/             # Schema validation tests
 ├── security/            # Security testing framework
 └── unit/                # Unit test suites
 
@@ -66,9 +93,10 @@ bin/                     # CLI utilities and scripts
 ## Tech Stack
 
 ### Core Plugin Technology
-- **Language**: Bash (hooks), JSON (schemas, config), Markdown (skills, agents)
-- **Claude Code**: >= 2.1.11 (CC 2.1.11 Setup hooks, CC 2.1.9 additionalContext, auto:N MCP, plansDirectory, session ID substitution)
-- **MCP Integration**: Optional - Context7, Sequential Thinking, Memory (configure via /skf:configure, auto-enable via auto:N thresholds)
+- **Language**: TypeScript + Bash (hooks), JSON (schemas, config), Markdown (skills, agents)
+- **Hook Infrastructure**: TypeScript ESM (27/147 hooks migrated, 35.60 KB bundle) + Bash legacy
+- **Claude Code**: >= 2.1.16 (CC 2.1.16 Task Management + VSCode plugins, CC 2.1.15 plugin engine field, CC 2.1.14 plugin versioning, CC 2.1.11 Setup hooks, CC 2.1.9 additionalContext, auto:N MCP, plansDirectory)
+- **MCP Integration**: Optional - Context7, Sequential Thinking, Memory (configure via /ork:configure, auto-enable via auto:N thresholds)
 - **Browser Automation**: agent-browser CLI (Vercel) - 93% less context vs Playwright MCP, Snapshot + Refs workflow
 
 ### Expected Application Stack (Skills Support)
@@ -81,7 +109,8 @@ bin/                     # CLI utilities and scripts
 - **Discovery**: SKILL.md frontmatter (name, description, tags) - semantic matching
 - **Overview**: SKILL.md body (300-800 tokens) - patterns and best practices
 - **Specific**: `references/*.md` (90-300 tokens) - implementation guides
-- **Generate**: `templates/*` (150-400 tokens) - boilerplate generation
+- **Generate**: `assets/*` (templates, copyable files) - boilerplate and templates
+- **Execute**: `scripts/*` (executable code) - generators and utilities
 
 ---
 
@@ -90,14 +119,14 @@ bin/                     # CLI utilities and scripts
 ### Installation & Setup
 ```bash
 # Install from marketplace
-/plugin marketplace add yonatangross/skillforge-claude-plugin
+/plugin marketplace add yonatangross/orchestkit
 /plugin install skf
 
 # Or clone manually
-git clone https://github.com/yonatangross/skillforge-claude-plugin ~/.claude/plugins/skillforge
+git clone https://github.com/yonatangross/orchestkit ~/.claude/plugins/orchestkit
 
 # Verify installation - check nested structure
-ls ~/.claude/plugins/skillforge/skills/
+ls ~/.claude/plugins/orchestkit/skills/
 ```
 
 ### Testing
@@ -140,6 +169,21 @@ hooks/pretool/bash/git-branch-protection.sh
 
 # Clear hook logs
 rm -rf hooks/logs/*.log
+```
+
+### TypeScript Hook Development
+```bash
+# Build TypeScript hooks
+cd hooks && npm run build
+
+# Type check hooks
+cd hooks && npm run typecheck
+
+# Watch mode for development
+cd hooks && npm run dev
+
+# Validate hook bundle
+ls -lh hooks/dist/hooks.mjs
 ```
 
 ### Coordination System
@@ -229,8 +273,8 @@ Read skills/api-design-framework/SKILL.md
 # Step 2: If implementing specific pattern, read reference
 Read skills/api-design-framework/references/rest-pagination.md
 
-# Step 3: If generating code, use template
-Read skills/api-design-framework/templates/endpoint-template.py
+# Step 3: If generating code, use template from assets/
+Read skills/api-design-framework/assets/openapi-template.yaml
 ```
 
 ### 2. Hook Architecture (CC 2.1.7)
@@ -240,10 +284,10 @@ Lifecycle hooks use CC 2.1.7 native parallel execution with output aggregation:
 - **SessionEnd**: 4 hooks registered directly (cleanup, metrics, sync)
 - **Stop**: 10 hooks registered directly (auto-save, compaction, cleanup)
 
-Tool-based hooks still use dispatchers for routing:
-- `pretool/bash-dispatcher.sh` → routes to branch-protection, etc.
-- `pretool/write-dispatcher.sh` → routes to file-guard, lock-check
-- `posttool/dispatcher.sh` → routes by file-type to validators
+Tool-based hooks use CC 2.1.7 native registration (direct hooks, no dispatchers):
+- `pretool/bash/*` → git-branch-protection, dangerous-command-blocker, etc.
+- `pretool/write-edit/*` → file-guard, file-lock-check, multi-instance-lock
+- `posttool/*` → audit-logger, error-tracker, memory-bridge, etc.
 
 **All hooks output CC 2.1.7 compliant JSON**: `{"continue":true,"suppressOutput":true}`
 
@@ -361,7 +405,7 @@ Use the statusline to monitor context usage:
 [CTX: 97%] ██████████████████ - RED: COMPACT NOW
 ```
 
-Use `/skf:claude-hud` to configure statusline display.
+Use `/ork:claude-hud` to configure statusline display.
 
 ### 10. Automatic Pattern Extraction (#48, #49)
 The plugin automatically extracts and learns from development patterns without manual intervention:
@@ -469,8 +513,13 @@ EOF
 # Step 3: Add references (optional)
 touch skills/my-skill/references/impl.md
 
-# Step 4: Validate
+# Step 4: Add assets if needed (optional - for templates/copyable files)
+mkdir -p skills/my-skill/assets
+touch skills/my-skill/assets/my-template.tsx
+
+# Step 5: Validate
 ./tests/skills/structure/test-skill-md.sh
+./tests/skills/structure/test-assets-directory.sh
 ```
 
 ### 2. Creating a New Agent (CC 2.1.6 Format)
@@ -523,8 +572,8 @@ exit 0  # 0=approve, 1=reject
 EOF
 chmod +x hooks/pretool/bash/my-security-hook.sh
 
-# Step 2: Add to bash-dispatcher.sh
-# Source and call hook in dispatcher
+# Step 2: Register hook in .claude/settings.json
+# CC 2.1.7 uses direct registration, no dispatchers
 
 # Step 3: Write test
 cat > tests/security/test-my-hook.sh
@@ -542,7 +591,7 @@ cat > tests/security/test-my-hook.sh
 # - Secure API Endpoint: "create a secure /users endpoint"
 # - Full Stack Feature: "build a feature for user profiles"
 # - AI Integration: "add RAG to the app"
-# - Frontend 2025 Compliance: "modernize the frontend"
+# - Frontend 2026 Compliance: "modernize the frontend"
 
 # Manual workflow check:
 # Read plugin.json workflows array to see triggers and estimated tokens
@@ -584,6 +633,8 @@ CLAUDE_PROJECT_DIR=<path-to-user-project>
 CLAUDE_PLUGIN_ROOT=<path-to-cached-plugin>  # Set when installed via /plugin install
 CLAUDE_SESSION_ID=<session-uuid>
 CLAUDE_AGENT_ID=<agent-id-if-subagent>
+ORCHESTKIT_SKIP_SETUP=1  # Skip Setup hook entirely (runs before SessionStart) - use if startup hangs
+ORCHESTKIT_SKIP_SLOW_HOOKS=1  # Skip slow SessionStart hooks (pattern-sync, dependency-check, coordination) for faster startup
 ```
 
 ### Common Tasks
@@ -614,7 +665,7 @@ ls agents/
 
 ## Skills Overview (CC 2.1.7)
 
-159 skills in flat structure at `skills/`. Common skill types include:
+162 skills in flat structure at `skills/`. Common skill types include:
 
 - **AI/LLM**: RAG, embeddings, agents, caching, observability, agentic-rag-patterns, prompt-engineering-suite, alternative-agent-frameworks, high-performance-inference, fine-tuning-customization (27 skills)
 - **AI Security**: MCP security hardening, advanced guardrails, LLM safety patterns (3 skills - NEW)
@@ -672,6 +723,122 @@ Hooks use `${CLAUDE_SESSION_ID}` directly without fallback patterns (CC 2.1.9 gu
 
 ---
 
+## CC 2.1.14-2.1.15 Features
+
+### Plugin Versioning (CC 2.1.14)
+Pin plugins to specific git commits for reproducible installations:
+```bash
+# Pin to specific commit
+/plugin install user/plugin@abc123
+
+# Pin to tag
+/plugin install user/plugin@v1.0.0
+```
+
+### Engine Field (CC 2.1.15)
+Plugins can now declare minimum Claude Code version requirements:
+```json
+{
+  "name": "my-plugin",
+  "engine": ">=2.1.15"
+}
+```
+
+### Other 2.1.14-2.1.15 Features
+- **Bash history autocomplete**: Use `!` + Tab to search command history
+- **Plugin search**: Search marketplace with `/plugin search <query>`
+- **Context window fix**: Now uses 98% of context (was incorrectly limited to 65%)
+- **NPM deprecation notice**: Migrate to `/plugin install` from npm
+- **MCP timeout fix**: Improved connection reliability
+- **VSCode /usage command**: Display current plan usage in VSCode
+
+### NPM to Plugin Migration Guide
+
+As of CC 2.1.15, npm-based plugin installations are **deprecated**. Follow this guide to migrate:
+
+**Step 1: Remove npm installation**
+```bash
+# Check if installed via npm
+npm list -g | grep claude
+
+# Remove npm installations
+npm uninstall -g @anthropic/claude-plugin-orchestkit
+npm uninstall -g claude-code-plugins
+```
+
+**Step 2: Install via native plugin system**
+```bash
+# In Claude Code
+/plugin marketplace add yonatangross/orchestkit
+/plugin install ork
+```
+
+**Step 3: Verify migration**
+```bash
+/ork:doctor
+```
+
+**Benefits of Native Plugin System:**
+| Feature | npm (deprecated) | /plugin install |
+|---------|-----------------|-----------------|
+| Version pinning | Package version only | Git SHA + tags |
+| Installation | Requires Node.js | Built-in |
+| Sandboxing | None | Full isolation |
+| Updates | `npm update` | `/plugin update` |
+| Marketplace | npm registry | Claude marketplace |
+
+**Timeline:**
+- **CC 2.1.15**: Deprecation warning shown
+- **CC 2.2.0** (est.): npm support removed
+
+---
+
+## CC 2.1.16 Features
+
+### Task Management System
+CC 2.1.16 introduces native task tracking with four new tools:
+
+| Tool | Purpose |
+|------|---------|
+| `TaskCreate` | Create tasks with subject, description, activeForm |
+| `TaskUpdate` | Update status, set dependencies (blocks/blockedBy) |
+| `TaskGet` | Retrieve full task details including blockers |
+| `TaskList` | View all tasks with status summary |
+
+**Status Workflow:**
+```
+pending → in_progress → completed
+```
+
+**Dependency Tracking:**
+```json
+// Task #3 blocked until #1 and #2 complete
+{"taskId": "3", "addBlockedBy": ["1", "2"]}
+```
+
+**Best Practices:**
+- Use imperative form for subject: "Add authentication" (not "Adding")
+- Use present continuous for activeForm: "Adding authentication"
+- Keep tasks atomic and independently completable
+- Mark completed only when work is fully verified
+
+See `skills/task-dependency-patterns` for comprehensive patterns.
+
+### VSCode Native Plugin Management
+VSCode extension now supports plugin operations directly in the UI:
+
+- **Install plugins**: Click to install from marketplace
+- **Manage plugins**: View installed plugins, enable/disable
+- **Trust warnings**: Security prompts before installation
+- **Install counts**: See plugin popularity in listings
+
+### Bug Fixes
+- **OOM prevention**: Better memory management for large contexts
+- **Context warning accuracy**: Improved 90% context warning thresholds
+- **Session title handling**: Fixed title persistence issues
+
+---
+
 ## CC 2.1.11 Features
 
 ### Setup Hook Event
@@ -713,7 +880,7 @@ hooks/setup/
 
 **Emergency Bypass:**
 ```bash
-SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
+ORCHESTKIT_SKIP_SETUP=1 claude  # Skip all setup hooks
 ```
 
 ### VSCode Plugin Enhancements
@@ -724,17 +891,17 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 
 ## Version Information
 
-- **Current Version**: 4.28.2 (as of 2026-01-18)
-- **Claude Code Requirement**: >= 2.1.11
+- **Current Version**: 4.28.3 (as of 2026-01-18)
+- **Claude Code Requirement**: >= 2.1.16
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (141 hooks)
+- **Hook Architecture**: CC 2.1.16 task dependencies + CC 2.1.15 engine field + CC 2.1.14 plugin versioning + CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (147 hooks: 27 TypeScript, 120 Bash)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Memory Fabric**: v2.1.0 (graph-first architecture, knowledge graph PRIMARY, mem0 optional enhancement)
 - **Coordination System**: Multi-worktree support added in v4.6.0
 - **Security Testing**: Comprehensive 8-layer framework added in v4.5.1
 - **CC 2.1.9 Integration**: additionalContext, auto:N MCP, plansDirectory (v4.16.0)
-- **User-Invocable Skills**: CC 2.1.3 `user-invocable` field for 17 commands (v4.17.0)
+- **User-Invocable Skills**: CC 2.1.3 `user-invocable` field for 21 skills (v4.17.0)
 - **Git Enforcement**: Commit message, branch naming, atomic commits, issue creation (v4.18.0)
 - **CC 2.1.11 Integration**: Setup hooks (--init, --init-only, --maintenance), self-healing, maintenance automation (v4.19.0)
 - **Automatic Pattern Extraction**: Hook-driven pattern learning and anti-pattern warnings (#48, #49) (v4.19.0)
@@ -742,6 +909,8 @@ SKILLFORGE_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **Frontend Skills Expansion**: lazy-loading-patterns, view-transitions, scroll-driven-animations, responsive-patterns, pwa-patterns, recharts-patterns, dashboard-patterns + performance-engineer agent (v4.26.0)
 - **AI/ML Roadmap 2026**: 8 new AI security/ML skills + 2 agents (ai-safety-auditor, prompt-engineer) (v4.27.0)
 - **agent-browser Integration**: Replaced Playwright MCP with Vercel agent-browser CLI (93% less context, Snapshot + Refs workflow) (v4.28.0)
+- **CC 2.1.16 Integration**: Task Management System (TaskCreate, TaskUpdate, TaskGet, TaskList), VSCode native plugins, new task-dependency-patterns skill (v5.0.0)
+- **TypeScript Hook Migration**: Phase 1 complete (27/147 hooks), 35.60 KB bundle, ESM architecture with shared utilities (v5.1.0)
 
 ---
 
@@ -775,7 +944,12 @@ tail -f hooks/logs/*.log
 4. **Lock timeout**: Run `.claude/coordination/lib/coordination.sh cleanup`
 5. **Context budget exceeded**: Use progressive loading, don't load entire directories
 6. **Agent skills not injected**: Verify agent uses CC 2.1.6 frontmatter with `skills:` array
+7. **Claude Code hangs on startup**: 
+   - **Quick fix**: Use `ORCHESTKIT_SKIP_SETUP=1 claude` to bypass Setup hook (runs before SessionStart)
+   - **Full bypass**: Use `ORCHESTKIT_SKIP_SLOW_HOOKS=1 claude` to skip all slow hooks
+   - **Both**: `ORCHESTKIT_SKIP_SETUP=1 ORCHESTKIT_SKIP_SLOW_HOOKS=1 claude` for maximum speed
+   - Setup hook runs FIRST and can block - this is usually the culprit
 
 ---
 
-**Last Updated**: 2026-01-20 (v4.28.0)
+**Last Updated**: 2026-01-22 (v4.28.0)

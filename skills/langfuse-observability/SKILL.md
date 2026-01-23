@@ -4,8 +4,8 @@ description: LLM observability platform for tracing, evaluation, prompt manageme
 context: fork
 agent: metrics-architect
 version: 1.0.0
-author: SkillForge AI Agent Hub
-tags: [langfuse, llm, observability, tracing, evaluation, prompts, 2025]
+author: OrchestKit AI Agent Hub
+tags: [langfuse, llm, observability, tracing, evaluation, prompts, 2026]
 user-invocable: false
 ---
 
@@ -13,7 +13,7 @@ user-invocable: false
 
 ## Overview
 
-**Langfuse** is the open-source LLM observability platform that SkillForge uses for tracing, monitoring, evaluation, and prompt management. Unlike LangSmith (deprecated), Langfuse is self-hosted, free, and designed for production LLM applications.
+**Langfuse** is the open-source LLM observability platform that OrchestKit uses for tracing, monitoring, evaluation, and prompt management. Unlike LangSmith (deprecated), Langfuse is self-hosted, free, and designed for production LLM applications.
 
 **When to use this skill:**
 - Setting up LLM observability from scratch
@@ -23,10 +23,10 @@ user-invocable: false
 - Evaluating LLM output quality
 - Migrating from LangSmith to Langfuse
 
-**SkillForge Integration:**
+**OrchestKit Integration:**
 - **Status**: Migrated from LangSmith (Dec 2025)
 - **Location**: `backend/app/shared/services/langfuse/`
-- **MCP Server**: `skillforge-langfuse` (optional)
+- **MCP Server**: `orchestkit-langfuse` (optional)
 
 ---
 
@@ -67,7 +67,7 @@ langfuse.trace(
     user_id="user_123",
     session_id="session_abc",
     metadata={"content_type": "article", "agent_count": 8},
-    tags=["production", "skillforge"]
+    tags=["production", "orchestkit"]
 )
 ```
 
@@ -116,7 +116,7 @@ Key topics covered:
 - Prompt versioning and labels (production/staging/draft)
 - Template variables with Jinja2 syntax
 - A/B testing prompt versions
-- SkillForge 4-level caching architecture (L1-L4)
+- OrchestKit 4-level caching architecture (L1-L4)
 - Linking prompts to generation spans
 
 ### LLM Evaluation
@@ -151,7 +151,7 @@ Key topics covered:
 Key topics covered:
 - Multiple LLM judges for quality assessment
 - Weighted scoring across judges
-- SkillForge langfuse_evaluators.py integration
+- OrchestKit langfuse_evaluators.py integration
 
 ---
 
@@ -280,12 +280,12 @@ Key topics covered:
 - Quality score trends
 - Custom monitoring queries
 
-### skillforge-integration
-**Keywords:** skillforge, migration, setup, workflow integration
+### orchestkit-integration
+**Keywords:** orchestkit, migration, setup, workflow integration
 **Solves:**
-- How does SkillForge use Langfuse?
+- How does OrchestKit use Langfuse?
 - Migrate from LangSmith to Langfuse
-- SkillForge workflow tracing patterns
+- OrchestKit workflow tracing patterns
 - Cost tracking per analysis
 
 ### multi-judge-evaluation
@@ -294,7 +294,7 @@ Key topics covered:
 - How do I use multiple LLM judges to evaluate quality?
 - Set up G-Eval criteria evaluation
 - Configure weighted scoring across judges
-- Wire SkillForge's existing langfuse_evaluators.py
+- Wire OrchestKit's existing langfuse_evaluators.py
 
 ### experiments-api
 **Keywords:** experiment, dataset, benchmark, regression test, prompt testing

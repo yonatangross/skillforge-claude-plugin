@@ -5,7 +5,7 @@
 # Tests for memory/feedback slash commands (CC 2.1.3 merged with skills):
 # - /remember (skills/remember/SKILL.md)
 # - /recall (skills/recall/SKILL.md)
-# - /skf:feedback (skills/feedback/SKILL.md)
+# - /ork:feedback (skills/feedback/SKILL.md)
 # ============================================================================
 
 set -euo pipefail
@@ -41,7 +41,8 @@ test_remember_has_categories() {
 }
 
 test_remember_references_mem0_tool() {
-    assert_file_contains "$SKILLS_DIR/remember/SKILL.md" "mcp__mem0__add_memory"
+    # Check for script reference instead of MCP
+    assert_file_contains "$SKILLS_DIR/remember/SKILL.md" "add-memory.py"
 }
 
 test_remember_has_workflow() {
@@ -93,7 +94,8 @@ test_recall_has_options() {
 }
 
 test_recall_references_mem0_search() {
-    assert_file_contains "$SKILLS_DIR/recall/SKILL.md" "mcp__mem0__search_memories"
+    # Check for script reference instead of MCP
+    assert_file_contains "$SKILLS_DIR/recall/SKILL.md" "search-memories.py"
 }
 
 test_recall_has_workflow() {
@@ -125,10 +127,10 @@ test_recall_has_advanced_flags() {
 }
 
 # ============================================================================
-# /skf:feedback COMMAND TESTS
+# /ork:feedback COMMAND TESTS
 # ============================================================================
 
-describe "Command: /skf:feedback"
+describe "Command: /ork:feedback"
 
 test_feedback_command_exists() {
     assert_file_exists "$SKILLS_DIR/feedback/SKILL.md"

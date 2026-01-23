@@ -3,7 +3,7 @@ name: claude-hud
 description: Configure Claude Code statusline with context window monitoring using CC 2.1.6 fields. Use when configuring statusline, monitoring context, displaying HUD.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [statusline, hud, context, monitoring, cc216]
 user-invocable: true
 ---
@@ -79,7 +79,11 @@ Your Usage:     45,000 tokens (28% of effective)
 
 ## Visual States
 
-Context usage thresholds help you know when to act:
+Context usage thresholds help you know when to act.
+
+> **CC 2.1.14 Context Window Fix**: Claude Code now uses **98%** of the context window
+> (previously capped at ~65%). Thresholds below are calculated against the **effective
+> window** (160K tokens for 200K max after ~20% system overhead).
 
 ```
 [CTX: 45%] ████████░░░░░░░░ - GREEN:  Plenty of room, work freely
@@ -87,6 +91,9 @@ Context usage thresholds help you know when to act:
 [CTX: 89%] █████████████████ - ORANGE: Consider compacting soon
 [CTX: 97%] ██████████████████ - RED:    COMPACT NOW or lose context
 ```
+
+**Note**: These percentages are of the effective window (~160K tokens), not the static
+200K max. A 50% reading means ~80K tokens used.
 
 ### Recommended Actions by State
 
@@ -143,22 +150,22 @@ Context usage thresholds help you know when to act:
 }
 ```
 
-## Integration with SkillForge
+## Integration with OrchestKit
 
 ### Automatic Context Management
 
-SkillForge's hooks can automatically suggest compression when context gets high:
+OrchestKit's hooks can automatically suggest compression when context gets high:
 
 ```bash
 # In hooks/posttool/context-monitor.sh
 if [ "$CONTEXT_USED_PCT" -gt 80 ]; then
-  echo "SUGGESTION: Consider using /skf:context-compression"
+  echo "SUGGESTION: Consider using /ork:context-compression"
 fi
 ```
 
 ### Progressive Loading Optimization
 
-When context is above 60%, SkillForge automatically:
+When context is above 60%, OrchestKit automatically:
 1. Uses Tier 1 discovery more aggressively
 2. Loads smaller reference files
 3. Suggests skill completion before loading new skills
@@ -181,6 +188,34 @@ Context percentages are calculated from:
 
 If numbers seem off, check for large files loaded in context.
 
+## VSCode Integration (CC 2.1.14)
+
+When using Claude Code in VSCode, additional features are available:
+
+### /usage Command
+
+Display current plan usage directly in VSCode:
+
+```bash
+/usage
+```
+
+Shows:
+- Tokens used in current billing period
+- Cost breakdown by model
+- Remaining quota (if applicable)
+
+### VSCode Status Bar
+
+The statusline integrates with VSCode's status bar. Configure in VSCode settings:
+
+```json
+{
+  "claudeCode.statusBar.enabled": true,
+  "claudeCode.statusBar.position": "right"
+}
+```
+
 ## Related Skills
 
 - `context-compression`: Reduce context when hitting limits
@@ -189,5 +224,6 @@ If numbers seem off, check for large files loaded in context.
 
 ## Version Requirements
 
-- **Claude Code**: >= 2.1.7
+- **Claude Code**: >= 2.1.14
 - **Fields Available**: CC 2.1.6 + CC 2.1.7 (turn.duration, context_window.effective, mcp.deferred)
+- **VSCode Features**: CC 2.1.14 (/usage command)

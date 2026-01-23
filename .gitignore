@@ -21,6 +21,9 @@ logs/
 *.temp
 .cache/
 
+# Generated visualization outputs
+outputs/
+
 # Environment files
 .env
 .env.local
@@ -76,7 +79,6 @@ __pycache__/
 *.pyo
 
 # IDE/Editor specific
-.cursor/
 .idea/
 .vscode/
 

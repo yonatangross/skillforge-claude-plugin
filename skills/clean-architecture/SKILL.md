@@ -5,7 +5,7 @@ context: fork
 agent: code-quality-reviewer
 version: 1.0.0
 tags: [architecture, solid, hexagonal, ddd, python, fastapi, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

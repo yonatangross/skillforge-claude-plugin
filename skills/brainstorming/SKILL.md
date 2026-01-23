@@ -1,10 +1,11 @@
 ---
 name: brainstorming
 description: Use when creating or developing anything, before writing code or implementation plans. Brainstorming skill refines ideas through structured questioning and alternatives.
+tags: [planning, ideation, creativity, design]
 context: fork
 agent: product-strategist
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: true
 ---
 
@@ -30,7 +31,7 @@ Transform rough ideas into fully-formed designs through structured questioning a
 **Examples of clear requirements (no brainstorming needed):**
 - "Add a print button to this page"
 - "Fix this TypeError on line 42"
-- "Update the copyright year to 2025"
+- "Update the copyright year to 2026"
 - "Change the button color to #FF5733"
 
 ## The Three-Phase Process
@@ -154,7 +155,7 @@ Consider these optional next steps:
 - Break down the design into actionable implementation tasks
 - Create a git branch or workspace for isolated development
 
-Use templates in `templates/design-doc-template.md` and `templates/decision-matrix-template.md` for structured documentation.
+Use templates in `scripts/design-doc-template.md` and `scripts/decision-matrix-template.md` for structured documentation.
 
 ## Socratic Questioning Templates
 
@@ -299,7 +300,7 @@ that pattern with a new route handler..."
 ---
 
 **Version:** 2.0.0 (January 2026)
-**Status:** Production patterns from SkillForge brainstorming sessions
+**Status:** Production patterns from OrchestKit brainstorming sessions
 
 ## Related Skills
 
@@ -367,10 +368,10 @@ that pattern with a new route handler..."
 - Start simple, scale later
 
 ### real-world-examples
-**Keywords:** example, skillforge, caching, dashboard, authentication
+**Keywords:** example, orchestkit, caching, dashboard, authentication
 **Solves:**
 - Show me real examples of brainstorming sessions
-- How was SkillForge designed?
+- How was OrchestKit designed?
 - Caching strategy examples
 - Real-time dashboard design decisions
 

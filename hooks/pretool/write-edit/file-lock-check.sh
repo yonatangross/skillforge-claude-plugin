@@ -10,7 +10,7 @@ trap 'echo "{\"continue\":true,\"suppressOutput\":true}"' EXIT
 
 # Read stdin BEFORE sourcing common.sh to avoid race conditions
 _HOOK_INPUT=$(cat)
-export _HOOK_INPUT
+# NOTE: Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 

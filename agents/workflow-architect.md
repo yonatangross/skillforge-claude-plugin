@@ -26,6 +26,7 @@ skills:
   - langfuse-observability
   - observability-monitoring
   - context-compression
+  - task-dependency-patterns
   - remember
   - recall
 ---
@@ -126,7 +127,7 @@ Return structured workflow design:
 
 ## Workflow Patterns
 
-### 1. Supervisor-Worker (SkillForge Default)
+### 1. Supervisor-Worker (OrchestKit Default)
 ```python
 from langgraph.graph import StateGraph, START, END
 

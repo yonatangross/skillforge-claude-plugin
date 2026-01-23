@@ -5,7 +5,7 @@ version: 1.0.0
 tags: [crewai, autogen, openai-agents, microsoft, multi-agent, orchestration, 2026]
 context: fork
 agent: workflow-architect
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

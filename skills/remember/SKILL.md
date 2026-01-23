@@ -3,7 +3,7 @@ name: remember
 description: Store decisions and patterns in knowledge graph with optional cloud sync. Use when saving patterns, storing decisions, remembering approaches that worked.
 context: inherit
 version: 2.1.0
-author: SkillForge
+author: OrchestKit
 tags: [memory, decisions, patterns, best-practices, graph-memory, mem0, unified-memory]
 user-invocable: true
 ---
@@ -17,7 +17,7 @@ Store important decisions, patterns, or context in the knowledge graph for futur
 The remember skill uses **graph memory as PRIMARY** storage:
 
 1. **Knowledge Graph (PRIMARY)**: Entity and relationship storage via `mcp__memory__create_entities` and `mcp__memory__create_relations` - FREE, zero-config, always works
-2. **Semantic Memory (mem0)**: Optional cloud storage via `mcp__mem0__add_memory` - requires MEM0_API_KEY
+2. **Semantic Memory (mem0)**: Optional cloud storage via `add-memory.py` script - requires MEM0_API_KEY
 
 **Benefits of Graph-First:**
 - Zero configuration required - works out of the box
@@ -93,7 +93,7 @@ Check for --success flag → outcome: success
 Check for --failed flag → outcome: failed
 Check for --category <category> flag
 Check for --mem0 flag → sync_to_mem0: true
-Check for --agent <agent-id> flag → agent_id: "skf:{agent-id}"
+Check for --agent <agent-id> flag → agent_id: "ork:{agent-id}"
 Check for --global flag → use global user_id
 Extract the text to remember
 If no category specified, auto-detect from content
@@ -197,28 +197,20 @@ Use `mcp__memory__create_relations`:
 
 **Skip if `--mem0` flag NOT set or MEM0_API_KEY not configured.**
 
-Use `mcp__mem0__add_memory` with:
+Execute the script:
 
-```json
-{
-  "user_id": "skillforge-{project-name}-decisions",
-  "text": "The user's text",
-  "agent_id": "skf:{agent-id}",
-  "enable_graph": true,
-  "metadata": {
-    "category": "detected_category",
-    "outcome": "success|failed|neutral",
-    "timestamp": "current_datetime",
-    "project": "current_project_name",
-    "source": "user",
-    "lesson": "extracted_lesson_if_failed"
-  }
-}
+```bash
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "The user's text" \
+  --user-id "orchestkit-{project-name}-decisions" \
+  --agent-id "ork:{agent-id}" \
+  --metadata '{"category":"detected_category","outcome":"success|failed|neutral","timestamp":"current_datetime","project":"current_project_name","source":"user","lesson":"extracted_lesson_if_failed"}' \
+  --enable-graph
 ```
 
 **User ID Selection:**
-- Default: `skillforge-{project-name}-decisions`
-- With `--global`: `skillforge-global-best-practices`
+- Default: `orchestkit-{project-name}-decisions`
+- With `--global`: `orchestkit-global-best-practices`
 - With `--agent`: Include `agent_id` field for agent-scoped retrieval
 
 ### 8. Confirm Storage

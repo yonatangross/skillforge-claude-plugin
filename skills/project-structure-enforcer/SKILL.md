@@ -4,7 +4,7 @@ description: Enforce 2026 folder structure standards - feature-based organizatio
 context: fork
 agent: code-quality-reviewer
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [structure, architecture, enforcement, blocking, imports, organization]
 user-invocable: false
 ---

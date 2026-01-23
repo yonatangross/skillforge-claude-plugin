@@ -1,6 +1,7 @@
 ---
 name: issue-progress-tracking
 description: Automatic GitHub issue progress updates from commits and sub-task completion. Use when tracking issue progress from commits or automating status updates.
+context: fork
 tags: [github, issues, progress, tracking, automation, commits]
 user-invocable: false
 ---
@@ -99,7 +100,7 @@ Commit messages are matched against issue checkboxes using:
 https://github.com/owner/repo/pull/42
 
 ---
-*Automated by SkillForge*
+*Automated by OrchestKit*
 ```
 
 ## Requirements

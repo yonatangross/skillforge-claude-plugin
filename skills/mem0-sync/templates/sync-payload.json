@@ -1,93 +1,88 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Mem0 Sync Payload Templates",
-  "description": "Templates for MCP add_memory calls during sync",
-
-  "session_summary": {
-    "text": "Session Summary: {{task_summary}}{{#blockers}} | Blockers: {{blockers}}{{/blockers}}{{#next_steps}} | Next: {{next_steps}}{{/next_steps}}",
-    "user_id": "{{project}}-continuity",
-    "metadata": {
-      "type": "session_summary",
-      "status": "{{status}}",
-      "project": "{{project}}",
-      "session_id": "{{session_id}}",
-      "stored_at": "{{timestamp}}",
-      "has_blockers": "{{has_blockers}}",
-      "has_next_steps": "{{has_next_steps}}",
-      "source": "skillforge-plugin"
-    },
-    "enable_graph": true
+  "$schema": "../../.claude/schemas/memory.schema.json",
+  "type": "sync_payload",
+  "description": "Generic sync payload template for Mem0 memory operations",
+  "template": {
+    "items": [
+      {
+        "type": "session_summary",
+        "text": "{{task_summary}}",
+        "user_id": "{{project}}-continuity",
+        "metadata": {
+          "type": "session_summary",
+          "status": "{{status}}",
+          "has_blockers": "{{has_blockers}}",
+          "has_next_steps": "{{has_next_steps}}"
+        },
+        "enable_graph": true
+      },
+      {
+        "type": "decision",
+        "items": "{{decisions}}",
+        "user_id": "{{project}}-decisions",
+        "enable_graph": true
+      },
+      {
+        "type": "agent_pattern",
+        "items": "{{patterns}}",
+        "user_id": "{{project}}-agents",
+        "enable_graph": true
+      },
+      {
+        "type": "global_best_practice",
+        "items": "{{best_practices}}",
+        "user_id": "orchestkit-global-best-practices",
+        "enable_graph": true
+      }
+    ]
   },
-
-  "decision": {
-    "text": "{{decision_content}}",
-    "user_id": "{{project}}-decisions",
-    "metadata": {
-      "decision_id": "{{decision_id}}",
-      "category": "{{category}}",
-      "outcome": "success",
-      "agent": "{{agent}}",
-      "project": "{{project}}",
-      "stored_at": "{{timestamp}}"
+  "variables": {
+    "project": {
+      "description": "Project identifier",
+      "required": true
     },
-    "enable_graph": true
+    "task_summary": {
+      "description": "Session task summary",
+      "required": true
+    },
+    "status": {
+      "description": "Session status",
+      "enum": ["completed", "in_progress", "blocked", "paused"],
+      "default": "completed"
+    },
+    "has_blockers": {
+      "type": "boolean",
+      "default": false
+    },
+    "has_next_steps": {
+      "type": "boolean",
+      "default": true
+    },
+    "decisions": {
+      "description": "Array of decision objects to sync",
+      "type": "array",
+      "default": []
+    },
+    "patterns": {
+      "description": "Array of pattern objects to sync",
+      "type": "array",
+      "default": []
+    },
+    "best_practices": {
+      "description": "Array of global best practice objects to sync",
+      "type": "array",
+      "default": []
+    }
   },
-
-  "agent_pattern_success": {
-    "text": "{{agent_type}}: {{pattern_description}}",
-    "user_id": "{{project}}-agents",
-    "agent_id": "skf:{{agent_type}}",
-    "metadata": {
-      "category": "{{category}}",
-      "outcome": "success",
-      "project": "{{project}}",
-      "stored_at": "{{timestamp}}"
-    },
-    "enable_graph": true
-  },
-
-  "agent_pattern_failed": {
-    "text": "{{agent_type}}: {{pattern_description}}",
-    "user_id": "{{project}}-agents",
-    "agent_id": "skf:{{agent_type}}",
-    "metadata": {
-      "category": "{{category}}",
-      "outcome": "failed",
-      "lesson": "{{lesson}}",
-      "project": "{{project}}",
-      "stored_at": "{{timestamp}}"
-    },
-    "enable_graph": true
-  },
-
-  "global_best_practice": {
-    "text": "{{best_practice_description}}",
-    "user_id": "skillforge-global-best-practices",
-    "metadata": {
-      "category": "{{category}}",
-      "outcome": "success",
-      "original_project": "{{project}}",
-      "original_agent": "{{agent}}",
-      "stored_at": "{{timestamp}}",
-      "source": "skillforge-plugin"
-    },
-    "enable_graph": true
-  },
-
-  "example_filled": {
-    "_comment": "Example of a filled session summary template",
-    "text": "Session Summary: Implemented cursor pagination for API | Blockers: JWT validation failing | Next: Add unit tests",
-    "user_id": "myproject-continuity",
-    "metadata": {
-      "type": "session_summary",
-      "status": "in_progress",
-      "project": "myproject",
-      "session_id": "sess-12345",
-      "stored_at": "2026-01-17T15:00:00Z",
-      "has_blockers": true,
-      "has_next_steps": true,
-      "source": "skillforge-plugin"
-    },
-    "enable_graph": true
+  "sync_protocol": {
+    "steps": [
+      "Load .claude/coordination/.decision-sync-state.json",
+      "Filter items not yet synced",
+      "Execute add-memory.py for each item",
+      "Update sync state with synced IDs",
+      "Output sync summary"
+    ],
+    "idempotency": "Track synced IDs to prevent duplicates",
+    "error_handling": "Continue on individual failures, report at end"
   }
 }

@@ -5,7 +5,7 @@ tags: [dashboard, widgets, data-grid, real-time, layout, admin, tanstack-table, 
 context: fork
 agent: frontend-ui-developer
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

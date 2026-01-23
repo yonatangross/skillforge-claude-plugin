@@ -1,6 +1,6 @@
 #!/bin/bash
 # analytics-consent-check.sh - Check if user needs to be prompted for analytics consent
-# Part of SkillForge Claude Plugin (#59)
+# Part of OrchestKit Claude Plugin (#59)
 #
 # This hook runs on session start to check if user has been asked about analytics.
 # It outputs a gentle reminder or first-time prompt if appropriate.
@@ -9,8 +9,12 @@
 set -euo pipefail
 
 # Read and discard stdin to prevent broken pipe errors in hook chain
-_HOOK_INPUT=$(cat 2>/dev/null || true)
-export _HOOK_INPUT
+if [[ -t 0 ]]; then
+    _HOOK_INPUT=""
+else
+    _HOOK_INPUT=$(cat 2>/dev/null || true)
+fi
+# Dont export - large inputs overflow environment
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-$(pwd)}"
@@ -51,7 +55,7 @@ if has_been_asked; then
 
                 if [[ $days_since -ge 30 ]]; then
                     # Show gentle reminder (not blocking)
-                    reminder='📊 Reminder: Anonymous analytics help improve SkillForge. Enable with /skf:feedback opt-in'
+                    reminder='📊 Reminder: Anonymous analytics help improve OrchestKit. Enable with /ork:feedback opt-in'
                     jq -nc --arg msg "$reminder" '{systemMessage:$msg,continue:true}'
                     exit 0
                 fi
@@ -65,7 +69,7 @@ if has_been_asked; then
 fi
 
 # First time - show a brief notice (not the full prompt, to avoid blocking)
-# The full prompt will be shown when user runs /skf:feedback
-first_time_msg='📊 SkillForge collects local usage metrics. Share anonymously with /skf:feedback opt-in'
+# The full prompt will be shown when user runs /ork:feedback
+first_time_msg='📊 OrchestKit collects local usage metrics. Share anonymously with /ork:feedback opt-in'
 jq -nc --arg msg "$first_time_msg" '{systemMessage:$msg,continue:true}'
 exit 0

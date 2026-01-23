@@ -8,13 +8,13 @@ Guide for syncing agent-learned patterns to Mem0.
 {
   "text": "database-engineer recommends cursor-based pagination for large tables over offset pagination",
   "user_id": "myproject-agents",
-  "agent_id": "skf:database-engineer",
+  "agent_id": "ork:database-engineer",
   "metadata": {
     "category": "pagination",
     "outcome": "success",
     "project": "myproject",
     "stored_at": "2026-01-17T15:00:00Z",
-    "source": "skillforge-plugin"
+    "source": "orchestkit-plugin"
   },
   "enable_graph": true
 }
@@ -25,8 +25,8 @@ Guide for syncing agent-learned patterns to Mem0.
 Patterns are logged to `.claude/logs/agent-patterns.jsonl`:
 
 ```jsonl
-{"agent_id":"skf:database-engineer","pattern":"cursor pagination","outcome":"success","pending_sync":true}
-{"agent_id":"skf:security-auditor","pattern":"JWT validation","outcome":"failed","pending_sync":true}
+{"agent_id":"ork:database-engineer","pattern":"cursor pagination","outcome":"success","pending_sync":true}
+{"agent_id":"ork:security-auditor","pattern":"JWT validation","outcome":"failed","pending_sync":true}
 ```
 
 ## Syncing Patterns
@@ -37,7 +37,7 @@ Patterns are logged to `.claude/logs/agent-patterns.jsonl`:
 mcp__mem0__add_memory({
   text: "database-engineer: Use cursor-based pagination with indexed columns for tables > 10k rows",
   user_id: "myproject-agents",
-  agent_id: "skf:database-engineer",
+  agent_id: "ork:database-engineer",
   metadata: {
     category: "pagination",
     outcome: "success",
@@ -53,7 +53,7 @@ mcp__mem0__add_memory({
 mcp__mem0__add_memory({
   text: "security-auditor: Manual JWT validation without library caused token bypass vulnerability",
   user_id: "myproject-agents",
-  agent_id: "skf:security-auditor",
+  agent_id: "ork:security-auditor",
   metadata: {
     category: "authentication",
     outcome: "failed",
@@ -83,7 +83,7 @@ If a pattern is generalizable across projects:
 ```javascript
 mcp__mem0__add_memory({
   text: "Cursor-based pagination outperforms offset pagination for large datasets",
-  user_id: "skillforge-global-best-practices",
+  user_id: "orchestkit-global-best-practices",
   metadata: {
     category: "pagination",
     outcome: "success",

@@ -149,7 +149,7 @@ class AuditEvent:
     metadata: dict | None = None
 ```
 
-### Usage in SkillForge
+### Usage in OrchestKit
 
 ```python
 # Authentication

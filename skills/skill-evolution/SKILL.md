@@ -3,7 +3,7 @@ name: skill-evolution
 description: Analyze, evolve, and rollback skills based on usage patterns. Use when evolving skills, improving skill definitions, updating skill content.
 context: inherit
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [skill-management, evolution, versioning, analytics]
 user-invocable: true
 ---
@@ -24,11 +24,11 @@ Enables skills to automatically improve based on usage patterns, user edits, and
 
 | Command | Description |
 |---------|-------------|
-| `/skf:skill-evolution` | Show evolution report for all skills |
-| `/skf:skill-evolution analyze <skill-id>` | Analyze specific skill patterns |
-| `/skf:skill-evolution evolve <skill-id>` | Review and apply suggestions |
-| `/skf:skill-evolution history <skill-id>` | Show version history |
-| `/skf:skill-evolution rollback <skill-id> <version>` | Restore previous version |
+| `/ork:skill-evolution` | Show evolution report for all skills |
+| `/ork:skill-evolution analyze <skill-id>` | Analyze specific skill patterns |
+| `/ork:skill-evolution evolve <skill-id>` | Review and apply suggestions |
+| `/ork:skill-evolution history <skill-id>` | Show version history |
+| `/ork:skill-evolution rollback <skill-id> <version>` | Restore previous version |
 
 ---
 
@@ -40,7 +40,7 @@ The skill evolution system operates in three phases:
 COLLECT                    ANALYZE                    ACT
 ───────                    ───────                    ───
 ┌─────────────┐           ┌─────────────┐           ┌─────────────┐
-│ PostTool    │──────────▶│ Evolution   │──────────▶│ /skf:skill  │
+│ PostTool    │──────────▶│ Evolution   │──────────▶│ /ork:skill  │
 │ Edit        │  patterns │ Analyzer    │ suggest   │ evolve      │
 │ Tracker     │           │ Engine      │           │ command     │
 └─────────────┘           └─────────────┘           └─────────────┘
@@ -81,7 +81,7 @@ The system tracks these common edit patterns:
 
 ## Subcommand: Report (Default)
 
-**Usage:** `/skf:skill-evolution`
+**Usage:** `/ork:skill-evolution`
 
 Shows evolution report for all tracked skills.
 
@@ -122,7 +122,7 @@ Top Pending Suggestions:
 
 ## Subcommand: Analyze
 
-**Usage:** `/skf:skill-evolution analyze <skill-id>`
+**Usage:** `/ork:skill-evolution analyze <skill-id>`
 
 Analyzes edit patterns for a specific skill.
 
@@ -153,14 +153,14 @@ Pending Suggestions:
 1. 93% conf: ADD add_pagination to template
 2. 88% conf: ADD add_rate_limiting to template
 
-Run `/skf:skill-evolution evolve api-design-framework` to review
+Run `/ork:skill-evolution evolve api-design-framework` to review
 ```
 
 ---
 
 ## Subcommand: Evolve
 
-**Usage:** `/skf:skill-evolution evolve <skill-id>`
+**Usage:** `/ork:skill-evolution evolve <skill-id>`
 
 Interactive review and application of improvement suggestions.
 
@@ -220,7 +220,7 @@ When a user accepts a suggestion, the implementation depends on the suggestion t
 
 ## Subcommand: History
 
-**Usage:** `/skf:skill-evolution history <skill-id>`
+**Usage:** `/ork:skill-evolution history <skill-id>`
 
 Shows version history with performance metrics.
 
@@ -252,7 +252,7 @@ Current Version: 1.2.0
 
 ## Subcommand: Rollback
 
-**Usage:** `/skf:skill-evolution rollback <skill-id> <version>`
+**Usage:** `/ork:skill-evolution rollback <skill-id> <version>`
 
 Restores a skill to a previous version.
 
@@ -316,7 +316,7 @@ The system monitors skill health and can trigger warnings:
 
 ```
 WARNING: api-design-framework success rate dropped from 94% to 71%
-Consider: /skf:skill-evolution rollback api-design-framework 1.1.0
+Consider: /ork:skill-evolution rollback api-design-framework 1.1.0
 ```
 
 ---
@@ -330,6 +330,6 @@ Consider: /skf:skill-evolution rollback api-design-framework 1.1.0
 
 ## Related Skills
 
-- `configure` - Configure SkillForge settings
-- `doctor` - Diagnose SkillForge issues
+- `configure` - Configure OrchestKit settings
+- `doctor` - Diagnose OrchestKit issues
 - `feedback-dashboard` - View comprehensive feedback metrics

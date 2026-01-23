@@ -6,7 +6,7 @@ context: fork
 agent: frontend-ui-developer
 version: 1.0.0
 allowed-tools: [Read, Write, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -335,5 +335,5 @@ function Dashboard() {
 ## References
 
 - `references/middleware-composition.md` - Combining multiple middleware
-- `templates/store-template.ts` - Production-ready store template
+- `scripts/store-template.ts` - Production-ready store template
 - `checklists/zustand-checklist.md` - Implementation checklist

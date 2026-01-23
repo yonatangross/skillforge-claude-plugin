@@ -206,11 +206,11 @@ else
 fi
 
 # Check primary agent is in filter
-assert_contains "$RESULT" "skf:database-engineer" "Cross-agent search includes primary agent"
+assert_contains "$RESULT" "ork:database-engineer" "Cross-agent search includes primary agent"
 
 # Check related agents are in filter
-assert_contains "$RESULT" "skf:backend-system-architect" "Cross-agent search includes related backend-system-architect"
-assert_contains "$RESULT" "skf:security-auditor" "Cross-agent search includes related security-auditor"
+assert_contains "$RESULT" "ork:backend-system-architect" "Cross-agent search includes related backend-system-architect"
+assert_contains "$RESULT" "ork:security-auditor" "Cross-agent search includes related security-auditor"
 
 # -----------------------------------------------------------------------------
 # Test: mem0_cross_project_search_json Function
@@ -236,7 +236,7 @@ else
 fi
 
 # Check global user_id is used
-assert_contains "$RESULT" "skillforge-global-best-practices" "Cross-project search uses global user_id"
+assert_contains "$RESULT" "orchestkit-global-best-practices" "Cross-project search uses global user_id"
 
 # Check enable_graph is true
 if echo "$RESULT" | jq -e '.enable_graph == true' >/dev/null 2>&1; then
@@ -277,14 +277,14 @@ else
     echo -e "${RED}FAIL${NC}: agent-memory-inject.sh should be executable"
 fi
 
-# Test hook version is 1.2.0
+# Test hook has version 1.3.0+ (cross-agent federation)
 TESTS_RUN=$((TESTS_RUN + 1))
-if head -20 "$HOOK" | grep -q "Version: 1.2.0"; then
+if head -20 "$HOOK" | grep -qE "Version: 1\.[3-9]\.[0-9]|Version: [2-9]\."; then
     TESTS_PASSED=$((TESTS_PASSED + 1))
-    echo -e "${GREEN}PASS${NC}: agent-memory-inject.sh version is 1.2.0"
+    echo -e "${GREEN}PASS${NC}: agent-memory-inject.sh version is 1.3.0+"
 else
     TESTS_FAILED=$((TESTS_FAILED + 1))
-    echo -e "${RED}FAIL${NC}: agent-memory-inject.sh version should be 1.2.0"
+    echo -e "${RED}FAIL${NC}: agent-memory-inject.sh version should be 1.3.0+"
 fi
 
 # Test hook mentions cross-agent federation

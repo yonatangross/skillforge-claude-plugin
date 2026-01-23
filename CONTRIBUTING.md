@@ -1,6 +1,6 @@
-# Contributing to SkillForge Plugin
+# Contributing to OrchestKit Plugin
 
-Welcome to the SkillForge plugin for Claude Code! We're excited that you're interested in contributing. This plugin extends Claude Code with specialized skills, agents, and hooks for AI-native development workflows.
+Welcome to the OrchestKit plugin for Claude Code! We're excited that you're interested in contributing. This plugin extends Claude Code with specialized skills, agents, and hooks for AI-native development workflows.
 
 ## How to Contribute
 
@@ -9,8 +9,8 @@ Welcome to the SkillForge plugin for Claude Code! We're excited that you're inte
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/skillforge-claude-plugin.git
-   cd skillforge-claude-plugin
+   git clone https://github.com/YOUR_USERNAME/orchestkit.git
+   cd orchestkit
    ```
 3. **Create a feature branch**:
    ```bash
@@ -32,12 +32,14 @@ Welcome to the SkillForge plugin for Claude Code! We're excited that you're inte
 
 ```
 .claude/
-├── skills/               # 111 skills in flat CC 2.1.7 structure
+├── skills/               # 159 skills in flat CC 2.1.7 structure
 │   └── <skill-name>/
 │       ├── SKILL.md           # Required: Patterns and best practices
 │       ├── references/        # Optional: Specific implementations
-│       └── templates/         # Optional: Code generation
-├── agents/               # 25 specialized AI personas
+│       ├── scripts/           # Optional: Executable code and generators
+│       ├── assets/            # Optional: Templates and copyable files
+│       └── checklists/        # Optional: Implementation checklists
+├── agents/               # 34 specialized AI personas
 └── context/              # Session and knowledge management
 hooks/                    # Lifecycle hooks
 ```
@@ -245,4 +247,4 @@ bash -n hooks/your-hook.sh
 2. Open a new discussion for general questions
 3. Open an issue for bug reports or feature requests
 
-Thank you for contributing to SkillForge!
+Thank you for contributing to OrchestKit!

@@ -9,7 +9,7 @@ context: inherit
 
 # Mem0 Auto-Sync
 
-Automatically synchronize session context to Mem0 for seamless cross-session continuity. This skill executes MCP calls to persist decisions, patterns, and session summaries.
+Automatically synchronize session context to Mem0 for seamless cross-session continuity. This skill executes Python SDK scripts to persist decisions, patterns, and session summaries.
 
 ## Overview
 
@@ -19,79 +19,60 @@ Automatically synchronize session context to Mem0 for seamless cross-session con
 
 ## Quick Sync
 
-Execute these MCP calls based on the sync context provided:
+Execute these script commands based on the sync context provided:
 
 ### 1. Session Summary (Always)
 
-```
-mcp__mem0__add_memory({
-  text: "Session Summary: {task_summary}",
-  user_id: "{project}-continuity",
-  metadata: {
-    type: "session_summary",
-    status: "{status}",
-    has_blockers: {has_blockers},
-    has_next_steps: {has_next_steps}
-  },
-  enable_graph: true
-})
+```bash
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "Session Summary: {task_summary}" \
+  --user-id "{project}-continuity" \
+  --metadata '{"type":"session_summary","status":"{status}","has_blockers":{has_blockers},"has_next_steps":{has_next_steps}}' \
+  --enable-graph
 ```
 
 ### 2. Pending Decisions (If Any)
 
 For each decision in the decision log that hasn't been synced:
 
-```
-mcp__mem0__add_memory({
-  text: "{decision_content}",
-  user_id: "{project}-decisions",
-  metadata: {
-    category: "{category}",
-    outcome: "success"
-  },
-  enable_graph: true
-})
+```bash
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "{decision_content}" \
+  --user-id "{project}-decisions" \
+  --metadata '{"category":"{category}","outcome":"success"}' \
+  --enable-graph
 ```
 
 ### 3. Agent Patterns (If Any)
 
 For each agent pattern that was learned:
 
-```
-mcp__mem0__add_memory({
-  text: "{pattern_description}",
-  user_id: "{project}-agents",
-  agent_id: "skf:{agent_type}",
-  metadata: {
-    category: "{category}",
-    outcome: "{success|failed}"
-  },
-  enable_graph: true
-})
+```bash
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "{pattern_description}" \
+  --user-id "{project}-agents" \
+  --agent-id "ork:{agent_type}" \
+  --metadata '{"category":"{category}","outcome":"{success|failed}"}' \
+  --enable-graph
 ```
 
 ### 4. Best Practices (If Generalizable)
 
 For patterns that apply across projects:
 
-```
-mcp__mem0__add_memory({
-  text: "{best_practice}",
-  user_id: "skillforge-global-best-practices",
-  metadata: {
-    project: "{project}",
-    category: "{category}",
-    outcome: "success"
-  },
-  enable_graph: true
-})
+```bash
+!bash skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "{best_practice}" \
+  --user-id "orchestkit-global-best-practices" \
+  --metadata '{"project":"{project}","category":"{category}","outcome":"success"}' \
+  --enable-graph
 ```
 
 ## Sync Protocol
 
-1. **Check availability**: Verify Mem0 MCP is configured
+1. **Check availability**: Verify `MEM0_API_KEY` environment variable is set
 2. **Read sync state**: Load `.claude/coordination/.decision-sync-state.json`
-3. **Execute MCP calls**: Run add_memory for each item
+3. **Execute scripts**: Run `add-memory.py` script for each item
 4. **Update sync state**: Mark synced items to prevent duplicates
 5. **Confirm completion**: Output sync summary
 
@@ -111,7 +92,7 @@ mcp__mem0__add_memory({
 - `{project}-continuity`: Session summaries
 - `{project}-decisions`: Architectural decisions
 - `{project}-agents`: Agent-specific patterns
-- `skillforge-global-best-practices`: Cross-project patterns
+- `orchestkit-global-best-practices`: Cross-project patterns
 
 ## Related Skills
 

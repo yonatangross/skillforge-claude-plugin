@@ -1,13 +1,14 @@
 ---
 name: DevOps & Deployment
 description: Use when setting up CI/CD pipelines, containerizing applications, deploying to Kubernetes, or writing infrastructure as code. DevOps & Deployment covers GitHub Actions, Docker, Helm, and Terraform patterns.
+tags: [devops, ci-cd, docker, kubernetes, terraform]
 context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
 category: Infrastructure & Deployment
 agents: [backend-system-architect, code-quality-reviewer, studio-coach]
 keywords: [CI/CD, deployment, Docker, Kubernetes, pipeline, infrastructure, GitOps, container, automation, release]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -192,7 +193,7 @@ Key topics covered:
 charts/app/
 ├── Chart.yaml
 ├── values.yaml
-├── templates/
+├── scripts/
 │   ├── deployment.yaml
 │   ├── service.yaml
 │   ├── ingress.yaml

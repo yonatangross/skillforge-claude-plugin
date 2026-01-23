@@ -4,7 +4,7 @@
 
 Multi-judge evaluation uses multiple LLM evaluators to assess quality from different perspectives. Langfuse provides the infrastructure to run, track, and analyze these evaluations.
 
-**SkillForge has built-in evaluators** at `backend/app/shared/services/g_eval/langfuse_evaluators.py` - but they're not wired up!
+**OrchestKit has built-in evaluators** at `backend/app/shared/services/g_eval/langfuse_evaluators.py` - but they're not wired up!
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -34,9 +34,9 @@ Multi-judge evaluation uses multiple LLM evaluators to assess quality from diffe
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## G-Eval Criteria (Built into SkillForge)
+## G-Eval Criteria (Built into OrchestKit)
 
-SkillForge uses these evaluation criteria:
+OrchestKit uses these evaluation criteria:
 
 | Criterion | Weight | Description |
 |-----------|--------|-------------|
@@ -46,7 +46,7 @@ SkillForge uses these evaluation criteria:
 | **coherence** | 0.15 | Logical structure and flow |
 | **usefulness** | 0.10 | Practical applicability |
 
-## Existing SkillForge Evaluators (BUILT BUT NOT USED!)
+## Existing OrchestKit Evaluators (BUILT BUT NOT USED!)
 
 ```python
 # backend/app/shared/services/g_eval/langfuse_evaluators.py
@@ -367,7 +367,7 @@ GROUP BY name;
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-## Integration Steps for SkillForge
+## Integration Steps for OrchestKit
 
 1. **Import existing evaluators** (they're already built!)
    ```python

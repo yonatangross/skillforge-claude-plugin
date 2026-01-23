@@ -6,8 +6,12 @@
 set -euo pipefail
 
 # Read and discard stdin to prevent broken pipe errors in hook chain
-_HOOK_INPUT=$(cat 2>/dev/null || true)
-export _HOOK_INPUT
+if [[ -t 0 ]]; then
+  _HOOK_INPUT=""
+else
+  _HOOK_INPUT=$(cat 2>/dev/null || true)
+fi
+# Dont export - large inputs overflow environment
 
 # Ensure JSON output on any exit (trap for safety)
 trap 'echo "{\"continue\":true,\"suppressOutput\":true}"' EXIT

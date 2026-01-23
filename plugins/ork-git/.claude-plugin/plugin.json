@@ -1,0 +1,10 @@
+{
+  "name": "ork-git",
+  "version": "5.0.0",
+  "engine": ">=2.1.16",
+  "description": "OrchestKit plugin",
+  "author": {
+    "name": "Yonatan Gross",
+    "email": "yonatan2gross@gmail.com"
+  }
+}

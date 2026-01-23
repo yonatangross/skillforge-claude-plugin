@@ -1,0 +1,16 @@
+{
+  "name": "ork-memory",
+  "version": "5.0.0",
+  "engine": ">=2.1.16",
+  "description": "Cross-session memory and knowledge graph — Mem0 integration, memory fabric, sync patterns",
+  "author": {
+    "name": "Yonatan Gross",
+    "email": "yonatan2gross@gmail.com"
+  },
+  "keywords": [
+    "memory",
+    "mem0",
+    "knowledge-graph",
+    "persistence"
+  ]
+}

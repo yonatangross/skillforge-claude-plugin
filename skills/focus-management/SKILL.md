@@ -6,7 +6,7 @@ agent: accessibility-specialist
 version: 1.0.0
 tags: [accessibility, focus, keyboard, a11y, trap]
 allowed-tools: [Read, Write, Edit, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

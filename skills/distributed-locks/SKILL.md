@@ -5,7 +5,7 @@ context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [distributed, locks, redis, postgresql, concurrency, coordination, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

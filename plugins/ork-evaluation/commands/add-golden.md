@@ -1,0 +1,1 @@
+../../../commands/add-golden.md

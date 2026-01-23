@@ -241,8 +241,8 @@ pytest tests/smoke/ --tb=short
 **Exit Code:** 0
 **Output:**
 ```
-deployment.apps/skillforge-backend configured
-service/skillforge-backend unchanged
+deployment.apps/orchestkit-backend configured
+service/orchestkit-backend unchanged
 ```
 
 ### Post-Deployment Verification
@@ -284,7 +284,7 @@ curl -X POST http://localhost:8500/api/v1/analyze \
   -d '{"url": "https://example.com"}'
 
 # Database integrity
-psql -h localhost -p 5437 -U skillforge -c "SELECT COUNT(*) FROM analyses;"
+psql -h localhost -p 5437 -U orchestkit -c "SELECT COUNT(*) FROM analyses;"
 ```
 
 **Evidence Template:**
@@ -549,7 +549,7 @@ echo "[$DATE] Tests: $?, Lint: $?" >> .claude/evidence/daily-log.txt
 
 ---
 
-## SkillForge Examples
+## OrchestKit Examples
 
 ### Example 1: Backend API Endpoint
 
@@ -790,7 +790,7 @@ Store evidence in `.claude/context/session/state.json (Context Protocol 2.0)`:
 
 ## Quick Reference
 
-### Evidence Collection Commands (SkillForge)
+### Evidence Collection Commands (OrchestKit)
 
 **Backend (Python):**
 ```bash

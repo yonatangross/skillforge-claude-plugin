@@ -1,6 +1,6 @@
 # MCP Configuration
 
-MCPs (Model Context Protocol servers) enhance SkillForge commands but are **NOT required**.
+MCPs (Model Context Protocol servers) enhance OrchestKit commands but are **NOT required**.
 Commands work without them - MCPs just add extra capabilities.
 
 ## Available MCPs
@@ -89,7 +89,7 @@ Edit `.mcp.json` and set `"disabled": false` for selected MCPs:
 
 ## Plugin Integration
 
-SkillForge hooks integrate with these MCPs:
+OrchestKit hooks integrate with these MCPs:
 
 | Hook | MCP Used | Purpose |
 |------|----------|---------|

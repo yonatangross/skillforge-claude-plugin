@@ -2,7 +2,7 @@
 
 ## Overview
 
-SkillForge includes 93 hooks across 11 categories. This reference explains how to validate and troubleshoot hooks.
+OrchestKit includes 93 hooks across 11 categories. This reference explains how to validate and troubleshoot hooks.
 
 ## Validation Checks
 

@@ -39,7 +39,7 @@ def rrf_score(ranks: list[int], k: int = 60) -> float:
 - **k=60 is empirically optimal** (research paper: "Reciprocal Rank Fusion outperforms Condorcet and individual rank learning methods")
 - Smaller k: Top results dominate
 - Larger k: All ranks weighted more equally
-- **SkillForge uses k=60 (standard)**
+- **OrchestKit uses k=60 (standard)**
 
 ---
 
@@ -94,7 +94,7 @@ ORDER BY r.rrf_score DESC;
 
 ---
 
-## Python Implementation (SkillForge)
+## Python Implementation (OrchestKit)
 
 ```python
 # backend/app/shared/services/search/search_service.py
@@ -182,13 +182,13 @@ class SearchService:
 # → High overlap, excellent RRF performance
 ```
 
-**SkillForge Results:**
+**OrchestKit Results:**
 - **1x multiplier:** 87.2% pass rate
 - **2x multiplier:** 89.5% pass rate (+2.3%)
 - **3x multiplier:** 91.1% pass rate (+1.6%)
 - **4x multiplier:** 91.3% pass rate (+0.2%, diminishing returns)
 
-**SkillForge uses 3x (optimal).**
+**OrchestKit uses 3x (optimal).**
 
 ---
 
@@ -262,4 +262,4 @@ FULL OUTER JOIN keyword_results k ON v.id = k.id
 
 - [Original RRF Paper (2009)](https://plg.uwaterloo.ca/~gvcormac/cormacksigir09-rrf.pdf)
 - [PGVector Documentation](https://github.com/pgvector/pgvector)
-- SkillForge: `backend/app/db/repositories/chunk_repository.py`
+- OrchestKit: `backend/app/db/repositories/chunk_repository.py`

@@ -6,7 +6,7 @@ agent: backend-system-architect
 version: 1.0.0
 tags: [idempotency, deduplication, exactly-once, distributed-systems, api, 2026]
 allowed-tools: [Read, Write, Edit, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

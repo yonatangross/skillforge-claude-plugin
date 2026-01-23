@@ -10,20 +10,20 @@
 
 - [ ] **Database connection verified**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c "SELECT version();"
+  psql -h localhost -p 5437 -U orchestkit -c "SELECT version();"
   # Expected: PostgreSQL 16.x
   ```
 
 - [ ] **Database contains expected data**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analyses WHERE status = 'completed';"
   # Expected: 98 (or current golden dataset size)
   ```
 
 - [ ] **Embeddings generated for all chunks**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analysis_chunks WHERE vector IS NULL;"
   # Expected: 0 (no chunks without embeddings)
   ```
@@ -32,14 +32,14 @@
 
 - [ ] **URL contract verified (no placeholder URLs)**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
-    "SELECT COUNT(*) FROM analyses WHERE url LIKE '%skillforge.dev%';"
+  psql -h localhost -p 5437 -U orchestkit -c \
+    "SELECT COUNT(*) FROM analyses WHERE url LIKE '%orchestkit.dev%';"
   # Expected: 0 (no placeholder URLs)
   ```
 
 - [ ] **All analyses have artifacts**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analyses a
      LEFT JOIN artifacts ar ON a.id = ar.analysis_id
      WHERE ar.id IS NULL AND a.status = 'completed';"
@@ -48,7 +48,7 @@
 
 - [ ] **No orphaned chunks**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analysis_chunks c
      LEFT JOIN analyses a ON c.analysis_id = a.id
      WHERE a.id IS NULL;"
@@ -59,21 +59,21 @@
 
 - [ ] **Backup script exists**
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/scripts/backup_golden_dataset.py
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/scripts/backup_golden_dataset.py
   # Expected: File exists
   ```
 
 - [ ] **Dependencies installed**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry install
   # Expected: All dependencies installed
   ```
 
 - [ ] **Data directory exists**
   ```bash
-  mkdir -p /Users/yonatangross/coding/SkillForge/backend/data
-  ls -ld /Users/yonatangross/coding/SkillForge/backend/data
+  mkdir -p /Users/yonatangross/coding/OrchestKit/backend/data
+  ls -ld /Users/yonatangross/coding/OrchestKit/backend/data
   # Expected: Directory exists and is writable
   ```
 
@@ -85,7 +85,7 @@
 
 - [ ] **Execute backup command**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry run python scripts/backup_golden_dataset.py backup
   ```
 
@@ -98,13 +98,13 @@
 
 - [ ] **Check backup file created**
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json
   # Expected: ~2.5 MB file
   ```
 
 - [ ] **Check metadata file created**
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_metadata.json
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_metadata.json
   # Expected: ~1 KB file
   ```
 
@@ -127,13 +127,13 @@
 
 - [ ] **Verify backup file is valid JSON**
   ```bash
-  cat /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json | jq '.'
+  cat /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json | jq '.'
   # Expected: Valid JSON, no parse errors
   ```
 
 - [ ] **Check backup version**
   ```bash
-  cat /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json | \
+  cat /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json | \
     jq '.version'
   # Expected: "2.0"
   ```
@@ -168,13 +168,13 @@
 
 - [ ] **Backup file exists**
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_backup.json
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_backup.json
   # Expected: File exists
   ```
 
 - [ ] **Backup integrity verified**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry run python scripts/backup_golden_dataset.py verify
   # Expected: "BACKUP IS VALID"
   ```
@@ -189,13 +189,13 @@
 
 - [ ] **Database accessible**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c "SELECT 1;"
+  psql -h localhost -p 5437 -U orchestkit -c "SELECT 1;"
   # Expected: "1"
   ```
 
 - [ ] **Current data count known**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c "SELECT COUNT(*) FROM analyses;"
+  psql -h localhost -p 5437 -U orchestkit -c "SELECT COUNT(*) FROM analyses;"
   # Note the count for comparison after restore
   ```
 
@@ -218,7 +218,7 @@
 
 - [ ] **Database migrations applied**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry run alembic current
   # Expected: Shows latest migration revision
   ```
@@ -235,7 +235,7 @@
 
 - [ ] **Sufficient disk space**
   ```bash
-  df -h /Users/yonatangross/coding/SkillForge/backend/data
+  df -h /Users/yonatangross/coding/OrchestKit/backend/data
   # Expected: At least 1 GB free
   ```
 
@@ -249,7 +249,7 @@
 
 - [ ] **Execute restore command**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry run python scripts/backup_golden_dataset.py restore
   ```
 
@@ -300,37 +300,37 @@
 - [ ] **Check database counts**
   ```bash
   # Analyses
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analyses WHERE status = 'completed';"
   # Expected: 98
 
   # Artifacts
-  psql -h localhost -p 5437 -U skillforge -c "SELECT COUNT(*) FROM artifacts;"
+  psql -h localhost -p 5437 -U orchestkit -c "SELECT COUNT(*) FROM artifacts;"
   # Expected: 98
 
   # Chunks
-  psql -h localhost -p 5437 -U skillforge -c "SELECT COUNT(*) FROM analysis_chunks;"
+  psql -h localhost -p 5437 -U orchestkit -c "SELECT COUNT(*) FROM analysis_chunks;"
   # Expected: 415
   ```
 
 - [ ] **Verify embeddings generated**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT COUNT(*) FROM analysis_chunks WHERE vector IS NULL;"
   # Expected: 0 (all chunks have embeddings)
   ```
 
 - [ ] **Verify URL contract maintained**
   ```bash
-  psql -h localhost -p 5437 -U skillforge -c \
-    "SELECT COUNT(*) FROM analyses WHERE url LIKE '%skillforge.dev%';"
+  psql -h localhost -p 5437 -U orchestkit -c \
+    "SELECT COUNT(*) FROM analyses WHERE url LIKE '%orchestkit.dev%';"
   # Expected: 0 (no placeholder URLs)
   ```
 
 - [ ] **Check sample data integrity**
   ```bash
   # Verify a known document exists
-  psql -h localhost -p 5437 -U skillforge -c \
+  psql -h localhost -p 5437 -U orchestkit -c \
     "SELECT title FROM analyses WHERE url = 'https://docs.python.org/3/library/asyncio.html';"
   # Expected: Row returned with title
   ```
@@ -343,7 +343,7 @@
 
 - [ ] **Run smoke tests**
   ```bash
-  cd /Users/yonatangross/coding/SkillForge/backend
+  cd /Users/yonatangross/coding/OrchestKit/backend
   poetry run pytest tests/smoke/retrieval/test_retrieval_quality.py -v
   ```
 
@@ -382,7 +382,7 @@
 
 - [ ] **Verify fixture files restored** (v2.0 backups only)
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/tests/smoke/retrieval/fixtures/
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/tests/smoke/retrieval/fixtures/
   # Expected:
   # - documents_expanded.json
   # - source_url_map.json
@@ -433,7 +433,7 @@
 
 - [ ] **Check for SQL dump**
   ```bash
-  ls -lh /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_dump.sql
+  ls -lh /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_dump.sql
   # If exists, use pg_restore
   ```
 
@@ -446,8 +446,8 @@
 
 - [ ] **Import SQL dump**
   ```bash
-  psql -h localhost -p 5437 -U skillforge < \
-    /Users/yonatangross/coding/SkillForge/backend/data/golden_dataset_dump.sql
+  psql -h localhost -p 5437 -U orchestkit < \
+    /Users/yonatangross/coding/OrchestKit/backend/data/golden_dataset_dump.sql
   ```
 
 **Option 3: Restore from git history (if committed)**
@@ -513,7 +513,7 @@
 
 ### Full Backup Workflow
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 poetry run python scripts/backup_golden_dataset.py backup
 poetry run python scripts/backup_golden_dataset.py verify
 git add data/golden_dataset_backup.json data/golden_dataset_metadata.json
@@ -523,7 +523,7 @@ git push
 
 ### Full Restore Workflow (New Environment)
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 docker compose up -d postgres
 sleep 5
 poetry run alembic upgrade head
@@ -534,7 +534,7 @@ poetry run pytest tests/smoke/retrieval/test_retrieval_quality.py -v
 
 ### Full Restore Workflow (Replace Existing)
 ```bash
-cd /Users/yonatangross/coding/SkillForge/backend
+cd /Users/yonatangross/coding/OrchestKit/backend
 poetry run python scripts/backup_golden_dataset.py verify
 # CONFIRM: I understand this is destructive
 poetry run python scripts/backup_golden_dataset.py restore --replace

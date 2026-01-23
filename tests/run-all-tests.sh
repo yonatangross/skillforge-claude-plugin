@@ -1,6 +1,6 @@
 #!/bin/bash
 # Main Test Runner
-# Executes all tests for the SkillForge Claude Plugin
+# Executes all tests for the OrchestKit Claude Plugin
 #
 # Usage: ./run-all-tests.sh [OPTIONS]
 #
@@ -96,7 +96,7 @@ export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${BOLD}║        SkillForge Claude Plugin - Test Suite v3.0                ║${NC}"
+echo -e "${BOLD}║        OrchestKit Claude Plugin - Test Suite v3.0                ║${NC}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -185,6 +185,7 @@ if [[ "$RUN_SECURITY" == "true" ]]; then
     run_test "Symlink Attack Tests" "$SCRIPT_DIR/security/test-symlink-attacks.sh" || true
     run_test "Input Validation Tests" "$SCRIPT_DIR/security/test-input-validation.sh" || true
     run_test "Additional Security Tests" "$SCRIPT_DIR/security/test-additional-security.sh" || true
+    run_test "Mem0 Security Tests" "$SCRIPT_DIR/security/test-mem0-security.sh" || true
 fi
 
 # ============================================================
@@ -247,8 +248,9 @@ if [[ "$RUN_SKILLS" == "true" ]]; then
         run_test "Agent Definitions" "$SCRIPT_DIR/subagents/definition/test-agent-definitions.sh" || true
     fi
 
-    # Commands directory validation (for autocomplete)
-    run_test "Commands Structure" "$SCRIPT_DIR/commands/test-commands-structure.sh" || true
+    # Plugin structure validation (CC 2.1.16 compliance)
+    run_test "Plugin JSON Schema" "$SCRIPT_DIR/plugins/test-plugin-json-schema.sh" || true
+    run_test "No Commands Directory" "$SCRIPT_DIR/plugins/test-no-commands-directory.sh" || true
 fi
 # ============================================================
 

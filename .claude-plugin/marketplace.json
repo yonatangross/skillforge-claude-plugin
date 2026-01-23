@@ -1,23 +1,425 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "skillforge",
-  "version": "4.28.2",
-  "description": "The Complete AI Development Toolkit — 159 skills, 34 agents, 20 commands, 141 hooks for full-stack development",
+  "name": "orchestkit",
+  "version": "4.28.3",
+  "engine": ">=2.1.16",
+  "description": "Modular AI Development Toolkit — Install only what you need",
   "owner": {
     "name": "Yonatan Gross",
     "email": "yonatan2gross@gmail.com"
   },
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
   "plugins": [
     {
-      "name": "skf",
-      "description": "Complete AI development toolkit with 159 skills covering AI/LLM, backend, frontend, security, and testing patterns. Includes 34 specialized agents, 20 commands, and 144 lifecycle hooks.",
-      "version": "4.28.2",
+      "name": "orchestkit-complete",
+      "description": "Full OrchestKit toolkit — 161 skills, 34 agents, 147 hooks. Complete AI development powerhouse with Memory Fabric, progressive loading, and production patterns.",
+      "version": "4.28.3",
       "author": {
         "name": "Yonatan Gross",
         "email": "yonatan2gross@gmail.com"
       },
-      "source": "./",
-      "category": "development"
+      "source": ".",
+      "category": "development",
+      "featured": true,
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-core",
+      "description": "Core OrchestKit foundation — essential skills, agents, and hooks. Required for all other OrchestKit plugins.",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-core",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-context",
+      "description": "Context window management and engineering — compression, context optimization, system design interrogation",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-context",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-memory",
+      "description": "Cross-session memory and knowledge graph — Mem0 integration, memory fabric, sync patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-memory",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-rag",
+      "description": "RAG & Retrieval patterns — rag-retrieval, embeddings, contextual-retrieval, hyde-retrieval, reranking-patterns, query-decomposition",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-rag",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-rag-advanced",
+      "description": "Advanced RAG patterns — agentic-rag-patterns, multimodal-rag, pgvector-search, semantic-caching",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-rag-advanced",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-langgraph-core",
+      "description": "LangGraph Core patterns — state, routing, parallel, checkpoints, functional, supervisor",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-langgraph-core",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-langgraph-advanced",
+      "description": "LangGraph Advanced patterns — human-in-loop, multi-agent-orchestration, agent-loops, alternative-agent-frameworks, temporal-io",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-langgraph-advanced",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-llm-core",
+      "description": "Core LLM patterns — function-calling, prompt-engineering-suite, llm-streaming, llm-testing, llm-safety-patterns, prompt-caching",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-llm-core",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-llm-advanced",
+      "description": "Advanced LLM patterns — fine-tuning-customization, vision-language-models, audio-language-models, high-performance-inference, ollama-local",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-llm-advanced",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-ai-observability",
+      "description": "AI Observability — langfuse-observability, cache-cost-tracking, semantic-caching, llm-evaluation, evidence-verification",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-ai-observability",
+      "category": "ai",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-data-engineering",
+      "description": "Data Engineering — pgvector-search, test-data-management, embeddings, database-schema-designer, database-versioning, zero-downtime-migration",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-data-engineering",
+      "category": "data",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-evaluation",
+      "description": "Evaluation patterns — llm-evaluation, golden-dataset-curation, golden-dataset-management, golden-dataset-validation, add-golden",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-evaluation",
+      "category": "data",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-product",
+      "description": "Product Management agents — product-strategist, business-case-builder, prioritization-analyst, market-intelligence",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-product",
+      "category": "product",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-fastapi",
+      "description": "FastAPI & APIs — fastapi-advanced, api-design-framework, api-versioning, streaming-api-patterns, rate-limiting, error-handling-rfc9457",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-fastapi",
+      "category": "backend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-database",
+      "description": "Database patterns — sqlalchemy-2-async, alembic-migrations, database-schema-designer, database-versioning, zero-downtime-migration, connection-pooling",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-database",
+      "category": "backend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-async",
+      "description": "Async & Tasks — asyncio-advanced, connection-pooling, background-jobs, celery-advanced, distributed-locks, resilience-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-async",
+      "category": "backend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-architecture",
+      "description": "Architecture Patterns — clean-architecture, domain-driven-design, backend-architecture-enforcer, cqrs-patterns, event-sourcing, saga-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-architecture",
+      "category": "backend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-backend-advanced",
+      "description": "Backend Advanced patterns — aggregate-patterns, outbox-pattern, idempotency-patterns, caching-strategies, grpc-python",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-backend-advanced",
+      "category": "backend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-react-core",
+      "description": "React Core patterns — react-server-components-framework, form-state-patterns, zustand-patterns, tanstack-query-advanced, react-aria-patterns, type-safety-validation",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-react-core",
+      "category": "frontend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-ui-design",
+      "description": "UI & Design patterns — design-system-starter, shadcn-patterns, radix-primitives, motion-animation-patterns, i18n-date-patterns, focus-management",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-ui-design",
+      "category": "frontend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-frontend-performance",
+      "description": "Frontend Performance — performance-optimization, render-optimization, lazy-loading-patterns, image-optimization, core-web-vitals, vite-advanced",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-frontend-performance",
+      "category": "frontend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-frontend-advanced",
+      "description": "Frontend Advanced patterns — pwa-patterns, view-transitions, scroll-driven-animations, responsive-patterns, dashboard-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-frontend-advanced",
+      "category": "frontend",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-testing-core",
+      "description": "Testing Core patterns — unit-testing, integration-testing, property-based-testing, test-data-management, test-standards-enforcer, pytest-advanced",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-testing-core",
+      "category": "testing",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-testing-e2e",
+      "description": "E2E Testing patterns — e2e-testing, webapp-testing, msw-mocking, vcr-http-recording, contract-testing",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-testing-e2e",
+      "category": "testing",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-security",
+      "description": "Security patterns — owasp-top-10, auth-patterns, input-validation, defense-in-depth, security-scanning, advanced-guardrails",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-security",
+      "category": "security",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-cicd",
+      "description": "CI/CD patterns — devops-deployment, observability-monitoring, performance-testing, github-operations, release-management, stacked-prs",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-cicd",
+      "category": "devops",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-infrastructure",
+      "description": "Infrastructure patterns — zero-downtime-migration, database-versioning, alembic-migrations, observability-monitoring, edge-computing-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-infrastructure",
+      "category": "devops",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-git",
+      "description": "Git/GitHub patterns — git-workflow, git-recovery-command, create-pr, fix-issue, issue-progress-tracking, stacked-prs",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-git",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-accessibility",
+      "description": "Accessibility patterns — wcag-compliance, a11y-testing, focus-management, react-aria-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-accessibility",
+      "category": "accessibility",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-workflows-core",
+      "description": "Workflows Core — implement, explore, verify, review-pr, code-review-playbook, skill-evolution",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-workflows-core",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-workflows-advanced",
+      "description": "Workflows Advanced — claude-hud, feedback, add-golden, worktree-coordination, browser-content-capture",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-workflows-advanced",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-mcp",
+      "description": "MCP Integration — mcp-server-building, mcp-advanced-patterns, mcp-security-hardening, agent-browser, browser-content-capture",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-mcp",
+      "category": "development",
+      "engine": ">=2.1.16"
+    },
+    {
+      "name": "ork-graphql",
+      "description": "GraphQL patterns — strawberry-graphql, api-design-framework (GraphQL patterns), streaming-api-patterns",
+      "version": "5.0.0",
+      "author": {
+        "name": "Yonatan Gross",
+        "email": "yonatan2gross@gmail.com"
+      },
+      "source": "plugins/ork-graphql",
+      "category": "backend",
+      "engine": ">=2.1.16"
     }
   ]
 }

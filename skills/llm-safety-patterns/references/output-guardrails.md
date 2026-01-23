@@ -332,7 +332,7 @@ async def run_guardrails(
     return parsed, results
 ```
 
-## SkillForge Integration
+## OrchestKit Integration
 
 ```python
 # backend/app/workflows/agents/content_analyzer.py

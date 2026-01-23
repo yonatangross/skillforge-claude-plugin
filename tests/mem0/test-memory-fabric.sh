@@ -1,6 +1,6 @@
 #!/bin/bash
 # test-memory-fabric.sh - Integration tests for Memory Fabric
-# Part of SkillForge Claude Plugin comprehensive test suite
+# Part of OrchestKit Claude Plugin comprehensive test suite
 # CC 2.1.7 Compliant
 #
 # Tests Memory Fabric v2.1 (Graph-First Architecture):
@@ -135,45 +135,60 @@ test_memory_fabric_library_functions() {
 test_load_context_command_exists() {
     test_start "load-context command exists"
 
-    if [[ -f "$PROJECT_ROOT/commands/load-context.md" ]]; then
+    # Check skill (new structure) or command (legacy)
+    if [[ -f "$PROJECT_ROOT/skills/load-context/SKILL.md" ]] || [[ -f "$PROJECT_ROOT/commands/load-context.md" ]]; then
         test_pass
     else
-        test_fail "commands/load-context.md not found"
+        test_fail "load-context skill/command not found"
     fi
 }
 
 test_load_context_auto_invoke() {
     test_start "load-context has auto-invoke: session-start"
 
+    # Check skill first (new structure), then fallback to command (legacy)
+    local skill_file="$PROJECT_ROOT/skills/load-context/SKILL.md"
     local cmd_file="$PROJECT_ROOT/commands/load-context.md"
 
-    if [[ ! -f "$cmd_file" ]]; then
-        test_skip "Command file not found"
-        return
+    if [[ -f "$skill_file" ]]; then
+        if grep -q "auto-invoke.*session-start\|auto-invoke: session-start" "$skill_file"; then
+            test_pass
+            return
+        fi
     fi
 
-    if grep -q "auto-invoke.*session-start\|auto-invoke: session-start" "$cmd_file"; then
-        test_pass
-    else
-        test_fail "Missing auto-invoke: session-start"
+    if [[ -f "$cmd_file" ]]; then
+        if grep -q "auto-invoke.*session-start\|auto-invoke: session-start" "$cmd_file"; then
+            test_pass
+            return
+        fi
     fi
+
+    test_fail "Missing auto-invoke: session-start"
 }
 
 test_load_context_user_invocable() {
     test_start "load-context is user-invocable"
 
+    # Check skill first (new structure), then fallback to command (legacy)
+    local skill_file="$PROJECT_ROOT/skills/load-context/SKILL.md"
     local cmd_file="$PROJECT_ROOT/commands/load-context.md"
 
-    if [[ ! -f "$cmd_file" ]]; then
-        test_skip "Command file not found"
-        return
+    if [[ -f "$skill_file" ]]; then
+        if grep -q "user-invocable.*true\|user-invocable: true" "$skill_file"; then
+            test_pass
+            return
+        fi
     fi
 
-    if grep -q "user-invocable.*true\|user-invocable: true" "$cmd_file"; then
-        test_pass
-    else
-        test_fail "Missing user-invocable: true"
+    if [[ -f "$cmd_file" ]]; then
+        if grep -q "user-invocable.*true\|user-invocable: true" "$cmd_file"; then
+            test_pass
+            return
+        fi
     fi
+
+    test_fail "Missing user-invocable: true"
 }
 
 # =============================================================================
@@ -201,7 +216,7 @@ test_memory_bridge_outputs_valid_json() {
     fi
 
     # Run hook with mock input
-    export HOOK_INPUT='{"tool_name":"mcp__mem0__add_memory","tool_result":"success"}'
+    export HOOK_INPUT='{"tool_name":"bash","tool_result":"success","command":"add-memory.py"}'
     local output
     output=$(bash "$hook_file" 2>/dev/null || echo '{"continue":true}')
 

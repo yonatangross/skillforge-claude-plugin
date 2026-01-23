@@ -20,7 +20,7 @@ PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-${CLAUDE_PROJECT_DIR:-.}}"
 
 # Log directory
 if [[ -n "${CLAUDE_PLUGIN_ROOT:-}" ]]; then
-  HOOK_LOG_DIR="${HOME}/.claude/logs/skf"
+  HOOK_LOG_DIR="${HOME}/.claude/logs/ork"
 else
   HOOK_LOG_DIR="${CLAUDE_PROJECT_DIR:-.}/.claude/logs"
 fi
@@ -39,13 +39,12 @@ init_hook_input() {
     # Use provided data
     _HOOK_INPUT="$1"
   elif [[ -z "$_HOOK_INPUT" ]]; then
-    # Read from stdin with timeout
-    if ! IFS= read -r -t 2 -d '' _HOOK_INPUT 2>/dev/null; then
-      # Timeout or EOF reached - that's fine, use what we got
-      :
-    fi
+    # CRITICAL: Don't read from stdin at all - it can block even with timeout
+    # If HOOK_INPUT is needed, it will be provided via environment variable
+    # This prevents hanging during hook execution
+    _HOOK_INPUT=""
   fi
-  export _HOOK_INPUT
+  # Dont export - can overflow with large inputs
 }
 
 # Legacy function - now just returns cached input
@@ -1135,3 +1134,103 @@ atomic_json_update() {
 
 # Export atomic JSON functions
 export -f atomic_json_write atomic_json_update
+
+# -----------------------------------------------------------------------------
+# Timeout and Performance Utilities for SessionStart Hooks
+# -----------------------------------------------------------------------------
+# These utilities prevent hooks from hanging during startup by adding timeouts
+# and tracking execution times.
+
+# Run a command with timeout (prevents hanging)
+# Usage: run_with_timeout <timeout_seconds> <command> [args...]
+# Returns: 0 on success, 124 on timeout, or command's exit code
+# On timeout, logs warning and returns 0 (graceful degradation)
+# NOTE: If timeout command is not available, runs command without timeout
+run_with_timeout() {
+  local timeout_sec="$1"
+  shift
+  local cmd=("$@")
+
+  # Check if timeout command is available (GNU coreutils or macOS gtimeout)
+  if command -v timeout >/dev/null 2>&1; then
+    # GNU timeout
+    if timeout "$timeout_sec" "${cmd[@]}" 2>/dev/null; then
+      return 0
+    else
+      local exit_code=$?
+      if [[ $exit_code -eq 124 ]]; then
+        log_hook "WARN: Command timed out after ${timeout_sec}s: ${cmd[0]}"
+        return 0  # Graceful degradation - don't block startup
+      fi
+      return $exit_code
+    fi
+  elif command -v gtimeout >/dev/null 2>&1; then
+    # macOS gtimeout (from GNU coreutils via Homebrew)
+    if gtimeout "$timeout_sec" "${cmd[@]}" 2>/dev/null; then
+      return 0
+    else
+      local exit_code=$?
+      if [[ $exit_code -eq 124 ]]; then
+        log_hook "WARN: Command timed out after ${timeout_sec}s: ${cmd[0]}"
+        return 0
+      fi
+      return $exit_code
+    fi
+  else
+    # Fallback: No timeout available - just run the command
+    # This is safer than trying to implement timeout in bash which can hang
+    # The assumption is that hooks should not be blocking anyway
+    "${cmd[@]}"
+    return $?
+  fi
+}
+
+# Check if slow hooks should be bypassed
+# Usage: if should_skip_slow_hooks; then exit 0; fi
+should_skip_slow_hooks() {
+  [[ "${ORCHESTKIT_SKIP_SLOW_HOOKS:-0}" == "1" ]]
+}
+
+# Log hook execution timing
+# Usage: 
+#   HOOK_START_TIME=$(date +%s.%N)
+#   # ... hook code ...
+#   log_hook_timing "hook-name"
+log_hook_timing() {
+  local hook_name="${1:-$(basename "${BASH_SOURCE[1]:-$0}" .sh)}"
+  local start_time="${HOOK_START_TIME:-}"
+  
+  if [[ -z "$start_time" ]]; then
+    return 0  # No timing data available
+  fi
+  
+  local end_time
+  end_time=$(date +%s.%N 2>/dev/null || date +%s)
+  
+  # Calculate duration (handle both GNU and BSD date)
+  local duration
+  if command -v bc >/dev/null 2>&1; then
+    duration=$(echo "$end_time - $start_time" | bc 2>/dev/null || echo "0")
+  else
+    # Fallback: integer seconds
+    local start_int end_int
+    start_int=$(echo "$start_time" | cut -d. -f1)
+    end_int=$(echo "$end_time" | cut -d. -f1)
+    duration=$((end_int - start_int))
+  fi
+  
+  # Log if hook took more than 1 second
+  if (( $(echo "$duration > 1.0" | bc 2>/dev/null || echo 0) )); then
+    log_hook "SLOW: $hook_name took ${duration}s (threshold: 1s)"
+  fi
+}
+
+# Start timing a hook
+# Usage: start_hook_timing
+start_hook_timing() {
+  export HOOK_START_TIME
+  HOOK_START_TIME=$(date +%s.%N 2>/dev/null || date +%s)
+}
+
+# Export timeout and timing utilities
+export -f run_with_timeout should_skip_slow_hooks log_hook_timing start_hook_timing

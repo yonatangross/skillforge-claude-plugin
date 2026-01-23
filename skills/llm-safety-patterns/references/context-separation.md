@@ -60,7 +60,7 @@ When identifiers appear in LLM prompts, several security issues arise:
 ### 1. Define What's Forbidden
 
 ```python
-# SkillForge parameters that NEVER go in prompts
+# OrchestKit parameters that NEVER go in prompts
 FORBIDDEN_IN_PROMPTS = {
     # User identity
     "user_id",      # UUID - hallucination risk
@@ -182,7 +182,7 @@ def build_safe_prompt(content: ContentPayload) -> str:
     return prompt
 ```
 
-## SkillForge Integration Points
+## OrchestKit Integration Points
 
 ### Content Analysis Workflow
 

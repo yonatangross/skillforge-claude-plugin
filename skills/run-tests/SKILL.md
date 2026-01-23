@@ -3,7 +3,7 @@ name: run-tests
 description: Comprehensive test execution with parallel analysis and coverage reporting. Use when running test suites or troubleshooting failures with the run-tests workflow.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [testing, pytest, coverage, test-execution]
 user-invocable: false
 ---

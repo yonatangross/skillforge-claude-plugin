@@ -1,13 +1,14 @@
 ---
 name: Observability & Monitoring
 description: Use when adding logging, metrics, tracing, or alerting to applications. Observability & Monitoring covers structured logging, Prometheus metrics, OpenTelemetry tracing, and alerting strategies.
+tags: [observability, monitoring, metrics, logging, tracing]
 context: fork
 agent: metrics-architect
 version: 1.0.0
 category: Operations & Reliability
 agents: [backend-system-architect, code-quality-reviewer, ai-ml-engineer]
 keywords: [observability, monitoring, logging, metrics, tracing, alerts, Prometheus, OpenTelemetry]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -45,7 +46,7 @@ Key topics covered:
 - Correlation IDs for cross-service request tracking
 - Log sampling strategies for high-traffic systems
 - LogQL queries for Loki log aggregation
-- SkillForge structlog configuration example
+- OrchestKit structlog configuration example
 
 ### Metrics Collection
 **See: `references/metrics-collection.md`**
@@ -168,7 +169,7 @@ async def analyze_content(url: str) -> AnalysisResult:
     # ... workflow implementation
 ```
 
-See `examples/skillforge-monitoring-dashboard.md` for real-world examples.
+See `examples/orchestkit-monitoring-dashboard.md` for real-world examples.
 
 ## Extended Thinking Triggers
 

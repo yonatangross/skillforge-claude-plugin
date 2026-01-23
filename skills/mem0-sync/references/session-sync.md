@@ -16,7 +16,7 @@ Detailed guide for syncing session summaries to Mem0.
     "stored_at": "2026-01-17T15:00:00Z",
     "has_blockers": false,
     "has_next_steps": true,
-    "source": "skillforge-plugin"
+    "source": "orchestkit-plugin"
   },
   "enable_graph": true
 }
@@ -52,6 +52,17 @@ Example:
 Session Summary: Implemented cursor pagination | Blockers: JWT validation failing | Next: Add unit tests; Update docs
 ```
 
+## Script Execution
+
+```bash
+# Execute via Python SDK script
+python3 skills/mem0-memory/scripts/crud/add-memory.py \
+  --text "Session Summary: Implemented cursor pagination | Blockers: JWT validation failing | Next: Add unit tests" \
+  --user-id "myproject-continuity" \
+  --metadata '{"type":"session_summary","status":"in_progress","project":"myproject","has_blockers":true,"has_next_steps":true}' \
+  --enable-graph
+```
+
 ## MCP Execution
 
 ```javascript
@@ -67,7 +78,7 @@ mcp__mem0__add_memory({
     stored_at: "2026-01-17T15:00:00Z",
     has_blockers: true,
     has_next_steps: true,
-    source: "skillforge-plugin"
+    source: "orchestkit-plugin"
   },
   enable_graph: true
 })

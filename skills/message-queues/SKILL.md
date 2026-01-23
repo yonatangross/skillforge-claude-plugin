@@ -6,7 +6,7 @@ agent: event-driven-architect
 version: 2.0.0
 tags: [message-queue, rabbitmq, redis-streams, kafka, faststream, pub-sub, async, event-driven, 2026]
 allowed-tools: [Read, Write, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

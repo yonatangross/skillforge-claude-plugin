@@ -285,7 +285,7 @@ def aggregate_results(
     if q["accuracy"]["score"] < 0.6:
         warnings.append("Low accuracy score - verify technical claims")
     if q["relevance"]["score"] < 0.7:
-        warnings.append("Low relevance - may be off-topic for SkillForge")
+        warnings.append("Low relevance - may be off-topic for OrchestKit")
     if domain_result["confidence"] < 0.7:
         warnings.append("Low confidence in domain classification")
 

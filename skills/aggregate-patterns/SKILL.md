@@ -5,7 +5,7 @@ context: fork
 agent: backend-system-architect
 version: 1.0.0
 tags: [ddd, aggregate, consistency, invariants, domain-modeling, python, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -82,7 +82,7 @@ class OrderAggregate:
             raise DomainError(f"Cannot modify {self.status} order")
 ```
 
-See [aggregate-root-template.py](templates/aggregate-root-template.py) for complete implementation.
+See [aggregate-root-template.py](scripts/aggregate-root-template.py) for complete implementation.
 
 ## Key Decisions
 

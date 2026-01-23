@@ -1,16 +1,16 @@
 ---
 name: feedback
-description: Manage the SkillForge feedback system that learns from your usage. Use when providing feedback, reporting issues, suggesting improvements.
+description: Manage the OrchestKit feedback system that learns from your usage. Use when providing feedback, reporting issues, suggesting improvements.
 context: inherit
 version: 1.2.0
-author: SkillForge
+author: OrchestKit
 tags: [feedback, learning, patterns, metrics, privacy, analytics, consent]
 user-invocable: true
 ---
 
 # Feedback - Manage Learning System
 
-View and manage the SkillForge feedback system that learns from your usage.
+View and manage the OrchestKit feedback system that learns from your usage.
 
 ## Overview
 
@@ -233,7 +233,7 @@ Display the full privacy policy for anonymous analytics.
 **Output:**
 ```
 ═══════════════════════════════════════════════════════════════════
-              SKILLFORGE ANONYMOUS ANALYTICS PRIVACY POLICY
+              ORCHESTKIT ANONYMOUS ANALYTICS PRIVACY POLICY
 ═══════════════════════════════════════════════════════════════════
 
 WHAT WE COLLECT (only with your consent)
@@ -243,7 +243,7 @@ WHAT WE COLLECT (only with your consent)
   ✓ Skill success rates       - e.g., "92% success rate"
   ✓ Agent spawn counts        - e.g., "backend-architect spawned 8 times"
   ✓ Agent success rates       - e.g., "88% tasks completed successfully"
-  ✓ Hook trigger counts       - e.g., "bash-dispatcher triggered 120 times"
+  ✓ Hook trigger counts       - e.g., "git-branch-protection triggered 120 times"
   ✓ Hook block counts         - e.g., "blocked 5 potentially unsafe commands"
   ✓ Plugin version            - e.g., "4.12.0"
   ✓ Report date               - e.g., "2026-01-14" (date only, no time)

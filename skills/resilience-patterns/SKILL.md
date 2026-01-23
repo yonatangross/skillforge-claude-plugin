@@ -4,7 +4,7 @@ description: Production-grade fault tolerance for distributed systems. Use when 
 context: fork
 agent: backend-system-architect
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [resilience, circuit-breaker, bulkhead, retry, fault-tolerance]
 user-invocable: false
 ---
@@ -89,7 +89,7 @@ Isolates failures by partitioning resources into independent pools.
 +-------------------------------------------------------------------+
 ```
 
-**Tier Configuration (SkillForge):**
+**Tier Configuration (OrchestKit):**
 | Tier | Workers | Queue | Timeout | Use Case |
 |------|---------|-------|---------|----------|
 | 1 (Critical) | 5 | 10 | 300s | Synthesis, quality gate |
@@ -208,7 +208,7 @@ Patterns specific to LLM API integrations.
 | Fallback Chain | Critical operations | Graceful degradation |
 | Token Budget | LLM calls | Cost control, prevent failures |
 
-## SkillForge Integration Points
+## OrchestKit Integration Points
 
 1. **Workflow Agents**: Each agent wrapped with circuit breaker + bulkhead tier
 2. **LLM Calls**: All model invocations use fallback chain + retry logic
@@ -225,20 +225,20 @@ Patterns specific to LLM API integrations.
 - `references/error-classification.md` - How to categorize errors
 
 ### Templates (Code Patterns)
-- `templates/circuit-breaker.py` - Ready-to-use circuit breaker class
-- `templates/bulkhead.py` - Semaphore-based bulkhead implementation
-- `templates/retry-handler.py` - Configurable retry decorator
-- `templates/llm-fallback-chain.py` - Multi-model fallback pattern
-- `templates/token-budget.py` - Token budget guard implementation
+- `scripts/circuit-breaker.py` - Ready-to-use circuit breaker class
+- `scripts/bulkhead.py` - Semaphore-based bulkhead implementation
+- `scripts/retry-handler.py` - Configurable retry decorator
+- `scripts/llm-fallback-chain.py` - Multi-model fallback pattern
+- `scripts/token-budget.py` - Token budget guard implementation
 
 ### Examples
-- `examples/skillforge-workflow-resilience.md` - Full SkillForge integration example
+- `examples/orchestkit-workflow-resilience.md` - Full OrchestKit integration example
 
 ### Checklists
 - `checklists/pre-deployment-resilience.md` - Production readiness checklist
 - `checklists/circuit-breaker-setup.md` - Circuit breaker configuration guide
 
-## 2025 Best Practices
+## 2026 Best Practices
 
 1. **Adaptive Thresholds**: Use sliding windows, not fixed counters
 2. **Observability First**: Every circuit trip = alert + metric + trace

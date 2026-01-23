@@ -5,7 +5,7 @@ context: fork
 agent: workflow-architect
 version: 1.0.0
 tags: [temporal, workflow, orchestration, durable-execution, saga, microservices, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

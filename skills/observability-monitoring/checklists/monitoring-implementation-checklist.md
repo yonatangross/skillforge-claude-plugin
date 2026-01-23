@@ -1,6 +1,6 @@
 # Monitoring Implementation Checklist
 
-Complete guide for implementing production-grade monitoring, based on SkillForge's real setup.
+Complete guide for implementing production-grade monitoring, based on OrchestKit's real setup.
 
 ## Prerequisites
 
@@ -756,10 +756,10 @@ curl http://localhost:9090/api/v1/alerts
 
 ## References
 
-- Template: `../templates/structured-logging.ts`
-- Template: `../templates/prometheus-metrics.ts`
-- Template: `../templates/alerting-rules.yml`
-- Example: `../examples/skillforge-monitoring-dashboard.md`
+- Template: `../scripts/structured-logging.ts`
+- Template: `../scripts/prometheus-metrics.ts`
+- Template: `../scripts/alerting-rules.yml`
+- Example: `../examples/orchestkit-monitoring-dashboard.md`
 - [Prometheus Best Practices](https://prometheus.io/docs/practices/)
 - [Grafana Documentation](https://grafana.com/docs/)
 - [Loki Documentation](https://grafana.com/docs/loki/)

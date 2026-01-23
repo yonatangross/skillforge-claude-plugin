@@ -69,7 +69,7 @@ filtered = [
 
 ## Score Boosting Strategies
 
-### 1. Section Title Matching (SkillForge)
+### 1. Section Title Matching (OrchestKit)
 
 ```python
 def boost_section_title(chunk: Chunk, query: str, base_score: float) -> float:
@@ -94,13 +94,13 @@ def boost_section_title(chunk: Chunk, query: str, base_score: float) -> float:
 # Match: YES → 1.5x boost
 ```
 
-**SkillForge Result:**
+**OrchestKit Result:**
 - **Before:** 91.1% pass rate, 0.647 MRR (Hard queries)
 - **After:** 91.4% pass rate, 0.678 MRR (+4.8% MRR)
 
 ---
 
-### 2. Document Path Matching (SkillForge)
+### 2. Document Path Matching (OrchestKit)
 
 ```python
 def boost_document_path(chunk: Chunk, query: str, base_score: float) -> float:
@@ -126,7 +126,7 @@ def boost_document_path(chunk: Chunk, query: str, base_score: float) -> float:
 # Match: YES (backend, API) → 1.15x boost
 ```
 
-**SkillForge Result:**
+**OrchestKit Result:**
 - **Before:** 91.4% pass rate, 0.678 MRR
 - **After:** 91.6% pass rate, 0.686 MRR (+1.2% MRR)
 
@@ -179,7 +179,7 @@ def boost_by_recency(chunk: Chunk, base_score: float) -> float:
 
 ---
 
-## Combined Boosting (SkillForge)
+## Combined Boosting (OrchestKit)
 
 ```python
 # backend/app/shared/services/search/search_service.py
@@ -226,7 +226,7 @@ async def hybrid_search_with_boosting(
     return chunks[:top_k]
 ```
 
-**Cumulative SkillForge Results:**
+**Cumulative OrchestKit Results:**
 - **Base RRF:** 91.1% pass rate, 0.647 MRR
 - **+ Title boost:** 91.4% pass rate, 0.678 MRR (+4.8% MRR)
 - **+ Path boost:** 91.6% pass rate, 0.686 MRR (+1.2% MRR)
@@ -390,6 +390,6 @@ CREATE INDEX idx_chunks_content_type ON chunks(content_type);
 
 ## References
 
-- SkillForge: `backend/app/shared/services/search/search_service.py`
-- SkillForge: `backend/app/core/constants.py` (boost factors)
+- OrchestKit: `backend/app/shared/services/search/search_service.py`
+- OrchestKit: `backend/app/core/constants.py` (boost factors)
 - [PostgreSQL GIN Indexes](https://www.postgresql.org/docs/current/gin.html)

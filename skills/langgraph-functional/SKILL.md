@@ -1,10 +1,11 @@
 ---
 name: langgraph-functional
 description: LangGraph Functional API with @entrypoint and @task decorators. Use when building workflows with the modern LangGraph pattern, enabling parallel execution, persistence, and human-in-the-loop.
+tags: [langgraph, functional, api, patterns]
 context: fork
 agent: workflow-architect
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 # LangGraph Functional API

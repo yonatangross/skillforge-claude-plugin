@@ -6,7 +6,7 @@ agent: database-engineer
 version: 2.0.0
 tags: [database, migration, zero-downtime, expand-contract, pgroll, 2026]
 allowed-tools: [Read, Write, Bash, Grep, Glob]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 

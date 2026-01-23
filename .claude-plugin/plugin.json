@@ -1,14 +1,14 @@
 {
-  "name": "skf",
-  "version": "4.28.2",
-  "description": "Comprehensive AI-assisted development toolkit with 160 skills (20 user-invocable commands, 140 internal knowledge), 34 agents, 141 hooks (CC 2.1.11 Setup hooks), progressive loading, Memory Fabric v2.1 (graph-first architecture, optional mem0 cloud enhancement), and production-ready patterns for modern full-stack development including AI/ML Roadmap 2026 (MCP security, guardrails, agentic RAG, inference optimization)",
+  "name": "ork",
+  "version": "4.28.3",
+  "description": "Comprehensive AI-assisted development toolkit with 162 skills (21 user-invocable, 141 internal), 34 agents, 147 hooks, Memory Fabric v2.1, and production-ready patterns for modern full-stack development including AI/ML Roadmap 2026",
   "author": {
     "name": "Yonatan Gross",
     "email": "yonatan2gross@gmail.com",
-    "url": "https://github.com/yonatangross/skillforge-claude-plugin"
+    "url": "https://github.com/yonatangross/orchestkit"
   },
-  "homepage": "https://github.com/yonatangross/skillforge-claude-plugin",
-  "repository": "https://github.com/yonatangross/skillforge-claude-plugin",
+  "homepage": "https://github.com/yonatangross/orchestkit",
+  "repository": "https://github.com/yonatangross/orchestkit",
   "license": "MIT",
   "lspServers": {
     "pyright": {
@@ -57,6 +57,8 @@
     "agent-framework",
     "mcp-integration"
   ],
+  "agents": "./agents/",
+  "skills": "./skills/",
   "hooks": {
     "PreToolUse": [
       {
@@ -350,6 +352,10 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/posttool/bash/issue-subtask-updater.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/posttool/mem0-webhook-handler.sh"
           }
         ]
       },
@@ -479,6 +485,14 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/mem0-context-retrieval.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/mem0-webhook-setup.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/lifecycle/mem0-analytics-tracker.sh"
           },
           {
             "type": "command",
@@ -737,6 +751,18 @@
           {
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/setup/setup-maintenance.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/setup/mem0-backup-setup.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/setup/mem0-cleanup.sh"
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/setup/mem0-analytics-dashboard.sh"
           }
         ]
       }

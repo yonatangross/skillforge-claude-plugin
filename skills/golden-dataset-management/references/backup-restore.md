@@ -282,7 +282,7 @@ psql $DATABASE_URL < backend/data/golden_dataset_dump.sql
 - DB version dependent
 - No easy inspection
 
-**SkillForge uses JSON (version controlled), SQL dump for local snapshots only.**
+**OrchestKit uses JSON (version controlled), SQL dump for local snapshots only.**
 
 ---
 
@@ -313,5 +313,5 @@ async def restore_with_error_handling():
 
 ## References
 
-- SkillForge: `backend/scripts/backup_golden_dataset.py`
-- SkillForge: `backend/data/golden_dataset_backup.json`
+- OrchestKit: `backend/scripts/backup_golden_dataset.py`
+- OrchestKit: `backend/data/golden_dataset_backup.json`

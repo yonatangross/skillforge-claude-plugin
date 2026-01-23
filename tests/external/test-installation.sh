@@ -1,6 +1,6 @@
 #!/bin/bash
 # test-installation.sh - External installation validation tests
-# Part of SkillForge Claude Plugin comprehensive test suite
+# Part of OrchestKit Claude Plugin comprehensive test suite
 # CC 2.1.7 Compliant
 #
 # Tests plugin installation in various repo types:
@@ -246,10 +246,10 @@ version = "0.1.0"' > "$repo_dir/pyproject.toml"
 
     install_plugin_to_repo "$repo_dir"
 
-    # Test write hook on Python file
+    # Test write hook on Python file (CC 2.1.7 native - use file-guard directly)
     local input='{"tool_name":"Write","tool_input":{"file_path":"'$repo_dir'/backend/app/api/users.py","content":"# users api"}}'
     local output
-    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/write-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/write-edit/file-guard.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
@@ -275,10 +275,10 @@ test_react_repo_hooks() {
 
     install_plugin_to_repo "$repo_dir"
 
-    # Test write hook on TSX file
+    # Test write hook on TSX file (CC 2.1.7 native - use file-guard directly)
     local input='{"tool_name":"Write","tool_input":{"file_path":"'$repo_dir'/src/components/Button.tsx","content":"export const Button = () => <button />"}}'
     local output
-    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/write-dispatcher.sh" 2>/dev/null || echo '{"continue":true}')
+    output=$(echo "$input" | bash "$PLUGIN_ROOT/hooks/pretool/write-edit/file-guard.sh" 2>/dev/null || echo '{"continue":true}')
 
     local has_continue
     has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")

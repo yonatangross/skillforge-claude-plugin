@@ -1,0 +1,1 @@
+../../../commands/fix-issue.md

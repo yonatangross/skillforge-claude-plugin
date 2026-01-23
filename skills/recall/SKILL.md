@@ -3,7 +3,7 @@ name: recall
 description: Search and retrieve decisions and patterns from knowledge graph. Use when recalling patterns, retrieving memories, finding past decisions.
 context: inherit
 version: 2.1.0
-author: SkillForge
+author: OrchestKit
 tags: [memory, search, decisions, patterns, graph-memory, mem0, unified-memory]
 user-invocable: true
 ---
@@ -17,7 +17,7 @@ Search past decisions and patterns from the knowledge graph with optional cloud 
 The recall skill uses **graph memory as PRIMARY** search:
 
 1. **Knowledge Graph (PRIMARY)**: Entity and relationship search via `mcp__memory__search_nodes` - FREE, zero-config, always works
-2. **Semantic Memory (mem0)**: Optional cloud search via `mcp__mem0__search_memories` - requires MEM0_API_KEY, use with `--mem0` flag
+2. **Semantic Memory (mem0)**: Optional cloud search via `search-memories.py` script - requires MEM0_API_KEY, use with `--mem0` flag
 
 **Benefits of Graph-First:**
 - Zero configuration required - works out of the box
@@ -102,7 +102,7 @@ Use `mcp__memory__search_nodes`:
 
 **Entity Types to Look For:**
 - `Technology`: Tools, frameworks, databases (pgvector, PostgreSQL, React)
-- `Agent`: SkillForge agents (database-engineer, backend-system-architect)
+- `Agent`: OrchestKit agents (database-engineer, backend-system-architect)
 - `Pattern`: Named patterns (cursor-pagination, connection-pooling)
 - `Decision`: Architectural decisions
 - `Project`: Project-specific context
@@ -112,29 +112,24 @@ Use `mcp__memory__search_nodes`:
 
 **Skip if `--mem0` flag NOT set or MEM0_API_KEY not configured.**
 
-Use `mcp__mem0__search_memories` IN PARALLEL with step 2:
+Execute the script IN PARALLEL with step 2:
 
-```json
-{
-  "query": "user's search query",
-  "filters": {
-    "AND": [
-      { "user_id": "skillforge-{project-name}-decisions" }
-    ]
-  },
-  "limit": 10,
-  "enable_graph": true
-}
+```bash
+!bash skills/mem0-memory/scripts/crud/search-memories.py \
+  --query "user's search query" \
+  --user-id "orchestkit-{project-name}-decisions" \
+  --limit 10 \
+  --enable-graph
 ```
 
 **User ID Selection:**
-- Default: `skillforge-{project-name}-decisions`
-- With `--global`: `skillforge-global-best-practices`
+- Default: `orchestkit-{project-name}-decisions`
+- With `--global`: `orchestkit-global-best-practices`
 
 **Filter Construction:**
 - Always include `user_id` filter
 - With `--category`: Add `{ "metadata.category": "{category}" }` to AND array
-- With `--agent`: Add `{ "agent_id": "skf:{agent-id}" }` to AND array
+- With `--agent`: Add `{ "agent_id": "ork:{agent-id}" }` to AND array
 
 ### 4. Merge and Deduplicate Results (if --mem0)
 

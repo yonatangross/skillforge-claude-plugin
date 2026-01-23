@@ -5,7 +5,7 @@ context: fork
 agent: data-pipeline-engineer
 version: 1.0.0
 tags: [background-jobs, celery, arq, redis, async, python, 2026]
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
@@ -142,7 +142,7 @@ async def get_job_status(
 from celery import Celery
 
 celery_app = Celery(
-    "skillforge",
+    "orchestkit",
     broker="redis://redis:6379/0",
     backend="redis://redis:6379/1",
 )

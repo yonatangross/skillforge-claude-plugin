@@ -410,7 +410,7 @@ class QualityAwareFallback:
         return response
 ```
 
-## Best Practices (2025)
+## Best Practices (2026)
 
 1. **Always have a fallback**: Even a cached or default response is better than an error
 2. **Monitor costs per-request**: Track token usage in traces (Langfuse)
@@ -419,10 +419,10 @@ class QualityAwareFallback:
 5. **Set appropriate timeouts**: 30s for completion, 5s for embeddings
 6. **Log all fallback events**: Critical for understanding system behavior
 
-## SkillForge Integration
+## OrchestKit Integration
 
 ```python
-# Example integration for SkillForge analysis pipeline
+# Example integration for OrchestKit analysis pipeline
 
 llm_chain = FallbackChain(
     primary=LLMConfig(

@@ -2,7 +2,7 @@
 
 ## Overview
 
-SkillForge uses JSON schemas to validate configuration files. This reference explains how to validate and fix schema issues.
+OrchestKit uses JSON schemas to validate configuration files. This reference explains how to validate and fix schema issues.
 
 ## Schemas
 

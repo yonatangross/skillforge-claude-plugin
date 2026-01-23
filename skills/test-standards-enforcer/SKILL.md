@@ -4,7 +4,7 @@ description: Enforce testing best practices - AAA pattern, naming conventions, i
 context: fork
 agent: test-generator
 version: 1.0.0
-author: SkillForge AI Agent Hub
+author: OrchestKit AI Agent Hub
 tags: [testing, quality, enforcement, blocking, aaa-pattern, coverage]
 user-invocable: false
 ---

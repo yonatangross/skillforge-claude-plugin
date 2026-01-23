@@ -3,7 +3,7 @@ name: create-pr
 description: Create GitHub pull requests with validation and auto-generated descriptions. Use when creating pull requests, opening PRs, submitting code for review.
 context: fork
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 tags: [git, github, pull-request, pr, code-review]
 user-invocable: true
 ---
@@ -118,4 +118,4 @@ Only use Task agents for:
 - review-pr: Review PRs after creation
 ## References
 
-- [PR Template](references/pr-template.md)
+- [PR Template](assets/pr-template.md)

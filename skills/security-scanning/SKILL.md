@@ -1,6 +1,7 @@
 ---
 name: security-scanning
 description: Automated security scanning for dependencies and code. Use when running npm audit, pip-audit, Semgrep, secret detection, or integrating security checks into CI/CD.
+tags: [security, scanning, vulnerabilities, audit]
 context: fork
 agent: security-auditor
 allowed-tools:
@@ -9,7 +10,7 @@ allowed-tools:
   - Glob
   - Bash  # For running security scanners only
 version: 1.0.0
-author: SkillForge
+author: OrchestKit
 user-invocable: false
 ---
 
