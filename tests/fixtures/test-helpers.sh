@@ -1232,5 +1232,6 @@ check_for_antipattern_query() {
 sqlite_escape() {
     local input="${1:-}"
     # Double all single quotes for SQLite escaping
-    echo "${input//\'/\'\'}"
+    # Use sed for reliable cross-platform escaping
+    printf '%s' "$input" | sed "s/'/''/g"
 }
