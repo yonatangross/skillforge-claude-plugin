@@ -47,6 +47,7 @@ const commonBuildOptions = {
 
 /**
  * Build split bundles (one per event type)
+ * No unified bundle - split bundles are verified stable
  */
 async function buildSplitBundles() {
   const startTime = Date.now();
@@ -87,41 +88,15 @@ async function buildSplitBundles() {
     console.log(`  ${name}.mjs: ${stats.bundles[name].sizeKB} KB (${outputFile.exports.length} exports)`);
   }
 
-  // Also build the unified bundle for backwards compatibility
-  const unifiedResult = await build({
-    ...commonBuildOptions,
-    entryPoints: ['./src/index.ts'],
-    outfile: './dist/hooks.mjs',
-    banner: {
-      js: `// OrchestKit Hooks - Unified Bundle (for backwards compatibility)
-// Generated: ${new Date().toISOString()}
-// Prefer using split bundles for better performance
-`,
-    },
-  });
-
-  const unifiedOutput = unifiedResult.metafile.outputs['dist/hooks.mjs'];
-  stats.bundles['hooks'] = {
-    size: unifiedOutput.bytes,
-    sizeKB: (unifiedOutput.bytes / 1024).toFixed(2),
-    exports: unifiedOutput.exports.length,
-    unified: true,
-  };
-
   stats.buildTimeMs = Date.now() - startTime;
   stats.totalSizeKB = (stats.totalSize / 1024).toFixed(2);
+  stats.avgBundleSizeKB = (stats.totalSize / Object.keys(entryPoints).length / 1024).toFixed(2);
 
   writeFileSync('./dist/bundle-stats.json', JSON.stringify(stats, null, 2));
 
-  console.log(`\n  hooks.mjs (unified): ${stats.bundles['hooks'].sizeKB} KB`);
   console.log(`\nBuild complete in ${stats.buildTimeMs}ms`);
-  console.log(`Split bundles total: ${stats.totalSizeKB} KB`);
-  console.log(`Unified bundle: ${stats.bundles['hooks'].sizeKB} KB`);
-
-  // Calculate savings
-  const avgSplitSize = stats.totalSize / Object.keys(entryPoints).length;
-  const savings = ((1 - avgSplitSize / unifiedOutput.bytes) * 100).toFixed(0);
-  console.log(`Average per-load savings: ~${savings}%`);
+  console.log(`Total: ${stats.totalSizeKB} KB (11 bundles)`);
+  console.log(`Average per-bundle: ${stats.avgBundleSizeKB} KB`);
 }
 
 /**

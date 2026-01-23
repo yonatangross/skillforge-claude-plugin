@@ -5,9 +5,7 @@
  * Usage: run-hook.mjs <hook-name>
  * Example: run-hook.mjs permission/auto-approve-readonly
  *
- * Phase 4: Loads event-specific bundles for faster startup (~77% smaller loads)
- * Falls back to unified bundle if split bundle not available.
- *
+ * Loads event-specific split bundles for fast startup (~89% smaller than unified)
  * Reads hook input from stdin, executes the hook, outputs result to stdout.
  */
 
@@ -42,31 +40,16 @@ function getBundleName(hookName) {
 }
 
 /**
- * Load the appropriate bundle for the hook
- * Tries split bundle first, falls back to unified bundle
+ * Load the appropriate split bundle for the hook
  */
 async function loadBundle(hookName) {
   const bundleName = getBundleName(hookName);
+  if (!bundleName) return null;
 
-  // Try split bundle first (faster)
-  if (bundleName) {
-    const splitPath = join(distDir, `${bundleName}.mjs`);
-    if (existsSync(splitPath)) {
-      try {
-        return await import(splitPath);
-      } catch {
-        // Fall through to unified bundle
-      }
-    }
-  }
+  const bundlePath = join(distDir, `${bundleName}.mjs`);
+  if (!existsSync(bundlePath)) return null;
 
-  // Fall back to unified bundle
-  const unifiedPath = join(distDir, 'hooks.mjs');
-  if (existsSync(unifiedPath)) {
-    return await import(unifiedPath);
-  }
-
-  return null;
+  return await import(bundlePath);
 }
 
 const hookName = process.argv[2];
