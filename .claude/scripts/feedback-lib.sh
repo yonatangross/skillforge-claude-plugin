@@ -176,6 +176,7 @@ EOF
 
     # Create satisfaction.json if not exists
     if [[ ! -f "$SATISFACTION_FILE" ]]; then
+        mkdir -p "$(dirname "$SATISFACTION_FILE")" 2>/dev/null || true
         cat > "$SATISFACTION_FILE" << 'EOF'
 {
   "version": "1.0",
