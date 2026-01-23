@@ -70,6 +70,9 @@ HOOK_SECURITY_*.txt
 # Mem0 sync state
 .mem0-sync-pending
 
+# Orchestration runtime state (session-specific)
+.claude/orchestration/
+
 # Python caches
 .mypy_cache/
 .pytest_cache/
