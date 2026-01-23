@@ -5,7 +5,7 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [5.1.0] - 2026-01-23
 
 ### Added
 
@@ -83,6 +83,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Mermaid Generator** (#203): Generate timeline diagrams for documentation
   - **Skill Update**: `skills/decision-history/SKILL.md` v2.0.0 with TypeScript implementation
   - Restored unified bundle (`hooks.mjs`) for CLI tools in esbuild config
+
+- **TypeScript/ESM Hook Migration Phase 4** (#200): Complete code splitting architecture
+  - **11 Split Bundles**: Event-based bundles for faster per-hook load times (~77% reduction)
+    - `permission.mjs` (8.35 KB), `pretool.mjs` (47.68 KB), `posttool.mjs` (58.16 KB)
+    - `prompt.mjs` (56.91 KB), `lifecycle.mjs` (31.45 KB), `stop.mjs` (33.23 KB)
+    - `subagent.mjs` (56.16 KB), `notification.mjs` (4.96 KB), `setup.mjs` (24.24 KB)
+    - `skill.mjs` (51.63 KB), `agent.mjs` (8.31 KB)
+  - **Unified Bundle**: `hooks.mjs` (324.25 KB) retained for CLI tools like decision-history
+  - **156 TypeScript Hooks**: All hooks migrated to TypeScript with shared utilities
+  - **Build Optimization**: esbuild 0.27.2 with `drop: ['debugger']` in production
+  - **Test Suite**: 372 tests (39 new split bundle tests)
+  - **Performance**: Build time ~60ms, average bundle 34.64 KB per event type
 
 ### Changed
 
