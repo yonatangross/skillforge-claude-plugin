@@ -76,6 +76,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Engine Field Updates**: All 33 plugin manifests updated to `engine: ">=2.1.16"`
   - **VSCode Plugin Support**: Documentation for native plugin management in VSCode extension
 
+- **Decision History Dashboard** (#203, #206, #207, #208): TypeScript CLI for visualizing architecture decisions
+  - **CHANGELOG Parser** (#206): `hooks/src/lib/decision-history.ts` parses Keep a Changelog format
+  - **Decision Aggregator** (#207): Merges session, CHANGELOG, and coordination sources
+  - **CLI Dashboard** (#208): `hooks/bin/decision-history.mjs` with 7 commands (list, show, timeline, stats, mermaid, sync, search)
+  - **Mermaid Generator** (#203): Generate timeline diagrams for documentation
+  - **Skill Update**: `skills/decision-history/SKILL.md` v2.0.0 with TypeScript implementation
+  - Restored unified bundle (`hooks.mjs`) for CLI tools in esbuild config
+
 ### Changed
 
 - **Plugin Structure**: Restructured to Claude Code marketplace standards (code.claude.com/docs/en/plugins-reference)
@@ -86,7 +94,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Documentation**: Updated README.md and CLAUDE.md with modular plugin structure
 
-- **Skills Count**: 161 → 162 (added task-dependency-patterns)
+- **Skills Count**: 161 → 163 (added task-dependency-patterns, decision-history v2.0.0)
+
+- **User-Invocable Skills**: 21 → 22 (decision-history now user-invocable)
 
 - **Doctor Skill**: Version bumped to 2.0.0 with 6 health checks (was 5)
 
