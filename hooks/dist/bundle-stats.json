@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-01-23T16:53:15.781Z",
-  "buildTimeMs": 49,
+  "generatedAt": "2026-01-23T16:55:06.774Z",
+  "buildTimeMs": 58,
   "mode": "split",
   "bundles": {
     "permission": {
@@ -57,6 +57,12 @@
       "size": 8505,
       "sizeKB": "8.31",
       "exports": 41
+    },
+    "hooks": {
+      "size": 331863,
+      "sizeKB": "324.08",
+      "exports": 136,
+      "unified": true
     }
   },
   "totalSize": 390250,

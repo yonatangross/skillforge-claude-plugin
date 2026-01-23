@@ -439,6 +439,87 @@ The plugin automatically extracts and learns from development patterns without m
 
 **No manual commands required** - all extraction and warnings happen automatically via hooks.
 
+### 11. Agent Orchestration Layer (#197)
+Intelligent agent dispatch system that automatically spawns specialized agents based on prompt analysis.
+
+**Architecture:**
+```
+UserPromptSubmit
+      │
+      ▼
+┌─────────────────┐
+│ Intent Classifier│  Hybrid scoring: 30% keyword + 25% phrase +
+│ (85%+ accuracy) │  20% context + 15% co-occurrence + 10% negation
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────────────────┐
+│            Decision Engine                   │
+│  ≥85%: AUTO-DISPATCH  │  ≥80%: SKILL-INJECT │
+│  ≥70%: STRONG RECOMMEND │  ≥50%: SUGGEST    │
+└────────────────────────────────────────────-┘
+         │
+         ▼
+┌─────────────────┐     ┌─────────────────┐
+│ Agent Spawned   │────►│ CC 2.1.16 Task  │
+│ (Task tool)     │     │ TaskCreate      │
+└────────┬────────┘     └─────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│ Calibration     │  Records outcomes, adjusts keyword weights
+│ Engine          │  for continuous accuracy improvement
+└─────────────────┘
+```
+
+**Confidence Thresholds:**
+| Threshold | Value | Action |
+|-----------|-------|--------|
+| AUTO_DISPATCH | 85% | Immediately spawn agent |
+| SKILL_INJECT | 80% | Auto-inject skill content |
+| STRONG_RECOMMEND | 70% | Strong recommendation |
+| SUGGEST | 50% | Suggestion only |
+| MINIMUM | 40% | Filter threshold |
+
+**Multi-Agent Pipelines (5 predefined):**
+- `product-thinking`: market-intelligence → product-strategist → prioritization-analyst → business-case-builder → requirements-translator → metrics-architect
+- `full-stack-feature`: backend-system-architect → frontend-ui-developer → test-generator → security-auditor
+- `ai-integration`: workflow-architect → llm-integrator → data-pipeline-engineer → test-generator
+- `security-audit`: security-auditor → security-layer-auditor → test-generator
+- `frontend-compliance`: ux-researcher → rapid-ui-designer → frontend-ui-developer
+
+**Pipeline Detection Triggers:**
+- "should we build" → product-thinking pipeline
+- "full-stack feature" → full-stack-feature pipeline
+- "add RAG/LLM" → ai-integration pipeline
+
+**Key Files:**
+```
+hooks/src/lib/
+├── intent-classifier.ts      # Hybrid scoring engine
+├── orchestration-types.ts    # THRESHOLDS, type definitions
+├── orchestration-state.ts    # Session state management
+├── task-integration.ts       # CC 2.1.16 bridge
+├── retry-manager.ts          # Exponential backoff + alternatives
+├── calibration-engine.ts     # Outcome learning
+└── multi-agent-coordinator.ts # Pipeline definitions
+
+hooks/src/prompt/
+├── agent-orchestrator.ts     # Auto-dispatch hook
+├── skill-injector.ts         # Skill auto-injection
+└── pipeline-detector.ts      # Pipeline detection
+```
+
+**Retry Logic:**
+- Max 3 retries with exponential backoff (2^n seconds, capped at 30s)
+- Suggests alternative agents after failures
+- Keeps task in_progress during retry, marks blocked on give-up
+
+**Calibration:**
+- Records: agent, confidence, outcome (success/partial/failure/rejected)
+- Adjusts keyword weights: +3 for success, -3 for failure (capped at ±15)
+- Stored in `.claude/feedback/calibration-data.json`
+
 ---
 
 ## What NOT to Do
