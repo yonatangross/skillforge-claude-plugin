@@ -1,0 +1,156 @@
+---
+name: demo-producer
+description: Create polished demo videos for anything - skills, plugins, coding tutorials, CLI tools, or any custom content. Interactive workflow with format selection.
+user-invocable: true
+context: fork
+version: 1.0.0
+author: OrchestKit
+tags: [demo, video, marketing, vhs, remotion, terminal, showcase, tutorial]
+---
+
+# Demo Producer
+
+Universal demo video creation for any content type.
+
+## Quick Start
+
+```bash
+/demo-producer                    # Interactive mode - asks what to create
+/demo-producer skill explore      # Create demo for a skill
+/demo-producer plugin ork-rag     # Create demo for a plugin
+/demo-producer tutorial "Building a REST API"  # Custom tutorial
+```
+
+## Supported Content Types
+
+| Type | Source | Example |
+|------|--------|---------|
+| `skill` | skills/{name}/SKILL.md | `/demo-producer skill commit` |
+| `agent` | agents/{name}.md | `/demo-producer agent debug-investigator` |
+| `plugin` | plugins/{name}/plugin.json | `/demo-producer plugin ork-core` |
+| `marketplace` | Marketplace install flow | `/demo-producer marketplace ork-rag` |
+| `tutorial` | Custom description | `/demo-producer tutorial "Git workflow"` |
+| `cli` | Any CLI tool | `/demo-producer cli "npm create vite"` |
+| `code` | Code walkthrough | `/demo-producer code src/api/auth.ts` |
+
+## Interactive Flow
+
+When invoked without arguments, asks:
+
+### Question 1: Content Type
+```
+What type of demo do you want to create?
+
+○ Skill - OrchestKit skill showcase
+○ Agent - AI agent demonstration
+○ Plugin - Plugin installation/features
+○ Tutorial - Custom coding tutorial
+○ CLI Tool - Command-line tool demo
+○ Code Walkthrough - Explain existing code
+```
+
+### Question 2: Format
+```
+What format(s) do you need?
+
+☑ Horizontal (16:9) - YouTube, Twitter
+☑ Vertical (9:16) - TikTok, Reels, Shorts
+☐ Square (1:1) - Instagram, LinkedIn
+```
+
+### Question 3: Style
+```
+What style fits your content?
+
+○ Quick Demo (6-10s) - Fast showcase, single feature
+○ Standard Demo (15-25s) - Full workflow, multiple steps
+○ Tutorial (30-60s) - Detailed explanation, code examples
+○ Cinematic (60s+) - Story-driven, high polish
+```
+
+### Question 4: Audio
+```
+Audio preferences?
+
+○ Music Only - Subtle ambient background
+○ Music + SFX - Background + success sounds
+○ Silent - No audio
+```
+
+## Pipeline Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Demo Producer Pipeline                        │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────────┐  │
+│  │   Content   │───▶│   Content    │───▶│   Script Generator  │  │
+│  │   Detector  │    │   Analyzer   │    │   (per type)        │  │
+│  └─────────────┘    └──────────────┘    └──────────┬──────────┘  │
+│                                                     │             │
+│                                                     ▼             │
+│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────────┐  │
+│  │  Remotion   │◀───│    VHS       │◀───│   Terminal Script   │  │
+│  │  Composer   │    │   Recorder   │    │   (.sh + .tape)     │  │
+│  └──────┬──────┘    └──────────────┘    └─────────────────────┘  │
+│         │                                                         │
+│         ▼                                                         │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │                    Final Outputs                             │ │
+│  │  • horizontal/{Name}Demo.mp4                                 │ │
+│  │  • vertical/{Name}Demo-Vertical.mp4                          │ │
+│  │  • square/{Name}Demo-Square.mp4 (optional)                   │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+## Content Type Templates
+
+### Skill Template
+Shows: Skill activation → Task creation → Phase execution → Results
+
+### Agent Template
+Shows: Agent spawning → Tool usage → Parallel execution → Synthesis
+
+### Plugin Template
+Shows: /plugin install → Configuration → Features showcase
+
+### Tutorial Template
+Shows: Problem statement → Code writing → Execution → Result
+
+### CLI Template
+Shows: Command entry → Execution → Output explanation
+
+### Code Walkthrough Template
+Shows: File overview → Key sections → Pattern explanation
+
+## Generation Commands
+
+```bash
+# After interactive selection, generates:
+
+# 1. Terminal script
+./skills/demo-producer/scripts/generate-script.sh \
+  --type=skill \
+  --name=explore \
+  --style=standard \
+  --output=orchestkit-demos/scripts/
+
+# 2. VHS tape files
+./skills/demo-producer/scripts/generate-tape.sh \
+  --script=demo-explore.sh \
+  --format=horizontal,vertical \
+  --output=orchestkit-demos/tapes/
+
+# 3. Record VHS
+cd orchestkit-demos/tapes && vhs sim-explore.tape
+
+# 4. Add Remotion composition
+./skills/demo-producer/scripts/add-composition.sh \
+  --name=explore \
+  --type=skill \
+  --formats=horizontal,vertical
+
+# 5. Render final
+cd orchestkit-demos && npx remotion render ExploreDe
