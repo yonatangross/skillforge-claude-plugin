@@ -1,6 +1,6 @@
-# Proxy Support (v0.6.0)
+# Proxy Support (v0.6.0+)
 
-Route browser traffic through HTTP, HTTPS, or SOCKS proxies.
+Route browser traffic through HTTP, HTTPS, or SOCKS proxies. Updated for v0.7.0 with proxy bypass and advanced configuration.
 
 ## Basic Proxy Usage
 
@@ -143,14 +143,31 @@ agent-browser get text body
 # Should show proxy IP, not your real IP
 ```
 
-## Proxy Bypass
+## Proxy Bypass (v0.7.0)
 
-No built-in bypass list. For local/internal sites without proxy:
+Use `--proxy-bypass` to exclude domains from proxy routing:
+
+```bash
+# Bypass localhost and local domains
+agent-browser --proxy http://proxy:8080 --proxy-bypass "localhost,*.local" \
+    open https://external-site.com
+
+# Bypass multiple domains
+agent-browser --proxy http://proxy:8080 \
+    --proxy-bypass "localhost,*.internal.corp,192.168.*" \
+    open https://example.com
+
+# Environment variable alternative
+export AGENT_BROWSER_PROXY_BYPASS="localhost,*.local,*.corp"
+agent-browser --proxy http://proxy:8080 open https://example.com
+```
+
+### Legacy Pattern (Still Works)
+
+For complex scenarios, use different sessions:
 
 ```bash
 #!/bin/bash
-# Use different sessions for proxy/no-proxy
-
 # Proxied session for external sites
 agent-browser --session external --proxy http://proxy:8080 \
     open https://external-site.com
@@ -194,6 +211,52 @@ update-ca-certificates
 agent-browser --proxy http://slow-proxy:8080 \
     --timeout 60000 \
     open https://example.com
+```
+
+## Advanced Browser Configuration (v0.7.0)
+
+### Custom User Agent
+
+```bash
+# Set user agent for proxy detection evasion
+agent-browser --proxy http://proxy:8080 \
+    --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0" \
+    open https://example.com
+
+# Environment variable
+export AGENT_BROWSER_USER_AGENT="Custom Agent/1.0"
+agent-browser --proxy http://proxy:8080 open https://example.com
+```
+
+### Extra Browser Arguments
+
+```bash
+# Disable features that might reveal proxy use
+agent-browser --proxy http://proxy:8080 \
+    --args "--disable-webrtc --disable-features=WebRTC" \
+    open https://example.com
+
+# Multiple arguments
+agent-browser --proxy http://proxy:8080 \
+    --args "--disable-gpu --no-sandbox --disable-dev-shm-usage" \
+    open https://example.com
+
+# Environment variable
+export AGENT_BROWSER_ARGS="--disable-webrtc"
+```
+
+### Combining Options
+
+```bash
+#!/bin/bash
+# Full stealth proxy configuration
+
+agent-browser \
+    --proxy http://residential-proxy:8080 \
+    --proxy-bypass "localhost,*.local" \
+    --user-agent "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)" \
+    --args "--disable-blink-features=AutomationControlled" \
+    open https://target-site.com
 ```
 
 ## Security Considerations
