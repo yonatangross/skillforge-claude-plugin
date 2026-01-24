@@ -5,6 +5,29 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.1] - 2026-01-24
+
+### Changed
+
+- **agent-browser skill**: Synced to upstream v0.7.0
+  - Added Installation section (`install`, `install --with-deps`)
+  - Added `download` command and `wait --download`
+  - Added `connect` command for CDP WebSocket URLs
+  - Added `get styles` command
+  - Added `--profile` flag for persistent browser profiles
+  - Added `-p, --provider` flag for cloud browsers (Browserbase, Browser Use)
+  - Added `--args`, `--user-agent`, `--proxy-bypass` launch config flags
+  - Added `--executable-path`, `--debug`, `--cdp` flags
+  - Added new semantic locators: `placeholder`, `alt`, `title`, `testid`, `last`, `--exact`
+  - Added Selector Types section (refs, CSS, text=, xpath=)
+  - Added `storage session` commands (alongside `storage local`)
+  - Added command aliases (goto/navigate, quit/exit, key, scrollinto)
+  - Added `tab close <n>` for closing tabs by index
+  - Added complete environment variables (including `AGENT_BROWSER_STREAM_PORT`)
+  - New references: `persistent-profiles.md`, `cloud-providers.md`
+  - Updated `commands.md`, `proxy-support.md`, `protocol-alignment.md`
+  - Skill version bumped to 2.0.0
+
 ## [5.1.0] - 2026-01-23
 
 ### Added

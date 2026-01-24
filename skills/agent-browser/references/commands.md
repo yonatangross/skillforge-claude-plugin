@@ -1,13 +1,18 @@
 # agent-browser Command Reference
 
-Complete reference for all 60+ agent-browser CLI commands.
+Complete reference for all 60+ agent-browser CLI commands. Updated for v0.7.0.
 
 ## Navigation Commands
 
 ```bash
 # Open URL (starts browser if needed)
+# Aliases: goto, navigate
 agent-browser open <url>
 agent-browser open https://example.com
+
+# Connect to existing browser via CDP (v0.7.0)
+agent-browser connect <port>
+agent-browser connect 9222
 
 # Navigation history
 agent-browser back
@@ -53,7 +58,7 @@ agent-browser type @e2 "additional text"
 agent-browser select @e3 "Option Text"
 agent-browser select @e3 --value "option_value"
 
-# Press keyboard keys
+# Press keyboard keys (alias: key)
 agent-browser press Enter
 agent-browser press Tab
 agent-browser press "Control+a"
@@ -109,6 +114,20 @@ agent-browser record stop
 agent-browser record restart /path/to/new-recording.webm
 ```
 
+## Download Commands (v0.7.0)
+
+```bash
+# Click element and save download
+agent-browser download @e1 /path/to/file.pdf
+
+# Wait for download to complete
+agent-browser wait --download
+agent-browser wait --download /path/to/expected-file.pdf
+
+# Download with timeout
+agent-browser download @e1 /path/to/file.zip --timeout 60000
+```
+
 ## Wait Commands
 
 ```bash
@@ -162,8 +181,9 @@ agent-browser tab switch 2
 # Close current tab
 agent-browser tab close
 
-# Close specific tab
+# Close specific tab by index (v0.7.0)
 agent-browser tab close 1
+agent-browser tab close 2
 ```
 
 ## Session Management
@@ -291,9 +311,52 @@ agent-browser close --force
 # Timeout (ms)
 --timeout <ms>
 
+# JSON output mode
+--json
+
 # Headful mode (visible browser)
-AGENT_BROWSER_HEADED=1 agent-browser open https://example.com
+--headed
+
+# Persistent browser profile (v0.7.0)
+--profile <path>
+
+# Cloud browser provider (v0.7.0)
+-p, --provider <name>
+
+# Extra browser arguments (v0.7.0)
+--args <args>
+
+# Custom user agent (v0.7.0)
+--user-agent <ua>
+
+# Proxy bypass list (v0.7.0)
+--proxy-bypass <domains>
+
+# Load browser extension
+--extension <path>
+```
+
+## Environment Variables
+
+```bash
+# Persistent profile path (v0.7.0)
+AGENT_BROWSER_PROFILE="/path/to/profile"
+
+# Cloud provider (v0.7.0)
+AGENT_BROWSER_PROVIDER="browserbase"
+
+# Extra browser args (v0.7.0)
+AGENT_BROWSER_ARGS="--disable-gpu"
+
+# Custom user agent (v0.7.0)
+AGENT_BROWSER_USER_AGENT="Custom/1.0"
+
+# Proxy bypass list (v0.7.0)
+AGENT_BROWSER_PROXY_BYPASS="localhost,*.local"
+
+# Headful mode (visible browser)
+AGENT_BROWSER_HEADED=1
 
 # No color output
-NO_COLOR=1 agent-browser snapshot
+NO_COLOR=1
 ```

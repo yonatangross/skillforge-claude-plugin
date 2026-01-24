@@ -1,6 +1,6 @@
-# Protocol Alignment (v0.6.0)
+# Protocol Alignment (v0.6.0 - v0.7.0)
 
-Breaking changes in v0.6.0 for protocol consistency. Update commands accordingly.
+Version compatibility notes and breaking changes. Update commands accordingly.
 
 ## Breaking Changes
 
@@ -153,6 +153,93 @@ agent-browser network
 agent-browser select @e1 "Option 1" "Option 2" "Option 3"
 ```
 
+## New Features in v0.7.0
+
+### Download Commands
+
+```bash
+# Click element and save download
+agent-browser download @e1 ./file.pdf
+
+# Wait for download to complete
+agent-browser wait --download [path]
+```
+
+### Persistent Browser Profiles
+
+```bash
+# Maintain browser state across sessions
+agent-browser --profile ~/.agent-browser/my-project open https://example.com
+
+# Environment variable
+AGENT_BROWSER_PROFILE="/path" agent-browser open https://example.com
+```
+
+### Cloud Browser Providers
+
+```bash
+# Use cloud browser infrastructure
+agent-browser -p browserbase open https://example.com
+agent-browser --provider browseruse open https://example.com
+
+# Environment variable
+AGENT_BROWSER_PROVIDER="browserbase" agent-browser open https://example.com
+```
+
+### New Semantic Locators
+
+```bash
+# Exact text match
+agent-browser find text "Sign In" click --exact
+
+# By placeholder
+agent-browser find placeholder "Search" type "query"
+
+# By alt text
+agent-browser find alt "Logo" click
+
+# By title attribute
+agent-browser find title "Close" click
+
+# By data-testid
+agent-browser find testid "submit-btn" click
+
+# Last match
+agent-browser find last ".item" click
+```
+
+### Proxy Bypass
+
+```bash
+# Bypass specific domains from proxy
+agent-browser --proxy http://proxy:8080 --proxy-bypass "localhost,*.local" \
+    open https://example.com
+```
+
+### Advanced Browser Configuration
+
+```bash
+# Custom user agent
+agent-browser --user-agent "Custom/1.0" open https://example.com
+
+# Extra browser args
+agent-browser --args "--disable-gpu" open https://example.com
+```
+
+### Tab Close by Index
+
+```bash
+# Close specific tab
+agent-browser tab close 2
+```
+
+### Connect to Existing Browser
+
+```bash
+# Connect via CDP port
+agent-browser connect 9222
+```
+
 ## Bug Fixes in v0.6.0
 
 | Issue | Fix |
@@ -187,14 +274,27 @@ agent-browser --version
 
 ## Compatibility Matrix
 
-| Feature | v0.5.x | v0.6.0 |
-|---------|--------|--------|
-| Basic navigation | ✓ | ✓ |
-| Snapshot + refs | ✓ | ✓ |
-| Sessions | ✓ | ✓ |
-| Video recording | ✗ | ✓ |
-| Proxy support | ✗ | ✓ |
-| CDP connect | ✗ | ✓ |
-| `mouse wheel` | ✗ | ✓ |
-| `set media` | ✗ | ✓ |
-| Multi-select | Partial | ✓ |
+| Feature | v0.5.x | v0.6.0 | v0.7.0 |
+|---------|--------|--------|--------|
+| Basic navigation | ✓ | ✓ | ✓ |
+| Snapshot + refs | ✓ | ✓ | ✓ |
+| Sessions | ✓ | ✓ | ✓ |
+| Video recording | ✗ | ✓ | ✓ |
+| Proxy support | ✗ | ✓ | ✓ |
+| CDP connect | ✗ | ✓ | ✓ |
+| `mouse wheel` | ✗ | ✓ | ✓ |
+| `set media` | ✗ | ✓ | ✓ |
+| Multi-select | Partial | ✓ | ✓ |
+| Download command | ✗ | ✗ | ✓ |
+| Persistent profiles | ✗ | ✗ | ✓ |
+| Cloud providers | ✗ | ✗ | ✓ |
+| Proxy bypass | ✗ | ✗ | ✓ |
+| New semantic locators | ✗ | ✗ | ✓ |
+| Tab close by index | ✗ | ✗ | ✓ |
+
+## Checking Version
+
+```bash
+agent-browser --version
+# Should output: 0.7.0 or higher for latest features
+```
