@@ -38,6 +38,7 @@ HOOK_SECURITY_*.txt
 
 # Instance-specific environment
 .claude/.instance_env
+.claude-local/
 
 # Session state and runtime data
 .claude/context/session.json

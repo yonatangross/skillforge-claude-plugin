@@ -6,6 +6,11 @@ import {
   CinematicVerticalDemo,
   cinematicVerticalDemoSchema,
 } from "./components/CinematicVerticalDemo";
+import {
+  VideoDemo,
+  videoDemoSchema,
+  calculateVideoDemoMetadata,
+} from "./components/VideoDemo";
 
 const FPS = 30;
 const WIDTH = 1920;
@@ -24,6 +29,40 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       {/* ==================== HORIZONTAL 16:9 DEMOS ==================== */}
+
+      {/* /plugin install - Video-driven duration (2026 pattern) */}
+      <Composition
+        id="InstallDemo"
+        component={VideoDemo}
+        durationInFrames={300} // Overridden by calculateMetadata
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        schema={videoDemoSchema}
+        calculateMetadata={calculateVideoDemoMetadata}
+        defaultProps={{
+          skillName: "plugin install ork",
+          hook: "One command. Full-stack AI toolkit.",
+          terminalVideo: "install-demo.mp4",
+          primaryColor: "#8b5cf6",
+          cta: "/plugin install ork",
+          problemPoints: [
+            "Manual setup takes forever",
+            "No standardized workflows",
+            "Missing best practices",
+          ],
+          stats: [
+            { value: "168", label: "skills", color: "#8b5cf6" },
+            { value: "35", label: "agents", color: "#22c55e" },
+            { value: "148", label: "hooks", color: "#f59e0b" },
+          ],
+          results: {
+            before: "Hours configuring",
+            after: "Instant productivity",
+          },
+          ccVersion: "CC 2.1.16",
+        }}
+      />
 
       {/* /explore - 13s VHS video */}
       <Composition

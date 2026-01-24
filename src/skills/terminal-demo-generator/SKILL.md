@@ -1,122 +1,143 @@
 ---
 name: terminal-demo-generator
-description: Reference patterns for VHS terminal recordings. Documents tape format, Claude Code CLI simulation, and terminal output patterns.
+description: Terminal recording patterns using VHS (scripted) and asciinema (real). Documents tape format, cast editing, Claude Code CLI simulation, and conversion to video.
 context: inherit
-version: 1.0.0
+version: 2.0.0
 author: OrchestKit
-tags: [demo, video, vhs, terminal, reference, cli]
+tags: [demo, video, vhs, asciinema, terminal, recording, cli]
 ---
 
 # Terminal Demo Generator
 
-Reference patterns for creating VHS terminal recordings and Claude Code CLI simulations.
+Two approaches for terminal demo recordings:
 
-> **Note**: Actual generation is performed by `demo-producer/scripts/generate.sh`. This skill provides reference patterns.
+| Method | Best For | Authenticity |
+|--------|----------|--------------|
+| **asciinema** | Real CC sessions, actual output | ⭐⭐⭐⭐⭐ |
+| **VHS scripts** | Controlled demos, reproducible | ⭐⭐⭐ |
 
-## VHS Tape Format
+## Quick Start
 
-### Horizontal (16:9)
-```tape
-Output ../output/{name}-demo.mp4
-Set Shell "bash"
-Set FontFamily "Menlo"
-Set FontSize 18
+### Real Session (Recommended)
+```bash
+# Record actual Claude Code session
+asciinema rec --cols 120 --rows 35 -i 2 demo.cast
+
+# Convert to MP4 via VHS
+vhs << 'EOF'
+Output demo.mp4
 Set Width 1400
-Set Height 650
-Set Theme "Dracula"
-Set Padding 30
-Set Framerate 30
-Set TypingSpeed 50ms
-
-Type "../scripts/demo-{name}.sh"
-Enter
-Sleep 12s
+Set Height 800
+Source demo.cast
+EOF
 ```
 
-### Vertical (9:16)
+### Scripted Demo
+```bash
+# Generate script via demo-producer
+./skills/demo-producer/scripts/generate.sh skill verify
+
+# Record with VHS
+vhs orchestkit-demos/tapes/sim-verify.tape
+```
+
+## Recording Methods
+
+### 1. Asciinema (Real Sessions)
+
+Record actual Claude Code usage:
+
+```bash
+# Start recording
+asciinema rec \
+  --cols 120 \
+  --rows 35 \
+  --idle-time-limit 2 \
+  session.cast
+
+# Inside recording:
+claude
+> /verify
+# ... real Claude output ...
+> exit
+```
+
+See `references/asciinema-recording.md` for editing and conversion.
+
+### 2. VHS Scripts (Controlled)
+
+Pre-scripted terminal simulations:
+
 ```tape
-Output ../output/{name}-demo-vertical.mp4
+Output demo.mp4
 Set Shell "bash"
 Set FontFamily "Menlo"
-Set FontSize 22
-Set Width 900
-Set Height 1400
+Set FontSize 16
+Set Width 1400
+Set Height 800
 Set Theme "Dracula"
-Set Padding 40
 Set Framerate 30
-Set TypingSpeed 50ms
 
-Type "../scripts/demo-{name}.sh"
+Type "./demo-script.sh"
 Enter
-Sleep 12s
+Sleep 15s
 ```
 
-## Claude Code CLI Simulation
+## Claude Code CLI Patterns
 
 ### Status Bar (CC 2.1.16+)
-```bash
+```
 [Opus 4.5] ████████░░ 42% | ~/project git:(main) | ● 3m
 ✓ Bash ×3 | ✓ Read ×5 | ✓ Grep ×2 | ✓ Task ×∞
 >> bypass permissions on (shift+Tab to cycle)
 ```
 
-### Skill Activation
-```bash
-◆ Activating skill: {name}
-  → Reading skills/{name}/SKILL.md
-  → Auto-injecting: {related_skills}
-✓ {description}
+### Task Management
+```
+◆ TaskCreate #1 "Analyze codebase"
+◆ TaskCreate #2 "Security scan"
+◆ TaskCreate #3 "Generate report" blockedBy: #1, #2
+◆ TaskUpdate: #1, #2 → in_progress (PARALLEL)
+✓ Task #1 completed
+✓ Task #2 completed
+◆ Task #3 unblocked (2/2 resolved)
 ```
 
-### Task Management (CC 2.1.16)
-```bash
-◆ TaskCreate: Created task #1 "{phase_name}"
-◆ TaskUpdate: Task #1 → in_progress
-⠋ [Task #1] Processing...
-✓ [Task #1] {phase_name} completed
-◆ TaskList: 2/2 completed
+### Agent Spawning
+```
+⚡ Spawning 6 parallel agents via Task tool
+  ▸ code-reviewer spawned
+  ▸ security-auditor spawned
+  ▸ test-generator spawned
 ```
 
-### Parallel Agent Spawning
+## Color Codes
+
 ```bash
-⚡ Spawning {n} parallel agents via Task tool...
-◆ TaskUpdate: Task #1 → in_progress
-◆ TaskUpdate: Task #2 → in_progress
-✓ [Task #1] ork:{agent_1} analyzing... completed
-✓ [Task #2] ork:{agent_2} scanning... completed
+P="\033[35m"  # Purple - skills, agents
+C="\033[36m"  # Cyan - info, tasks
+G="\033[32m"  # Green - success
+Y="\033[33m"  # Yellow - warnings, progress
+R="\033[31m"  # Red - errors
+D="\033[90m"  # Gray - dim/secondary
+B="\033[1m"   # Bold
+N="\033[0m"   # Reset
 ```
 
-## Terminal Color Codes
+## Pipeline Integration
 
-```bash
-GREEN="\033[32m"   # Success, prompts
-YELLOW="\033[33m"  # Warnings, in_progress
-CYAN="\033[36m"    # Info, tasks
-MAGENTA="\033[35m" # Agents, skills
-DIM="\033[2m"      # Secondary text
-BOLD="\033[1m"     # Emphasis
-RESET="\033[0m"    # Reset formatting
+Terminal recordings feed into the full demo pipeline:
+
 ```
-
-## Spinner Animation
-
-```bash
-SPINNERS=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
-
-spinner() {
-    local message="$1"
-    local duration="${2:-1}"
-    local i=0
-    while [ $SECONDS -lt $((SECONDS + duration)) ]; do
-        printf "\r${CYAN}${SPINNERS[$i]} ${message}${RESET}"
-        i=$(( (i + 1) % ${#SPINNERS[@]} ))
-        sleep 0.1
-    done
-}
+terminal-demo-generator     →  demo-producer  →  remotion-composer
+(asciinema/VHS recording)      (orchestration)    (final composition)
+                                    ↓
+                            manim-visualizer
+                            (animations)
 ```
 
 ## References
 
-See `references/` for detailed patterns:
-- `vhs-tape-format.md` - VHS configuration options
-- `cc-simulation.md` - Claude Code CLI patterns
+- `references/asciinema-recording.md` - Real session recording
+- See `demo-producer` for full pipeline
+- See `remotion-composer` for video composition
