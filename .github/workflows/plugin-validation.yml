@@ -114,7 +114,10 @@ jobs:
       - name: Validate marketplace.json schema
         run: ./tests/schemas/test-marketplace-schema.sh
 
-      - name: Validate plugin.json structure
+      - name: Validate plugin.json schema
+        run: ./tests/schemas/test-plugin-schema.sh
+
+      - name: Validate plugin.json structure (legacy)
         run: |
           echo "Checking .claude-plugin/plugin.json..."
 
