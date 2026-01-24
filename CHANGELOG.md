@@ -5,6 +5,24 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.3] - 2026-01-24
+
+### Fixed
+
+- **plugin.json schema compliance**: Removed invalid `engine` field from all 33 modular plugins (#213)
+  - CC plugin.json schema does not allow `engine` field at plugin level (only at marketplace.json root)
+  - All 34 plugins now pass schema validation
+
+### Added
+
+- **Comprehensive plugin validation**: Updated `tests/schemas/test-plugin-schema.sh` to validate ALL plugins
+  - Root plugin at `.claude-plugin/plugin.json`
+  - All 33 modular plugins at `plugins/ork-*/.claude-plugin/plugin.json`
+  - Validates required fields, version format, hooks structure, and invalid fields
+
+---
+
+
 ## [5.1.2] - 2026-01-24
 
 ### Fixed
