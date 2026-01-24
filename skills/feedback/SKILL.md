@@ -6,6 +6,7 @@ version: 1.2.0
 author: OrchestKit
 tags: [feedback, learning, patterns, metrics, privacy, analytics, consent]
 user-invocable: true
+allowedTools: [Read, Write, Edit, Grep, Glob]
 ---
 
 # Feedback - Manage Learning System

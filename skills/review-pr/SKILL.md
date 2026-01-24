@@ -6,6 +6,7 @@ version: 1.1.0
 author: OrchestKit
 tags: [code-review, pull-request, quality, security, testing]
 user-invocable: true
+allowedTools: [Bash, Read, Write, Edit, Grep, Glob, Task]
 ---
 
 # Review PR

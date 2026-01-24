@@ -1,7 +1,7 @@
 ---
 name: performance-engineer
 description: Performance engineer who optimizes Core Web Vitals, analyzes bundles, profiles render performance, and sets up RUM. Activates for performance, Core Web Vitals, LCP, INP, CLS, bundle size, Lighthouse, optimization, slow, latency, profiling, metrics, RUM, bundle, chunk, splitting, speed
-model: sonnet
+model: inherit
 context: fork
 color: green
 tools:

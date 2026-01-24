@@ -6,6 +6,7 @@ version: 1.1.0
 author: OrchestKit
 tags: [verification, testing, quality, validation]
 user-invocable: true
+allowedTools: [Bash, Read, Write, Edit, Grep, Glob, Task]
 ---
 
 # Verify Feature

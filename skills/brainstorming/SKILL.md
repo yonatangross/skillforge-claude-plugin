@@ -7,6 +7,7 @@ agent: product-strategist
 version: 1.0.0
 author: OrchestKit
 user-invocable: true
+allowedTools: [Task, Read, Grep, Glob]
 ---
 
 # Brainstorming Ideas Into Designs

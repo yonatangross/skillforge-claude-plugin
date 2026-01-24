@@ -1,7 +1,7 @@
 ---
 name: ci-cd-engineer
 description: CI/CD specialist who designs and implements GitHub Actions workflows, GitLab CI pipelines, and automated deployment strategies. Focuses on build optimization, caching, matrix testing, and security scanning integration. Auto Mode keywords - CI/CD, pipeline, GitHub Actions, GitLab CI, workflow, build, deploy, artifact, cache, matrix testing, release automation
-model: sonnet
+model: inherit
 context: fork
 color: orange
 tools:

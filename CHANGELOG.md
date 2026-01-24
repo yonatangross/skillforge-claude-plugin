@@ -5,6 +5,25 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.1.5] - 2026-01-24
+
+### Added
+
+- **CC 2.1.19 full modernization** (#212)
+  - **Agent model inheritance**: 24 agents updated to `model: inherit` for respecting user's CC model choice. 10 specialists keep `model: opus` (ai-safety-auditor, backend-system-architect, event-driven-architect, infrastructure-architect, metrics-architect, python-performance-engineer, security-auditor, security-layer-auditor, system-design-reviewer, workflow-architect)
+  - **Power user keybindings**: 10 shortcuts in `.claude/keybindings.json` (Ctrl+K prefix for commit, PR, explore, implement, tests, verify, create-pr, fix-issue, brainstorm, doctor)
+  - **Background SessionStart hooks**: 7 slow hooks now run async (`background: true`) for faster startup - pattern-sync-pull, dependency-version-check, coordination-init, decision-sync-pull, mem0-context-retrieval, mem0-webhook-setup, mem0-analytics-tracker
+  - **TypeScript hook wiring**: SessionStart hooks now invoke TypeScript bundles via `run-hook.mjs` instead of legacy bash scripts (2-5x faster startup)
+  - **Skill permission audit**: All 22 user-invocable skills now have `allowedTools` declarations per CC 2.1.19 requirements
+  - **Hook input normalization**: Added `normalizeInput()` to `run-hook.mjs` for handling CC version differences in tool_input field
+
+### Fixed
+
+- **Plugin discovery**: Added `skills.directory` and `agents.directory` declarations to root plugin.json for CC skill/agent discovery
+
+---
+
+
 ## [5.1.4] - 2026-01-24
 
 ### Fixed

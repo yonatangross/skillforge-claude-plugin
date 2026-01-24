@@ -6,6 +6,7 @@ version: 2.0.0
 author: OrchestKit
 tags: [health-check, diagnostics, validation, permissions, hooks]
 user-invocable: true
+allowedTools: [Bash, Read, Grep, Glob]
 ---
 
 # OrchestKit Health Diagnostics

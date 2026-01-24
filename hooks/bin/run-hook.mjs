@@ -52,6 +52,23 @@ async function loadBundle(hookName) {
   return await import(bundlePath);
 }
 
+/**
+ * Normalize hook input to handle CC version differences
+ * CC 2.1.19+ uses tool_input, older versions may use toolInput
+ */
+function normalizeInput(input) {
+  if (!input.tool_input && input.toolInput) {
+    input.tool_input = input.toolInput;
+  }
+  if (!input.tool_input) {
+    input.tool_input = {};
+  }
+  input.tool_name = input.tool_name || input.toolName || '';
+  input.session_id = input.session_id || input.sessionId || process.env.CLAUDE_SESSION_ID || '';
+  input.project_dir = input.project_dir || input.projectDir || process.env.CLAUDE_PROJECT_DIR || '.';
+  return input;
+}
+
 const hookName = process.argv[2];
 
 // If no hook name provided, output silent success
@@ -93,7 +110,7 @@ let stdinClosed = false;
 const timeout = setTimeout(() => {
   if (!stdinClosed) {
     stdinClosed = true;
-    runHook({});
+    runHook(normalizeInput({}));
   }
 }, 100);
 
@@ -110,7 +127,7 @@ process.stdin.on('end', () => {
     stdinClosed = true;
     try {
       const parsedInput = input.trim() ? JSON.parse(input) : {};
-      runHook(parsedInput);
+      runHook(normalizeInput(parsedInput));
     } catch (err) {
       // JSON parse error - output error message but continue
       console.log(JSON.stringify({
@@ -125,7 +142,7 @@ process.stdin.on('error', () => {
   clearTimeout(timeout);
   if (!stdinClosed) {
     stdinClosed = true;
-    runHook({});
+    runHook(normalizeInput({}));
   }
 });
 

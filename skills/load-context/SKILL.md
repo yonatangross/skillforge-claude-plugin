@@ -3,6 +3,7 @@ name: load-context
 description: Auto-load relevant memories at session start from both mem0 and graph. Use when you need session context restored or preloaded.
 tags: [memory, mem0, graph, session, context, continuity, auto-load]
 user-invocable: true
+allowedTools: [Read, Grep, Glob]
 auto-invoke: session-start
 context: inherit
 agent: null

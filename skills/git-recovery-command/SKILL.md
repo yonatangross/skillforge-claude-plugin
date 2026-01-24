@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [git, recovery, undo, reflog, reset]
 user-invocable: true
+allowedTools: [Bash]
 ---
 
 # Git Recovery

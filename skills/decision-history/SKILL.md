@@ -6,6 +6,7 @@ version: 2.0.0
 author: OrchestKit
 tags: [decisions, history, visualization, timeline, mermaid, cli, typescript]
 user-invocable: true
+allowedTools: [Read, Grep, Glob]
 ---
 
 # Decision History Dashboard

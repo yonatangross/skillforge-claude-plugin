@@ -1,7 +1,7 @@
 ---
 name: monitoring-engineer
 description: Observability and monitoring specialist. Prometheus metrics, Grafana dashboards, alerting rules, distributed tracing, log aggregation, SLOs/SLIs. Use for monitoring, prometheus, grafana, alerting, tracing, opentelemetry, metrics, observability, logs, slo, sli.
-model: sonnet
+model: inherit
 context: fork
 color: orange
 tools:
