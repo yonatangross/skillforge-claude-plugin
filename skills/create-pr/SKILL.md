@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [git, github, pull-request, pr, code-review]
 user-invocable: true
+allowedTools: [Bash]
 ---
 
 # Create Pull Request

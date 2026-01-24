@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [skill-management, evolution, versioning, analytics]
 user-invocable: true
+allowedTools: [Read, Write, Edit, Grep, Glob]
 ---
 
 # Skill Evolution Manager

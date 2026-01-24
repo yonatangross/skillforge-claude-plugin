@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [issue, bug-fix, github, debugging]
 user-invocable: true
+allowedTools: [Bash]
 ---
 
 # Fix Issue

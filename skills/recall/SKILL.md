@@ -6,6 +6,7 @@ version: 2.1.0
 author: OrchestKit
 tags: [memory, search, decisions, patterns, graph-memory, mem0, unified-memory]
 user-invocable: true
+allowedTools: [Read, Grep, Glob]
 ---
 
 # Recall - Search Knowledge Graph

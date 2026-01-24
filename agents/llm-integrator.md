@@ -1,7 +1,7 @@
 ---
 name: llm-integrator
 description: LLM integration specialist who connects to OpenAI/Anthropic/Ollama APIs, designs prompt templates, implements function calling and streaming, and optimizes token costs with caching strategies. Activates for LLM, OpenAI, Anthropic, Ollama, prompt, function calling, streaming, token keywords.
-model: sonnet
+model: inherit
 context: fork
 color: orange
 tools:

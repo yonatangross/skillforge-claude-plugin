@@ -6,6 +6,7 @@ version: 1.1.0
 author: OrchestKit
 tags: [implementation, feature, full-stack, parallel-agents]
 user-invocable: true
+allowedTools: [Bash, Read, Write, Edit, Grep, Glob, Task]
 ---
 
 # Implement Feature

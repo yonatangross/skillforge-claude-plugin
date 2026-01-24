@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [statusline, hud, context, monitoring, cc216]
 user-invocable: true
+allowedTools: [Read, Write]
 ---
 
 # Claude HUD - Status Line Configuration

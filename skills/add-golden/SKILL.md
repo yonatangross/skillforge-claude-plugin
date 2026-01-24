@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [curation, golden-dataset, evaluation, testing]
 user-invocable: true
+allowedTools: [Read, Write, Edit, Grep, Glob]
 ---
 
 # Add to Golden Dataset

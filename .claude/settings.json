@@ -441,51 +441,58 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/session-context-loader.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/session-context-loader"
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/session-env-setup.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/session-env-setup"
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/mem0-context-retrieval.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/mem0-context-retrieval",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/mem0-webhook-setup.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/mem0-webhook-setup",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/mem0-analytics-tracker.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/mem0-analytics-tracker",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/pattern-sync-pull.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/pattern-sync-pull",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/analytics-consent-check.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/analytics-consent-check"
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/multi-instance-init.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/multi-instance-init"
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/coordination-init.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/coordination-init",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/instance-heartbeat.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/instance-heartbeat"
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/decision-sync-pull.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/decision-sync-pull",
+            "background": true
           },
           {
             "type": "command",
-            "command": "${CLAUDE_PROJECT_DIR}/hooks/lifecycle/session-start/dependency-version-check.sh"
+            "command": "node ${CLAUDE_PROJECT_DIR}/hooks/bin/run-hook.mjs lifecycle/dependency-version-check",
+            "background": true
           }
         ]
       }

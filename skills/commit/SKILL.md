@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [git, commit, version-control, conventional-commits]
 user-invocable: true
+allowedTools: [Bash]
 ---
 
 # Smart Commit

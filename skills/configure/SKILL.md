@@ -6,6 +6,7 @@ version: 1.0.0
 author: OrchestKit
 tags: [configuration, setup, wizard, customization]
 user-invocable: true
+allowedTools: [Bash, Read, Grep, Glob]
 ---
 
 # OrchestKit Configuration

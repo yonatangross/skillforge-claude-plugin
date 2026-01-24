@@ -1,0 +1,17 @@
+{
+  "$schema": "https://claude.ai/code/keybindings.schema.json",
+  "version": "1.0.0",
+  "description": "OrchestKit power user keybindings",
+  "keybindings": [
+    {"key": "ctrl+k c", "command": "/ork:commit", "description": "Git commit"},
+    {"key": "ctrl+k r", "command": "/ork:review-pr", "description": "PR review"},
+    {"key": "ctrl+k e", "command": "/ork:explore", "description": "Explore codebase"},
+    {"key": "ctrl+k i", "command": "/ork:implement", "description": "Implement feature"},
+    {"key": "ctrl+k t", "command": "/ork:run-tests", "description": "Run tests"},
+    {"key": "ctrl+k v", "command": "/ork:verify", "description": "Verify feature"},
+    {"key": "ctrl+k p", "command": "/ork:create-pr", "description": "Create PR"},
+    {"key": "ctrl+k f", "command": "/ork:fix-issue", "description": "Fix issue"},
+    {"key": "ctrl+k b", "command": "/ork:brainstorming", "description": "Brainstorm"},
+    {"key": "ctrl+k d", "command": "/ork:doctor", "description": "Health check"}
+  ]
+}
