@@ -2,7 +2,7 @@
 name: review-pr
 description: Comprehensive PR review with 6-7 parallel specialized agents. Use when reviewing pull requests, checking PRs, code review.
 context: fork
-version: 1.3.0
+version: 1.3.1
 author: OrchestKit
 tags: [code-review, pull-request, quality, security, testing]
 user-invocable: true
@@ -92,6 +92,7 @@ Launch SIX specialized reviewers in ONE message with `run_in_background: true`:
 ```python
 # PARALLEL - All 6 agents in ONE message
 Task(
+  description="Review code quality",
   subagent_type="code-quality-reviewer",
   prompt="""CODE QUALITY REVIEW for PR $ARGUMENTS
 
@@ -106,6 +107,7 @@ Task(
   run_in_background=True
 )
 Task(
+  description="Review type safety",
   subagent_type="code-quality-reviewer",
   prompt="""TYPE SAFETY REVIEW for PR $ARGUMENTS
 
@@ -120,6 +122,7 @@ Task(
   run_in_background=True
 )
 Task(
+  description="Security audit PR",
   subagent_type="security-auditor",
   prompt="""SECURITY REVIEW for PR $ARGUMENTS
 
@@ -134,6 +137,7 @@ Task(
   run_in_background=True
 )
 Task(
+  description="Review test coverage",
   subagent_type="test-generator",
   prompt="""TEST COVERAGE REVIEW for PR $ARGUMENTS
 
@@ -148,6 +152,7 @@ Task(
   run_in_background=True
 )
 Task(
+  description="Review backend code",
   subagent_type="backend-system-architect",
   prompt="""BACKEND REVIEW for PR $ARGUMENTS
 
@@ -162,6 +167,7 @@ Task(
   run_in_background=True
 )
 Task(
+  description="Review frontend code",
   subagent_type="frontend-ui-developer",
   prompt="""FRONTEND REVIEW for PR $ARGUMENTS
 
@@ -183,6 +189,7 @@ If PR includes AI/ML code, add 7th agent:
 
 ```python
 Task(
+  description="Review LLM integration",
   subagent_type="llm-integrator",
   prompt="""LLM CODE REVIEW for PR $ARGUMENTS
 
