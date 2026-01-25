@@ -19,10 +19,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `add-golden` v2.0.0: Quality Score Explanation, Bias Detection Agent, Silver→Gold Workflow
 - **~50 new reference/asset files** following CC 2.1.7 progressive loading structure across all 7 enhanced skills
 - **Skill count**: 163 → 164 skills (23 user-invocable, 141 internal)
+- **TypeScript test migration**: 793 tests across 12 new Vitest test files for security, prompt, and lifecycle hooks
 
 ### Changed
 
 - `task-dependency-patterns`: Added Related Skills section
+
+### Fixed
+
+- **Integration tests for TypeScript hook architecture**: Updated all shell-based integration tests to use `run-hook.mjs` pattern for invoking TypeScript hooks (test-coordination-hooks, test-multi-instance-gates, test-agent-skill-validation, test-context-deferral, test-hook-paths, test-agent-required-hooks)
 
 ---
 
