@@ -172,7 +172,8 @@ for manifest in "$MANIFESTS_DIR"/*.json; do
         echo '  "license": "MIT",'
         echo '  "keywords": ["ai-development", "langgraph", "fastapi", "react", "typescript", "python", "multi-agent"]'
         [[ -d "$PLUGIN_DIR/skills" ]] && echo '  ,"skills": "./skills/"'
-        [[ -d "$PLUGIN_DIR/agents" ]] && echo '  ,"agents": "./agents/"'
+        # Note: "agents" field removed - Claude Code doesn't support this field
+        # Agents are auto-discovered from the agents/ directory
         echo '}'
     } > "$PLUGIN_DIR/.claude-plugin/plugin.json"
 
