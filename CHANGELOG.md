@@ -5,6 +5,32 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.3] - 2026-01-25
+
+### Fixed
+
+- **Marketplace auto-install bug** (#227): Fixed `ork` plugin auto-installing when adding marketplace to external projects
+  - Root cause: `source: "./"` combined with root `plugin.json` triggered auto-install per CC 2.1.19 convention
+  - Solution: Moved plugin.json to `plugins/ork/.claude-plugin/plugin.json`, changed source to `./plugins/ork`
+  - Root `.claude-plugin/` now only contains `marketplace.json` (no auto-install trigger)
+
+### Changed
+
+- **Plugin architecture restructure**: `plugins/ork/` now uses symlinks to root skills/agents/hooks
+- **Updated all scripts** for new plugin.json location: `pre-push`, `bump-version.sh`, `validate-counts.sh`
+
+### Removed
+
+- **claude-hud skill**: Removed duplicate skill (use external `jarrodwatts/claude-hud` plugin instead)
+  - Skill count: 164 → 163, user-invocable: 23 → 22
+
+### Added
+
+- **Marketplace structure tests**: `test-marketplace-structure.sh` with 6 validation checks to prevent regression
+
+---
+
+
 ## [5.2.2] - 2026-01-25
 
 ### Fixed

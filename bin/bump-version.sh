@@ -13,8 +13,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Source of truth
-PLUGIN_JSON="$PROJECT_ROOT/.claude-plugin/plugin.json"
+# Source of truth (plugin.json moved to plugins/ork/ in marketplace restructure)
+PLUGIN_JSON="$PROJECT_ROOT/plugins/ork/.claude-plugin/plugin.json"
 
 # Get current version
 get_current_version() {
@@ -142,7 +142,7 @@ add_changelog_entry() {
 stage_changes() {
   echo "Staging changes..."
   cd "$PROJECT_ROOT"
-  git add .claude-plugin/plugin.json .claude-plugin/marketplace.json 2>/dev/null || true
+  git add plugins/ork/.claude-plugin/plugin.json .claude-plugin/marketplace.json 2>/dev/null || true
   git add pyproject.toml CLAUDE.md CHANGELOG.md 2>/dev/null || true
   echo "  ✓ Changes staged"
 }
