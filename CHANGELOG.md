@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Hook runner path**: Updated all hook paths from `hooks/bin/run-hook.mjs` to `src/hooks/bin/run-hook.mjs`
   - Fixed MODULE_NOT_FOUND errors after repository restructuring
   - Updated 25 files: settings.json (146 hooks), 10 agents, 12 tests, hooks.json, README
+- **CI test paths**: Fixed all test paths for src/ directory migration
+  - Updated test-skill-references.sh, test-agent-skill-validation.sh, test-count-components.sh
+  - Fixed workflow files to use Node.js 22 and run build before validation
+  - Removed git commit step from build.yml (plugins/ now gitignored)
 
 ### Changed
 

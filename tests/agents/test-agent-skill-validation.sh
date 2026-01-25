@@ -9,7 +9,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AGENTS_DIR="$REPO_ROOT/src/agents"
-SKILLS_DIR="$REPO_ROOT/skills"
+SKILLS_DIR="$REPO_ROOT/src/skills"
 # Phase 4: Use TypeScript hook via run-hook.mjs
 HOOK_RUNNER="$REPO_ROOT/src/hooks/bin/run-hook.mjs"
 HOOK_HANDLER="subagent-start/subagent-validator"
