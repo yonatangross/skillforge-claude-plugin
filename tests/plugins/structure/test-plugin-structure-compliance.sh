@@ -51,9 +51,9 @@ echo ""
 # -----------------------------------------------------------------------------
 echo "Test 1: hooks/hooks.json exists"
 if [[ -f "$PROJECT_ROOT/src/hooks/hooks.json" ]]; then
-    pass "hooks/hooks.json exists"
+    pass "src/hooks/hooks.json exists"
 else
-    fail "hooks/hooks.json is MISSING - Claude Code requires hooks in hooks/hooks.json"
+    fail "src/hooks/hooks.json is MISSING - Claude Code requires hooks in hooks/hooks.json"
 fi
 
 # -----------------------------------------------------------------------------
@@ -63,9 +63,9 @@ echo ""
 echo "Test 2: hooks/hooks.json is valid JSON"
 if [[ -f "$PROJECT_ROOT/src/hooks/hooks.json" ]]; then
     if jq empty "$PROJECT_ROOT/src/hooks/hooks.json" 2>/dev/null; then
-        pass "hooks/hooks.json is valid JSON"
+        pass "src/hooks/hooks.json is valid JSON"
     else
-        fail "hooks/hooks.json is NOT valid JSON"
+        fail "src/hooks/hooks.json is NOT valid JSON"
     fi
 else
     fail "Cannot validate - file missing"
@@ -79,17 +79,17 @@ echo "Test 3: hooks/hooks.json has required structure"
 if [[ -f "$PROJECT_ROOT/src/hooks/hooks.json" ]]; then
     # Check for "hooks" wrapper object
     if jq -e '.hooks' "$PROJECT_ROOT/src/hooks/hooks.json" >/dev/null 2>&1; then
-        pass "hooks/hooks.json has 'hooks' wrapper object"
+        pass "src/hooks/hooks.json has 'hooks' wrapper object"
     else
-        fail "hooks/hooks.json missing 'hooks' wrapper - Claude Code requires {\"hooks\": {...}}"
+        fail "src/hooks/hooks.json missing 'hooks' wrapper - Claude Code requires {\"hooks\": {...}}"
     fi
 
     # Check for required hook types
     for hook_type in PreToolUse PostToolUse SessionStart Stop UserPromptSubmit; do
         if jq -e ".hooks.$hook_type" "$PROJECT_ROOT/src/hooks/hooks.json" >/dev/null 2>&1; then
-            pass "hooks/hooks.json has $hook_type hooks"
+            pass "src/hooks/hooks.json has $hook_type hooks"
         else
-            fail "hooks/hooks.json missing $hook_type hooks"
+            fail "src/hooks/hooks.json missing $hook_type hooks"
         fi
     done
 else

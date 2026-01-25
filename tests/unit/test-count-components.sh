@@ -228,7 +228,7 @@ test_count_accuracy() {
 
     # Count hooks manually (TypeScript files in hooks/src, excluding __tests__ and lib)
     # Migrated from shell scripts to TypeScript in v5.1.0
-    local actual_hooks=$(find "${PROJECT_ROOT}/hooks/src" -name "*.ts" -type f ! -path "*/__tests__/*" ! -path "*/lib/*" ! -name "index.ts" ! -name "types.ts" 2>/dev/null | wc -l | tr -d ' ')
+    local actual_hooks=$(find "${PROJECT_ROOT}/src/hooks/src" -name "*.ts" -type f ! -path "*/__tests__/*" ! -path "*/lib/*" ! -name "index.ts" ! -name "types.ts" 2>/dev/null | wc -l | tr -d ' ')
     local reported_hooks=$("${PROJECT_ROOT}/bin/count-components.sh" --json | jq '.hooks')
 
     if [[ "$actual_hooks" -eq "$reported_hooks" ]]; then

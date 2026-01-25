@@ -85,7 +85,7 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x tests/**/*.sh
-          find hooks -name "*.sh" -exec chmod +x {} \;
+          find src/hooks -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 
       - name: Run Hook Unit Tests
         run: ./tests/unit/test-hooks-unit.sh --verbose
@@ -107,7 +107,7 @@ jobs:
       - name: Make scripts executable
         run: |
           chmod +x tests/**/*.sh
-          find hooks -name "*.sh" -exec chmod +x {} \;
+          find src/hooks -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
 
       - name: Run Hook Chain Tests
         run: ./tests/integration/test-hook-chains.sh --verbose

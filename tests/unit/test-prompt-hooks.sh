@@ -202,7 +202,7 @@ test_hooks_registered_in_plugin_json() {
     if [[ -f "$hooks_json" ]] && grep -qE "UserPromptSubmit|hooks" "$hooks_json" 2>/dev/null; then
         return 0
     fi
-    fail "hooks/hooks.json should contain hook registrations"
+    fail "src/hooks/hooks.json should contain hook registrations"
 }
 
 # ============================================================================
