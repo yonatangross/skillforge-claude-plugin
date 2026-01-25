@@ -150,16 +150,35 @@ Each agent outputs structured JSON with findings and SUMMARY line.
 
 ## Phase 6: Implementation
 
+### CRITICAL: Feature Branch Required
+
+**NEVER commit directly to main or dev.** Always create a feature branch:
+
 ```bash
-git checkout dev && git pull origin dev
+# Determine base branch
+BASE_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d: -f2 | tr -d ' ')
+
+# Create feature branch (MANDATORY)
+git checkout $BASE_BRANCH && git pull origin $BASE_BRANCH
 git checkout -b issue/$ARGUMENTS-fix
+```
+
+### CRITICAL: Regression Test Required
+
+**A fix without a test is incomplete.** Add test BEFORE implementing fix:
+
+```bash
+# 1. Write test that reproduces the bug (should FAIL)
+# 2. Implement the fix
+# 3. Verify test now PASSES
 ```
 
 **Guidelines:**
 - Make minimal, focused changes
 - Add proper error handling
-- Add regression test FIRST
+- Add regression test FIRST (MANDATORY)
 - DO NOT over-engineer
+- DO NOT commit directly to protected branches
 
 ---
 
@@ -178,14 +197,19 @@ npm run lint && npm run typecheck && npm run test
 
 ## Phase 8: Prevention Recommendations
 
+**CRITICAL: Prevention must include at least one of:**
+1. **Automated test** - CI catches similar issues (PREFERRED)
+2. **Validation rule** - Schema/lint rule prevents bad state
+3. **Process check** - Review checklist item
+
 See [Prevention Patterns](references/prevention-patterns.md) for full template.
 
-| Category | Examples |
-|----------|----------|
-| Code-level | Null checks, validation |
-| Architecture | Better error boundaries |
-| Process | Review checklist item |
-| Tooling | ESLint rule |
+| Category | Examples | Effectiveness |
+|----------|----------|---------------|
+| **Automated test** | Unit/integration test in CI | HIGH - catches before merge |
+| **Validation rule** | Schema check, lint rule | HIGH - catches on save/commit |
+| Architecture | Better error boundaries | MEDIUM |
+| Process | Review checklist item | LOW - human-dependent |
 
 ---
 
@@ -246,6 +270,8 @@ gh pr create --base dev --title "fix(#$ARGUMENTS): [description]"
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
+| Feature branch | MANDATORY | Never commit to main/dev directly |
+| Regression test | MANDATORY | Fix without test is incomplete |
 | Hypothesis confidence | 0-100% scale | Quantifies certainty |
 | Similar issue search | Before hypothesis | Leverage past solutions |
 | Prevention analysis | Mandatory phase | Break recurring issue cycle |
