@@ -5,6 +5,31 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.4] - 2026-01-25
+
+### Fixed
+
+- **Plugin installation failure** (#228): Fixed symlink issue causing "agents: Invalid input" error
+  - Root cause: Symlinked directories (`agents/`, `skills/`, `scripts/`) not supported by Claude Code plugin system
+  - Solution: Implemented build script to assemble plugins with real directories (no symlinks)
+  - Build script copies files from `src/` to `plugins/<plugin-name>/` based on manifest definitions
+
+### Changed
+
+- **Plugin development workflow**: Introduced build system for assembling plugins
+  - Source moved to `src/` directory (skills, agents, hooks)
+  - Plugin manifests in `manifests/` directory (34 JSON files)
+  - Build script `scripts/build-plugins.sh` assembles `plugins/` directory
+  - CI auto-builds on merge to main
+  - Developers edit `src/`, not `plugins/` (which is generated)
+
+### Added
+
+- **Build infrastructure**:
+  - `scripts/build-plugins.sh`: Plugin assembly script
+  - `manifests/` directory: 34 plugin definition files
+  - `src/` directory: Single source of truth for skills, agents, hooks
+
 ## [5.2.3] - 2026-01-25
 
 ### Fixed

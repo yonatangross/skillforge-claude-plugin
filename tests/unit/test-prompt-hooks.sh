@@ -19,8 +19,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../fixtures/test-helpers.sh"
 
-TS_HOOKS_DIR="$PROJECT_ROOT/hooks/src/prompt"
-DIST_DIR="$PROJECT_ROOT/hooks/dist"
+TS_HOOKS_DIR="$PROJECT_ROOT/src/hooks/src/prompt"
+DIST_DIR="$PROJECT_ROOT/src/hooks/dist"
 
 # ============================================================================
 # TYPESCRIPT SOURCE FILE TESTS
@@ -195,7 +195,7 @@ test_all_prompt_hooks_have_suppress_output() {
 }
 
 test_hooks_registered_in_plugin_json() {
-    local hooks_json="$PROJECT_ROOT/hooks/hooks.json"
+    local hooks_json="$PROJECT_ROOT/src/hooks/hooks.json"
 
     # TypeScript hooks are registered in hooks/hooks.json (CC 2.1.7+)
     # Check that hooks.json exists and has hooks

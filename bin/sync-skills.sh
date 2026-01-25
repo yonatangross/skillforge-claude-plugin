@@ -70,7 +70,7 @@ for plugin_dir in "$PROJECT_ROOT"/plugins/*/skills; do
         else
             # It's a directory (CI might convert symlinks to directories)
             # Just verify the corresponding root skill exists
-            if [[ ! -d "$PROJECT_ROOT/skills/$skill_name" ]]; then
+            if [[ ! -d "$PROJECT_ROOT/src/skills/$skill_name" ]]; then
                 echo "ERROR: Plugin skill $plugin_name/$skill_name has no corresponding root skill"
                 errors=$((errors + 1))
             fi

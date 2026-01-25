@@ -22,22 +22,44 @@ This document provides essential context for Claude Code when working with the O
 ## Key Directories
 
 ```
-# MODULAR PLUGINS (33 domain-specific bundles)
-.claude-plugin/
-└── marketplace.json     # Marketplace manifest with all plugins
+# SOURCE (single source of truth - ALWAYS EDIT THESE)
+src/
+├── skills/              # 163 skills (22 user-invocable, 141 internal)
+│   └── <skill-name>/
+│       ├── SKILL.md     # Required: Overview and patterns (~500 tokens)
+│       ├── references/  # Optional: Specific implementations (~200 tokens)
+│       ├── scripts/     # Optional: Executable code and generators
+│       ├── assets/      # Optional: Templates and copyable files
+│       └── checklists/  # Optional: Implementation checklists
+├── agents/              # 34 agents (all domains)
+│   └── <agent-name>.md  # CC 2.1.6 format with frontmatter
+└── hooks/               # 144 TypeScript hooks in 11 split bundles (source at hooks/src/)
 
-plugins/                 # Modular plugin bundles
+# BUILD SYSTEM
+manifests/               # Plugin definitions (34 JSON files - EDIT THESE)
+├── ork.json             # Core plugin manifest
+├── ork-rag.json         # RAG plugin manifest
+└── ...                  # 32 more domain-specific manifests
+
+scripts/
+└── build-plugins.sh     # Assembles plugins/ from src/ + manifests/
+
+# GENERATED (DO NOT EDIT - created by build script, not tracked in git)
+.claude-plugin/
+└── marketplace.json     # Generated marketplace manifest
+
+plugins/                 # Generated modular plugin bundles (DO NOT EDIT)
 └── ork-<domain>/        # Domain-specific plugin (e.g., ork-core, ork-rag)
     ├── .claude-plugin/
     │   └── plugin.json  # Plugin manifest (hooks, metadata)
-    ├── agents/          # AI agent personas
-    ├── skills/          # Knowledge modules with SKILL.md
-    └── scripts/         # Hook executables
+    ├── agents/          # AI agent personas (copied from src/)
+    ├── skills/          # Knowledge modules with SKILL.md (copied from src/)
+    └── scripts/         # Hook executables (copied from src/)
 
-# FULL TOOLKIT (root level - for development/reference)
-skills/                  # 163 skills (22 user-invocable, 141 internal)
-agents/                  # 34 agents (all domains)
-hooks/                   # 144 TypeScript hooks in 11 split bundles
+# LEGACY (deprecated - for backwards compatibility only)
+skills/                  # Symlink to src/skills/
+agents/                  # Symlink to src/agents/
+hooks/                   # Actual location - TypeScript hooks in 11 split bundles
 │   ├── src/             # TypeScript source (Phase 4: 144 hooks in 11 bundles)
 │   │   ├── index.ts     # Unified hook registry + exports
 │   │   ├── types.ts     # HookInput, HookResult interfaces
@@ -115,6 +137,23 @@ bin/                     # CLI utilities and scripts
 ---
 
 ## Development Commands
+
+### Build System
+```bash
+# Build all plugins from source (REQUIRED after editing src/ or manifests/)
+bash scripts/build-plugins.sh
+
+# What the build script does:
+# 1. Reads plugin definitions from manifests/
+# 2. Copies skills, agents, hooks from src/ to plugins/<plugin-name>/
+# 3. Generates .claude-plugin/plugin.json for each plugin
+# 4. Creates .claude-plugin/marketplace.json with all plugins
+
+# Test local build
+/plugin marketplace add file://$(pwd)
+/plugin install ork-rag
+/ork:doctor
+```
 
 ### Installation & Setup
 ```bash

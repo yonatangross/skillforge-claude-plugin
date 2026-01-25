@@ -1,15 +1,16 @@
 {
   "name": "ork-memory",
-  "version": "5.0.0",
+  "version": "5.2.3",
   "description": "Cross-session memory and knowledge graph — Mem0 integration, memory fabric, sync patterns",
   "author": {
     "name": "Yonatan Gross",
-    "email": "yonatan2gross@gmail.com"
+    "email": "yonatan2gross@gmail.com",
+    "url": "https://github.com/yonatangross/orchestkit"
   },
-  "keywords": [
-    "memory",
-    "mem0",
-    "knowledge-graph",
-    "persistence"
-  ]
+  "homepage": "https://github.com/yonatangross/orchestkit",
+  "repository": "https://github.com/yonatangross/orchestkit",
+  "license": "MIT",
+  "keywords": ["ai-development", "langgraph", "fastapi", "react", "typescript", "python", "multi-agent"]
+  ,"skills": "./skills/"
+  ,"agents": "./agents/"
 }

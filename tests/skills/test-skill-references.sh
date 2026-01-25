@@ -7,7 +7,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 AGENTS_DIR="$REPO_ROOT/agents"
-SKILLS_ROOT="$REPO_ROOT/skills"
+SKILLS_ROOT="$REPO_ROOT/src/skills"
 
 FAILED=0
 CHECKED=0
