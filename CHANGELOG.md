@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Root cause: Symlinked directories (`agents/`, `skills/`, `scripts/`) not supported by Claude Code plugin system
   - Solution: Implemented build script to assemble plugins with real directories (no symlinks)
   - Build script copies files from `src/` to `plugins/<plugin-name>/` based on manifest definitions
-- **Hook runner path**: Updated all hook paths from `hooks/bin/run-hook.mjs` to `src/hooks/bin/run-hook.mjs`
-  - Fixed MODULE_NOT_FOUND errors after repository restructuring
-  - Updated 25 files: settings.json (146 hooks), 10 agents, 12 tests, hooks.json, README
+- **Hook runner paths for installed plugins**: Updated hooks.json paths from `${CLAUDE_PLUGIN_ROOT}/src/hooks/bin/run-hook.mjs` to `${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs`
+  - Fixed MODULE_NOT_FOUND errors when plugin is installed via `/plugin install`
+  - Built plugins have hooks at `hooks/` not `src/hooks/` - paths now match
 - **CI test paths**: Fixed all test paths for src/ directory migration
   - Updated test-skill-references.sh, test-agent-skill-validation.sh, test-count-components.sh
   - Fixed workflow files to use Node.js 22 and run build before validation
