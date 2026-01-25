@@ -2,7 +2,7 @@
 name: fix-issue
 description: Fix GitHub issue with parallel analysis and implementation. Use when fixing issues, resolving bugs, closing GitHub issues.
 context: fork
-version: 2.0.0
+version: 2.0.1
 author: OrchestKit
 tags: [issue, bug-fix, github, debugging, rca, prevention]
 user-invocable: true
