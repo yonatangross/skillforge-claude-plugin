@@ -44,37 +44,7 @@ jobs:
 
           echo "✓ No symlinks found"
 
-      - name: Check for changes
-        id: changes
-        run: |
-          git add plugins/
-
-          # Check if there are staged changes
-          if git diff --staged --quiet; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "No changes to commit"
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected:"
-            git diff --staged --stat
-          fi
-
-      - name: Commit and push (main branch only)
-        if: steps.changes.outputs.has_changes == 'true' && github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git commit -m "chore: Build plugins from manifests [skip ci]
-
-          - Auto-generated from manifests/
-          - Built by GitHub Actions
-
-          Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
-
-          git push
-
-      - name: Upload build artifacts (PRs)
+      - name: Upload build artifacts
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
