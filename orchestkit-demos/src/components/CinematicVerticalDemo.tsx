@@ -6,6 +6,7 @@ import {
   useVideoConfig,
   Audio,
   staticFile,
+  OffthreadVideo,
 } from "remotion";
 import { z } from "zod";
 import { SceneTransition } from "./shared/TransitionWipe";
@@ -49,7 +50,9 @@ export const CinematicVerticalDemo: React.FC<CinematicVerticalDemoProps> = ({
   ccVersion,
   hookDuration,
   problemDuration,
-  manimDuration,
+  // manimDuration is defined in schema but not used in vertical layout (no manim scene)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  manimDuration: _manimDuration,
   terminalDuration,
   resultsDuration,
   ctaDuration,
@@ -355,7 +358,7 @@ const VerticalTerminalScene: React.FC<{
           paddingBottom: 80,
         }}
       >
-        <video
+        <OffthreadVideo
           src={staticFile(videoPath)}
           style={{
             width: "95%",
@@ -363,8 +366,6 @@ const VerticalTerminalScene: React.FC<{
             objectFit: "contain",
             borderRadius: 12,
           }}
-          autoPlay
-          muted
         />
       </AbsoluteFill>
     </AbsoluteFill>

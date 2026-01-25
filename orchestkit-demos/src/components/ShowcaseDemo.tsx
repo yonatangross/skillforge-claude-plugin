@@ -50,7 +50,7 @@ export const calculateShowcaseMetadata = async ({
       width: 1920,
       height: 1080,
     };
-  } catch (e) {
+  } catch {
     return {
       durationInFrames: 900, // 30s default
       fps: 30,
