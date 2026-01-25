@@ -189,12 +189,12 @@ test_prompt_bundle_has_content() {
 }
 
 test_memory_hook_in_plugin_json() {
-    local plugin_json="$PROJECT_ROOT/.claude-plugin/plugin.json"
-    # TypeScript hooks are registered via run-hook.mjs
-    if grep -qE "run-hook|hooks|prompt" "$plugin_json" 2>/dev/null; then
+    local hooks_json="$PROJECT_ROOT/hooks/hooks.json"
+    # TypeScript hooks are registered in hooks/hooks.json (CC 2.1.7+)
+    if [[ -f "$hooks_json" ]] && grep -qE "memory-context|UserPromptSubmit" "$hooks_json" 2>/dev/null; then
         return 0
     fi
-    fail "memory hook should be registered in plugin.json"
+    fail "memory hook should be registered in hooks/hooks.json"
 }
 
 it "prompt bundle exists" test_prompt_bundle_exists
