@@ -2,11 +2,12 @@
 name: create-pr
 description: Create GitHub pull requests with validation and auto-generated descriptions. Use when creating pull requests, opening PRs, submitting code for review.
 context: fork
-version: 1.0.0
+version: 2.2.0
 author: OrchestKit
 tags: [git, github, pull-request, pr, code-review]
 user-invocable: true
-allowedTools: [Bash]
+allowedTools: [Bash, Task, TaskCreate, TaskUpdate, mcp__memory__search_nodes]
+skills: [commit, review-pr, security-scanning, recall]
 ---
 
 # Create Pull Request
@@ -18,6 +19,33 @@ Comprehensive PR creation with validation. All output goes directly to GitHub PR
 ```bash
 /create-pr
 ```
+
+---
+
+## ⚠️ CRITICAL: Task Management is MANDATORY (CC 2.1.16)
+
+**BEFORE doing ANYTHING else, create tasks to show progress:**
+
+```python
+# 1. Create main PR task IMMEDIATELY
+TaskCreate(
+  subject="Create PR for {branch}",
+  description="PR creation with parallel validation agents",
+  activeForm="Creating pull request"
+)
+
+# 2. Create subtasks for phases
+TaskCreate(subject="Pre-flight checks", activeForm="Running pre-flight checks")
+TaskCreate(subject="Run parallel validation agents", activeForm="Validating with agents")
+TaskCreate(subject="Run local tests", activeForm="Running local tests")
+TaskCreate(subject="Create PR on GitHub", activeForm="Creating GitHub PR")
+
+# 3. Update status as you progress
+TaskUpdate(taskId="2", status="in_progress")  # When starting phase
+TaskUpdate(taskId="2", status="completed")    # When phase done
+```
+
+---
 
 ## Workflow
 
@@ -44,7 +72,50 @@ if ! git rev-parse --verify origin/$BRANCH &>/dev/null; then
 fi
 ```
 
-### Phase 2: Run Local Validation
+### Phase 2: Parallel Pre-PR Validation (3 Agents)
+
+Launch validation agents in ONE message BEFORE creating PR:
+
+```python
+# PARALLEL - All 3 in ONE message
+Task(
+  subagent_type="security-auditor",
+  prompt="""Security audit for PR changes:
+  1. Check for secrets/credentials in diff
+  2. Dependency vulnerabilities (npm audit/pip-audit)
+  3. OWASP Top 10 quick scan
+  Return: {status: PASS/BLOCK, issues: [...]}
+
+  SUMMARY: End with: "RESULT: [PASS|WARN|BLOCK] - [N] issues: [brief list or 'clean']"
+  """,
+  run_in_background=True
+)
+Task(
+  subagent_type="test-generator",
+  prompt="""Test coverage verification:
+  1. Run test suite with coverage
+  2. Identify untested code in changed files
+  Return: {coverage: N%, passed: N/N, gaps: [...]}
+
+  SUMMARY: End with: "RESULT: [N]% coverage, [passed]/[total] tests - [status]"
+  """,
+  run_in_background=True
+)
+Task(
+  subagent_type="code-quality-reviewer",
+  prompt="""Code quality check:
+  1. Run linting (ruff/eslint)
+  2. Type checking (mypy/tsc)
+  3. Check for anti-patterns
+  Return: {lint_errors: N, type_errors: N, issues: [...]}
+
+  SUMMARY: End with: "RESULT: [PASS|WARN|FAIL] - [N] lint, [M] type errors"
+  """,
+  run_in_background=True
+)
+```
+
+Wait for agents, then run local validation:
 
 ```bash
 # Backend

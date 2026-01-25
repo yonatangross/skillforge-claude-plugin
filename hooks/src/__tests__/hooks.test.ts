@@ -7,15 +7,18 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import type { HookInput, HookResult } from '../types.js';
 
 // Import hooks to test
-import { autoApproveReadonly } from '../permission/auto-approve-readonly.js';
 import { autoApproveSafeBash } from '../permission/auto-approve-safe-bash.js';
-import { gitBranchProtection } from '../pretool/bash/git-branch-protection.js';
+import { gitValidator } from '../pretool/bash/git-validator.js';
 import { dangerousCommandBlocker } from '../pretool/bash/dangerous-command-blocker.js';
 import { fileGuard } from '../pretool/write-edit/file-guard.js';
 import { sessionContextLoader } from '../lifecycle/session-context-loader.js';
 import { sessionEnvSetup } from '../lifecycle/session-env-setup.js';
 import { coordinationInit } from '../lifecycle/coordination-init.js';
 import { coordinationCleanup } from '../lifecycle/coordination-cleanup.js';
+
+// Consolidated hooks (Issue #219)
+import { unifiedErrorHandler } from '../posttool/unified-error-handler.js';
+import { decisionProcessor } from '../skill/decision-processor.js';
 
 // Import utilities
 import {
@@ -92,38 +95,6 @@ function createReadInput(file_path: string, overrides: Partial<HookInput> = {}):
 // Permission Hooks Tests
 // =============================================================================
 
-describe('permission/auto-approve-readonly', () => {
-  test('auto-approves Read tool', () => {
-    const input = createReadInput('/test/file.ts');
-    const result = autoApproveReadonly(input);
-
-    expect(result.continue).toBe(true);
-    expect(result.suppressOutput).toBe(true);
-    expect(result.hookSpecificOutput?.permissionDecision).toBe('allow');
-  });
-
-  test('auto-approves Glob tool', () => {
-    const input = createHookInput({
-      tool_name: 'Glob',
-      tool_input: { pattern: '**/*.ts' },
-    });
-    const result = autoApproveReadonly(input);
-
-    expect(result.continue).toBe(true);
-    expect(result.hookSpecificOutput?.permissionDecision).toBe('allow');
-  });
-
-  test('auto-approves Grep tool', () => {
-    const input = createHookInput({
-      tool_name: 'Grep',
-      tool_input: { pattern: 'import.*from' },
-    });
-    const result = autoApproveReadonly(input);
-
-    expect(result.continue).toBe(true);
-    expect(result.hookSpecificOutput?.permissionDecision).toBe('allow');
-  });
-});
 
 describe('permission/auto-approve-safe-bash', () => {
   describe('safe git commands', () => {
@@ -256,7 +227,7 @@ describe('permission/auto-approve-safe-bash', () => {
 // PreTool/Bash Hooks Tests
 // =============================================================================
 
-describe('pretool/bash/git-branch-protection', () => {
+describe('pretool/bash/git-validator', () => {
   describe('protected branch detection', () => {
     test('detects protected branches correctly', () => {
       // This test validates the isProtectedBranch utility function
@@ -306,7 +277,7 @@ describe('pretool/bash/git-branch-protection', () => {
   describe('non-git commands', () => {
     test('ignores non-git commands', () => {
       const input = createBashInput('npm test');
-      const result = gitBranchProtection(input);
+      const result = gitValidator(input);
 
       expect(result.continue).toBe(true);
       expect(result.suppressOutput).toBe(true);
@@ -1410,5 +1381,138 @@ describe('prompt/skill-auto-suggest', () => {
         expect(result.hookSpecificOutput.hookEventName).toBe('UserPromptSubmit');
       }
     });
+  });
+});
+
+// =============================================================================
+// Consolidated Hooks Tests (Issue #219)
+// =============================================================================
+
+describe('unified-error-handler (consolidated from error-collector + error-tracker + error-solution-suggester)', () => {
+  
+
+  const createPostToolInput = (
+    toolName: string,
+    exitCode: number,
+    output: string,
+    toolInput?: Record<string, unknown>
+  ): HookInput => ({
+    hook_event_name: 'PostToolUse',
+    tool_name: toolName,
+    tool_input: toolInput || {},
+    tool_result: {
+      is_error: exitCode !== 0,
+      content: output,
+    },
+    session_id: 'test-session',
+    transcript: [],
+  });
+
+  test('returns silent success for non-error outputs', () => {
+    const input = createPostToolInput('Bash', 0, 'Success output');
+    const result = unifiedErrorHandler(input);
+
+    expect(result.continue).toBe(true);
+    expect(result.suppressOutput).toBe(true);
+  });
+
+  test('detects errors from exit code', () => {
+    const input = createPostToolInput('Bash', 1, 'Error: command failed');
+    const result = unifiedErrorHandler(input);
+
+    expect(result.continue).toBe(true);
+  });
+
+  test('detects errors from tool_error flag', () => {
+    const input: HookInput = {
+      hook_event_name: 'PostToolUse',
+      tool_name: 'Bash',
+      tool_input: {},
+      tool_result: {
+        is_error: true,
+        content: 'Some error occurred',
+      },
+      session_id: 'test-session',
+      transcript: [],
+    };
+    const result = unifiedErrorHandler(input);
+
+    expect(result.continue).toBe(true);
+  });
+
+  test('skips trivial commands (echo, ls)', () => {
+    const input = createPostToolInput('Bash', 1, 'error', { command: 'echo test' });
+    const result = unifiedErrorHandler(input);
+
+    expect(result.continue).toBe(true);
+    expect(result.suppressOutput).toBe(true);
+  });
+
+  test('always continues even on errors', () => {
+    const input = createPostToolInput('Bash', 1, 'fatal error');
+    const result = unifiedErrorHandler(input);
+
+    expect(result.continue).toBe(true);
+  });
+});
+
+describe('decision-processor (consolidated from mem0-decision-saver + decision-entity-extractor)', () => {
+  
+
+  const createSkillInput = (skillOutput: string): HookInput => ({
+    hook_event_name: 'Skill',
+    tool_name: 'Skill',
+    tool_input: { skill: 'test-skill' },
+    tool_result: {
+      is_error: false,
+      content: skillOutput,
+    },
+    session_id: 'test-session',
+    transcript: [],
+  });
+
+  test('returns silent success for non-decision content', () => {
+    const input = createSkillInput('Just some regular output without decisions');
+    const result = decisionProcessor(input);
+
+    expect(result.continue).toBe(true);
+    expect(result.suppressOutput).toBe(true);
+  });
+
+  test('detects decision-related content', () => {
+    const input = createSkillInput('DECIDED: We will use PostgreSQL for the database');
+    const result = decisionProcessor(input);
+
+    expect(result.continue).toBe(true);
+  });
+
+  test('extracts technology entities', () => {
+    const input = createSkillInput('We decided to use React 19 with TypeScript and Vite');
+    const result = decisionProcessor(input);
+
+    expect(result.continue).toBe(true);
+  });
+
+  test('handles empty skill output', () => {
+    const input = createSkillInput('');
+    const result = decisionProcessor(input);
+
+    expect(result.continue).toBe(true);
+    expect(result.suppressOutput).toBe(true);
+  });
+
+  test('always continues', () => {
+    const inputs = [
+      'Decision: use FastAPI',
+      'CHOSE: React over Vue',
+      'We will implement caching',
+      'Random text',
+    ];
+
+    for (const text of inputs) {
+      const input = createSkillInput(text);
+      const result = decisionProcessor(input);
+      expect(result.continue).toBe(true);
+    }
   });
 });

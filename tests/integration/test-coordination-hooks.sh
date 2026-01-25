@@ -3,9 +3,11 @@
 # Tests that hooks work correctly with the coordination system
 #
 # CC 2.1.6 Requirement: All hooks must output valid JSON
+# Phase 4: Updated for TypeScript hooks with run-hook.mjs
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+HOOK_RUNNER="${PROJECT_ROOT}/hooks/bin/run-hook.mjs"
 
 # Colors
 RED='\033[0;31m'
@@ -33,6 +35,13 @@ log_fail() {
     TESTS_FAILED=$((TESTS_FAILED + 1))
 }
 
+# Run TypeScript hook via run-hook.mjs
+run_hook() {
+    local handler="$1"
+    local input="$2"
+    echo "$input" | node "$HOOK_RUNNER" "$handler" 2>/dev/null || echo ""
+}
+
 # Cleanup function
 cleanup() {
     rm -f "${PROJECT_ROOT}/.claude/.instance_env.test" 2>/dev/null || true
@@ -40,30 +49,40 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Test coordination-init.sh hook
+# Test coordination-init hook (TypeScript)
 test_coordination_init() {
-    log_section "Test: coordination-init.sh"
+    log_section "Test: coordination-init (TypeScript)"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
     export SESSION_ID="test-session-$$"
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/lifecycle/coordination-init.sh" 2>/dev/null) || output=""
+    local input='{"session_id":"test-session-123"}'
+    local output
+    output=$(run_hook "lifecycle/coordination-init" "$input")
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    # Extract JSON from output (may have multiple lines)
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
+        log_fail "No JSON found in output: $output"
+        return
+    fi
+
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Valid JSON output"
     else
-        log_fail "Invalid JSON: $output"
+        log_fail "Invalid JSON: $json_line"
         return
     fi
 
     local has_continue=""
-    has_continue=$(echo "$output" | jq 'has("continue")' 2>/dev/null) || has_continue="false"
+    has_continue=$(echo "$json_line" | jq 'has("continue")' 2>/dev/null) || has_continue="false"
     if [[ "$has_continue" == "true" ]]; then
         log_pass "Has 'continue' field"
     else
@@ -71,7 +90,7 @@ test_coordination_init() {
     fi
 
     local has_message=""
-    has_message=$(echo "$output" | jq 'has("systemMessage") or has("suppressOutput")' 2>/dev/null) || has_message="false"
+    has_message=$(echo "$json_line" | jq 'has("systemMessage") or has("suppressOutput")' 2>/dev/null) || has_message="false"
     if [[ "$has_message" == "true" ]]; then
         log_pass "Has 'systemMessage' or 'suppressOutput' field"
     else
@@ -79,9 +98,9 @@ test_coordination_init() {
     fi
 }
 
-# Test coordination-cleanup.sh hook
+# Test coordination-cleanup hook (TypeScript)
 test_coordination_cleanup() {
-    log_section "Test: coordination-cleanup.sh"
+    log_section "Test: coordination-cleanup (TypeScript)"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
     export SESSION_ID="test-session-$$"
@@ -90,8 +109,9 @@ test_coordination_cleanup() {
     mkdir -p "${PROJECT_ROOT}/.claude" 2>/dev/null || true
     echo "CLAUDE_INSTANCE_ID=test-$$" > "${PROJECT_ROOT}/.claude/.instance_env"
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/lifecycle/coordination-cleanup.sh" 2>/dev/null) || output=""
+    local input='{"session_id":"test-session-123"}'
+    local output
+    output=$(run_hook "lifecycle/coordination-cleanup" "$input")
 
     # Cleanup
     rm -f "${PROJECT_ROOT}/.claude/.instance_env" 2>/dev/null || true
@@ -101,15 +121,24 @@ test_coordination_cleanup() {
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    # Extract JSON from output
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
+        log_fail "No JSON found in output: $output"
+        return
+    fi
+
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Valid JSON output"
     else
-        log_fail "Invalid JSON: $output"
+        log_fail "Invalid JSON: $json_line"
         return
     fi
 
     local continue_val=""
-    continue_val=$(echo "$output" | jq '.continue' 2>/dev/null) || continue_val=""
+    continue_val=$(echo "$json_line" | jq '.continue' 2>/dev/null) || continue_val=""
     if [[ "$continue_val" == "true" ]]; then
         log_pass "'continue' is true"
     else
@@ -117,31 +146,39 @@ test_coordination_cleanup() {
     fi
 }
 
-# Test file-lock-check.sh hook
+# Test file-lock-check hook (TypeScript)
 test_file_lock_check() {
-    log_section "Test: file-lock-check.sh"
+    log_section "Test: file-lock-check (TypeScript)"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-    export TOOL_NAME="Write"
-    export TOOL_INPUT='{"file_path": "/tmp/test-lock-file.txt", "content": "test"}'
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
+    local input='{"tool_input":{"file_path":"/tmp/test-lock-file.txt","content":"test"},"session_id":"test-123"}'
+    local output
+    output=$(run_hook "pretool/write-edit/file-lock-check" "$input")
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    # Extract JSON from output
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
+        log_fail "No JSON found in output: $output"
+        return
+    fi
+
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Valid JSON output"
     else
-        log_fail "Invalid JSON: $output"
+        log_fail "Invalid JSON: $json_line"
         return
     fi
 
     local continue_val=""
-    continue_val=$(echo "$output" | jq '.continue' 2>/dev/null) || continue_val=""
+    continue_val=$(echo "$json_line" | jq '.continue' 2>/dev/null) || continue_val=""
     if [[ "$continue_val" == "true" ]] || [[ "$continue_val" == "false" ]]; then
         log_pass "'continue' field is boolean"
     else
@@ -149,32 +186,39 @@ test_file_lock_check() {
     fi
 }
 
-# Test file-lock-release.sh hook
+# Test file-lock-release hook (TypeScript)
 test_file_lock_release() {
-    log_section "Test: file-lock-release.sh"
+    log_section "Test: file-lock-release (TypeScript)"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-    export TOOL_NAME="Write"
-    export TOOL_INPUT='{"file_path": "/tmp/test-lock-file.txt"}'
-    export TOOL_ERROR=""
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/posttool/write-edit/file-lock-release.sh" 2>/dev/null) || output=""
+    local input='{"tool_input":{"file_path":"/tmp/test-lock-file.txt"},"session_id":"test-123"}'
+    local output
+    output=$(run_hook "posttool/write-edit/file-lock-release" "$input")
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    # Extract JSON from output
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
+        log_fail "No JSON found in output: $output"
+        return
+    fi
+
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Valid JSON output"
     else
-        log_fail "Invalid JSON: $output"
+        log_fail "Invalid JSON: $json_line"
         return
     fi
 
     local continue_val=""
-    continue_val=$(echo "$output" | jq '.continue' 2>/dev/null) || continue_val=""
+    continue_val=$(echo "$json_line" | jq '.continue' 2>/dev/null) || continue_val=""
     if [[ "$continue_val" == "true" ]]; then
         log_pass "'continue' is true"
     else
@@ -182,29 +226,38 @@ test_file_lock_release() {
     fi
 }
 
-# Test coordination-heartbeat.sh hook
+# Test coordination-heartbeat hook (TypeScript)
 test_coordination_heartbeat() {
-    log_section "Test: coordination-heartbeat.sh"
+    log_section "Test: coordination-heartbeat (TypeScript)"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-    export TOOL_NAME="Read"
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/posttool/coordination-heartbeat.sh" 2>/dev/null) || output=""
+    local input='{"tool_input":{"command":"ls"},"session_id":"test-123"}'
+    local output
+    output=$(run_hook "posttool/coordination-heartbeat" "$input")
 
     if [[ -z "$output" ]]; then
         log_fail "Empty output"
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    # Extract JSON from output
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
+        log_fail "No JSON found in output: $output"
+        return
+    fi
+
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Valid JSON output"
     else
-        log_fail "Invalid JSON: $output"
+        log_fail "Invalid JSON: $json_line"
     fi
 }
 
-# Test hooks with coordination.sh unavailable
+# Test hooks with coordination.sh unavailable (TypeScript hooks handle gracefully)
 test_hooks_without_coordination() {
     log_section "Test: Hooks without coordination.sh"
 
@@ -217,26 +270,37 @@ test_hooks_without_coordination() {
     fi
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-    export TOOL_NAME="Write"
-    export TOOL_INPUT='{"file_path": "/tmp/test.txt"}'
 
-    # Test each hook
-    local hooks=(
-        "hooks/lifecycle/coordination-init.sh"
-        "hooks/lifecycle/coordination-cleanup.sh"
-        "hooks/posttool/coordination-heartbeat.sh"
-        "hooks/pretool/write-edit/file-lock-check.sh"
+    # Test each hook - TypeScript hooks should handle missing coordination gracefully
+    # Using parallel arrays instead of associative array to avoid bash arithmetic issues with slashes
+    local handlers=(
+        "lifecycle/coordination-init"
+        "lifecycle/coordination-cleanup"
+        "posttool/coordination-heartbeat"
+        "pretool/write-edit/file-lock-check"
+    )
+    local inputs=(
+        '{"session_id":"test-123"}'
+        '{"session_id":"test-123"}'
+        '{"tool_input":{"command":"ls"},"session_id":"test-123"}'
+        '{"tool_input":{"file_path":"/tmp/test.txt"},"session_id":"test-123"}'
     )
 
-    for hook in "${hooks[@]}"; do
-        local name=""
-        name=$(basename "$hook")
-        local output=""
-        output=$(bash "${PROJECT_ROOT}/${hook}" 2>/dev/null) || output=""
+    for i in "${!handlers[@]}"; do
+        local handler="${handlers[$i]}"
+        local input="${inputs[$i]}"
+        local name
+        name=$(basename "$handler")
+        local output
+        output=$(run_hook "$handler" "$input")
 
-        if [[ -z "$output" ]]; then
+        # Extract JSON from output
+        local json_line
+        json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+        if [[ -z "$json_line" ]]; then
             log_fail "$name: Empty output without coordination.sh"
-        elif echo "$output" | jq . >/dev/null 2>&1; then
+        elif echo "$json_line" | jq . >/dev/null 2>&1; then
             log_pass "$name: Graceful fallback"
         else
             log_fail "$name: Invalid fallback JSON: $output"
@@ -254,18 +318,22 @@ test_hooks_malformed_input() {
     log_section "Test: Hooks with malformed input"
 
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-    export TOOL_NAME="Write"
-    export TOOL_INPUT='not-valid-json'
 
-    local output=""
-    output=$(bash "${PROJECT_ROOT}/hooks/pretool/write-edit/file-lock-check.sh" 2>/dev/null) || output=""
+    # TypeScript hooks should handle malformed JSON gracefully
+    local input='not-valid-json'
+    local output
+    output=$(run_hook "pretool/write-edit/file-lock-check" "$input")
 
-    if [[ -z "$output" ]]; then
+    # Extract JSON from output (TypeScript hook should return error JSON)
+    local json_line
+    json_line=$(echo "$output" | grep -E '^\{.*\}$' | tail -1)
+
+    if [[ -z "$json_line" ]]; then
         log_fail "Empty output with malformed input"
         return
     fi
 
-    if echo "$output" | jq . >/dev/null 2>&1; then
+    if echo "$json_line" | jq . >/dev/null 2>&1; then
         log_pass "Handles malformed input gracefully"
     else
         log_fail "Invalid JSON with malformed input: $output"

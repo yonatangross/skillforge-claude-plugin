@@ -6,10 +6,10 @@ This document provides essential context for Claude Code when working with the O
 
 **OrchestKit Complete** is a comprehensive AI-assisted development toolkit that transforms Claude Code into a full-stack development powerhouse. It provides:
 
-- **163 skills**: Reusable knowledge modules in flat structure (including task-dependency-patterns for CC 2.1.16)
+- **164 skills**: Reusable knowledge modules in flat structure (including task-dependency-patterns for CC 2.1.16)
 - **34 agents**: Specialized AI personas with native skill injection (CC 2.1.6)
-- **22 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
-- **148 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
+- **23 user-invocable skills**: Pre-configured workflows (CC 2.1.3 unified skills/commands with `user-invocable: true`)
+- **144 hooks**: Lifecycle automation via CC 2.1.11 Setup hooks + CC 2.1.7 native parallel execution
 - **Progressive Loading**: Semantic discovery system that loads skills on-demand based on task context
 - **Context Window HUD**: Real-time context usage monitoring with CC 2.1.6 statusline integration
 
@@ -35,10 +35,10 @@ plugins/                 # Modular plugin bundles
     └── scripts/         # Hook executables
 
 # FULL TOOLKIT (root level - for development/reference)
-skills/                  # 163 skills (22 user-invocable, 141 internal)
+skills/                  # 164 skills (23 user-invocable, 141 internal)
 agents/                  # 34 agents (all domains)
-hooks/                   # 148 lifecycle hooks (156 TypeScript in split bundles, 148 Bash)
-│   ├── src/             # TypeScript source (Phase 4: 156 hooks in 11 bundles)
+hooks/                   # 144 TypeScript hooks in 11 split bundles
+│   ├── src/             # TypeScript source (Phase 4: 144 hooks in 11 bundles)
 │   │   ├── index.ts     # Unified hook registry + exports
 │   │   ├── types.ts     # HookInput, HookResult interfaces
 │   │   ├── entries/     # Split bundle entry points
@@ -93,9 +93,9 @@ bin/                     # CLI utilities and scripts
 ## Tech Stack
 
 ### Core Plugin Technology
-- **Language**: TypeScript + Bash (hooks), JSON (schemas, config), Markdown (skills, agents)
-- **Hook Infrastructure**: TypeScript ESM (156 hooks in 11 split bundles, 381 KB total) + Bash legacy (148 hooks)
-- **Claude Code**: >= 2.1.16 (CC 2.1.16 Task Management + VSCode plugins, CC 2.1.15 plugin engine field, CC 2.1.14 plugin versioning, CC 2.1.11 Setup hooks, CC 2.1.9 additionalContext, auto:N MCP, plansDirectory)
+- **Language**: TypeScript (hooks), JSON (schemas, config), Markdown (skills, agents)
+- **Hook Infrastructure**: TypeScript ESM (144 hooks in 11 split bundles, 379 KB total)
+- **Claude Code**: >= 2.1.19 (CC 2.1.19 modernization, CC 2.1.16 Task Management + VSCode plugins, CC 2.1.15 plugin engine field, CC 2.1.14 plugin versioning, CC 2.1.11 Setup hooks, CC 2.1.9 additionalContext, auto:N MCP, plansDirectory)
 - **MCP Integration**: Optional - Context7, Sequential Thinking, Memory (configure via /ork:configure, auto-enable via auto:N thresholds)
 - **Browser Automation**: agent-browser CLI (Vercel) - 93% less context vs Playwright MCP, Snapshot + Refs workflow
 
@@ -520,6 +520,81 @@ hooks/src/prompt/
 - Adjusts keyword weights: +3 for success, -3 for failure (capped at ±15)
 - Stored in `.claude/feedback/calibration-data.json`
 
+### 12. Task Management (CC 2.1.16) - CRITICAL
+**ALWAYS use TaskCreate proactively** when starting non-trivial work. This is NOT optional.
+
+**When to use TaskCreate:**
+- User request involves 3+ distinct steps
+- Implementing a feature that touches multiple files
+- Fixing a bug that requires investigation + implementation + verification
+- Any work that would benefit from progress tracking
+
+**Required workflow:**
+```
+1. TaskCreate - Create tasks BEFORE starting work
+   - Use imperative subject: "Add authentication"
+   - Use continuous activeForm: "Adding authentication"
+
+2. TaskUpdate status: "in_progress" - When starting a task
+
+3. TaskUpdate status: "completed" - When task is FULLY verified
+   - Only mark complete after tests pass
+   - Only mark complete after manual verification
+
+4. TaskUpdate addBlockedBy - For dependent tasks
+   - Task #3 depends on #1 and #2:
+   - {"taskId": "3", "addBlockedBy": ["1", "2"]}
+```
+
+**activeForm Examples (action-specific, not generic):**
+| Task Type | Subject (imperative) | activeForm (continuous) |
+|-----------|---------------------|------------------------|
+| API design | Design user endpoints | Designing user endpoints |
+| Database | Create schema migration | Creating schema migration |
+| Frontend | Build login component | Building login component |
+| Tests | Write integration tests | Writing integration tests |
+| Review | Audit security patterns | Auditing security patterns |
+
+**Task Creation Responsibility:**
+- **Orchestrator creates**: Pipeline tasks (auto via multi-agent-coordinator), auto-dispatched agent tasks
+- **User creates**: Ad-hoc feature work, investigation/research tasks
+- **Agents create**: Sub-tasks for complex work, related parallel work
+
+**Failure Handling:**
+- If task fails (tests don't pass, errors occur): Keep as `in_progress`, create blocker task
+- If blocked by external dependency: Create new task describing the blocker
+- NEVER mark `completed` if work is partial or has unresolved errors
+- CC 2.1.16 has no `failed` status - use `pending` for retry or create new task
+
+**Owner Field (multi-agent):**
+- Set `owner` when claiming a task: `{"taskId": "1", "owner": "backend-system-architect"}`
+- Clear owner when releasing: `{"taskId": "1", "owner": ""}`
+- Check owner before claiming to avoid conflicts
+
+**Example for "Implement user authentication":**
+```
+#1. [pending] Create User model schema
+#2. [pending] Add auth endpoints (blockedBy: #1)
+#3. [pending] Implement JWT token handling (blockedBy: #2)
+#4. [pending] Add auth middleware (blockedBy: #3)
+#5. [pending] Write integration tests (blockedBy: #4)
+```
+
+**Anti-Patterns:**
+- Creating tasks for trivial single-line changes
+- Creating circular dependencies (A blocks B, B blocks A)
+- Over-blocking (task D blockedBy [A, B, C] when only C matters)
+- Leaving tasks `in_progress` indefinitely when blocked
+- Marking `completed` before verification
+
+**DO NOT skip Task Management** - It provides:
+- Progress visibility for the user
+- Structured execution tracking
+- Dependency management for parallel work
+- Clear completion criteria
+
+See `skills/task-dependency-patterns` for comprehensive patterns.
+
 ---
 
 ## What NOT to Do
@@ -746,7 +821,7 @@ ls agents/
 
 ## Skills Overview (CC 2.1.7)
 
-163 skills in flat structure at `skills/`. Common skill types include:
+164 skills in flat structure at `skills/`. Common skill types include:
 
 - **AI/LLM**: RAG, embeddings, agents, caching, observability, agentic-rag-patterns, prompt-engineering-suite, alternative-agent-frameworks, high-performance-inference, fine-tuning-customization (27 skills)
 - **AI Security**: MCP security hardening, advanced guardrails, LLM safety patterns (3 skills - NEW)
@@ -972,11 +1047,11 @@ ORCHESTKIT_SKIP_SETUP=1 claude  # Skip all setup hooks
 
 ## Version Information
 
-- **Current Version**: 5.1.4 (as of 2026-01-23)
+- **Current Version**: 5.2.0 (as of 2026-01-23)
 - **Claude Code Requirement**: >= 2.1.16
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
-- **Hook Architecture**: CC 2.1.16 task dependencies + CC 2.1.15 engine field + CC 2.1.14 plugin versioning + CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (148 hooks: 156 TypeScript in split bundles, 148 Bash)
+- **Hook Architecture**: CC 2.1.16 task dependencies + CC 2.1.15 engine field + CC 2.1.14 plugin versioning + CC 2.1.11 Setup hooks + CC 2.1.9 additionalContext + CC 2.1.7 native parallel (144 TypeScript hooks in 11 bundles)
 - **Context Protocol**: 2.0.0 (tiered, attention-aware)
 - **Memory Fabric**: v2.1.0 (graph-first architecture, knowledge graph PRIMARY, mem0 optional enhancement)
 - **Coordination System**: Multi-worktree support added in v4.6.0
@@ -991,7 +1066,7 @@ ORCHESTKIT_SKIP_SETUP=1 claude  # Skip all setup hooks
 - **AI/ML Roadmap 2026**: 8 new AI security/ML skills + 2 agents (ai-safety-auditor, prompt-engineer) (v4.27.0)
 - **agent-browser Integration**: Replaced Playwright MCP with Vercel agent-browser CLI (93% less context, Snapshot + Refs workflow) (v4.28.0)
 - **CC 2.1.16 Integration**: Task Management System (TaskCreate, TaskUpdate, TaskGet, TaskList), VSCode native plugins, new task-dependency-patterns skill (v5.0.0)
-- **TypeScript Hook Migration**: Phase 4 complete (156 TypeScript hooks in 11 split bundles, 381 KB total), ~77% load size reduction per hook type (v5.1.0)
+- **TypeScript Hook Migration**: Phase 4 complete (144 TypeScript hooks in 11 split bundles, 379 KB total), ~77% load size reduction per hook type (v5.1.0)
 
 ---
 
@@ -1033,4 +1108,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-24 (v5.1.1)
+**Last Updated**: 2026-01-24 (v5.1.5)

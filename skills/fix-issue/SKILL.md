@@ -2,16 +2,17 @@
 name: fix-issue
 description: Fix GitHub issue with parallel analysis and implementation. Use when fixing issues, resolving bugs, closing GitHub issues.
 context: fork
-version: 1.0.0
+version: 2.0.0
 author: OrchestKit
-tags: [issue, bug-fix, github, debugging]
+tags: [issue, bug-fix, github, debugging, rca, prevention]
 user-invocable: true
-allowedTools: [Bash]
+allowedTools: [Bash, Read, Write, Edit, Task, TaskCreate, TaskUpdate, Grep, Glob, mcp__memory__search_nodes, mcp__context7__get-library-docs]
+skills: [commit, explore, verify, debug-investigator, recall, remember]
 ---
 
 # Fix Issue
 
-Systematic issue resolution with 5-7 parallel agents.
+Systematic issue resolution with hypothesis-based root cause analysis, similar issue detection, and prevention recommendations.
 
 ## Quick Start
 
@@ -20,115 +21,245 @@ Systematic issue resolution with 5-7 parallel agents.
 /fix-issue 456
 ```
 
+---
+
+## Task Management (CC 2.1.16)
+
+```python
+# Create main fix task
+TaskCreate(
+  subject="Fix issue #{number}",
+  description="Systematic issue resolution with hypothesis-based RCA",
+  activeForm="Fixing issue #{number}"
+)
+
+# Create subtasks for 11-phase process
+phases = ["Understand issue", "Search similar issues", "Form hypotheses",
+          "Analyze root cause", "Design fix", "Implement fix", "Validate fix",
+          "Generate prevention", "Create runbook", "Capture lessons", "Commit and PR"]
+for phase in phases:
+    TaskCreate(subject=phase, activeForm=f"{phase}ing")
+```
+
+---
+
+## Workflow Overview
+
+| Phase | Activities | Output |
+|-------|------------|--------|
+| **1. Understand Issue** | Read GitHub issue details | Problem statement |
+| **2. Similar Issue Detection** | Search for related past issues | Related issues list |
+| **3. Hypothesis Formation** | Form hypotheses with confidence scores | Ranked hypotheses |
+| **4. Root Cause Analysis** | 5 parallel agents investigate | Confirmed root cause |
+| **5. Fix Design** | Design approach based on RCA | Fix specification |
+| **6. Implementation** | Apply fix with tests | Working code |
+| **7. Validation** | Verify fix resolves issue | Evidence |
+| **8. Prevention** | How to prevent recurrence | Prevention plan |
+| **9. Runbook** | Create/update runbook entry | Runbook |
+| **10. Lessons Learned** | Capture knowledge | Persisted learnings |
+| **11. Commit and PR** | Create PR with fix | Merged PR |
+
+---
+
 ## Phase 1: Understand the Issue
 
 ```bash
-# Get full issue details
 gh issue view $ARGUMENTS --json title,body,labels,assignees,comments
-
-# Check related PRs
 gh pr list --search "issue:$ARGUMENTS"
+gh issue view $ARGUMENTS --comments
 ```
 
-## Phase 2: Create Feature Branch
+---
+
+## Phase 2: Similar Issue Detection
+
+See [Similar Issue Search](references/similar-issue-search.md) for patterns.
 
 ```bash
-git checkout dev
-git pull origin dev
+gh issue list --search "[key error message]" --state all
+mcp__memory__search_nodes(query="issue [error type] fix")
+```
+
+| Similar Issue | Similarity | Status | Relevant? |
+|---------------|------------|--------|-----------|
+| #101 | 85% | Closed | Yes |
+
+**Determine:** Regression? Variant? New issue?
+
+---
+
+## Phase 3: Hypothesis Formation
+
+See [Hypothesis-Based RCA](references/hypothesis-rca.md) for confidence scoring.
+
+```markdown
+## Hypothesis 1: [Brief name]
+**Confidence:** [0-100]%
+**Description:** [What might cause the issue]
+**Test:** [How to verify]
+```
+
+| Confidence | Meaning |
+|------------|---------|
+| 90-100% | Near certain |
+| 70-89% | Highly likely |
+| 50-69% | Probable |
+| 30-49% | Possible |
+| 0-29% | Unlikely |
+
+---
+
+## Phase 4: Root Cause Analysis (5 Agents)
+
+Launch ALL 5 agents in parallel with `run_in_background=True`:
+
+1. **debug-investigator**: Root cause tracing
+2. **debug-investigator**: Impact analysis
+3. **backend-system-architect**: Backend fix design
+4. **frontend-ui-developer**: Frontend fix design
+5. **test-generator**: Test requirements
+
+Each agent outputs structured JSON with findings and SUMMARY line.
+
+---
+
+## Phase 5: Fix Design
+
+```markdown
+## Fix Design for Issue #$ARGUMENTS
+
+### Root Cause (Confirmed)
+[Description]
+
+### Proposed Fix
+[Approach]
+
+### Files to Modify
+| File | Change | Reason |
+|------|--------|--------|
+| [file] | MODIFY | [why] |
+
+### Risks
+- [Risk 1]
+
+### Rollback Plan
+[How to revert]
+```
+
+---
+
+## Phase 6: Implementation
+
+```bash
+git checkout dev && git pull origin dev
 git checkout -b issue/$ARGUMENTS-fix
 ```
 
-## Phase 3: Memory Check
-
-```python
-mcp__memory__search_nodes(query="issue $ARGUMENTS")
-```
-
-## Phase 4: Parallel Analysis (5 Agents)
-
-| Agent | Task |
-|-------|------|
-| Explore #1 | Root cause analysis |
-| Explore #2 | Impact analysis |
-| backend-system-architect | Backend fix design |
-| frontend-ui-developer | Frontend fix design |
-| code-quality-reviewer | Test requirements |
-
-All 5 agents run in ONE message, then synthesize fix plan.
-
-## Phase 5: Context7 for Patterns
-
-```python
-mcp__context7__get-library-docs(libraryId="/tiangolo/fastapi", topic="relevant")
-mcp__context7__get-library-docs(libraryId="/facebook/react", topic="relevant")
-```
-
-## Phase 6: Implement the Fix (2 Agents)
-
-| Agent | Task |
-|-------|------|
-| backend/frontend | Implement fix |
-| code-quality-reviewer | Write tests |
-
-Requirements:
+**Guidelines:**
 - Make minimal, focused changes
 - Add proper error handling
-- Include type hints
+- Add regression test FIRST
 - DO NOT over-engineer
+
+---
 
 ## Phase 7: Validation
 
 ```bash
 # Backend
-cd backend
 poetry run ruff format --check app/
-poetry run ruff check app/
-poetry run ty check app/
 poetry run pytest tests/unit/ -v --tb=short
 
 # Frontend
-cd frontend
-npm run format:check
-npm run lint
-npm run typecheck
-npm run test
+npm run lint && npm run typecheck && npm run test
 ```
 
-## Phase 8: Commit and PR
+---
+
+## Phase 8: Prevention Recommendations
+
+See [Prevention Patterns](references/prevention-patterns.md) for full template.
+
+| Category | Examples |
+|----------|----------|
+| Code-level | Null checks, validation |
+| Architecture | Better error boundaries |
+| Process | Review checklist item |
+| Tooling | ESLint rule |
+
+---
+
+## Phase 9: Runbook Generation
+
+```markdown
+# Runbook: [Issue Type]
+
+## Symptoms
+- [Observable symptom]
+
+## Diagnosis Steps
+1. Check [X] by running: `[command]`
+
+## Resolution Steps
+1. [Step 1]
+
+## Prevention
+- [How to prevent]
+```
+
+Store in memory for future reference.
+
+---
+
+## Phase 10: Lessons Learned
+
+```python
+mcp__memory__create_entities(entities=[{
+  "name": "lessons-issue-$ARGUMENTS",
+  "entityType": "LessonsLearned",
+  "observations": [
+    "root_cause: [brief]",
+    "key_learning: [most important]",
+    "prevention: [recommendation]"
+  ]
+}])
+```
+
+---
+
+## Phase 11: Commit and PR
 
 ```bash
 git add .
-git commit -m "fix(#$ARGUMENTS): [Brief description]"
+git commit -m "fix(#$ARGUMENTS): [Brief description]
+
+Root cause: [one line]
+Prevention: [recommendation]"
+
 git push -u origin issue/$ARGUMENTS-fix
-gh pr create --base dev --title "fix(#$ARGUMENTS): [Brief description]"
+gh pr create --base dev --title "fix(#$ARGUMENTS): [description]"
 ```
 
-## Summary
+---
 
-**Total Parallel Agents: 7**
-- Phase 4 (Analysis): 5 agents
-- Phase 6 (Implementation): 2 agents
+## Key Decisions
 
-**Agents Used:**
-- 2 Explore (root cause, impact)
-- 1 backend-system-architect
-- 1 frontend-ui-developer
-- 2 code-quality-reviewer
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| Hypothesis confidence | 0-100% scale | Quantifies certainty |
+| Similar issue search | Before hypothesis | Leverage past solutions |
+| Prevention analysis | Mandatory phase | Break recurring issue cycle |
+| Runbook generation | Template-based | Consistent documentation |
 
-**Workflow:**
-1. Understand issue
-2. Create branch
-3. Parallel analysis
-4. Design fix
-5. Implement + test
-6. Validate
-7. PR with issue reference
+---
 
 ## Related Skills
-- commit: Commit issue fixes
-- debug-investigator: Debug complex issues
-- errors: Handle error patterns
-- issue-progress-tracking: Auto-updates issue checkboxes from commits
-## References
 
-- [Commit Template](assets/commit-template.md)
+- `commit` - Commit issue fixes
+- `debug-investigator` - Debug complex issues
+- `issue-progress-tracking` - Auto-updates from commits
+- `remember` - Store lessons learned
+
+---
+
+**Version:** 2.0.0 (January 2026)

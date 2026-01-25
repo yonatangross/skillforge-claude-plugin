@@ -37,6 +37,41 @@ resolve_hook_path() {
     echo "$hook_path"
 }
 
+# Function to validate run-hook.mjs based commands
+# Format: run-hook.mjs <handler-type>/<handler-name>
+validate_run_hook_command() {
+    local cmd="$1"
+
+    # Remove leading and trailing quotes
+    cmd="${cmd%\"}"
+    cmd="${cmd%\'}"
+    cmd="${cmd#\"}"
+    cmd="${cmd#\'}"
+
+    # Check if this is a run-hook.mjs command
+    if [[ "$cmd" == *"run-hook.mjs"* ]]; then
+        # Check if run-hook.mjs exists
+        local runner_path="$REPO_ROOT/hooks/bin/run-hook.mjs"
+        if [[ ! -f "$runner_path" ]]; then
+            return 1
+        fi
+
+        # Extract handler path (e.g., "agent/ci-safety-check" or "pretool/bash/git-validator")
+        # Match pattern: word/word or word/word/word at end of string
+        local handler=$(echo "$cmd" | grep -oE '[a-z]+/[a-z-]+(/[a-z-]+)?$' || true)
+
+        if [[ -n "$handler" ]]; then
+            # Check if TypeScript source exists
+            local ts_path="$REPO_ROOT/hooks/src/${handler}.ts"
+            if [[ -f "$ts_path" ]]; then
+                return 0  # Valid
+            fi
+        fi
+        return 1  # Invalid - handler not found
+    fi
+    return 2  # Not a run-hook command
+}
+
 for agent_file in "$AGENTS_DIR"/*.md; do
     agent_name=$(basename "$agent_file" .md)
     agent_errors=0
@@ -74,15 +109,21 @@ for agent_file in "$AGENTS_DIR"/*.md; do
                 hook_cmd="${BASH_REMATCH[1]}"
                 ((TOTAL_HOOKS++)) || true
 
-                resolved_path=$(resolve_hook_path "$hook_cmd")
-
-                if [[ -f "$resolved_path" ]]; then
+                # First try to validate as run-hook.mjs command
+                if validate_run_hook_command "$hook_cmd"; then
                     ((VALID_HOOKS++)) || true
                 else
-                    echo "FAIL: $agent_name - Hook path not found: $hook_cmd"
-                    echo "      Resolved to: $resolved_path"
-                    agent_errors=1
-                    FAILED=1
+                    # Fallback to file path resolution
+                    resolved_path=$(resolve_hook_path "$hook_cmd")
+
+                    if [[ -f "$resolved_path" ]]; then
+                        ((VALID_HOOKS++)) || true
+                    else
+                        echo "FAIL: $agent_name - Hook path not found: $hook_cmd"
+                        echo "      Resolved to: $resolved_path"
+                        agent_errors=1
+                        FAILED=1
+                    fi
                 fi
             fi
         fi

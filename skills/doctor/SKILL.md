@@ -7,6 +7,7 @@ author: OrchestKit
 tags: [health-check, diagnostics, validation, permissions, hooks]
 user-invocable: true
 allowedTools: [Bash, Read, Grep, Glob]
+skills: [configure]
 ---
 
 # OrchestKit Health Diagnostics
@@ -53,7 +54,7 @@ Leverages CC 2.1.3's unreachable permission rules detection:
 **Output:**
 ```
 Permission Rules: 12/12 reachable
-- auto-approve-readonly.sh: OK
+- auto-approve-safe-bash (TypeScript): OK
 - auto-approve-safe-bash.sh: OK (3 patterns)
 - auto-approve-project-writes.sh: OK
 ```
