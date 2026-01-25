@@ -195,14 +195,14 @@ test_all_prompt_hooks_have_suppress_output() {
 }
 
 test_hooks_registered_in_plugin_json() {
-    local plugin_json="$PROJECT_ROOT/.claude-plugin/plugin.json"
+    local hooks_json="$PROJECT_ROOT/hooks/hooks.json"
 
-    # TypeScript hooks are registered via the run-hook.mjs runner
-    # Check that plugin.json references the hook system
-    if grep -qE "run-hook|hooks" "$plugin_json" 2>/dev/null; then
+    # TypeScript hooks are registered in hooks/hooks.json (CC 2.1.7+)
+    # Check that hooks.json exists and has hooks
+    if [[ -f "$hooks_json" ]] && grep -qE "UserPromptSubmit|hooks" "$hooks_json" 2>/dev/null; then
         return 0
     fi
-    fail "Plugin should reference hooks system"
+    fail "hooks/hooks.json should contain hook registrations"
 }
 
 # ============================================================================
