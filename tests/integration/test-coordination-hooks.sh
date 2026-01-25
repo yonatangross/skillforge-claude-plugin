@@ -272,17 +272,25 @@ test_hooks_without_coordination() {
     export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
 
     # Test each hook - TypeScript hooks should handle missing coordination gracefully
-    local -A hooks=(
-        ["lifecycle/coordination-init"]='{"session_id":"test-123"}'
-        ["lifecycle/coordination-cleanup"]='{"session_id":"test-123"}'
-        ["posttool/coordination-heartbeat"]='{"tool_input":{"command":"ls"},"session_id":"test-123"}'
-        ["pretool/write-edit/file-lock-check"]='{"tool_input":{"file_path":"/tmp/test.txt"},"session_id":"test-123"}'
+    # Using parallel arrays instead of associative array to avoid bash arithmetic issues with slashes
+    local handlers=(
+        "lifecycle/coordination-init"
+        "lifecycle/coordination-cleanup"
+        "posttool/coordination-heartbeat"
+        "pretool/write-edit/file-lock-check"
+    )
+    local inputs=(
+        '{"session_id":"test-123"}'
+        '{"session_id":"test-123"}'
+        '{"tool_input":{"command":"ls"},"session_id":"test-123"}'
+        '{"tool_input":{"file_path":"/tmp/test.txt"},"session_id":"test-123"}'
     )
 
-    for handler in "${!hooks[@]}"; do
+    for i in "${!handlers[@]}"; do
+        local handler="${handlers[$i]}"
+        local input="${inputs[$i]}"
         local name
         name=$(basename "$handler")
-        local input="${hooks[$handler]}"
         local output
         output=$(run_hook "$handler" "$input")
 
