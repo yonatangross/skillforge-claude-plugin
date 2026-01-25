@@ -5,6 +5,22 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.1] - 2026-01-25
+
+### Fixed
+
+- **Missing hook command field** (#224): `lifecycle/decision-sync-pull` hook in SessionStart was missing its `command` field, causing silent failure
+- **Plugin validation**: Added Test 6 to `test-plugin-json-schema.sh` that validates all hook entries with `type='command'` have a `command` field
+
+### Changed
+
+- **`fix-issue` skill v2.0.1**: Enforced feature branch and regression test as MANDATORY requirements
+  - Phase 6: Added CRITICAL sections for feature branch workflow
+  - Phase 8: Prioritized automated tests over process checks for prevention
+  - Key Decisions: Added feature branch and test as MANDATORY
+
+---
+
 ## [5.2.0] - 2026-01-24
 
 ### Added
