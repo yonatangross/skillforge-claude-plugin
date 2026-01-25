@@ -172,6 +172,7 @@ for manifest in "$MANIFESTS_DIR"/*.json; do
         echo '  "license": "MIT",'
         echo '  "keywords": ["ai-development", "langgraph", "fastapi", "react", "typescript", "python", "multi-agent"]'
         [[ -d "$PLUGIN_DIR/skills" ]] && echo '  ,"skills": "./skills/"'
+        # Note: "hooks" field not needed - CC auto-discovers hooks/hooks.json
         # Note: "agents" field removed - Claude Code doesn't support this field
         # Agents are auto-discovered from the agents/ directory
         echo '}'
