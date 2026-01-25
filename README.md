@@ -713,7 +713,9 @@ plugins/         # Generated (DO NOT EDIT - created by build script)
 #### Building Plugins
 
 ```bash
-# Build all plugins
+# Build all plugins (two methods)
+npm run build
+# OR
 bash scripts/build-plugins.sh
 
 # Test local installation
@@ -727,17 +729,27 @@ bash scripts/build-plugins.sh
 #### Development Cycle
 
 1. Edit source files in `src/skills/`, `src/agents/`, or `manifests/`
-2. Run `bash scripts/build-plugins.sh` to regenerate `plugins/`
+2. Run `npm run build` to regenerate `plugins/`
 3. Test changes locally
 4. Commit changes (only `src/` and `manifests/` are tracked in git)
 
 ### Running Tests
 
 ```bash
-./tests/run-all-tests.sh              # All 88 tests
-./tests/security/run-security-tests.sh # Security (must pass)
-./tests/skills/test-skill-structure.sh # Validate skills
-./tests/agents/test-agent-frontmatter.sh # Validate agents
+# Run all tests
+npm test
+# OR
+./tests/run-all-tests.sh
+
+# Individual test suites
+npm run test:security    # Security tests (must pass)
+npm run test:skills      # Validate skill structure
+npm run test:agents      # Validate agent frontmatter
+
+# Or use bash directly
+./tests/security/run-security-tests.sh
+./tests/skills/test-skill-structure.sh
+./tests/agents/test-agent-frontmatter.sh
 ```
 
 ### Contributing

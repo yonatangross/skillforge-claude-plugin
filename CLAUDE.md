@@ -141,6 +141,8 @@ bin/                     # CLI utilities and scripts
 ### Build System
 ```bash
 # Build all plugins from source (REQUIRED after editing src/ or manifests/)
+npm run build
+# OR
 bash scripts/build-plugins.sh
 
 # What the build script does:
@@ -171,30 +173,31 @@ ls ~/.claude/plugins/orchestkit/skills/
 ### Testing
 ```bash
 # Run all tests
+npm test
+# OR
 ./tests/run-all-tests.sh
 
-# Run security tests
-./tests/security/run-security-tests.sh
+# Individual test suites (via npm)
+npm run test:security    # Security tests (MUST pass)
+npm run test:skills      # Skill structure validation
+npm run test:agents      # Agent frontmatter validation
 
-# Validate schemas
-./tests/schemas/validate-all.sh
+# Or run directly
+./tests/security/run-security-tests.sh       # Security tests
+./tests/schemas/validate-all.sh              # Schema validation
+./tests/integration/test-coordination.sh     # Coordination system
 
-# Test coordination system
-./tests/integration/test-coordination.sh
-
-# Validate nested skills structure
+# Skill validation tests (added in v4.11.1)
 ./tests/skills/structure/test-skill-md.sh
+./tests/skills/test-skill-structure.sh
+./tests/skills/test-skill-context-modes.sh
+./tests/skills/test-skill-references.sh
 
 # Agent validation tests (added in v4.11.1)
 ./tests/agents/test-agent-model-selection.sh
 ./tests/agents/test-agent-context-modes.sh
 ./tests/agents/test-agent-required-hooks.sh
 ./tests/agents/test-agent-frontmatter.sh
-
-# Skill validation tests (added in v4.11.1)
-./tests/skills/test-skill-structure.sh
-./tests/skills/test-skill-context-modes.sh
-./tests/skills/test-skill-references.sh
 ```
 
 ### Hook Management
@@ -1086,7 +1089,7 @@ ORCHESTKIT_SKIP_SETUP=1 claude  # Skip all setup hooks
 
 ## Version Information
 
-- **Current Version**: 5.2.3 (as of 2026-01-23)
+- **Current Version**: 5.2.4 (as of 2026-01-25)
 - **Claude Code Requirement**: >= 2.1.16
 - **Skills Structure**: CC 2.1.7 native flat (skills/<skill>/)
 - **Agent Format**: CC 2.1.6 native (skills array in frontmatter)
@@ -1147,4 +1150,4 @@ tail -f hooks/logs/*.log
 
 ---
 
-**Last Updated**: 2026-01-25 (v5.1.5)
+**Last Updated**: 2026-01-25 (v5.2.4)

@@ -17,18 +17,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Plugin development workflow**: Introduced build system for assembling plugins
-  - Source moved to `src/` directory (skills, agents, hooks)
-  - Plugin manifests in `manifests/` directory (34 JSON files)
-  - Build script `scripts/build-plugins.sh` assembles `plugins/` directory
-  - CI auto-builds on merge to main
-  - Developers edit `src/`, not `plugins/` (which is generated)
+  - Source files moved to `src/` directory (skills, agents, hooks are single source of truth)
+  - Plugin definitions in `manifests/` directory (34 JSON manifest files)
+  - Build script `scripts/build-plugins.sh` assembles `plugins/` directory from source
+  - `plugins/` directory is now **generated** and **not tracked in git**
+  - CI automatically runs build on merge to main
+  - **Developers must edit `src/` and `manifests/`, never `plugins/`**
 
 ### Added
 
 - **Build infrastructure**:
-  - `scripts/build-plugins.sh`: Plugin assembly script
-  - `manifests/` directory: 34 plugin definition files
-  - `src/` directory: Single source of truth for skills, agents, hooks
+  - `scripts/build-plugins.sh`: Plugin assembly script that copies from src/ to plugins/
+  - `manifests/` directory: 34 plugin definition files (JSON format)
+  - `src/` directory: Single source of truth for all skills, agents, and hook references
+  - `.gitignore`: Added `plugins/` and `.claude-plugin/marketplace.json` (generated files)
+
+### Documentation
+
+- **README.md**: Added "Development Workflow" section with build system explanation
+- **CLAUDE.md**: Updated "Key Directories" section to document src/ structure and build process
+- **CONTRIBUTING.md**: Added build system section with critical workflow rules
+  - Added manifest editing steps to skill/agent creation workflows
+  - Emphasized src/ as the only place to edit files
 
 ## [5.2.3] - 2026-01-25
 
@@ -412,10 +422,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [4.28.1] - 2026-01-19
-
-### Fixed
-
-- TODO: Describe your changes here
 
 ---
 

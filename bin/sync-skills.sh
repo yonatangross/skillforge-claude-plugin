@@ -83,7 +83,7 @@ log "Checked $checked skill entries"
 # Check orphans: Skills in root that aren't in any plugin
 if [[ "$CHECK_ORPHANS" == "true" ]]; then
     log "Checking for orphan skills..."
-    for skill_dir in "$PROJECT_ROOT"/skills/*/; do
+    for skill_dir in "$PROJECT_ROOT"/src/skills/*/; do
         [[ -d "$skill_dir" ]] || continue
         skill_name=$(basename "$skill_dir")
 
