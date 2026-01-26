@@ -6,6 +6,9 @@ import { cinematicVerticalDemoSchema } from "./components/CinematicVerticalDemo"
 import { hybridDemoSchema } from "./components/HybridDemo";
 import { verticalDemoSchema } from "./components/VerticalDemo";
 import { marketplaceIntroSchema } from "./components/MarketplaceIntro";
+import { skillShowcaseSchema } from "./components/SkillShowcase";
+import { speedrunDemoSchema } from "./components/SpeedrunDemo";
+import { installWithAvatarDemoSchema } from "./components/InstallWithAvatarDemo";
 
 describe("ShowcaseDemo Schema", () => {
   it("should parse valid input with required fields", () => {
@@ -198,5 +201,79 @@ describe("MarketplaceIntro Schema", () => {
     expect(result.primaryColor).toBe("#ff0000");
     expect(result.secondaryColor).toBe("#00ff00");
     expect(result.accentColor).toBe("#0000ff");
+  });
+});
+
+describe("SkillShowcase Schema", () => {
+  it("should parse valid input with configName", () => {
+    const result = skillShowcaseSchema.parse({ configName: "brainstorming" });
+    expect(result.configName).toBe("brainstorming");
+    expect(result.primaryColor).toBe("#f59e0b"); // default
+  });
+
+  it("should reject missing configName", () => {
+    expect(() => skillShowcaseSchema.parse({})).toThrow();
+  });
+
+  it("should allow custom colors", () => {
+    const result = skillShowcaseSchema.parse({
+      configName: "brainstorming",
+      primaryColor: "#ff0000",
+      secondaryColor: "#00ff00",
+      accentColor: "#0000ff",
+    });
+    expect(result.primaryColor).toBe("#ff0000");
+    expect(result.secondaryColor).toBe("#00ff00");
+    expect(result.accentColor).toBe("#0000ff");
+  });
+});
+
+describe("SpeedrunDemo Schema", () => {
+  it("should parse with defaults", () => {
+    const result = speedrunDemoSchema.parse({});
+    expect(result.primaryColor).toBe("#8b5cf6");
+    expect(result.secondaryColor).toBe("#22c55e");
+    expect(result.accentColor).toBe("#06b6d4");
+  });
+
+  it("should allow custom colors", () => {
+    const result = speedrunDemoSchema.parse({
+      primaryColor: "#ff0000",
+      secondaryColor: "#00ff00",
+      accentColor: "#0000ff",
+    });
+    expect(result.primaryColor).toBe("#ff0000");
+    expect(result.secondaryColor).toBe("#00ff00");
+    expect(result.accentColor).toBe("#0000ff");
+  });
+});
+
+describe("InstallWithAvatarDemo Schema", () => {
+  it("should parse with defaults", () => {
+    const result = installWithAvatarDemoSchema.parse({});
+    expect(result.terminalVideoUrl).toBe("install-demo.mp4");
+    expect(result.showPlaceholder).toBe(true);
+    expect(result.primaryColor).toBe("#8b5cf6");
+  });
+
+  it("should accept optional avatarVideoUrl", () => {
+    const result = installWithAvatarDemoSchema.parse({
+      avatarVideoUrl: "avatar.mp4",
+    });
+    expect(result.avatarVideoUrl).toBe("avatar.mp4");
+  });
+
+  it("should allow custom terminalVideoUrl", () => {
+    const result = installWithAvatarDemoSchema.parse({
+      terminalVideoUrl: "custom-demo.mp4",
+    });
+    expect(result.terminalVideoUrl).toBe("custom-demo.mp4");
+  });
+
+  it("should allow disabling placeholder", () => {
+    const result = installWithAvatarDemoSchema.parse({
+      showPlaceholder: false,
+    });
+    expect(result.showPlaceholder).toBe(false);
   });
 });

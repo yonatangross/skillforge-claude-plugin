@@ -606,7 +606,10 @@ const StatItem: React.FC<{
     easing: EASE.OUT_EXPO,
   });
 
-  const displayValue = Math.round(parseInt(value) * countProgress);
+  const numericValue = parseInt(value);
+  const displayValue = isNaN(numericValue)
+    ? value
+    : Math.round(numericValue * countProgress);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>

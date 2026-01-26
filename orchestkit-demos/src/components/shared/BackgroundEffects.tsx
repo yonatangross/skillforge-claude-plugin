@@ -337,8 +337,16 @@ export const NoiseTexture: React.FC<NoiseTextureProps> = ({
   const frame = useCurrentFrame();
   const { width, height } = useVideoConfig();
 
+  // Render at 1/4 resolution for performance (reduces 8.3M to ~520K operations)
+  const NOISE_SCALE = 4;
+  const noiseWidth = Math.ceil(width / NOISE_SCALE);
+  const noiseHeight = Math.ceil(height / NOISE_SCALE);
+
   // Canvas-based noise for performance
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+
+  // Only regenerate when frame changes (if animated) or on mount
+  const frameKey = animated ? frame : 0;
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
@@ -347,10 +355,10 @@ export const NoiseTexture: React.FC<NoiseTextureProps> = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const imageData = ctx.createImageData(width, height);
+    const imageData = ctx.createImageData(noiseWidth, noiseHeight);
     for (let i = 0; i < imageData.data.length; i += 4) {
       // Use deterministic random based on pixel position and frame
-      const noise = random(`noise-${i}-${animated ? frame : 0}`) * 255;
+      const noise = random(`noise-${i}-${frameKey}`) * 255;
       imageData.data[i] = noise;
       imageData.data[i + 1] = noise;
       imageData.data[i + 2] = noise;
@@ -358,15 +366,20 @@ export const NoiseTexture: React.FC<NoiseTextureProps> = ({
     }
 
     ctx.putImageData(imageData, 0, 0);
-  }, [frame, width, height, animated]);
+  }, [frameKey, noiseWidth, noiseHeight]);
 
   return (
     <AbsoluteFill style={{ pointerEvents: "none", mixBlendMode: "overlay" }}>
       <canvas
         ref={canvasRef}
-        width={width}
-        height={height}
-        style={{ width: "100%", height: "100%", opacity }}
+        width={noiseWidth}
+        height={noiseHeight}
+        style={{
+          width: "100%",
+          height: "100%",
+          opacity,
+          imageRendering: "pixelated",
+        }}
       />
     </AbsoluteFill>
   );

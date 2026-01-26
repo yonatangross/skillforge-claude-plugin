@@ -1,3 +1,4 @@
+import React from "react";
 import { Composition } from "remotion";
 import { HybridDemo, hybridDemoSchema } from "./components/HybridDemo";
 import { VerticalDemo, verticalDemoSchema } from "./components/VerticalDemo";

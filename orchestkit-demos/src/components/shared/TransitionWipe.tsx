@@ -131,7 +131,6 @@ export const SceneTransition: React.FC<SceneTransitionProps> = ({
   durationFrames = 10,
 }) => {
   const frame = useCurrentFrame();
-  useVideoConfig(); // Access for potential future use
 
   // Progress: fade in then fade out
   const progress = interpolate(

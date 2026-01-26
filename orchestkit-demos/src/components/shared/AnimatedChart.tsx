@@ -293,6 +293,7 @@ export const LineChart: React.FC<LineChartProps> = ({
   gradientColors,
 }) => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const adjustedFrame = Math.max(0, frame - delay);
 
   const maxVal = Math.max(...points);
@@ -379,7 +380,7 @@ export const LineChart: React.FC<LineChartProps> = ({
           const dotFrame = Math.max(0, adjustedFrame - dotDelay);
           const dotScale = spring({
             frame: dotFrame,
-            fps: 30,
+            fps,
             config: { damping: 12, stiffness: 150 },
           });
 

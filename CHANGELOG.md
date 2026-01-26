@@ -17,6 +17,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hooks execute in background without blocking main conversation flow
   - Claude Code notifies when async hooks complete
 
+### Fixed
+
+- **PR #234 Review Issues** (#209): Address all findings from PR review
+  - Add missing React import to Root.tsx for React.FC usage
+  - Optimize NoiseTexture performance (1/4 resolution, ~520K vs 8.3M ops per frame)
+  - Remove unused useVideoConfig hook in TransitionWipe.tsx
+  - Use fps from useVideoConfig hook instead of hardcoded 30 in AnimatedChart.tsx
+  - Handle non-numeric StatItem values with isNaN check in SkillShowcase.tsx
+  - Replace identifiable HeyGen IDs with placeholders in .env.example
+  - Add 11 schema tests for SkillShowcase, SpeedrunDemo, InstallWithAvatarDemo
+
 ### Documentation
 
 - **Async Hooks Reference**: Added `src/hooks/README.md` section documenting async hook patterns
