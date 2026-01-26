@@ -29,6 +29,10 @@ import {
   SkillShowcase,
   skillShowcaseSchema,
 } from "./components/SkillShowcase";
+import {
+  HooksAsyncDemo,
+  hooksAsyncDemoSchema,
+} from "./components/HooksAsyncDemo";
 // HeyGen integration (experimental - isolated for future use)
 // import { HeyGenDemo } from "./components/HeyGenDemo";
 // import { InstallWithAvatarDemo, installWithAvatarDemoSchema } from "./components/InstallWithAvatarDemo";
@@ -99,6 +103,22 @@ export const RemotionRoot: React.FC = () => {
           primaryColor: "#f59e0b",
           secondaryColor: "#8b5cf6",
           accentColor: "#22c55e",
+        }}
+      />
+
+      {/* 15-second Hooks Async Demo - "31 Workers, Zero Wait" */}
+      <Composition
+        id="HooksAsyncDemo"
+        component={HooksAsyncDemo}
+        durationInFrames={FPS * 15}
+        fps={FPS}
+        width={1080}
+        height={1080}
+        schema={hooksAsyncDemoSchema}
+        defaultProps={{
+          primaryColor: "#8b5cf6",
+          secondaryColor: "#22c55e",
+          accentColor: "#06b6d4",
         }}
       />
 

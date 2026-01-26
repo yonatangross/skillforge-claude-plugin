@@ -9,6 +9,7 @@ import { marketplaceIntroSchema } from "./components/MarketplaceIntro";
 import { skillShowcaseSchema } from "./components/SkillShowcase";
 import { speedrunDemoSchema } from "./components/SpeedrunDemo";
 import { installWithAvatarDemoSchema } from "./components/InstallWithAvatarDemo";
+import { hooksAsyncDemoSchema } from "./components/HooksAsyncDemo";
 
 describe("ShowcaseDemo Schema", () => {
   it("should parse valid input with required fields", () => {
@@ -275,5 +276,25 @@ describe("InstallWithAvatarDemo Schema", () => {
       showPlaceholder: false,
     });
     expect(result.showPlaceholder).toBe(false);
+  });
+});
+
+describe("HooksAsyncDemo Schema", () => {
+  it("should parse with defaults", () => {
+    const result = hooksAsyncDemoSchema.parse({});
+    expect(result.primaryColor).toBe("#8b5cf6");
+    expect(result.secondaryColor).toBe("#22c55e");
+    expect(result.accentColor).toBe("#06b6d4");
+  });
+
+  it("should allow custom colors", () => {
+    const result = hooksAsyncDemoSchema.parse({
+      primaryColor: "#ff0000",
+      secondaryColor: "#00ff00",
+      accentColor: "#0000ff",
+    });
+    expect(result.primaryColor).toBe("#ff0000");
+    expect(result.secondaryColor).toBe("#00ff00");
+    expect(result.accentColor).toBe("#0000ff");
   });
 });

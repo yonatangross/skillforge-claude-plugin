@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hooks execute in background without blocking main conversation flow
   - Claude Code notifies when async hooks complete
 
+### Added
+
+- **HooksAsyncDemo Video Component** (#209): New 15-second X/Twitter video showcasing async hooks
+  - "31 Workers, Zero Wait" theme demonstrating async: true hooks
+  - 4 scenes: hook intro, session start, split view, stats CTA
+  - 1080x1080 square format for social media
+
 ### Fixed
 
 - **PR #234 Review Issues** (#209): Address all findings from PR review
@@ -26,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Use fps from useVideoConfig hook instead of hardcoded 30 in AnimatedChart.tsx
   - Handle non-numeric StatItem values with isNaN check in SkillShowcase.tsx
   - Replace identifiable HeyGen IDs with placeholders in .env.example
-  - Add 11 schema tests for SkillShowcase, SpeedrunDemo, InstallWithAvatarDemo
+  - Add 13 schema tests for SkillShowcase, SpeedrunDemo, InstallWithAvatarDemo, HooksAsyncDemo
 
 ### Documentation
 
