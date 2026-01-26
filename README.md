@@ -5,7 +5,7 @@
 
 ### Stop explaining your stack. Start shipping.
 
-**179 skills · 35 agents · 144 hooks · 33 modular plugins**
+**179 skills · 35 agents · 149 hooks · 33 modular plugins**
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.19-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
 [![Skills](https://img.shields.io/badge/Skills-164-blue?style=for-the-badge)](./skills)
@@ -88,7 +88,7 @@
         │ Git protect   │    │ Best practice │    │ Auto-activate │
         │ Quality check │    │ Code templates│    │ Domain expert │
         │               │    │               │    │               │
-        │   144 hooks   │    │  179 skills   │    │   35 agents   │
+        │   149 hooks   │    │  179 skills   │    │   35 agents   │
         └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
                 │                    │                    │
                 │    ┌───────────────┴───────────────┐    │
@@ -742,7 +742,7 @@ OrchestKit uses a **build system** to assemble modular plugins from source files
 src/
 ├── skills/      # 179 skills (single source of truth - edit these)
 ├── agents/      # 35 agents (single source of truth - edit these)
-└── hooks/       # 144 hooks (single source of truth - edit these)
+└── hooks/       # 149 hooks (single source of truth - edit these)
 
 manifests/       # Plugin definitions (34 manifests - edit these)
 ├── ork.json
