@@ -1,5 +1,5 @@
 {
-  "description": "OrchestKit hooks - 145 TypeScript hooks for comprehensive development automation",
+  "description": "OrchestKit hooks - 149 TypeScript hooks for comprehensive development automation",
   "hooks": {
     "PreToolUse": [
       {
@@ -370,35 +370,13 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/unified-dispatcher",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/session-context-loader"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/session-env-setup"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/mem0-context-retrieval",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/mem0-webhook-setup",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/mem0-analytics-tracker",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/pattern-sync-pull",
-            "async": true,
-            "timeout": 30
           },
           {
             "type": "command",
@@ -410,25 +388,7 @@
           },
           {
             "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/coordination-init",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/instance-heartbeat"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/decision-sync-pull",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs lifecycle/dependency-version-check",
-            "async": true,
-            "timeout": 30
           }
         ]
       }
@@ -460,6 +420,12 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/unified-dispatcher",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/multi-instance-cleanup"
           },
           {
@@ -469,12 +435,6 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/task-completion-check"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/auto-save-context",
-            "async": true,
-            "timeout": 30
           },
           {
             "type": "command",
@@ -543,24 +503,6 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs skill/test-runner"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/session-patterns",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/issue-work-summary",
-            "async": true,
-            "timeout": 60
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs stop/calibration-persist",
-            "async": true,
-            "timeout": 30
           }
         ]
       }
@@ -596,25 +538,13 @@
         "hooks": [
           {
             "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/unified-dispatcher",
+            "async": true,
+            "timeout": 60
+          },
+          {
+            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/output-validator"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/context-publisher",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/handoff-preparer",
-            "async": true,
-            "timeout": 30
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/feedback-loop",
-            "async": true,
-            "timeout": 30
           },
           {
             "type": "command",
@@ -623,12 +553,6 @@
           {
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/multi-claude-verifier"
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs subagent-stop/agent-memory-store",
-            "async": true,
-            "timeout": 30
           },
           {
             "type": "command",
@@ -650,15 +574,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs notification/desktop",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs notification/unified-dispatcher",
             "async": true,
-            "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs notification/sound",
-            "async": true,
-            "timeout": 10
+            "timeout": 30
           }
         ]
       }
