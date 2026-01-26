@@ -5,12 +5,12 @@
 
 ### Stop explaining your stack. Start shipping.
 
-**163 skills · 34 agents · 144 hooks · 33 modular plugins**
+**179 skills · 35 agents · 144 hooks · 33 modular plugins**
 
 [![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.19-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
 [![Skills](https://img.shields.io/badge/Skills-164-blue?style=for-the-badge)](./skills)
 [![Agents](https://img.shields.io/badge/Agents-34-green?style=for-the-badge)](./agents)
-[![Hooks](https://img.shields.io/badge/Hooks-144-orange?style=for-the-badge)](./hooks)
+[![Hooks](https://img.shields.io/badge/Hooks-147-orange?style=for-the-badge)](./hooks)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/yonatangross/orchestkit?style=for-the-badge&logo=github)](https://github.com/yonatangross/orchestkit)
 
@@ -42,7 +42,7 @@
 
 **The Problem:** Every Claude Code session starts from zero. You explain your stack, your patterns, your preferences—again and again.
 
-**The Solution:** OrchestKit gives Claude persistent knowledge of 163 production patterns, 34 specialized agents, and 144 security/quality hooks that work automatically.
+**The Solution:** OrchestKit gives Claude persistent knowledge of 163 production patterns, 34 specialized agents, and 147 security/quality hooks that work automatically.
 
 <table>
 <tr>
@@ -88,7 +88,7 @@
         │ Git protect   │    │ Best practice │    │ Auto-activate │
         │ Quality check │    │ Code templates│    │ Domain expert │
         │               │    │               │    │               │
-        │   144 hooks   │    │  163 skills   │    │   34 agents   │
+        │   144 hooks   │    │  179 skills   │    │   35 agents   │
         └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
                 │                    │                    │
                 │    ┌───────────────┴───────────────┐    │
@@ -317,7 +317,7 @@ Codebase Analysis:
 
 ## Skills
 
-**163 skills** with progressive loading (~70% token savings):
+**179 skills** with progressive loading (~70% token savings):
 
 ### 🤖 AI & ML — 27 skills
 
@@ -365,7 +365,7 @@ Codebase Analysis:
 `github-operations` · `git-workflow` · `stacked-prs` · `release-management` · `observability-monitoring` · `devops-deployment` · `zero-downtime-migration` · `database-versioning` · `alembic-migrations`
 
 <details>
-<summary><strong>📁 View all 163 skills</strong></summary>
+<summary><strong>📁 View all 179 skills</strong></summary>
 
 ```bash
 ls skills/
@@ -687,8 +687,8 @@ OrchestKit uses a **build system** to assemble modular plugins from source files
 
 ```
 src/
-├── skills/      # 163 skills (single source of truth - edit these)
-├── agents/      # 34 agents (single source of truth - edit these)
+├── skills/      # 179 skills (single source of truth - edit these)
+├── agents/      # 35 agents (single source of truth - edit these)
 └── hooks/       # 144 hooks (single source of truth - edit these)
 
 manifests/       # Plugin definitions (34 manifests - edit these)

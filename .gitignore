@@ -38,6 +38,7 @@ HOOK_SECURITY_*.txt
 
 # Instance-specific environment
 .claude/.instance_env
+.claude-local/
 
 # Session state and runtime data
 .claude/context/session.json
@@ -101,3 +102,4 @@ __pycache__/
 
 # Generated plugin builds (now committed for marketplace distribution)
 # Run `npm run build` before committing to ensure plugins/ is up-to-date
+hooks/node_modules

@@ -5,6 +5,53 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.8] - 2026-01-26
+
+### Changed
+
+- **Async Hooks Migration** (#209): Migrated 20 hooks from `background: true` to Claude Code's native `async: true` feature
+  - **7 SessionStart hooks** (startup performance): mem0-context-retrieval, mem0-webhook-setup, mem0-analytics-tracker, pattern-sync-pull, coordination-init, decision-sync-pull, dependency-version-check
+  - **7 PostToolUse analytics hooks** (non-blocking metrics): session-metrics, audit-logger, calibration-tracker, code-style-learner, naming-convention-learner, skill-usage-optimizer, realtime-sync
+  - **6 Network I/O hooks** (external API calls): pattern-extractor, issue-progress-commenter, issue-subtask-updater, mem0-webhook-handler, coordination-heartbeat, memory-bridge
+  - All async hooks include `timeout: 30` for graceful degradation
+  - Hooks execute in background without blocking main conversation flow
+  - Claude Code notifies when async hooks complete
+
+### Added
+
+- **HooksAsyncDemo Video Component** (#209): New 15-second X/Twitter video showcasing async hooks
+  - "31 Workers, Zero Wait" theme demonstrating async: true hooks
+  - 4 scenes: hook intro, session start, split view, stats CTA
+  - 1080x1080 square format for social media
+
+### Fixed
+
+- **PR #234 Review Issues** (#209): Address all findings from PR review
+  - Add missing React import to Root.tsx for React.FC usage
+  - Optimize NoiseTexture performance (1/4 resolution, ~520K vs 8.3M ops per frame)
+  - Remove unused useVideoConfig hook in TransitionWipe.tsx
+  - Use fps from useVideoConfig hook instead of hardcoded 30 in AnimatedChart.tsx
+  - Handle non-numeric StatItem values with isNaN check in SkillShowcase.tsx
+  - Replace identifiable HeyGen IDs with placeholders in .env.example
+  - Add 13 schema tests for SkillShowcase, SpeedrunDemo, InstallWithAvatarDemo, HooksAsyncDemo
+
+### Documentation
+
+- **Async Hooks Reference**: Added `src/hooks/README.md` section documenting async hook patterns
+- **CLAUDE.md**: Updated hooks section to mention async execution support
+
+---
+
+
+## [5.2.7] - 2026-01-25
+
+### Fixed
+
+- TODO: Describe your changes here
+
+---
+
+
 ## [5.2.6] - 2026-01-25
 
 ### Added
@@ -125,17 +172,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Missing hook command field** (#224): `lifecycle/decision-sync-pull` hook in SessionStart was missing its `command` field, causing silent failure
-- **Plugin validation**: Added Test 6 to `test-plugin-json-schema.sh` that validates all hook entries with `type='command'` have a `command` field
-
-### Changed
-
-- **`fix-issue` skill v2.0.1**: Enforced feature branch and regression test as MANDATORY requirements
-  - Phase 6: Added CRITICAL sections for feature branch workflow
-  - Phase 8: Prioritized automated tests over process checks for prevention
-  - Key Decisions: Added feature branch and test as MANDATORY
+- TODO: Describe your changes here
 
 ---
+
 
 ## [5.2.0] - 2026-01-24
 
