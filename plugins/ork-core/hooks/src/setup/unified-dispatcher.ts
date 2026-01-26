@@ -74,16 +74,30 @@ export async function unifiedSetupDispatcher(input: HookInput): Promise<HookResu
     })
   );
 
-  // Log summary for debugging (only errors)
-  const errors = results.filter(
-    r => r.status === 'rejected' || (r.status === 'fulfilled' && r.value.status === 'error')
-  );
+  // Collect failures for reporting
+  const failures: Array<{ hook: string; message: string }> = [];
 
-  if (errors.length > 0) {
-    logHook('setup-dispatcher', `${errors.length}/${HOOKS.length} hooks had errors`);
-  } else {
-    logHook('setup-dispatcher', `All ${HOOKS.length} Setup hooks completed successfully`);
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      const reason = result.reason instanceof Error ? result.reason.message : String(result.reason);
+      failures.push({ hook: 'unknown', message: reason });
+    } else if (result.value.status === 'error') {
+      failures.push({ hook: result.value.hook, message: result.value.message || 'Unknown error' });
+    }
   }
 
+  // On failure: return informative message visible to user
+  if (failures.length > 0) {
+    const failedNames = failures.map(f => f.hook).join(', ');
+    logHook('setup-dispatcher', `${failures.length}/${HOOKS.length} hooks failed: ${failedNames}`);
+
+    return {
+      continue: true,
+      systemMessage: `⚠️ Setup: ${failures.length}/${HOOKS.length} hooks failed (${failedNames})`
+    };
+  }
+
+  // On success: silent (no extra output)
+  logHook('setup-dispatcher', `All ${HOOKS.length} Setup hooks completed successfully`);
   return outputSilentSuccess();
 }
