@@ -33,6 +33,7 @@ import {
   HooksAsyncDemo,
   hooksAsyncDemoSchema,
 } from "./components/HooksAsyncDemo";
+import { HeroGif, heroGifSchema } from "./components/HeroGif";
 // HeyGen integration (experimental - isolated for future use)
 // import { HeyGenDemo } from "./components/HeyGenDemo";
 // import { InstallWithAvatarDemo, installWithAvatarDemoSchema } from "./components/InstallWithAvatarDemo";
@@ -53,6 +54,23 @@ const AUDIO_DEFAULTS = {
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      {/* ==================== README HERO GIF ==================== */}
+
+      {/* 8-second Hero GIF for README - Optimized for GIF output */}
+      <Composition
+        id="HeroGif"
+        component={HeroGif}
+        durationInFrames={15 * 8} // 8 seconds @ 15fps
+        fps={15}
+        width={800}
+        height={450}
+        schema={heroGifSchema}
+        defaultProps={{
+          primaryColor: "#8b5cf6",
+          secondaryColor: "#22c55e",
+        }}
+      />
+
       {/* ==================== MARKETPLACE INTRO ==================== */}
 
       {/* 30-second Marketplace Intro - Cinematic showcase */}

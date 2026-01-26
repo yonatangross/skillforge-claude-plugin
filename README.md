@@ -20,8 +20,9 @@
 
 ---
 
-<!-- Demo GIF placeholder - see issue #187 -->
-<!-- <p align="center"><img src="assets/demo.gif" alt="OrchestKit Demo" width="600"></p> -->
+<p align="center">
+  <img src="assets/demo.gif" alt="OrchestKit Demo - /ork:doctor health check" width="600">
+</p>
 
 ## Quick Start
 
