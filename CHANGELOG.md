@@ -16,6 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New `src/hooks/src/setup/unified-dispatcher.ts` with Promise.allSettled for parallel execution
   - Hook count: 149 → 150 (new dispatcher file)
 
+- **Enhanced Failure Reporting**: Unified dispatchers now show informative messages on failure
+  - On SUCCESS: Silent (only CC's "Async hook completed" message)
+  - On FAILURE: Shows failed hook names (e.g., "⚠️ PostToolUse: 2/14 hooks failed (pattern-extractor, audit-logger)")
+  - Applied to: posttool, lifecycle, and setup dispatchers
+
+### Fixed
+
+- **Test Path Updates**: Fixed pre-existing test failures for new directory structure
+  - Mem0 Security: Search multiple paths for mem0.sh (shared/_lib, hooks/_lib)
+  - External Installation: Search src/skills and plugins/ork/skills for discovery
+  - Async Hooks Test: Updated expectations for unified dispatcher architecture
+
 ---
 
 
