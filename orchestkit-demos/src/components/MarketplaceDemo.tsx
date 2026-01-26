@@ -6,101 +6,276 @@ import {
   interpolate,
   spring,
   Easing,
+  random,
 } from "remotion";
 import { z } from "zod";
 import { ORCHESTKIT_STATS } from "../constants";
 
 /**
- * MarketplaceDemo - "The Full Power Demo" (Option D)
+ * MarketplaceDemo - AnimStats-Inspired Full Restyle v3
  *
- * 55 seconds @ 30fps = 1650 frames
- * Resolution: 1920x1080 (16:9)
- *
- * Timeline (with scene intros):
- * 0-4s:    Hook - OrchestKit logo + "Stop explaining your stack. Start shipping." + stats
- * 4-22s:   /implement - 4 paginated views with command bar
- * 22-24s:  Verify Intro - "Quality Check" card
- * 24-34s:  /verify - 6 agents checking + grade reveal with command bar
- * 34-36s:  Breadth Intro - "22 User-Invocable Skills" card
- * 36-46s:  Breadth montage - Quick cuts of other commands
- * 46-48s:  CTA Intro - "Get Started" card
- * 48-55s:  CTA - Install command + ecosystem
+ * 45 seconds @ 30fps = 1350 frames
+ * Features: Cursor choreography, confetti, hard cuts, geometric backgrounds
  */
 
 export const marketplaceDemoSchema = z.object({
-  primaryColor: z.string().default("#a855f7"),
+  primaryColor: z.string().default("#9B5DE5"),
 });
 
 type MarketplaceDemoProps = z.infer<typeof marketplaceDemoSchema>;
 
-// Colors (vibrant palette)
-const BG = "#030712";
-const SURFACE = "#0f172a";
-const BORDER = "#334155";
-const TEXT = "#f8fafc";
-const DIM = "#94a3b8";
+// AnimStats color palette
+const WHITE_BG = "#FFFFFF";
+const BLACK_BG = "#050505";
+const SURFACE_DARK = "#1A1A1A";
+const GRADIENT_PURPLE = "#9B5DE5";
+const GRADIENT_PINK = "#F15BB5";
+const GRADIENT_YELLOW = "#FEE440";
+const TEXT_DARK = "#050505";
+const TEXT_LIGHT = "#FFFFFF";
+const DIM_DARK = "#666666";
+const DIM_LIGHT = "#94a3b8";
 const GREEN = "#22c55e";
-const PURPLE = "#a855f7";
 const CYAN = "#06b6d4";
-const _ORANGE = "#f97316"; // Reserved for future use
-const YELLOW = "#eab308";
-const PINK = "#ec4899";
 const RED = "#ef4444";
 const BLUE = "#3b82f6";
 
-// Agent definitions for /implement
+// Spring configs
+const SNAPPY_SPRING = { damping: 12, stiffness: 200 };
+const POP_SPRING = { damping: 10, stiffness: 300, mass: 0.8 };
+const BOUNCE_SPRING = { damping: 8, stiffness: 200 };
+
+// Agent definitions
 const IMPLEMENT_AGENTS = [
-  { icon: "🏗️", name: "backend-architect", color: CYAN, task: "Designing auth endpoints" },
-  { icon: "🔒", name: "security-auditor", color: RED, task: "Validating JWT patterns" },
-  { icon: "📊", name: "workflow-architect", color: PURPLE, task: "Planning task dependencies" },
-  { icon: "🧪", name: "test-generator", color: GREEN, task: "Creating test fixtures" },
-  { icon: "📝", name: "docs-specialist", color: PINK, task: "Writing API docs" },
+  { icon: "🏗️", name: "backend", color: CYAN, task: "Auth endpoints" },
+  { icon: "🔒", name: "security", color: RED, task: "JWT validation" },
+  { icon: "📊", name: "workflow", color: GRADIENT_PURPLE, task: "Dependencies" },
+  { icon: "🧪", name: "tests", color: GREEN, task: "Test fixtures" },
+  { icon: "📝", name: "docs", color: GRADIENT_PINK, task: "API docs" },
 ];
 
-// Tasks for /implement
-const IMPLEMENT_TASKS = [
-  { id: 1, name: "Create auth endpoints", status: "completed" },
-  { id: 2, name: "Add User model", status: "completed" },
-  { id: 3, name: "Implement JWT utils", status: "completed" },
-  { id: 4, name: "Add auth middleware", status: "completed" },
-  { id: 5, name: "Write integration tests", status: "completed" },
-  { id: 6, name: "Generate API docs", status: "completed" },
-];
-
-// Agents for /verify
 const VERIFY_AGENTS = [
   { icon: "🔒", name: "Security", score: 9.5, color: RED },
   { icon: "🧪", name: "Tests", score: 9.2, color: CYAN },
-  { icon: "📊", name: "Quality", score: 8.8, color: PURPLE },
-  { icon: "⚡", name: "Performance", score: 9.1, color: YELLOW },
-  { icon: "♿", name: "Accessibility", score: 8.5, color: BLUE },
-  { icon: "📝", name: "Documentation", score: 9.0, color: PINK },
+  { icon: "📊", name: "Quality", score: 8.8, color: GRADIENT_PURPLE },
+  { icon: "⚡", name: "Perf", score: 9.1, color: GRADIENT_YELLOW },
+  { icon: "♿", name: "A11y", score: 8.5, color: BLUE },
+  { icon: "📝", name: "Docs", score: 9.0, color: GRADIENT_PINK },
 ];
 
-// Breadth montage commands
 const BREADTH_COMMANDS = [
-  { cmd: "/explore", result: "Architecture mapped • 847 files analyzed", color: PURPLE },
-  { cmd: "/brainstorming", result: "3 agents → JWT + refresh tokens", color: YELLOW },
-  { cmd: "/commit", result: "feat(auth): add JWT authentication", color: PINK },
-  { cmd: "/create-pr", result: "PR #143 created → Ready for review", color: BLUE },
-  { cmd: "/doctor", result: "All systems operational ✓", color: GREEN },
+  { cmd: "/explore", result: "847 files mapped", color: GRADIENT_PURPLE },
+  { cmd: "/brainstorming", result: "JWT + refresh", color: GRADIENT_YELLOW },
+  { cmd: "/commit", result: "feat(auth): JWT", color: GRADIENT_PINK },
+  { cmd: "/create-pr", result: "PR #143 ready", color: BLUE },
+  { cmd: "/doctor", result: "All systems ✓", color: GREEN },
 ];
+
+// Gradient text component
+const GradientText: React.FC<{
+  children: React.ReactNode;
+  style?: React.CSSProperties;
+}> = ({ children, style }) => (
+  <span
+    style={{
+      background: `linear-gradient(90deg, ${GRADIENT_PURPLE} 0%, ${GRADIENT_PINK} 50%, ${GRADIENT_YELLOW} 100%)`,
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      ...style,
+    }}
+  >
+    {children}
+  </span>
+);
+
+// Floating geometric shapes for depth
+const GeometricBackground: React.FC<{ frame: number; dark?: boolean }> = ({ frame, dark = true }) => {
+  const shapes = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    x: random(`shape-x-${i}`) * 100,
+    y: random(`shape-y-${i}`) * 100,
+    size: 20 + random(`shape-size-${i}`) * 40,
+    rotation: random(`shape-rot-${i}`) * 360,
+    type: i % 3, // 0=diamond, 1=triangle, 2=circle
+  }));
+
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
+      {shapes.map((shape) => {
+        const float = Math.sin((frame + shape.id * 20) * 0.02) * 10;
+        const rotate = shape.rotation + frame * 0.1;
+        const opacity = dark ? 0.08 : 0.05;
+
+        return (
+          <div
+            key={shape.id}
+            style={{
+              position: "absolute",
+              left: `${shape.x}%`,
+              top: `${shape.y}%`,
+              width: shape.size,
+              height: shape.size,
+              transform: `translateY(${float}px) rotate(${rotate}deg)`,
+              opacity,
+              border: `2px solid ${dark ? TEXT_LIGHT : TEXT_DARK}`,
+              borderRadius: shape.type === 2 ? "50%" : shape.type === 0 ? 0 : 0,
+              clipPath: shape.type === 1 ? "polygon(50% 0%, 0% 100%, 100% 100%)" : shape.type === 0 ? "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" : undefined,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+// Confetti burst component
+const ConfettiBurst: React.FC<{ frame: number; fps: number; startFrame: number }> = ({ frame, fps, startFrame }) => {
+  const localFrame = frame - startFrame;
+  if (localFrame < 0 || localFrame > fps * 2) return null;
+
+  const particles = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    angle: (i / 30) * Math.PI * 2 + random(`conf-angle-${i}`) * 0.5,
+    speed: 200 + random(`conf-speed-${i}`) * 300,
+    color: [GRADIENT_PURPLE, GRADIENT_PINK, GRADIENT_YELLOW, GREEN, CYAN][i % 5],
+    size: 8 + random(`conf-size-${i}`) * 8,
+    rotationSpeed: random(`conf-rot-${i}`) * 10 - 5,
+  }));
+
+  const progress = localFrame / fps;
+  const gravity = progress * progress * 400;
+
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      {particles.map((p) => {
+        const x = Math.cos(p.angle) * p.speed * progress;
+        const y = Math.sin(p.angle) * p.speed * progress + gravity;
+        const opacity = interpolate(localFrame, [fps * 1.5, fps * 2], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+        const rotation = localFrame * p.rotationSpeed;
+
+        return (
+          <div
+            key={p.id}
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "40%",
+              width: p.size,
+              height: p.size,
+              backgroundColor: p.color,
+              borderRadius: random(`conf-shape-${p.id}`) > 0.5 ? "50%" : 2,
+              transform: `translate(${x}px, ${y}px) rotate(${rotation}deg)`,
+              opacity,
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+// Animated cursor with bezier movement
+const AnimatedCursor: React.FC<{
+  frame: number;
+  fps: number;
+  startPos: { x: number; y: number };
+  endPos: { x: number; y: number };
+  startFrame: number;
+  duration: number;
+  onClick?: boolean;
+}> = ({ frame, fps, startPos, endPos, startFrame, duration, onClick = false }) => {
+  const localFrame = frame - startFrame;
+  if (localFrame < 0 || localFrame > duration + fps * 0.3) return null;
+
+  const progress = Math.min(1, localFrame / duration);
+  // Bezier curve for natural movement
+  const eased = Easing.bezier(0.25, 0.1, 0.25, 1)(progress);
+
+  const x = startPos.x + (endPos.x - startPos.x) * eased;
+  const y = startPos.y + (endPos.y - startPos.y) * eased;
+
+  // Click animation
+  const isClicking = onClick && localFrame > duration && localFrame < duration + fps * 0.2;
+  const clickScale = isClicking ? 0.85 : 1;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: x,
+        top: y,
+        width: 24,
+        height: 24,
+        transform: `scale(${clickScale})`,
+        pointerEvents: "none",
+        zIndex: 1000,
+      }}
+    >
+      {/* Cursor SVG */}
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path
+          d="M5 3L19 12L12 13L9 20L5 3Z"
+          fill={TEXT_LIGHT}
+          stroke={TEXT_DARK}
+          strokeWidth="2"
+        />
+      </svg>
+      {/* Click ripple */}
+      {isClicking && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            border: `2px solid ${GRADIENT_PURPLE}`,
+            transform: "translate(-8px, -8px)",
+            opacity: 0.5,
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
+// Reaction emoji component
+const ReactionEmoji: React.FC<{ frame: number; fps: number; startFrame: number; emoji: string }> = ({ frame, fps, startFrame, emoji }) => {
+  const localFrame = frame - startFrame;
+  if (localFrame < 0) return null;
+
+  const scale = spring({ frame: localFrame, fps, config: BOUNCE_SPRING });
+  const wiggle = Math.sin(localFrame * 0.3) * 5;
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        right: 100,
+        top: "40%",
+        fontSize: 80,
+        transform: `scale(${scale}) rotate(${wiggle}deg)`,
+      }}
+    >
+      {emoji}
+    </div>
+  );
+};
 
 export const MarketplaceDemo: React.FC<MarketplaceDemoProps> = () => {
   const frame = useCurrentFrame();
   const { fps, width } = useVideoConfig();
 
-  // Scene boundaries (in frames) - with intro cards
+  // Scene boundaries
   const HOOK_END = fps * 4;
-  const IMPLEMENT_END = fps * 22;
-  const VERIFY_INTRO_END = fps * 24;
-  const VERIFY_END = fps * 34;
-  const BREADTH_INTRO_END = fps * 36;
-  const BREADTH_END = fps * 46;
-  const CTA_INTRO_END = fps * 48;
-  // CTA: 48-55s
+  const IMPLEMENT_END = fps * 16;
+  const VERIFY_INTRO_END = fps * 17;
+  const VERIFY_END = fps * 25;
+  const BREADTH_INTRO_END = fps * 26;
+  const BREADTH_END = fps * 34;
+  const CTA_INTRO_END = fps * 35;
 
-  // Determine current scene
   const isHook = frame < HOOK_END;
   const isImplement = frame >= HOOK_END && frame < IMPLEMENT_END;
   const isVerifyIntro = frame >= IMPLEMENT_END && frame < VERIFY_INTRO_END;
@@ -110,54 +285,40 @@ export const MarketplaceDemo: React.FC<MarketplaceDemoProps> = () => {
   const isCTAIntro = frame >= BREADTH_END && frame < CTA_INTRO_END;
   const isCTA = frame >= CTA_INTRO_END;
 
+  const bgColor = isHook || isCTA ? WHITE_BG : isVerifyIntro || isBreadthIntro || isCTAIntro ? WHITE_BG : BLACK_BG;
+  const isDarkBg = bgColor === BLACK_BG;
+
   return (
-    <AbsoluteFill style={{ backgroundColor: BG }}>
-      {/* Background gradient */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: isHook
-            ? "radial-gradient(ellipse at center, #1e1b4b 0%, #030712 60%)"
-            : isImplement
-            ? "radial-gradient(ellipse at 30% 50%, #0c4a6e22 0%, #030712 50%)"
-            : isVerify
-            ? "radial-gradient(ellipse at 70% 50%, #14532d22 0%, #030712 50%)"
-            : isBreadth
-            ? "radial-gradient(ellipse at center, #1e1b4b22 0%, #030712 50%)"
-            : "radial-gradient(ellipse at center, #1e1b4b 0%, #030712 60%)",
-        }}
-      />
+    <AbsoluteFill style={{ backgroundColor: bgColor }}>
+      {/* Geometric background */}
+      <GeometricBackground frame={frame} dark={isDarkBg} />
 
       {/* Scene content */}
-      {isHook && <HookScene frame={frame} fps={fps} />}
-      {isImplement && <ImplementScene frame={frame - HOOK_END} fps={fps} width={width} />}
-      {isVerifyIntro && <IntroCard frame={frame - IMPLEMENT_END} fps={fps} title="Quality Check" subtitle="/verify authentication" icon="🔍" color={GREEN} />}
-      {isVerify && <VerifyScene frame={frame - VERIFY_INTRO_END} fps={fps} width={width} />}
-      {isBreadthIntro && <IntroCard frame={frame - VERIFY_END} fps={fps} title="22 User-Invocable Skills" subtitle="Explore the ecosystem" icon="⚡" color={PURPLE} />}
-      {isBreadth && <BreadthScene frame={frame - BREADTH_INTRO_END} fps={fps} />}
-      {isCTAIntro && <IntroCard frame={frame - BREADTH_END} fps={fps} title="Get Started" subtitle="One command setup" icon="🚀" color={CYAN} />}
-      {isCTA && <CTAScene frame={frame - CTA_INTRO_END} fps={fps} />}
+      {isHook && <KineticHookScene frame={frame} fps={fps} />}
+      {isImplement && <FastImplementScene frame={frame - HOOK_END} fps={fps} width={width} />}
+      {isVerifyIntro && <PopIntroCard frame={frame - IMPLEMENT_END} fps={fps} title="Quality Check" subtitle="/verify" icon="🔍" />}
+      {isVerify && <FastVerifyScene frame={frame - VERIFY_INTRO_END} fps={fps} />}
+      {isBreadthIntro && <PopIntroCard frame={frame - VERIFY_END} fps={fps} title="22 Skills" subtitle="ecosystem" icon="⚡" />}
+      {isBreadth && <RapidBreadthScene frame={frame - BREADTH_INTRO_END} fps={fps} />}
+      {isCTAIntro && <PopIntroCard frame={frame - BREADTH_END} fps={fps} title="Get Started" subtitle="one command" icon="🚀" />}
+      {isCTA && <KineticCTAScene frame={frame - CTA_INTRO_END} fps={fps} />}
 
-      {/* Scene label badge */}
+      {/* Scene badge */}
       {(isImplement || isVerify || isBreadth) && (
         <div
           style={{
             position: "absolute",
             top: 30,
             right: 40,
-            backgroundColor: `${isImplement ? CYAN : isVerify ? GREEN : PURPLE}20`,
-            border: `2px solid ${isImplement ? CYAN : isVerify ? GREEN : PURPLE}`,
+            backgroundColor: BLACK_BG,
             borderRadius: 30,
-            padding: "8px 20px",
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
+            padding: "10px 24px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
           }}
         >
-          <span style={{ color: isImplement ? CYAN : isVerify ? GREEN : PURPLE, fontSize: 18, fontWeight: 700 }}>
+          <GradientText style={{ fontSize: 18, fontWeight: 800 }}>
             {isImplement ? "/implement" : isVerify ? "/verify" : "Skills"}
-          </span>
+          </GradientText>
         </div>
       )}
 
@@ -168,16 +329,15 @@ export const MarketplaceDemo: React.FC<MarketplaceDemoProps> = () => {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 4,
-          backgroundColor: "#1e293b",
+          height: 6,
+          backgroundColor: isDarkBg ? "#333" : "#E5E5E5",
         }}
       >
         <div
           style={{
             height: "100%",
-            width: `${(frame / (fps * 55)) * 100}%`,
-            background: `linear-gradient(90deg, ${PURPLE} 0%, ${CYAN} 50%, ${GREEN} 100%)`,
-            boxShadow: `0 0 10px ${CYAN}`,
+            width: `${(frame / (fps * 45)) * 100}%`,
+            background: `linear-gradient(90deg, ${GRADIENT_PURPLE} 0%, ${GRADIENT_PINK} 50%, ${GRADIENT_YELLOW} 100%)`,
           }}
         />
       </div>
@@ -185,18 +345,133 @@ export const MarketplaceDemo: React.FC<MarketplaceDemoProps> = () => {
   );
 };
 
-// IntroCard - Animated intro between scenes
-const IntroCard: React.FC<{
+// Scene 1: Kinetic Hook with hard contrast slams
+const KineticHookScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
+  // Phase 1: "Stop" (0-0.5s) - Black on white
+  // Phase 2: "explaining your stack" (0.5-1.5s) - White on black (SLAM)
+  // Phase 3: "Start shipping" (1.5-2.5s) - Gradient on white
+  // Phase 4: Stats (2.5-4s)
+
+  const phase1End = fps * 0.6;
+  const phase2End = fps * 1.4;
+  const phase3End = fps * 2.4;
+
+  const isPhase1 = frame < phase1End;
+  const isPhase2 = frame >= phase1End && frame < phase2End;
+  const isPhase3 = frame >= phase2End && frame < phase3End;
+  const isPhase4 = frame >= phase3End;
+
+  // Hard cut backgrounds
+  const bgColor = isPhase2 ? BLACK_BG : WHITE_BG;
+
+  return (
+    <AbsoluteFill style={{ backgroundColor: bgColor }}>
+      <GeometricBackground frame={frame} dark={isPhase2} />
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          fontFamily: "Inter, SF Pro Display, -apple-system, sans-serif",
+        }}
+      >
+        {/* Phase 1: "Stop" */}
+        {isPhase1 && (
+          <div
+            style={{
+              fontSize: 140,
+              fontWeight: 900,
+              color: TEXT_DARK,
+              transform: `scale(${spring({ frame, fps, config: POP_SPRING })})`,
+            }}
+          >
+            Stop
+          </div>
+        )}
+
+        {/* Phase 2: Hard slam to black - "explaining your stack" */}
+        {isPhase2 && (
+          <div
+            style={{
+              fontSize: 90,
+              fontWeight: 900,
+              color: TEXT_LIGHT,
+              textAlign: "center",
+              transform: `scale(${spring({ frame: frame - phase1End, fps, config: POP_SPRING })})`,
+            }}
+          >
+            explaining your stack.
+          </div>
+        )}
+
+        {/* Phase 3: Gradient payoff */}
+        {isPhase3 && (
+          <div style={{ textAlign: "center" }}>
+            <GradientText
+              style={{
+                fontSize: 120,
+                fontWeight: 900,
+                display: "block",
+                transform: `scale(${spring({ frame: frame - phase2End, fps, config: POP_SPRING })})`,
+              }}
+            >
+              Start shipping.
+            </GradientText>
+          </div>
+        )}
+
+        {/* Phase 4: Stats */}
+        {isPhase4 && (
+          <div style={{ display: "flex", gap: 80 }}>
+            {[
+              { value: ORCHESTKIT_STATS.skills, label: "SKILLS" },
+              { value: ORCHESTKIT_STATS.agents, label: "AGENTS" },
+              { value: ORCHESTKIT_STATS.hooks, label: "HOOKS" },
+            ].map((stat, idx) => {
+              const statDelay = idx * fps * 0.1;
+              const statFrame = frame - phase3End - statDelay;
+              if (statFrame <= 0) return <div key={idx} />;
+
+              const scale = spring({ frame: statFrame, fps, config: POP_SPRING });
+              const countUp = Math.min(
+                Math.floor(interpolate(statFrame, [0, fps * 0.5], [0, stat.value], {
+                  extrapolateRight: "clamp",
+                  easing: Easing.out(Easing.cubic),
+                })),
+                stat.value
+              );
+
+              return (
+                <div key={idx} style={{ textAlign: "center", transform: `scale(${scale})` }}>
+                  <GradientText style={{ fontSize: 80, fontWeight: 900, fontFamily: "SF Mono, monospace" }}>
+                    {countUp}
+                  </GradientText>
+                  <div style={{ fontSize: 18, color: DIM_DARK, fontWeight: 700, letterSpacing: 3, marginTop: 8 }}>
+                    {stat.label}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+// Pop Intro Card - Fixed with visible content
+const PopIntroCard: React.FC<{
   frame: number;
   fps: number;
   title: string;
   subtitle: string;
   icon: string;
-  color: string;
-}> = ({ frame, fps, title, subtitle, icon, color }) => {
-  const scale = spring({ frame, fps, config: { damping: 12, stiffness: 100 } });
-  const opacity = interpolate(frame, [0, fps * 0.3], [0, 1], { extrapolateRight: "clamp" });
-  const iconScale = spring({ frame: Math.max(0, frame - fps * 0.2), fps, config: { damping: 15, stiffness: 150 } });
+}> = ({ frame, fps, title, subtitle, icon }) => {
+  const scale = spring({ frame, fps, config: POP_SPRING });
+  const iconBounce = spring({ frame: Math.max(0, frame - fps * 0.1), fps, config: BOUNCE_SPRING });
 
   return (
     <div
@@ -206,167 +481,39 @@ const IntroCard: React.FC<{
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
-        opacity,
+        fontFamily: "Inter, SF Pro Display, sans-serif",
         transform: `scale(${scale})`,
-        fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
       }}
     >
       <div
         style={{
-          fontSize: 100,
+          fontSize: 140,
+          transform: `scale(${iconBounce}) rotate(${Math.sin(frame * 0.3) * 8}deg)`,
           marginBottom: 30,
-          transform: `scale(${iconScale})`,
-          textShadow: `0 0 60px ${color}60`,
         }}
       >
         {icon}
       </div>
-      <div
-        style={{
-          fontSize: 64,
-          fontWeight: 700,
-          color: TEXT,
-          marginBottom: 16,
-          textAlign: "center",
-        }}
-      >
+      <div style={{ fontSize: 72, fontWeight: 900, color: TEXT_DARK, marginBottom: 16 }}>
         {title}
       </div>
-      <div
-        style={{
-          fontSize: 32,
-          color: color,
-          fontWeight: 600,
-          fontFamily: "SF Mono, Monaco, Menlo, monospace",
-        }}
-      >
+      <GradientText style={{ fontSize: 32, fontWeight: 700 }}>
         {subtitle}
-      </div>
+      </GradientText>
     </div>
   );
 };
 
-// Scene 1: Hook (0-4s) - compressed
-const HookScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
-  const taglineOpacity = interpolate(frame, [0, fps * 0.3], [0, 1], { extrapolateRight: "clamp" });
-  const taglineY = interpolate(frame, [0, fps * 0.3], [30, 0], { extrapolateRight: "clamp" });
-
-  const statsOpacity = interpolate(frame, [fps * 0.8, fps * 1.2], [0, 1], { extrapolateRight: "clamp" });
-  const statsScale = spring({ frame: Math.max(0, frame - fps * 0.8), fps, config: { damping: 12, stiffness: 100 } });
-
-  const stats = [
-    { value: ORCHESTKIT_STATS.skills, label: "skills", color: PURPLE },
-    { value: ORCHESTKIT_STATS.agents, label: "agents", color: CYAN },
-    { value: ORCHESTKIT_STATS.hooks, label: "hooks", color: GREEN },
-  ];
-
-  return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-        fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
-      }}
-    >
-      {/* Main tagline */}
-      <div
-        style={{
-          opacity: taglineOpacity,
-          transform: `translateY(${taglineY}px)`,
-          textAlign: "center",
-          marginBottom: 60,
-        }}
-      >
-        <div
-          style={{
-            fontSize: 72,
-            fontWeight: 700,
-            color: TEXT,
-            letterSpacing: -1,
-            lineHeight: 1.1,
-          }}
-        >
-          Stop explaining your stack.
-        </div>
-        <div
-          style={{
-            fontSize: 72,
-            fontWeight: 700,
-            background: `linear-gradient(90deg, ${PURPLE} 0%, ${CYAN} 100%)`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            letterSpacing: -1,
-            lineHeight: 1.1,
-          }}
-        >
-          Start shipping.
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div
-        style={{
-          display: "flex",
-          gap: 80,
-          opacity: statsOpacity,
-          transform: `scale(${statsScale})`,
-        }}
-      >
-        {stats.map((stat, idx) => {
-          const delay = idx * 3;
-          const localFrame = Math.max(0, frame - fps * 1.3 - delay);
-          const countUp = Math.min(
-            Math.floor(interpolate(localFrame, [0, fps * 0.8], [0, stat.value], {
-              extrapolateRight: "clamp",
-              easing: Easing.out(Easing.cubic),
-            })),
-            stat.value
-          );
-
-          return (
-            <div key={idx} style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  fontSize: 80,
-                  fontWeight: 700,
-                  color: stat.color,
-                  fontFamily: "SF Mono, Monaco, Menlo, monospace",
-                  textShadow: `0 0 40px ${stat.color}60`,
-                }}
-              >
-                {countUp}
-              </div>
-              <div style={{ fontSize: 24, color: DIM, fontWeight: 500, letterSpacing: 2 }}>
-                {stat.label.toUpperCase()}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// Scene 2: /implement (4-22s) - 18s with 4 paginated views
-const ImplementScene: React.FC<{ frame: number; fps: number; width: number }> = ({ frame, fps, width: _width }) => {
-  const commandTyped = Math.min(Math.floor(frame * 2.5), "/implement user authentication".length);
-  const showCommand = commandTyped > 0;
-
-  // Page timing: 4.5s per page
-  const PAGE_DURATION = fps * 4.5;
-  const currentPage = Math.min(3, Math.floor(frame / PAGE_DURATION));
+// Scene 2: Fast Implement with cursor and confetti
+const FastImplementScene: React.FC<{ frame: number; fps: number; width: number }> = ({ frame, fps, width }) => {
+  const PAGE_DURATION = fps * 4;
+  const currentPage = Math.min(2, Math.floor(frame / PAGE_DURATION));
   const pageFrame = frame % PAGE_DURATION;
 
-  // Page transitions
-  const pageOpacity = interpolate(pageFrame, [0, fps * 0.3], [0, 1], { extrapolateRight: "clamp" });
-  const pageSlideX = interpolate(pageFrame, [0, fps * 0.3], [30, 0], { extrapolateRight: "clamp" });
+  const pageScale = spring({ frame: pageFrame, fps, config: SNAPPY_SPRING });
 
-  // Spinner for active tasks
   const SPINNER = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-  const spinnerIdx = Math.floor(frame / 3) % SPINNER.length;
+  const spinnerIdx = Math.floor(frame / 2) % SPINNER.length;
 
   return (
     <div
@@ -375,116 +522,89 @@ const ImplementScene: React.FC<{ frame: number; fps: number; width: number }> = 
         flexDirection: "column",
         height: "100%",
         padding: "40px 60px",
-        fontFamily: "SF Mono, Monaco, Menlo, monospace",
+        fontFamily: "SF Mono, Monaco, monospace",
+        position: "relative",
       }}
     >
-      {/* Command bar at top - always visible */}
+      {/* Command bar */}
       <div
         style={{
-          backgroundColor: SURFACE,
-          borderRadius: 16,
-          border: `2px solid ${CYAN}`,
+          backgroundColor: SURFACE_DARK,
+          borderRadius: 20,
           padding: "20px 30px",
           marginBottom: 20,
-          boxShadow: `0 0 30px ${CYAN}20`,
+          boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
         }}
       >
-        {showCommand && (
-          <div style={{ fontSize: 32, fontWeight: 600, display: "flex", alignItems: "center", gap: 20 }}>
-            <div>
-              <span style={{ color: GREEN }}>$ </span>
-              <span style={{ color: CYAN }}>{"/implement user authentication".slice(0, commandTyped)}</span>
-              {commandTyped < "/implement user authentication".length && (
-                <span style={{ backgroundColor: TEXT, width: 3, height: 32, display: "inline-block", marginLeft: 2 }} />
-              )}
-            </div>
-            {currentPage < 3 && (
-              <span style={{ color: YELLOW, fontSize: 20 }}>{SPINNER[spinnerIdx]} Running...</span>
-            )}
-            {currentPage === 3 && (
-              <span style={{ color: GREEN, fontSize: 20 }}>✓ Complete</span>
-            )}
-          </div>
-        )}
+        <div style={{ fontSize: 28, fontWeight: 700, display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ color: GREEN }}>$</span>
+          <GradientText>/implement user authentication</GradientText>
+          <span style={{ color: GRADIENT_YELLOW, fontSize: 18, marginLeft: "auto" }}>
+            {currentPage < 2 ? `${SPINNER[spinnerIdx]} Running...` : "✓ Done"}
+          </span>
+        </div>
       </div>
 
       {/* Page indicator */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20, justifyContent: "center" }}>
-        {["Agents", "Tasks", "Code", "Done"].map((label, idx) => (
-          <div
-            key={idx}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 16px",
-              borderRadius: 20,
-              backgroundColor: currentPage === idx ? PURPLE : SURFACE,
-              border: `1px solid ${currentPage >= idx ? PURPLE : BORDER}`,
-              transition: "all 0.3s",
-            }}
-          >
-            <span style={{ color: currentPage > idx ? GREEN : currentPage === idx ? TEXT : DIM, fontSize: 14 }}>
-              {currentPage > idx ? "✓" : idx + 1}
-            </span>
-            <span style={{ color: currentPage >= idx ? TEXT : DIM, fontSize: 14 }}>{label}</span>
-          </div>
-        ))}
+      <div style={{ display: "flex", gap: 12, marginBottom: 24, justifyContent: "center" }}>
+        {["Agents", "Code", "Complete"].map((label, idx) => {
+          const isActive = currentPage === idx;
+          const isPast = currentPage > idx;
+          return (
+            <div
+              key={idx}
+              style={{
+                padding: "8px 20px",
+                borderRadius: 30,
+                background: isActive ? `linear-gradient(90deg, ${GRADIENT_PURPLE}, ${GRADIENT_PINK})` : isPast ? GREEN : SURFACE_DARK,
+                boxShadow: isActive ? "0 4px 20px rgba(155, 93, 229, 0.4)" : "none",
+              }}
+            >
+              <span style={{ color: TEXT_LIGHT, fontSize: 14, fontWeight: 700 }}>
+                {isPast ? "✓" : idx + 1}. {label}
+              </span>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Main content area - paginated */}
-      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-        {/* Page 1: Agents spawning */}
+      {/* Page content */}
+      <div style={{ flex: 1, transform: `scale(${pageScale})`, transformOrigin: "top center" }}>
+        {/* Page 1: Agents */}
         {currentPage === 0 && (
-          <div
-            style={{
-              opacity: pageOpacity,
-              transform: `translateX(${pageSlideX}px)`,
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 20,
-              padding: 20,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 16 }}>
             {IMPLEMENT_AGENTS.map((agent, idx) => {
-              const agentDelay = idx * fps * 0.4;
+              const agentDelay = idx * fps * 0.15;
               const agentFrame = pageFrame - agentDelay;
-              const isVisible = agentFrame > 0;
-              if (!isVisible) return <div key={idx} />;
+              if (agentFrame <= 0) return <div key={idx} />;
 
-              const scale = spring({ frame: agentFrame, fps, config: { damping: 12, stiffness: 150 } });
-              const progress = Math.min(100, (agentFrame / (fps * 3)) * 100);
+              const agentScale = spring({ frame: agentFrame, fps, config: POP_SPRING });
+              const progress = Math.min(100, (agentFrame / (fps * 2)) * 100);
 
               return (
                 <div
                   key={idx}
                   style={{
-                    backgroundColor: SURFACE,
-                    borderRadius: 16,
-                    border: `2px solid ${agent.color}`,
+                    backgroundColor: SURFACE_DARK,
+                    borderRadius: 20,
                     padding: 24,
-                    transform: `scale(${scale})`,
-                    boxShadow: `0 0 20px ${agent.color}30`,
+                    transform: `scale(${agentScale})`,
+                    boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+                    textAlign: "center",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-                    <span style={{ fontSize: 32 }}>{agent.icon}</span>
-                    <span style={{ color: agent.color, fontWeight: 700, fontSize: 18 }}>{agent.name}</span>
-                  </div>
-                  <div style={{ color: TEXT, fontSize: 16, marginBottom: 16 }}>{agent.task}</div>
-                  <div style={{ height: 10, backgroundColor: BORDER, borderRadius: 5 }}>
+                  <div style={{ fontSize: 48, marginBottom: 12 }}>{agent.icon}</div>
+                  <div style={{ color: agent.color, fontWeight: 800, fontSize: 16 }}>{agent.name}</div>
+                  <div style={{ color: DIM_LIGHT, fontSize: 14, marginTop: 8 }}>{agent.task}</div>
+                  <div style={{ height: 8, backgroundColor: "#333", borderRadius: 4, marginTop: 16 }}>
                     <div
                       style={{
                         height: "100%",
                         width: `${progress}%`,
-                        backgroundColor: agent.color,
-                        borderRadius: 5,
-                        boxShadow: `0 0 10px ${agent.color}`,
+                        background: `linear-gradient(90deg, ${agent.color}, ${GRADIENT_PINK})`,
+                        borderRadius: 4,
                       }}
                     />
-                  </div>
-                  <div style={{ color: DIM, fontSize: 14, marginTop: 8 }}>
-                    {SPINNER[spinnerIdx]} {Math.floor(progress)}%
                   </div>
                 </div>
               );
@@ -492,142 +612,40 @@ const ImplementScene: React.FC<{ frame: number; fps: number; width: number }> = 
           </div>
         )}
 
-        {/* Page 2: Task panel with rapid completion */}
+        {/* Page 2: Code */}
         {currentPage === 1 && (
           <div
             style={{
-              opacity: pageOpacity,
-              transform: `translateX(${pageSlideX}px)`,
-              display: "flex",
-              gap: 30,
+              backgroundColor: SURFACE_DARK,
+              borderRadius: 20,
+              padding: 40,
+              boxShadow: "0 10px 40px rgba(0,0,0,0.4)",
               height: "100%",
             }}
           >
-            <div
-              style={{
-                flex: 1,
-                backgroundColor: SURFACE,
-                borderRadius: 16,
-                border: `2px solid ${CYAN}`,
-                padding: 30,
-              }}
-            >
-              <div style={{ color: CYAN, fontSize: 20, fontWeight: 700, marginBottom: 24, letterSpacing: 2 }}>
-                📋 TASK PANEL
-              </div>
-              {IMPLEMENT_TASKS.map((task, idx) => {
-                const taskDelay = idx * fps * 0.5;
-                const taskFrame = pageFrame - taskDelay;
-                const isVisible = taskFrame > 0;
-                const isComplete = taskFrame > fps * 1.5;
-
-                if (!isVisible) return null;
-
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 16,
-                      marginBottom: 16,
-                      padding: "12px 16px",
-                      backgroundColor: isComplete ? `${GREEN}15` : "transparent",
-                      borderRadius: 8,
-                      border: `1px solid ${isComplete ? GREEN : BORDER}`,
-                    }}
-                  >
-                    <span style={{ color: isComplete ? GREEN : YELLOW, fontSize: 24 }}>
-                      {isComplete ? "✓" : SPINNER[spinnerIdx]}
-                    </span>
-                    <span style={{ color: TEXT, fontSize: 18, flex: 1 }}>#{task.id} {task.name}</span>
-                    {isComplete && <span style={{ color: GREEN, fontSize: 14 }}>Done</span>}
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              style={{
-                flex: 1,
-                backgroundColor: SURFACE,
-                borderRadius: 16,
-                border: `2px solid ${PURPLE}`,
-                padding: 30,
-              }}
-            >
-              <div style={{ color: PURPLE, fontSize: 20, fontWeight: 700, marginBottom: 24, letterSpacing: 2 }}>
-                📁 FILES CREATED
-              </div>
-              {["src/api/auth.py", "src/models/user.py", "src/utils/jwt.py", "src/middleware/auth.py", "tests/test_auth.py"].map((file, idx) => {
-                const fileDelay = idx * fps * 0.4;
-                const fileFrame = pageFrame - fileDelay;
-                const isVisible = fileFrame > 0;
-                if (!isVisible) return null;
-
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      marginBottom: 12,
-                      color: TEXT,
-                      fontSize: 16,
-                    }}
-                  >
-                    <span style={{ color: GREEN }}>+</span>
-                    <span>{file}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Page 3: Code being written line by line */}
-        {currentPage === 2 && (
-          <div
-            style={{
-              opacity: pageOpacity,
-              transform: `translateX(${pageSlideX}px)`,
-              backgroundColor: SURFACE,
-              borderRadius: 16,
-              border: `2px solid ${GREEN}`,
-              padding: 30,
-              height: "100%",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20 }}>
-              <span style={{ color: GREEN, fontSize: 18 }}>●</span>
-              <span style={{ color: DIM, fontSize: 16 }}>src/api/auth.py</span>
-              <span style={{ color: YELLOW, fontSize: 14, marginLeft: "auto" }}>
-                {SPINNER[spinnerIdx]} Writing...
-              </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+              <span style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: RED }} />
+              <span style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: GRADIENT_YELLOW }} />
+              <span style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: GREEN }} />
+              <span style={{ color: DIM_LIGHT, fontSize: 14, marginLeft: 16 }}>src/api/auth.py</span>
             </div>
             {[
-              { code: '@router.post("/login")', color: PURPLE },
-              { code: 'async def login(credentials: LoginSchema):', color: BLUE },
-              { code: '    """Authenticate user and return JWT tokens."""', color: DIM },
-              { code: '    user = await authenticate(credentials)', color: TEXT },
-              { code: '    if not user:', color: TEXT },
-              { code: '        raise HTTPException(401, "Invalid credentials")', color: RED },
-              { code: '    access_token = create_access_token(user.id)', color: TEXT },
-              { code: '    refresh_token = create_refresh_token(user.id)', color: TEXT },
-              { code: '    return {"access_token": access_token, "refresh_token": refresh_token}', color: GREEN },
+              { code: '@router.post("/login")', color: GRADIENT_PURPLE },
+              { code: 'async def login(creds: LoginSchema):', color: CYAN },
+              { code: '    user = await authenticate(creds)', color: TEXT_LIGHT },
+              { code: '    if not user: raise HTTPException(401)', color: RED },
+              { code: '    return create_tokens(user.id)', color: GREEN },
             ].map((line, idx) => {
-              const lineDelay = idx * fps * 0.35;
+              const lineDelay = idx * fps * 0.25;
               const lineFrame = pageFrame - lineDelay;
-              const isVisible = lineFrame > 0;
-              const typedChars = Math.min(Math.floor(lineFrame * 1.5), line.code.length);
-
-              if (!isVisible) return null;
+              if (lineFrame <= 0) return null;
+              const typedChars = Math.min(Math.floor(lineFrame * 2), line.code.length);
 
               return (
-                <div key={idx} style={{ color: line.color, fontSize: 18, marginBottom: 8, fontFamily: "SF Mono, Monaco, monospace" }}>
+                <div key={idx} style={{ color: line.color, fontSize: 22, marginBottom: 12, fontWeight: 600 }}>
                   {line.code.slice(0, typedChars)}
                   {typedChars < line.code.length && (
-                    <span style={{ backgroundColor: TEXT, width: 2, height: 18, display: "inline-block" }} />
+                    <span style={{ backgroundColor: TEXT_LIGHT, width: 3, height: 24, display: "inline-block", marginLeft: 2 }} />
                   )}
                 </div>
               );
@@ -635,145 +653,102 @@ const ImplementScene: React.FC<{ frame: number; fps: number; width: number }> = 
           </div>
         )}
 
-        {/* Page 4: Complete summary */}
-        {currentPage === 3 && (
+        {/* Page 3: Complete with confetti */}
+        {currentPage === 2 && (
           <div
             style={{
-              opacity: pageOpacity,
-              transform: `translateX(${pageSlideX}px)`,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
               height: "100%",
-              gap: 30,
+              gap: 24,
+              position: "relative",
             }}
           >
-            <div
-              style={{
-                fontSize: 80,
-                color: GREEN,
-                textShadow: `0 0 40px ${GREEN}60`,
-              }}
-            >
+            <ConfettiBurst frame={frame} fps={fps} startFrame={HOOK_END + PAGE_DURATION * 2} />
+
+            <div style={{ fontSize: 120, transform: `scale(${spring({ frame: pageFrame, fps, config: POP_SPRING })})` }}>
               ✓
             </div>
-            <div style={{ color: GREEN, fontSize: 48, fontWeight: 700 }}>Feature Complete</div>
-            <div style={{ display: "flex", gap: 40 }}>
+            <GradientText style={{ fontSize: 56, fontWeight: 900 }}>Feature Complete</GradientText>
+            <div style={{ display: "flex", gap: 40, marginTop: 20 }}>
               {[
-                { value: "6", label: "Files", color: PURPLE },
-                { value: "487", label: "Lines", color: CYAN },
-                { value: "12", label: "Tests", color: GREEN },
-                { value: "5", label: "Agents", color: YELLOW },
+                { value: "6", label: "Files" },
+                { value: "487", label: "Lines" },
+                { value: "12", label: "Tests" },
               ].map((stat, idx) => {
-                const statDelay = idx * fps * 0.2;
-                const statFrame = pageFrame - statDelay;
-                const scale = spring({ frame: Math.max(0, statFrame), fps, config: { damping: 12, stiffness: 100 } });
-
+                const statScale = spring({ frame: Math.max(0, pageFrame - idx * fps * 0.1), fps, config: POP_SPRING });
                 return (
-                  <div
-                    key={idx}
-                    style={{
-                      textAlign: "center",
-                      transform: `scale(${scale})`,
-                    }}
-                  >
-                    <div style={{ fontSize: 48, fontWeight: 700, color: stat.color }}>{stat.value}</div>
-                    <div style={{ fontSize: 16, color: DIM }}>{stat.label}</div>
+                  <div key={idx} style={{ textAlign: "center", transform: `scale(${statScale})` }}>
+                    <GradientText style={{ fontSize: 48, fontWeight: 900 }}>{stat.value}</GradientText>
+                    <div style={{ color: DIM_LIGHT, fontSize: 14, marginTop: 8 }}>{stat.label}</div>
                   </div>
                 );
               })}
             </div>
+
+            {/* Reaction emoji */}
+            <ReactionEmoji frame={frame} fps={fps} startFrame={HOOK_END + PAGE_DURATION * 2 + fps * 0.5} emoji="👀" />
           </div>
         )}
       </div>
+
+      {/* Cursor animation */}
+      {currentPage === 0 && pageFrame > fps * 2 && (
+        <AnimatedCursor
+          frame={pageFrame}
+          fps={fps}
+          startPos={{ x: width - 200, y: 300 }}
+          endPos={{ x: width / 2, y: 500 }}
+          startFrame={fps * 2}
+          duration={fps * 1}
+        />
+      )}
     </div>
   );
 };
 
-// Scene 3: /verify (22-32s) - 10s compressed
-const VerifyScene: React.FC<{ frame: number; fps: number; width: number }> = ({ frame, fps, width: _width }) => {
-  const showCommand = frame >= 0;
-  const showAgents = frame >= fps * 0.5;  // Was fps * 1
-  const showGrade = frame >= fps * 5;      // Was fps * 10
-  const showVerdict = frame >= fps * 7;    // Was fps * 12
-
-  const commandTyped = Math.min(Math.floor(frame * 3), "/verify authentication".length); // Faster typing
-
-  // Calculate overall grade
-  const overallGrade = 8.7;
+// Scene 3: Fast Verify with reactions
+const FastVerifyScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
+  const showGrade = frame >= fps * 4;
+  const gradeValue = 8.7;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: 40 }}>
-      {/* Command */}
-      <div
-        style={{
-          backgroundColor: SURFACE,
-          borderRadius: 12,
-          border: `1px solid ${BORDER}`,
-          padding: 20,
-          marginBottom: 30,
-          fontFamily: "SF Mono, Monaco, Menlo, monospace",
-        }}
-      >
-        {showCommand && (
-          <div style={{ fontSize: 28, color: GREEN }}>
-            <span style={{ color: GREEN }}>$ </span>
-            {"/verify authentication".slice(0, commandTyped)}
-          </div>
-        )}
-      </div>
-
+    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: 40, position: "relative" }}>
       {/* Agent grid */}
-      {showAgents && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16, marginBottom: 30 }}>
-          {VERIFY_AGENTS.map((agent, idx) => {
-            const agentDelay = fps * 0.5 + idx * fps * 0.25; // Faster stagger
-            const agentFrame = frame - agentDelay;
-            const isVisible = agentFrame > 0;
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16, marginBottom: 30 }}>
+        {VERIFY_AGENTS.map((agent, idx) => {
+          const agentDelay = idx * fps * 0.1;
+          const agentFrame = frame - agentDelay;
+          if (agentFrame <= 0) return null;
 
-            if (!isVisible) return null;
+          const scale = spring({ frame: agentFrame, fps, config: POP_SPRING });
+          const showScore = agentFrame > fps * 1.5;
 
-            const scale = spring({ frame: agentFrame, fps, config: { damping: 15, stiffness: 200 } });
-            const progress = Math.min(100, Math.max(0, (agentFrame / (fps * 2)) * 100)); // 2x faster
-            const isDone = progress >= 100;
-            const showScore = agentFrame > fps * 2.5; // Faster reveal
-
-            return (
-              <div
-                key={idx}
-                style={{
-                  backgroundColor: SURFACE,
-                  borderRadius: 12,
-                  border: `2px solid ${isDone ? GREEN : agent.color}`,
-                  padding: 20,
-                  transform: `scale(${scale})`,
-                  textAlign: "center",
-                  boxShadow: isDone ? `0 0 20px ${GREEN}30` : "none",
-                }}
-              >
-                <div style={{ fontSize: 32, marginBottom: 8 }}>{agent.icon}</div>
-                <div style={{ color: agent.color, fontWeight: 600, fontSize: 14, marginBottom: 8 }}>{agent.name}</div>
-
-                {!showScore ? (
-                  <div style={{ height: 6, backgroundColor: BORDER, borderRadius: 3 }}>
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${progress}%`,
-                        backgroundColor: agent.color,
-                        borderRadius: 3,
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div style={{ color: GREEN, fontSize: 24, fontWeight: 700 }}>{agent.score}</div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+          return (
+            <div
+              key={idx}
+              style={{
+                backgroundColor: SURFACE_DARK,
+                borderRadius: 16,
+                padding: 20,
+                transform: `scale(${scale})`,
+                textAlign: "center",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+              }}
+            >
+              <div style={{ fontSize: 36 }}>{agent.icon}</div>
+              <div style={{ color: agent.color, fontWeight: 700, fontSize: 14, marginTop: 8 }}>{agent.name}</div>
+              {showScore && (
+                <GradientText style={{ fontSize: 28, fontWeight: 900, marginTop: 8 }}>
+                  {agent.score}
+                </GradientText>
+              )}
+            </div>
+          );
+        })}
+      </div>
 
       {/* Grade reveal */}
       {showGrade && (
@@ -783,54 +758,42 @@ const VerifyScene: React.FC<{ frame: number; fps: number; width: number }> = ({ 
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            opacity: interpolate(frame - fps * 5, [0, fps * 0.3], [0, 1], { extrapolateRight: "clamp" }),
+            transform: `scale(${spring({ frame: frame - fps * 4, fps, config: POP_SPRING })})`,
           }}
         >
           <div style={{ textAlign: "center" }}>
-            <div style={{ color: DIM, fontSize: 24, marginBottom: 16, letterSpacing: 2 }}>QUALITY SCORE</div>
+            <div style={{ color: DIM_LIGHT, fontSize: 24, fontWeight: 700, letterSpacing: 4, marginBottom: 16 }}>
+              QUALITY SCORE
+            </div>
+            <GradientText style={{ fontSize: 180, fontWeight: 900, fontFamily: "SF Mono, monospace", lineHeight: 1 }}>
+              {gradeValue}
+            </GradientText>
             <div
               style={{
-                fontSize: 160,
-                fontWeight: 700,
-                color: GREEN,
-                fontFamily: "SF Mono, Monaco, Menlo, monospace",
-                textShadow: `0 0 60px ${GREEN}60`,
-                lineHeight: 1,
+                marginTop: 30,
+                backgroundColor: GREEN,
+                borderRadius: 30,
+                padding: "16px 40px",
+                boxShadow: `0 10px 40px ${GREEN}50`,
               }}
             >
-              {overallGrade}
+              <span style={{ color: TEXT_LIGHT, fontSize: 24, fontWeight: 800 }}>🚀 READY FOR MERGE</span>
             </div>
-            <div style={{ color: DIM, fontSize: 24, marginTop: 8 }}>/ 10</div>
           </div>
         </div>
       )}
 
-      {/* Verdict */}
-      {showVerdict && (
-        <div
-          style={{
-            backgroundColor: `${GREEN}15`,
-            borderRadius: 16,
-            border: `3px solid ${GREEN}`,
-            padding: 24,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 20,
-            opacity: interpolate(frame - fps * 7, [0, fps * 0.3], [0, 1], { extrapolateRight: "clamp" }),
-          }}
-        >
-          <span style={{ fontSize: 40 }}>🚀</span>
-          <span style={{ color: GREEN, fontSize: 36, fontWeight: 700, letterSpacing: 1 }}>READY FOR MERGE</span>
-        </div>
+      {/* Celebration reaction */}
+      {showGrade && frame > fps * 5 && (
+        <ReactionEmoji frame={frame} fps={fps} startFrame={fps * 5} emoji="🎉" />
       )}
     </div>
   );
 };
 
-// Scene 4: Breadth montage (32-42s) - 10s compressed, 2s per command
-const BreadthScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
-  const commandDuration = fps * 2; // 2 seconds per command (was 3)
+// Scene 4: Rapid Breadth
+const RapidBreadthScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
+  const COMMAND_DURATION = fps * 1.5;
 
   return (
     <div
@@ -841,21 +804,17 @@ const BreadthScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) 
         justifyContent: "center",
         height: "100%",
         padding: 60,
+        fontFamily: "SF Mono, Monaco, monospace",
       }}
     >
-      <div style={{ color: DIM, fontSize: 24, marginBottom: 40, letterSpacing: 2 }}>AND MUCH MORE...</div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 24, width: "100%", maxWidth: 1200 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 1000 }}>
         {BREADTH_COMMANDS.map((item, idx) => {
-          const itemStart = idx * commandDuration;
+          const itemStart = idx * COMMAND_DURATION;
           const itemFrame = frame - itemStart;
-          const isVisible = itemFrame > 0;
-          const showResult = itemFrame > fps * 0.5; // Faster result (was fps * 1)
+          if (itemFrame <= 0) return null;
 
-          if (!isVisible) return null;
-
-          const opacity = interpolate(itemFrame, [0, fps * 0.2], [0, 1], { extrapolateRight: "clamp" });
-          const slideX = interpolate(itemFrame, [0, fps * 0.2], [-50, 0], { extrapolateRight: "clamp" });
+          const scale = spring({ frame: itemFrame, fps, config: POP_SPRING });
+          const showResult = itemFrame > fps * 0.3;
 
           return (
             <div
@@ -863,36 +822,19 @@ const BreadthScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) 
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 30,
-                opacity,
-                transform: `translateX(${slideX}px)`,
-                backgroundColor: SURFACE,
+                gap: 24,
+                backgroundColor: SURFACE_DARK,
                 borderRadius: 16,
-                border: `2px solid ${item.color}`,
-                padding: "24px 40px",
+                padding: "20px 32px",
+                transform: `scale(${scale})`,
+                boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
               }}
             >
-              <div
-                style={{
-                  fontSize: 32,
-                  fontWeight: 700,
-                  color: item.color,
-                  fontFamily: "SF Mono, Monaco, Menlo, monospace",
-                  minWidth: 280,
-                }}
-              >
-                {item.cmd}
-              </div>
+              <span style={{ color: item.color, fontSize: 28, fontWeight: 800, minWidth: 220 }}>{item.cmd}</span>
               {showResult && (
-                <div
-                  style={{
-                    fontSize: 24,
-                    color: TEXT,
-                    opacity: interpolate(itemFrame - fps * 0.5, [0, fps * 0.2], [0, 1], { extrapolateRight: "clamp" }),
-                  }}
-                >
+                <span style={{ color: TEXT_LIGHT, fontSize: 20, opacity: interpolate(itemFrame - fps * 0.3, [0, fps * 0.2], [0, 1]) }}>
                   → {item.result}
-                </div>
+                </span>
               )}
             </div>
           );
@@ -902,11 +844,10 @@ const BreadthScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) 
   );
 };
 
-// Scene 5: CTA (42-50s) - 8s with more impact
-const CTAScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
-  const titleOpacity = interpolate(frame, [0, fps * 0.5], [0, 1], { extrapolateRight: "clamp" });
-  const ctaOpacity = interpolate(frame, [fps * 1, fps * 1.5], [0, 1], { extrapolateRight: "clamp" });
-  const ctaScale = spring({ frame: Math.max(0, frame - fps * 1), fps, config: { damping: 12, stiffness: 100 } });
+// Scene 5: Kinetic CTA
+const KineticCTAScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
+  const titleScale = spring({ frame, fps, config: POP_SPRING });
+  const ctaScale = spring({ frame: Math.max(0, frame - fps * 1), fps, config: POP_SPRING });
 
   return (
     <div
@@ -916,73 +857,39 @@ const CTAScene: React.FC<{ frame: number; fps: number }> = ({ frame, fps }) => {
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
-        fontFamily: "SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif",
+        fontFamily: "Inter, SF Pro Display, sans-serif",
       }}
     >
-      {/* Title */}
-      <div
-        style={{
-          opacity: titleOpacity,
-          textAlign: "center",
-          marginBottom: 50,
-        }}
-      >
-        <div style={{ fontSize: 48, fontWeight: 700, color: TEXT, marginBottom: 16 }}>
-          Works with your existing projects.
+      <div style={{ textAlign: "center", transform: `scale(${titleScale})` }}>
+        <div style={{ fontSize: 56, fontWeight: 900, color: TEXT_DARK, marginBottom: 16 }}>
+          Works with your projects.
         </div>
-        <div style={{ fontSize: 28, color: DIM }}>
-          30+ plugins • {ORCHESTKIT_STATS.skills} skills • {ORCHESTKIT_STATS.agents} agents • {ORCHESTKIT_STATS.hooks} hooks
+        <div style={{ fontSize: 24, color: DIM_DARK }}>
+          30+ plugins • {ORCHESTKIT_STATS.skills} skills • {ORCHESTKIT_STATS.agents} agents
         </div>
       </div>
 
-      {/* CTA Button */}
-      <div
-        style={{
-          opacity: ctaOpacity,
-          transform: `scale(${ctaScale})`,
-          backgroundColor: `${PURPLE}20`,
-          borderRadius: 16,
-          border: `3px solid ${PURPLE}`,
-          padding: "24px 48px",
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-          boxShadow: `0 0 40px ${PURPLE}40`,
-        }}
-      >
-        <span style={{ color: GREEN, fontSize: 32, fontFamily: "SF Mono, Monaco, Menlo, monospace" }}>$</span>
-        <span
-          style={{
-            color: TEXT,
-            fontSize: 32,
-            fontWeight: 700,
-            fontFamily: "SF Mono, Monaco, Menlo, monospace",
-          }}
-        >
-          /plugin install ork
-        </span>
-      </div>
-
-      {/* OrchestKit logo/name */}
       <div
         style={{
           marginTop: 50,
-          opacity: interpolate(frame, [fps * 2, fps * 2.5], [0, 1], { extrapolateRight: "clamp" }),
+          transform: `scale(${ctaScale})`,
+          background: `linear-gradient(90deg, ${GRADIENT_PURPLE}, ${GRADIENT_PINK})`,
+          borderRadius: 20,
+          padding: "24px 48px",
+          boxShadow: `0 20px 60px ${GRADIENT_PURPLE}50`,
         }}
       >
-        <div
-          style={{
-            fontSize: 24,
-            fontWeight: 600,
-            background: `linear-gradient(90deg, ${PURPLE} 0%, ${CYAN} 100%)`,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            letterSpacing: 4,
-          }}
-        >
-          ORCHESTKIT
-        </div>
+        <span style={{ color: TEXT_LIGHT, fontSize: 32, fontWeight: 800, fontFamily: "SF Mono, monospace" }}>
+          $ /plugin install ork
+        </span>
+      </div>
+
+      <div style={{ marginTop: 40, opacity: interpolate(frame, [fps * 2, fps * 2.5], [0, 1]) }}>
+        <GradientText style={{ fontSize: 28, fontWeight: 900, letterSpacing: 6 }}>ORCHESTKIT</GradientText>
       </div>
     </div>
   );
 };
+
+// Export HOOK_END for confetti timing
+const HOOK_END = 30 * 4; // fps * 4
