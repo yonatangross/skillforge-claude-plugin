@@ -7,7 +7,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { registeredHookNames as posttoolHooks, registeredHookMatchers as posttoolMatchers } from '../../posttool/unified-dispatcher.js';
+import { registeredHookNames as posttoolHooks, registeredHookMatchers as posttoolMatchers, matchesTool } from '../../posttool/unified-dispatcher.js';
 import { registeredHookNames as lifecycleHooks } from '../../lifecycle/unified-dispatcher.js';
 import { registeredHookNames as stopHooks } from '../../stop/unified-dispatcher.js';
 import { registeredHookNames as subagentStopHooks } from '../../subagent-stop/unified-dispatcher.js';
@@ -120,6 +120,40 @@ describe('Dispatcher Registry Wiring', () => {
         'mem0-webhook-setup',
         'coordination-init',
       ]);
+    });
+  });
+
+  describe('matchesTool (posttool routing logic)', () => {
+    it('wildcard matches any tool name', () => {
+      expect(matchesTool('Bash', '*')).toBe(true);
+      expect(matchesTool('Write', '*')).toBe(true);
+      expect(matchesTool('', '*')).toBe(true);
+    });
+
+    it('string matcher matches exact tool name', () => {
+      expect(matchesTool('Bash', 'Bash')).toBe(true);
+      expect(matchesTool('Write', 'Bash')).toBe(false);
+    });
+
+    it('string matcher is case-sensitive', () => {
+      expect(matchesTool('bash', 'Bash')).toBe(false);
+      expect(matchesTool('BASH', 'Bash')).toBe(false);
+    });
+
+    it('array matcher matches any element', () => {
+      expect(matchesTool('Write', ['Write', 'Edit'])).toBe(true);
+      expect(matchesTool('Edit', ['Write', 'Edit'])).toBe(true);
+    });
+
+    it('array matcher rejects non-members', () => {
+      expect(matchesTool('Bash', ['Write', 'Edit'])).toBe(false);
+      expect(matchesTool('', ['Write', 'Edit'])).toBe(false);
+    });
+
+    it('empty string tool matches only wildcard', () => {
+      expect(matchesTool('', '*')).toBe(true);
+      expect(matchesTool('', 'Bash')).toBe(false);
+      expect(matchesTool('', ['Write', 'Edit'])).toBe(false);
     });
   });
 

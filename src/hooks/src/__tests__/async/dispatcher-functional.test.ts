@@ -106,6 +106,22 @@ import { unifiedNotificationDispatcher } from '../../notification/unified-dispat
 import { unifiedSetupDispatcher } from '../../setup/unified-dispatcher.js';
 
 // ---------------------------------------------------------------------------
+// Re-import hook functions to verify mocks are active
+// ---------------------------------------------------------------------------
+
+import { sessionMetrics } from '../../posttool/session-metrics.js';
+import { auditLogger } from '../../posttool/audit-logger.js';
+import { patternExtractor } from '../../posttool/bash/pattern-extractor.js';
+import { codeStyleLearner } from '../../posttool/write/code-style-learner.js';
+import { coordinationHeartbeat } from '../../posttool/coordination-heartbeat.js';
+import { memoryBridge } from '../../posttool/memory-bridge.js';
+import { mem0ContextRetrieval } from '../../lifecycle/mem0-context-retrieval.js';
+import { autoSaveContext } from '../../stop/auto-save-context.js';
+import { contextPublisher } from '../../subagent-stop/context-publisher.js';
+import { desktopNotification } from '../../notification/desktop.js';
+import { dependencyVersionCheck } from '../../lifecycle/dependency-version-check.js';
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -188,6 +204,28 @@ beforeEach(() => {
 describe('Dispatcher Functional Tests', () => {
 
   // =========================================================================
+  // MOCK INTEGRITY — verify mocks are actually intercepting
+  // =========================================================================
+
+  describe('mock integrity (guards against silent mock miss)', () => {
+    it('all hook imports are mocked, not real implementations', () => {
+      // One representative hook per dispatcher — if vi.mock path is wrong,
+      // these will be real functions, not vi.fn() instances
+      expect(vi.isMockFunction(sessionMetrics)).toBe(true);
+      expect(vi.isMockFunction(auditLogger)).toBe(true);
+      expect(vi.isMockFunction(patternExtractor)).toBe(true);
+      expect(vi.isMockFunction(codeStyleLearner)).toBe(true);
+      expect(vi.isMockFunction(coordinationHeartbeat)).toBe(true);
+      expect(vi.isMockFunction(memoryBridge)).toBe(true);
+      expect(vi.isMockFunction(mem0ContextRetrieval)).toBe(true);
+      expect(vi.isMockFunction(autoSaveContext)).toBe(true);
+      expect(vi.isMockFunction(contextPublisher)).toBe(true);
+      expect(vi.isMockFunction(desktopNotification)).toBe(true);
+      expect(vi.isMockFunction(dependencyVersionCheck)).toBe(true);
+    });
+  });
+
+  // =========================================================================
   // POSTTOOL — tool routing via matchesTool
   // =========================================================================
 
@@ -200,6 +238,14 @@ describe('Dispatcher Functional Tests', () => {
           'issue-subtask-updater', 'mem0-webhook-handler', 'pattern-extractor',
           'realtime-sync', 'session-metrics',
         ].sort());
+        // Write/Edit hooks must NOT fire for Bash
+        expect(mocks.codeStyleLearner).not.toHaveBeenCalled();
+        expect(mocks.namingConventionLearner).not.toHaveBeenCalled();
+        expect(mocks.skillEditTracker).not.toHaveBeenCalled();
+        // Task/Skill/MCP hooks must NOT fire for Bash
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
+        expect(mocks.skillUsageOptimizer).not.toHaveBeenCalled();
+        expect(mocks.memoryBridge).not.toHaveBeenCalled();
       });
 
       it('routes Write to wildcard + Write/Edit + multi-tool hooks', async () => {
@@ -209,6 +255,11 @@ describe('Dispatcher Functional Tests', () => {
           'naming-convention-learner', 'realtime-sync', 'session-metrics',
           'skill-edit-tracker',
         ].sort());
+        // Bash hooks must NOT fire for Write
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.issueProgressCommenter).not.toHaveBeenCalled();
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
+        expect(mocks.skillUsageOptimizer).not.toHaveBeenCalled();
       });
 
       it('routes Edit to wildcard + Write/Edit + multi-tool hooks', async () => {
@@ -218,6 +269,10 @@ describe('Dispatcher Functional Tests', () => {
           'naming-convention-learner', 'realtime-sync', 'session-metrics',
           'skill-edit-tracker',
         ].sort());
+        // Bash hooks must NOT fire for Edit
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.mem0WebhookHandler).not.toHaveBeenCalled();
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
       });
 
       it('routes Task to wildcard + Task + multi-tool hooks', async () => {
@@ -226,6 +281,11 @@ describe('Dispatcher Functional Tests', () => {
           'audit-logger', 'calibration-tracker', 'coordination-heartbeat',
           'realtime-sync', 'session-metrics',
         ].sort());
+        // Bash and Write/Edit hooks must NOT fire for Task
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.codeStyleLearner).not.toHaveBeenCalled();
+        expect(mocks.skillUsageOptimizer).not.toHaveBeenCalled();
+        expect(mocks.memoryBridge).not.toHaveBeenCalled();
       });
 
       it('routes Skill to wildcard + Skill + multi-tool hooks', async () => {
@@ -234,6 +294,11 @@ describe('Dispatcher Functional Tests', () => {
           'audit-logger', 'calibration-tracker', 'realtime-sync',
           'session-metrics', 'skill-usage-optimizer',
         ].sort());
+        // Bash and Write/Edit hooks must NOT fire for Skill
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.codeStyleLearner).not.toHaveBeenCalled();
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
+        expect(mocks.memoryBridge).not.toHaveBeenCalled();
       });
 
       it('routes MCP tool to wildcard + MCP-specific hooks only', async () => {
@@ -241,6 +306,12 @@ describe('Dispatcher Functional Tests', () => {
         expect(called(posttoolMap)).toEqual([
           'audit-logger', 'calibration-tracker', 'memory-bridge', 'session-metrics',
         ].sort());
+        // No Bash, Write/Edit, Task, Skill, or multi-tool hooks
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.codeStyleLearner).not.toHaveBeenCalled();
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
+        expect(mocks.skillUsageOptimizer).not.toHaveBeenCalled();
+        expect(mocks.realtimeSync).not.toHaveBeenCalled();
       });
 
       it('routes Read to wildcard hooks only (no specific matchers)', async () => {
@@ -248,6 +319,34 @@ describe('Dispatcher Functional Tests', () => {
         expect(called(posttoolMap)).toEqual([
           'audit-logger', 'calibration-tracker', 'session-metrics',
         ].sort());
+        // No specific-tool hooks should fire for Read
+        expect(mocks.patternExtractor).not.toHaveBeenCalled();
+        expect(mocks.codeStyleLearner).not.toHaveBeenCalled();
+        expect(mocks.coordinationHeartbeat).not.toHaveBeenCalled();
+        expect(mocks.skillUsageOptimizer).not.toHaveBeenCalled();
+        expect(mocks.memoryBridge).not.toHaveBeenCalled();
+        expect(mocks.realtimeSync).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('parallel execution', () => {
+      it('runs matching hooks concurrently, not sequentially', async () => {
+        const DELAY = 50; // ms each hook "takes"
+        // 3 wildcard hooks each delay 50ms — sequential would be ≥150ms
+        mocks.sessionMetrics.mockImplementationOnce(() => new Promise(r => setTimeout(r, DELAY)));
+        mocks.auditLogger.mockImplementationOnce(() => new Promise(r => setTimeout(r, DELAY)));
+        mocks.calibrationTracker.mockImplementationOnce(() => new Promise(r => setTimeout(r, DELAY)));
+
+        const start = performance.now();
+        await unifiedDispatcher(input('Read')); // only wildcards match
+        const elapsed = performance.now() - start;
+
+        // Parallel: ~50ms. Sequential: ~150ms. Threshold: 120ms.
+        expect(elapsed).toBeLessThan(DELAY * 2.4);
+        // All 3 still called
+        expect(mocks.sessionMetrics).toHaveBeenCalled();
+        expect(mocks.auditLogger).toHaveBeenCalled();
+        expect(mocks.calibrationTracker).toHaveBeenCalled();
       });
     });
 

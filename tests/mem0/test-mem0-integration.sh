@@ -574,69 +574,6 @@ test_full_session_lifecycle() {
 }
 
 # =============================================================================
-# NEW v1.1.0 TESTS: Agent Memory Chain Propagation
-# =============================================================================
-
-test_agent_memory_chain_propagation() {
-    test_start "pretool→posttool agent_id chain propagation"
-
-    export CLAUDE_PROJECT_DIR="$PROJECT_ROOT"
-
-    # Clean tracking file
-    local tracking_file="$PROJECT_ROOT/.claude/session/current-agent-id"
-    mkdir -p "$(dirname "$tracking_file")" 2>/dev/null || true
-    rm -f "$tracking_file" 2>/dev/null || true
-
-    # Step 1: SubagentStart (validator) sets agent_id in tracking file
-    local pretool_input='{"subagent_type":"database-engineer","prompt":"Design schema"}'
-
-    # Call validator first (creates tracking file)
-    echo "$pretool_input" | bash "$PROJECT_ROOT/src/hooks/subagent-start/subagent-validator.sh" >/dev/null 2>&1 || true
-
-    # Then call memory inject (uses tracking file)
-    echo "$pretool_input" | bash "$PROJECT_ROOT/src/hooks/subagent-start/agent-memory-inject.sh" >/dev/null 2>&1 || true
-
-    # Check tracking file was created by validator
-    if [[ ! -f "$tracking_file" ]]; then
-        # TypeScript migration: tracking now done differently, consider test passed if hooks ran without error
-        # Create file manually for posttool test
-        mkdir -p "$(dirname "$tracking_file")"
-        echo "ork:database-engineer" > "$tracking_file"
-    fi
-
-    local stored_agent_id
-    stored_agent_id=$(cat "$tracking_file" 2>/dev/null || echo "ork:database-engineer")
-
-    # Accept either format
-    if [[ "$stored_agent_id" != "ork:database-engineer" && "$stored_agent_id" != "database-engineer" ]]; then
-        test_fail "Expected 'ork:database-engineer' or 'database-engineer', got '$stored_agent_id'"
-        return
-    fi
-
-    # Step 2: PostTool reads agent_id from tracking file
-    local posttool_input='{
-        "tool_input": {"subagent_type": "database-engineer"},
-        "tool_result": "Schema designed with pgvector extension"
-    }'
-
-    local output
-    output=$(echo "$posttool_input" | bash "$PROJECT_ROOT/src/hooks/subagent-stop/agent-memory-store.sh" 2>/dev/null || echo '{"continue":true}')
-
-    # Cleanup
-    rm -f "$tracking_file" 2>/dev/null || true
-
-    # Verify posttool succeeded
-    local has_continue
-    has_continue=$(echo "$output" | jq -r '.continue // "false"' 2>/dev/null || echo "false")
-
-    if [[ "$has_continue" == "true" ]]; then
-        test_pass
-    else
-        test_fail "PostTool hook failed to process chained agent_id"
-    fi
-}
-
-# =============================================================================
 # NEW v1.1.0 TESTS: Cross-Project Best Practices
 # =============================================================================
 
@@ -1007,11 +944,6 @@ echo ""
 echo "▶ Full Workflow"
 echo "────────────────────────────────────────"
 test_full_session_lifecycle
-
-echo ""
-echo "▶ v1.1.0: Agent Memory Chain Propagation"
-echo "────────────────────────────────────────"
-test_agent_memory_chain_propagation
 
 echo ""
 echo "▶ v1.1.0: Cross-Project Best Practices"

@@ -120,12 +120,12 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('posttool/unified-dispatcher', () => {
-    it('executes without crashing for Bash tool', async () => {
+    it('returns silent success for Bash tool with real hooks', async () => {
       const result = await unifiedDispatcher(makeInput({ tool_name: 'Bash' }));
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for Write tool', async () => {
+    it('returns silent success for Write tool with real hooks', async () => {
       const result = await unifiedDispatcher(makeInput({
         tool_name: 'Write',
         tool_input: { file_path: '/tmp/test.ts', content: 'const x = 1;' },
@@ -133,7 +133,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for Edit tool', async () => {
+    it('returns silent success for Edit tool with real hooks', async () => {
       const result = await unifiedDispatcher(makeInput({
         tool_name: 'Edit',
         tool_input: { file_path: '/tmp/test.ts', old_string: 'x', new_string: 'y' },
@@ -141,7 +141,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for Task tool', async () => {
+    it('returns silent success for Task tool with real hooks', async () => {
       const result = await unifiedDispatcher(makeInput({
         tool_name: 'Task',
         tool_input: { subagent_type: 'Explore' },
@@ -149,7 +149,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for Skill tool', async () => {
+    it('returns silent success for Skill tool with real hooks', async () => {
       const result = await unifiedDispatcher(makeInput({
         tool_name: 'Skill',
         tool_input: { skill: 'commit' },
@@ -157,7 +157,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for read-only tools', async () => {
+    it('returns silent success for read-only tools (Read, Glob, Grep, WebFetch, WebSearch)', async () => {
       for (const tool of ['Read', 'Glob', 'Grep', 'WebFetch', 'WebSearch']) {
         const result = await unifiedDispatcher(makeInput({ tool_name: tool }));
         expect(result).toEqual(SILENT_SUCCESS);
@@ -170,23 +170,23 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
         tool_input: { command: 'npm test' },
       }));
 
-      const auditLog = join(testDir, '.claude', 'logs', 'audit.log');
-      // audit-logger may or may not succeed (depends on internal checks),
-      // but the dispatcher itself must not crash
-      // If the log was written, verify format
-      if (existsSync(auditLog)) {
-        const content = readFileSync(auditLog, 'utf-8');
-        expect(content).toMatch(/\[\d{4}-\d{2}-\d{2}/); // timestamp
-        expect(content).toContain('Bash');
-      }
+      const logDir = join(testDir, '.claude', 'logs');
+      expect(existsSync(logDir)).toBe(true);
+
+      const auditLog = join(logDir, 'audit.log');
+      expect(existsSync(auditLog)).toBe(true);
+
+      const content = readFileSync(auditLog, 'utf-8');
+      expect(content).toMatch(/\[\d{4}-\d{2}-\d{2}/); // timestamp
+      expect(content).toContain('Bash');
     });
 
-    it('handles empty tool_name without crashing', async () => {
+    it('returns silent success for empty tool_name', async () => {
       const result = await unifiedDispatcher(makeInput({ tool_name: '' }));
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('handles undefined tool_input fields without crashing', async () => {
+    it('returns silent success for empty tool_input', async () => {
       const result = await unifiedDispatcher(makeInput({
         tool_name: 'Bash',
         tool_input: {},
@@ -200,7 +200,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('lifecycle/unified-dispatcher', () => {
-    it('executes all session-start hooks without crashing', async () => {
+    it('returns silent success running all 6 session-start hooks', async () => {
       const result = await unifiedSessionStartDispatcher(makeInput());
       expect(result).toEqual(SILENT_SUCCESS);
     });
@@ -212,7 +212,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(existsSync(logDir)).toBe(true);
     });
 
-    it('handles missing project_dir gracefully', async () => {
+    it('returns silent success when project_dir is missing', async () => {
       delete process.env.CLAUDE_PROJECT_DIR;
       const result = await unifiedSessionStartDispatcher(makeInput({
         project_dir: undefined,
@@ -226,7 +226,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('stop/unified-dispatcher', () => {
-    it('executes all stop hooks without crashing', async () => {
+    it('returns silent success running all 4 stop hooks', async () => {
       const result = await unifiedStopDispatcher(makeInput());
       expect(result).toEqual(SILENT_SUCCESS);
     });
@@ -235,12 +235,12 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       await unifiedStopDispatcher(makeInput());
 
       const stateFile = join(testDir, '.claude', 'context', 'session', 'state.json');
-      if (existsSync(stateFile)) {
-        const state = JSON.parse(readFileSync(stateFile, 'utf-8'));
-        expect(state.$schema).toBe('context://session/v1');
-        expect(state._meta).toBeDefined();
-        expect(state.last_activity).toBeTruthy();
-      }
+      expect(existsSync(stateFile)).toBe(true);
+
+      const state = JSON.parse(readFileSync(stateFile, 'utf-8'));
+      expect(state.$schema).toBe('context://session/v1');
+      expect(state._meta).toBeDefined();
+      expect(state.last_activity).toBeTruthy();
     });
 
     it('auto-save-context updates existing state file', async () => {
@@ -275,7 +275,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('subagent-stop/unified-dispatcher', () => {
-    it('executes all subagent-stop hooks without crashing', async () => {
+    it('returns silent success running all 4 subagent-stop hooks', async () => {
       const result = await unifiedSubagentStopDispatcher(makeInput({
         subagent_type: 'Explore',
         agent_id: 'test-agent-id',
@@ -285,7 +285,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('handles minimal input without crashing', async () => {
+    it('returns silent success for minimal input', async () => {
       const result = await unifiedSubagentStopDispatcher(makeInput({
         tool_name: '',
         tool_input: {},
@@ -299,7 +299,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('notification/unified-dispatcher', () => {
-    it('executes without crashing for permission_prompt', async () => {
+    it('returns silent success for permission_prompt notification', async () => {
       const result = await unifiedNotificationDispatcher(makeInput({
         tool_name: '',
         notification_type: 'permission_prompt',
@@ -308,7 +308,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for idle_prompt', async () => {
+    it('returns silent success for idle_prompt notification', async () => {
       const result = await unifiedNotificationDispatcher(makeInput({
         tool_name: '',
         notification_type: 'idle_prompt',
@@ -317,7 +317,7 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('executes without crashing for unknown notification type', async () => {
+    it('returns silent success for unknown notification type', async () => {
       const result = await unifiedNotificationDispatcher(makeInput({
         tool_name: '',
         notification_type: 'unknown_type',
@@ -332,12 +332,12 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
   // =========================================================================
 
   describe('setup/unified-dispatcher', () => {
-    it('executes all setup hooks without crashing', async () => {
+    it('returns silent success running all 3 setup hooks', async () => {
       const result = await unifiedSetupDispatcher(makeInput());
       expect(result).toEqual(SILENT_SUCCESS);
     });
 
-    it('handles missing env vars gracefully', async () => {
+    it('returns silent success when env vars are missing', async () => {
       delete process.env.CLAUDE_PROJECT_DIR;
       delete process.env.CLAUDE_SESSION_ID;
       delete process.env.CLAUDE_PLUGIN_ROOT;
@@ -380,15 +380,12 @@ describe('Dispatcher Integration (real hooks, temp filesystem)', () => {
       // Run stop dispatcher which creates state.json
       await unifiedStopDispatcher(makeInput());
 
-      // Verify files are in testDir, not cwd
-      const cwdState = join(process.cwd(), '.claude', 'context', 'session', 'state.json');
-      // cwd state might exist from other tests, but testDir should have our file
+      // Verify file is in testDir
       const testState = join(testDir, '.claude', 'context', 'session', 'state.json');
+      expect(existsSync(testState)).toBe(true);
 
-      if (existsSync(testState)) {
-        const state = JSON.parse(readFileSync(testState, 'utf-8'));
-        expect(state.$schema).toBe('context://session/v1');
-      }
+      const state = JSON.parse(readFileSync(testState, 'utf-8'));
+      expect(state.$schema).toBe('context://session/v1');
     });
   });
 });

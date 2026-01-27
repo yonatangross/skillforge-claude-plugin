@@ -214,7 +214,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "*",
+        "matcher": "Bash|Write|Edit|Task|Skill|NotebookEdit",
         "hooks": [
           {
             "type": "command",

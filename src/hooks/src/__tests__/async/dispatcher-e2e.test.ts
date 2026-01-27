@@ -104,105 +104,46 @@ beforeAll(() => {
 describe('E2E: run-hook.mjs Pipeline', () => {
 
   // =========================================================================
-  // BASIC CONTRACT — stdout is always valid JSON with continue:true
+  // BUNDLE ROUTING + STDOUT CONTRACT — each dispatcher loads correct bundle,
+  // exits 0, and outputs valid JSON with continue:true, suppressOutput:true
   // =========================================================================
 
-  describe('stdout contract', () => {
-    it('outputs valid JSON for posttool dispatcher', async () => {
-      const result = await runHook('posttool/unified-dispatcher', {
-        tool_name: 'Bash',
-        session_id: 'test',
-        tool_input: { command: 'echo hi' },
+  describe('bundle routing and stdout contract', () => {
+    const dispatchers: Array<{ name: string; hook: string; input: Record<string, unknown> }> = [
+      { name: 'posttool', hook: 'posttool/unified-dispatcher', input: { tool_name: 'Bash', session_id: 'test', tool_input: { command: 'echo hi' } } },
+      { name: 'lifecycle', hook: 'lifecycle/unified-dispatcher', input: { tool_name: '', session_id: 'test', tool_input: {} } },
+      { name: 'stop', hook: 'stop/unified-dispatcher', input: { tool_name: '', session_id: 'test', tool_input: {} } },
+      { name: 'subagent-stop', hook: 'subagent-stop/unified-dispatcher', input: { tool_name: '', session_id: 'test', tool_input: {}, subagent_type: 'Explore' } },
+      { name: 'notification', hook: 'notification/unified-dispatcher', input: { tool_name: '', session_id: 'test', tool_input: {}, message: 'test', notification_type: 'idle_prompt' } },
+      { name: 'setup', hook: 'setup/unified-dispatcher', input: { tool_name: '', session_id: 'test', tool_input: {} } },
+    ];
+
+    for (const { name, hook, input } of dispatchers) {
+      it(`${name}: exits 0, outputs valid JSON with continue:true and suppressOutput:true`, async () => {
+        const result = await runHook(hook, input);
+        expect(result.exitCode).toBe(0);
+        expect(result.parsed).not.toBeNull();
+        expect(result.parsed!.continue).toBe(true);
+        expect(result.parsed!.suppressOutput).toBe(true);
       });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('outputs valid JSON for lifecycle dispatcher', async () => {
-      const result = await runHook('lifecycle/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('outputs valid JSON for stop dispatcher', async () => {
-      const result = await runHook('stop/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('outputs valid JSON for subagent-stop dispatcher', async () => {
-      const result = await runHook('subagent-stop/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-        subagent_type: 'Explore',
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('outputs valid JSON for notification dispatcher', async () => {
-      const result = await runHook('notification/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-        message: 'test notification',
-        notification_type: 'idle_prompt',
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('outputs valid JSON for setup dispatcher', async () => {
-      const result = await runHook('setup/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed).not.toBeNull();
-      expect(result.parsed!.continue).toBe(true);
-    });
+    }
   });
 
   // =========================================================================
-  // ERROR RESILIENCE — never crashes, never blocks Claude Code
+  // ERROR RESILIENCE — never crashes, never blocks Claude Code (exit 0)
   // =========================================================================
 
   describe('error resilience', () => {
     it('returns silent success when no hook name provided', async () => {
       const result = await runHook('', {});
-
       expect(result.exitCode).toBe(0);
       expect(result.parsed).toEqual({ continue: true, suppressOutput: true });
     });
 
     it('returns silent success for unknown hook', async () => {
       const result = await runHook('nonexistent/fake-hook', {
-        tool_name: 'Bash',
-        session_id: 'test',
-        tool_input: {},
+        tool_name: 'Bash', session_id: 'test', tool_input: {},
       });
-
       expect(result.exitCode).toBe(0);
       expect(result.parsed).not.toBeNull();
       expect(result.parsed!.continue).toBe(true);
@@ -210,13 +151,11 @@ describe('E2E: run-hook.mjs Pipeline', () => {
 
     it('returns silent success for unknown bundle prefix', async () => {
       const result = await runHook('zzzfake/some-hook', {});
-
       expect(result.exitCode).toBe(0);
       expect(result.parsed).toEqual({ continue: true, suppressOutput: true });
     });
 
-    it('handles malformed JSON stdin gracefully', async () => {
-      // Send raw invalid JSON via stdin
+    it('handles malformed JSON stdin gracefully (exit 0)', async () => {
       const child = spawn('node', [RUN_HOOK, 'posttool/unified-dispatcher'], {
         env: { ...process.env, CLAUDE_PROJECT_DIR: '/tmp/ork-e2e-test' },
         stdio: ['pipe', 'pipe', 'pipe'],
@@ -237,10 +176,8 @@ describe('E2E: run-hook.mjs Pipeline', () => {
       expect(parsed.continue).toBe(true);
     });
 
-    it('handles empty stdin gracefully', async () => {
+    it('handles empty stdin gracefully (exit 0)', async () => {
       const result = await runHook('posttool/unified-dispatcher');
-      // No input piped — stdin timeout kicks in
-
       expect(result.exitCode).toBe(0);
       expect(result.parsed).not.toBeNull();
       expect(result.parsed!.continue).toBe(true);
@@ -267,120 +204,13 @@ describe('E2E: run-hook.mjs Pipeline', () => {
     it('handles mixed old/new field names', async () => {
       const result = await runHook('posttool/unified-dispatcher', {
         tool_name: 'Write',
-        sessionId: 'test-mixed', // old format
+        sessionId: 'test-mixed',
         tool_input: { file_path: '/tmp/test.ts', content: 'const x = 1;' },
       });
 
       expect(result.exitCode).toBe(0);
       expect(result.parsed).not.toBeNull();
       expect(result.parsed!.continue).toBe(true);
-    });
-  });
-
-  // =========================================================================
-  // BUNDLE ROUTING — correct bundle loaded for each prefix
-  // =========================================================================
-
-  describe('bundle routing', () => {
-    it('routes posttool/* to posttool.mjs bundle', async () => {
-      const result = await runHook('posttool/unified-dispatcher', {
-        tool_name: 'Bash',
-        session_id: 'test',
-        tool_input: { command: 'ls' },
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('routes lifecycle/* to lifecycle.mjs bundle', async () => {
-      const result = await runHook('lifecycle/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('routes stop/* to stop.mjs bundle', async () => {
-      const result = await runHook('stop/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('routes subagent-stop/* to subagent.mjs bundle', async () => {
-      const result = await runHook('subagent-stop/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('routes notification/* to notification.mjs bundle', async () => {
-      const result = await runHook('notification/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-
-    it('routes setup/* to setup.mjs bundle', async () => {
-      const result = await runHook('setup/unified-dispatcher', {
-        tool_name: '',
-        session_id: 'test',
-        tool_input: {},
-      });
-      expect(result.exitCode).toBe(0);
-      expect(result.parsed!.continue).toBe(true);
-    });
-  });
-
-  // =========================================================================
-  // EXIT CODE — always 0 (never blocks Claude Code)
-  // =========================================================================
-
-  describe('exit code guarantee', () => {
-    it('exits 0 on success', async () => {
-      const result = await runHook('posttool/unified-dispatcher', {
-        tool_name: 'Bash',
-        session_id: 'test',
-        tool_input: { command: 'echo ok' },
-      });
-      expect(result.exitCode).toBe(0);
-    });
-
-    it('exits 0 on missing hook', async () => {
-      const result = await runHook('posttool/nonexistent-hook', {});
-      expect(result.exitCode).toBe(0);
-    });
-
-    it('exits 0 on missing bundle', async () => {
-      const result = await runHook('zzzfake/missing', {});
-      expect(result.exitCode).toBe(0);
-    });
-
-    it('exits 0 on malformed input', async () => {
-      const child = spawn('node', [RUN_HOOK, 'posttool/unified-dispatcher'], {
-        env: { ...process.env, CLAUDE_PROJECT_DIR: '/tmp/ork-e2e-test' },
-        stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 10000,
-      });
-
-      const exitCode = await new Promise<number | null>((resolve) => {
-        child.on('close', resolve);
-        child.stdin.write('{bad json');
-        child.stdin.end();
-      });
-
-      expect(exitCode).toBe(0);
     });
   });
 });

@@ -93,8 +93,9 @@ export const registeredHookMatchers = () => HOOKS.map(h => ({ name: h.name, matc
 
 /**
  * Check if a tool matches a matcher pattern
+ * Exported for direct unit testing
  */
-function matchesTool(toolName: string, matcher: string | string[]): boolean {
+export function matchesTool(toolName: string, matcher: string | string[]): boolean {
   if (matcher === '*') return true;
 
   if (Array.isArray(matcher)) {
