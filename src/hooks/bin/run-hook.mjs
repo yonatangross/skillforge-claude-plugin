@@ -169,6 +169,34 @@ function isHookDisabled(hookName, overrides) {
 }
 
 /**
+ * Validate hook input at the boundary
+ * Returns { valid, errors, warnings } or null if input is fine
+ */
+function validateInput(input, hookName) {
+  const errors = [];
+  const warnings = [];
+
+  // Input must be a plain object
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    return { valid: false, errors: [`Input must be an object, got ${input === null ? 'null' : typeof input}`], warnings: [] };
+  }
+
+  // tool_input must be an object if present
+  if (input.tool_input !== undefined && (typeof input.tool_input !== 'object' || input.tool_input === null || Array.isArray(input.tool_input))) {
+    errors.push(`tool_input must be an object, got ${Array.isArray(input.tool_input) ? 'array' : typeof input.tool_input}`);
+  }
+
+  // Event-specific checks
+  const prefix = hookName.split('/')[0];
+  const toolEvents = ['pretool', 'posttool', 'permission', 'skill', 'agent'];
+  if (toolEvents.includes(prefix) && !input.tool_name && input.tool_name !== '') {
+    warnings.push('Missing tool_name for tool-based hook');
+  }
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Execute the hook and output result
  */
 async function runHook(parsedInput) {
@@ -178,6 +206,16 @@ async function runHook(parsedInput) {
 
   if (isHookDisabled(hookName, overrides)) {
     console.log('{"continue":true,"suppressOutput":true}');
+    return;
+  }
+
+  // Validate input at the boundary
+  const validation = validateInput(parsedInput, hookName);
+  if (!validation.valid) {
+    console.log(JSON.stringify({
+      continue: true,
+      systemMessage: `Hook input validation failed (${hookName}): ${validation.errors.join('; ')}`,
+    }));
     return;
   }
 
