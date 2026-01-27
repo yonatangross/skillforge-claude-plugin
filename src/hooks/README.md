@@ -931,4 +931,4 @@ const bundleMap = {
 **Average Bundle:** ~35KB per event
 **Claude Code Requirement:** >= 2.1.20
 
-See [docs/async-hooks.md](docs/async-hooks.md) for detailed async hook patterns.
+See the async hooks section above for detailed async hook patterns.
