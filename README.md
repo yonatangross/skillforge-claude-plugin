@@ -5,9 +5,9 @@
 
 ### Stop explaining your stack. Start shipping.
 
-**179 skills · 35 agents · 150 hooks · 33 modular plugins**
+**181 skills · 35 agents · 152 hooks · 33 modular plugins**
 
-[![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.19-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-≥2.1.20-7C3AED?style=for-the-badge&logo=anthropic)](https://claude.ai/claude-code)
 [![Skills](https://img.shields.io/badge/Skills-164-blue?style=for-the-badge)](./skills)
 [![Agents](https://img.shields.io/badge/Agents-34-green?style=for-the-badge)](./agents)
 [![Hooks](https://img.shields.io/badge/Hooks-147-orange?style=for-the-badge)](./hooks)
