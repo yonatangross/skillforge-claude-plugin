@@ -41,6 +41,9 @@ import { captureUserIntent } from '../prompt/capture-user-intent.js';
 // Profile Injection (Issue #245 Phase 6.1)
 import { profileInjector } from '../prompt/profile-injector.js';
 
+// Communication Style Tracker (Issue #245 Phase 2.2)
+import { communicationStyleTracker } from '../prompt/communication-style-tracker.js';
+
 import type { HookFn } from '../types.js';
 
 /**
@@ -64,6 +67,8 @@ export const hooks: Record<string, HookFn> = {
   'prompt/capture-user-intent': captureUserIntent,
   // Profile Injection (Issue #245 Phase 6.1)
   'prompt/profile-injector': profileInjector,
+  // Communication Style Tracker (Issue #245 Phase 2.2)
+  'prompt/communication-style-tracker': communicationStyleTracker,
 };
 
 export function getHook(name: string): HookFn | undefined {

@@ -337,6 +337,10 @@
           },
           {
             "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs prompt/communication-style-tracker"
+          },
+          {
+            "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/bin/run-hook.mjs prompt/antipattern-detector"
           },
           {
