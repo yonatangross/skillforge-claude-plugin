@@ -2,14 +2,10 @@
  * HOME Environment Fallback Tests
  *
  * Tests HOME/USERPROFILE environment variable fallback behavior across
- * multiple hooks and utilities. Validates the inconsistency between:
- * - common.ts: `HOME || '/tmp'` (no USERPROFILE fallback)
- * - pattern-sync-pull/push: `HOME || USERPROFILE || '/tmp'` (with USERPROFILE)
- * - setup-maintenance: `HOME || '/tmp'` (no USERPROFILE fallback)
+ * multiple hooks and utilities. All hooks now consistently use:
+ * - `HOME || USERPROFILE || '/tmp'` (with USERPROFILE fallback for Windows)
  *
- * P2/P3 gaps for future sessions:
- * TODO(P3): Test pattern-sync-pull with large file (>1MB) triggers skip
- * TODO(P3): Test sync-config.json parse failure falls back to enabled
+ * All P2/P3 gaps resolved.
  */
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -531,23 +527,24 @@ describe('HOME environment fallback', () => {
   });
 
   // -----------------------------------------------------------------------
-  // Inconsistency documentation tests
+  // USERPROFILE fallback consistency tests
+  // All hooks now consistently use: HOME || USERPROFILE || '/tmp'
   // -----------------------------------------------------------------------
 
-  describe('HOME fallback inconsistency', () => {
-    test('common.ts getLogDir does NOT use USERPROFILE fallback', () => {
+  describe('HOME/USERPROFILE fallback consistency', () => {
+    test('common.ts getLogDir uses USERPROFILE fallback when HOME is unset', () => {
       delete process.env.HOME;
       process.env.USERPROFILE = 'C:\\Users\\testuser';
       process.env.CLAUDE_PLUGIN_ROOT = '/some/root';
 
       const logDir = getLogDir();
 
-      // common.ts uses: HOME || '/tmp' — no USERPROFILE
-      expect(logDir).toBe('/tmp/.claude/logs/ork');
-      expect(logDir).not.toContain('Users');
+      // common.ts now uses: HOME || USERPROFILE || '/tmp'
+      expect(logDir).toContain('Users');
+      expect(logDir).toBe('C:\\Users\\testuser/.claude/logs/ork');
     });
 
-    test('pattern-sync-pull DOES use USERPROFILE fallback (inconsistent with common.ts)', () => {
+    test('pattern-sync-pull uses USERPROFILE fallback (consistent with common.ts)', () => {
       delete process.env.HOME;
       process.env.USERPROFILE = 'C:\\Users\\testuser';
       delete process.env.ORCHESTKIT_SKIP_SLOW_HOOKS;
@@ -564,7 +561,133 @@ describe('HOME environment fallback', () => {
       const globalPath = checkedPaths.find(p => p.includes('global-patterns.json'));
       expect(globalPath).toBeDefined();
       expect(globalPath).toContain('C:\\Users\\testuser');
-      // This is DIFFERENT from common.ts which would use /tmp
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // P3.5: Large file skip (>1MB) in pattern-sync-pull
+  // -----------------------------------------------------------------------
+
+  describe('pattern-sync-pull large file skip (P3.5)', () => {
+    test('skips global patterns file when >1MB', () => {
+      process.env.HOME = '/home/largetest';
+      delete process.env.ORCHESTKIT_SKIP_SLOW_HOOKS;
+
+      // Mock existsSync to say files exist
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('global-patterns.json')) return true;
+        if (typeof p === 'string' && p.includes('sync-config.json')) return false;
+        return false;
+      });
+
+      // Mock statSync to return >1MB for global patterns
+      mockStatSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('global-patterns.json')) {
+          return { size: 2 * 1024 * 1024 }; // 2MB
+        }
+        return { size: 100 };
+      });
+
+      // Track if readFileSync is called for global-patterns.json
+      const readPaths: string[] = [];
+      mockReadFileSync.mockImplementation((p: string) => {
+        readPaths.push(p);
+        return '{}';
+      });
+
+      patternSyncPull(makeInput({ project_dir: '/tmp/test-project' }));
+
+      // Should NOT read the global patterns file (skipped due to size)
+      const readGlobal = readPaths.find(p => p.includes('global-patterns.json'));
+      expect(readGlobal).toBeUndefined();
+    });
+
+    test('processes global patterns file when exactly 1MB', () => {
+      process.env.HOME = '/home/edgetest';
+      delete process.env.ORCHESTKIT_SKIP_SLOW_HOOKS;
+
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('global-patterns.json')) return true;
+        if (typeof p === 'string' && p.includes('sync-config.json')) return false;
+        return false;
+      });
+
+      mockStatSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('global-patterns.json')) {
+          return { size: 1 * 1024 * 1024 }; // Exactly 1MB
+        }
+        return { size: 100 };
+      });
+
+      const readPaths: string[] = [];
+      mockReadFileSync.mockImplementation((p: string) => {
+        readPaths.push(p);
+        if (typeof p === 'string' && p.includes('global-patterns.json')) {
+          return JSON.stringify({ version: '1.0', patterns: [] });
+        }
+        return '{}';
+      });
+
+      patternSyncPull(makeInput({ project_dir: '/tmp/test-project' }));
+
+      // Should read the file (1MB is not > 1MB, it's equal)
+      const readGlobal = readPaths.find(p => p.includes('global-patterns.json'));
+      expect(readGlobal).toBeDefined();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // P3.6: sync-config.json parse failure falls back to enabled
+  // -----------------------------------------------------------------------
+
+  describe('sync-config.json parse failure (P3.6)', () => {
+    test('continues sync when sync-config.json contains invalid JSON', () => {
+      process.env.HOME = '/home/parsefailtest';
+      delete process.env.ORCHESTKIT_SKIP_SLOW_HOOKS;
+
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('sync-config.json')) return true;
+        if (typeof p === 'string' && p.includes('global-patterns.json')) return true;
+        return false;
+      });
+
+      mockStatSync.mockReturnValue({ size: 100 });
+
+      mockReadFileSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('sync-config.json')) {
+          return '{invalid json{{';
+        }
+        if (typeof p === 'string' && p.includes('global-patterns.json')) {
+          return JSON.stringify({ version: '1.0', patterns: [] });
+        }
+        return '{}';
+      });
+
+      // Should not throw — parse failure falls back to sync_enabled=true
+      const result = patternSyncPull(makeInput({ project_dir: '/tmp/test-project' }));
+      expect(result.continue).toBe(true);
+    });
+
+    test('continues sync when sync-config.json is empty', () => {
+      process.env.HOME = '/home/emptyconfig';
+      delete process.env.ORCHESTKIT_SKIP_SLOW_HOOKS;
+
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('sync-config.json')) return true;
+        if (typeof p === 'string' && p.includes('global-patterns.json')) return false;
+        return false;
+      });
+
+      mockReadFileSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('sync-config.json')) {
+          return '';
+        }
+        return '{}';
+      });
+
+      // Should not throw — empty string parse failure falls back to enabled
+      const result = patternSyncPull(makeInput({ project_dir: '/tmp/test-project' }));
+      expect(result.continue).toBe(true);
     });
   });
 });

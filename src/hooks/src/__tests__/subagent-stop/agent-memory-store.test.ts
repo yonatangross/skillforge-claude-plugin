@@ -5,10 +5,7 @@
  * successful patterns after agent completion. Writes patterns
  * to a JSONL log file with category detection and mem0 metadata.
  *
- * P2/P3 gaps for future sessions:
- * TODO(P3): Test tool_result { is_error: true, content: "..." } handling
- * TODO(P3): Test unlinkSync tracking file cleanup (existsSync=true path + throw path)
- * TODO(P3): Test getProjectId() sanitization (spaces, special chars, leading/trailing dashes)
+ * All P2/P3 gaps resolved.
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
@@ -44,7 +41,7 @@ vi.mock('node:child_process', () => ({
 // Import under test (after mocks)
 // ---------------------------------------------------------------------------
 import { agentMemoryStore } from '../../subagent-stop/agent-memory-store.js';
-import { appendFileSync, mkdirSync } from 'node:fs';
+import { appendFileSync, mkdirSync, existsSync, unlinkSync } from 'node:fs';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -673,6 +670,171 @@ describe('agentMemoryStore', () => {
       const result = agentMemoryStore(input);
 
       expect(result.systemMessage).toContain('workflow-architect');
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // P3.1: tool_result { is_error: true } handling
+  // -----------------------------------------------------------------------
+
+  describe('tool_result is_error field (P3.1)', () => {
+    test('skips pattern extraction when tool_result has is_error: true', () => {
+      const input = makeInput({
+        subagent_type: 'database-engineer',
+        tool_result: {
+          is_error: true,
+          content: makeOutputWithPattern('decided to use PostgreSQL with sharding'),
+        },
+      });
+
+      const result = agentMemoryStore(input);
+
+      expect(result.continue).toBe(true);
+      expect(result.suppressOutput).toBe(true);
+      // No patterns should be extracted from error content
+      expect(appendFileSync).not.toHaveBeenCalled();
+    });
+
+    test('extracts patterns normally when tool_result has is_error: false', () => {
+      const input = makeInput({
+        subagent_type: 'database-engineer',
+        tool_result: {
+          is_error: false,
+          content: makeOutputWithPattern('decided to use connection pooling'),
+        },
+      });
+
+      const result = agentMemoryStore(input);
+
+      expect(result.continue).toBe(true);
+      expect(result.systemMessage).toContain('Pattern Extraction');
+      expect(appendFileSync).toHaveBeenCalled();
+    });
+
+    test('is_error takes precedence even without input.error', () => {
+      // input.error is NOT set, but tool_result.is_error IS true
+      const input = makeInput({
+        subagent_type: 'test-generator',
+        tool_result: {
+          is_error: true,
+          content: makeOutputWithPattern('decided to retry the failing operation'),
+        },
+      });
+
+      const result = agentMemoryStore(input);
+
+      expect(result.continue).toBe(true);
+      expect(result.suppressOutput).toBe(true);
+      expect(appendFileSync).not.toHaveBeenCalled();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // P3.2: unlinkSync tracking file cleanup
+  // -----------------------------------------------------------------------
+
+  describe('unlinkSync tracking file cleanup (P3.2)', () => {
+    test('deletes tracking file when it exists', () => {
+      const mockExistsSync = existsSync as ReturnType<typeof vi.fn>;
+      const mockUnlinkSync = unlinkSync as ReturnType<typeof vi.fn>;
+
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('current-agent-id')) return true;
+        return false;
+      });
+
+      const input = makeInput({
+        subagent_type: 'test-generator',
+        tool_result: makeOutputWithPattern('decided to organize tests by domain'),
+      });
+
+      agentMemoryStore(input);
+
+      expect(mockUnlinkSync).toHaveBeenCalledWith(
+        expect.stringContaining('current-agent-id'),
+      );
+    });
+
+    test('handles unlinkSync ENOENT without crash', () => {
+      const mockExistsSync = existsSync as ReturnType<typeof vi.fn>;
+      const mockUnlinkSync = unlinkSync as ReturnType<typeof vi.fn>;
+
+      mockExistsSync.mockImplementation((p: string) => {
+        if (typeof p === 'string' && p.includes('current-agent-id')) return true;
+        return false;
+      });
+      mockUnlinkSync.mockImplementation(() => {
+        throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+      });
+
+      const input = makeInput({
+        subagent_type: 'test-generator',
+        tool_result: makeOutputWithPattern('decided to add snapshot tests'),
+      });
+
+      // Should not throw
+      const result = agentMemoryStore(input);
+      expect(result.continue).toBe(true);
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // P3.3: getProjectId() sanitization
+  // -----------------------------------------------------------------------
+
+  describe('getProjectId sanitization (P3.3)', () => {
+    test('sanitizes project dir with spaces into dashes', () => {
+      process.env.CLAUDE_PROJECT_DIR = '/home/user/my cool project';
+
+      const input = makeInput({
+        subagent_type: 'test-agent',
+        tool_result: makeOutputWithPattern('decided to use sanitized paths'),
+      });
+
+      agentMemoryStore(input);
+
+      const calls = (appendFileSync as ReturnType<typeof vi.fn>).mock.calls;
+      expect(calls.length).toBeGreaterThanOrEqual(1);
+      const entry = JSON.parse(calls[0][1].toString().trim());
+      // "my cool project" → "my-cool-project"
+      expect(entry.project).toBe('my-cool-project');
+      expect(entry.project).not.toContain(' ');
+    });
+
+    test('sanitizes project dir with path traversal characters', () => {
+      process.env.CLAUDE_PROJECT_DIR = '/home/user/../secret/project';
+
+      const input = makeInput({
+        subagent_type: 'test-agent',
+        tool_result: makeOutputWithPattern('decided to validate paths'),
+      });
+
+      agentMemoryStore(input);
+
+      const calls = (appendFileSync as ReturnType<typeof vi.fn>).mock.calls;
+      expect(calls.length).toBeGreaterThanOrEqual(1);
+      const entry = JSON.parse(calls[0][1].toString().trim());
+      // getProjectId takes last segment after split('/') → "project"
+      expect(entry.project).toBe('project');
+      expect(entry.project).not.toContain('..');
+    });
+
+    test('sanitizes project dir with special and unicode characters', () => {
+      process.env.CLAUDE_PROJECT_DIR = '/home/user/proj@ect#v2!';
+
+      const input = makeInput({
+        subagent_type: 'test-agent',
+        tool_result: makeOutputWithPattern('decided to handle unicode'),
+      });
+
+      agentMemoryStore(input);
+
+      const calls = (appendFileSync as ReturnType<typeof vi.fn>).mock.calls;
+      expect(calls.length).toBeGreaterThanOrEqual(1);
+      const entry = JSON.parse(calls[0][1].toString().trim());
+      // Non-alphanumeric chars → dashes, collapsed
+      expect(entry.project).toBe('proj-ect-v2');
+      expect(entry.project).not.toMatch(/[^a-z0-9-]/);
     });
   });
 });
