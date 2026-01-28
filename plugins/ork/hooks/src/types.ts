@@ -57,8 +57,8 @@ export interface HookInput {
   error?: string;
   /** Duration in milliseconds */
   duration_ms?: number;
-  /** Tool result (SubagentStop) */
-  tool_result?: string;
+  /** Tool result — string from most hooks, object from Skill PostToolUse */
+  tool_result?: string | { is_error?: boolean; content?: string };
 
   // Notification specific fields
   /** Notification message */
@@ -124,6 +124,40 @@ export interface HookResult {
  * Hook function signature
  */
 export type HookFn = (input: HookInput) => Promise<HookResult> | HookResult;
+
+/**
+ * Hook metadata for auto-discovery and governance
+ * Co-export alongside hook functions for single-source-of-truth registration
+ */
+export interface HookMeta {
+  /** Full hook name path (e.g., 'pretool/bash/dangerous-command-blocker') */
+  name: string;
+  /** Human-readable description */
+  description: string;
+  /** Hook event type */
+  event: HookEvent;
+  /** Tool matcher patterns for hooks.json (e.g., 'Bash', 'Write|Edit') */
+  matchers?: string[];
+  /** Run asynchronously (non-blocking) */
+  async?: boolean;
+  /** Only run once per session */
+  once?: boolean;
+  /** Timeout in seconds (async hooks only) */
+  timeout?: number;
+  /** Risk category for prioritization */
+  tier?: 'security-critical' | 'data-loss' | 'quality-gate' | 'standard';
+}
+
+/**
+ * Hook overrides configuration for per-project toggle/customization
+ * Stored at .claude/hook-overrides.json (gitignored)
+ */
+export interface HookOverrides {
+  /** Hook names to disable entirely */
+  disabled?: string[];
+  /** Per-hook timeout overrides (seconds) */
+  timeouts?: Record<string, number>;
+}
 
 /**
  * Hook registration entry

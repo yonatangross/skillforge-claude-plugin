@@ -5,6 +5,40 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.0] - 2026-01-28
+
+### Changed
+
+- **BREAKING: Memory plugin decomposition** — `ork-memory` split into 3 independent plugins:
+  - `ork-memory-graph` (Tier 1): Knowledge graph memory — zero-config, always works. Skills: remember, recall, load-context.
+  - `ork-memory-mem0` (Tier 2): Mem0 cloud memory — opt-in, requires `MEM0_API_KEY`. Skills: mem0-memory, mem0-sync.
+  - `ork-memory-fabric` (Tier 3): Memory orchestration — parallel query dispatch, dedup, cross-reference boosting. Skill: memory-fabric.
+  - Users must re-install the specific plugins they need. `ork-memory` no longer exists.
+
+- **Hook split: agent-memory-inject** — Split into two independent hooks:
+  - `graph-memory-inject.ts` — always runs, injects graph context into subagents (ork-memory-graph)
+  - `mem0-memory-inject.ts` — gated on `MEM0_API_KEY`, injects mem0 context into subagents (ork-memory-mem0)
+
+- **Mem0 hook gating** — `mem0-pre-compaction-sync.ts` now early-returns without `MEM0_API_KEY` instead of building messages about syncing
+
+- **Hook count**: 152 → 153 (split added 1 hook)
+
+- **Skill frontmatter** — All memory skills updated with `plugin:` field pointing to their respective plugin
+
+### Fixed
+
+- **`tool_result` type definition** — Changed from `string` to `string | { is_error?: boolean; content?: string }` in `HookInput` to match actual runtime payloads from Skill PostToolUse hooks. Removed `as any` casts from `decision-processor.ts` and `agent-memory-store.ts`.
+
+- **`dangerous-command-blocker` patterns** — Added blocking for: `git reset --hard`, `git clean -fd`, `git push --force/-f`, `DROP DATABASE`, `DROP SCHEMA`, `TRUNCATE TABLE`. Fixed case-insensitive matching (patterns and command both lowercased).
+
+- **`process.env.HOME` container safety** — Added `|| process.env.USERPROFILE || '/tmp'` fallback in `common.ts`, `pattern-sync-pull.ts`, `pattern-sync-push.ts`, `mem0-context-retrieval.ts`, and `setup-maintenance.ts` to prevent crashes in CI containers where HOME is unset.
+
+- **`split-bundles.test.ts` hook count** — Updated from 152 to 153 after memory hook split.
+
+- **Marketplace version sync** — `build-plugins.sh` now auto-syncs plugin versions from `manifests/*.json` to `.claude-plugin/marketplace.json` during build (Phase 5).
+
+- **Vitest CI integration** — Added `hook-typescript-tests` job to CI pipeline (`ci.yml`) and wired into `tests/run-all-tests.sh`. 1,449 TypeScript tests now run in CI and gate merges via the summary job.
+
 ## [5.3.0] - 2026-01-27
 
 ### Added

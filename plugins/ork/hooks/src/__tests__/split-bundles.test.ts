@@ -281,8 +281,10 @@ describe('Cross-Bundle Consistency', () => {
 
     const totalHooks = bundles.reduce((sum, bundle) => sum + Object.keys(bundle).length, 0);
 
-    // Should have 144 hooks total (3 hooks in hooks.json don't have TypeScript implementations yet)
-    expect(totalHooks).toBe(144);
+    // Total TypeScript hook implementations across all bundles
+    // Update this count when adding/removing hook implementations
+    // 153 -> 152: merged skill-auto-suggest + skill-injector into skill-resolver
+    expect(totalHooks).toBe(152);
   });
 });
 
