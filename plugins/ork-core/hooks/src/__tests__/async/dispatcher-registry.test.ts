@@ -32,6 +32,7 @@ describe('Dispatcher Registry Wiring', () => {
         'skill-usage-optimizer',
         'memory-bridge',
         'realtime-sync',
+        'user-tracking',
       ]);
     });
 
@@ -66,6 +67,9 @@ describe('Dispatcher Registry Wiring', () => {
 
       // Multi-tool hook
       expect(byName['realtime-sync']).toEqual(['Bash', 'Write', 'Edit', 'Skill', 'Task']);
+
+      // User tracking (Issue #245)
+      expect(byName['user-tracking']).toBe('*');
     });
   });
 
@@ -78,6 +82,7 @@ describe('Dispatcher Registry Wiring', () => {
         'multi-instance-init',
         'instance-heartbeat',
         'session-env-setup',
+        'session-tracking',
       ]);
     });
   });
@@ -89,6 +94,8 @@ describe('Dispatcher Registry Wiring', () => {
         'session-patterns',
         'issue-work-summary',
         'calibration-persist',
+        'session-profile-aggregator',
+        'session-end-tracking',
       ]);
     });
   });
@@ -158,7 +165,7 @@ describe('Dispatcher Registry Wiring', () => {
   });
 
   describe('Cross-dispatcher consistency', () => {
-    it('total consolidated hook count is 33', () => {
+    it('total consolidated hook count is 34', () => {
       const total =
         posttoolHooks().length +
         lifecycleHooks().length +
@@ -167,7 +174,7 @@ describe('Dispatcher Registry Wiring', () => {
         notificationHooks().length +
         setupHooks().length;
 
-      expect(total).toBe(33);
+      expect(total).toBe(37);
     });
   });
 });
