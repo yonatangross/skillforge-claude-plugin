@@ -10,7 +10,7 @@
  */
 
 import { existsSync, readFileSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
-import { execSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import type { HookInput, HookResult } from '../types.js';
 import { logHook, getProjectDir, getPluginRoot, outputSilentSuccess } from '../lib/common.js';
 
