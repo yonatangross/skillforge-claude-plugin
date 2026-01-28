@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.4.0] - 2026-01-28
 
+### Added
+
+- **Comprehensive E2E test suites** — 174 new E2E tests across 5 test files:
+  - `dispatcher-registry-wiring.test.ts` (24 tests): hooks.json configuration validation
+  - `multi-instance-coordination.test.ts` (22 tests): File locking and concurrent session coordination
+  - `security-boundaries.test.ts` (70 tests): Dangerous command blocking, path traversal prevention
+  - `stop-lifecycle.test.ts` (20 tests): Session termination and cleanup hooks
+  - `subagent-lifecycle.test.ts` (27 tests): Agent spawn/complete lifecycle validation
+
+- **Coverage tooling** — Added `@vitest/coverage-v8` with `vitest.config.ts` and `npm run test:coverage` script. Coverage thresholds: 70% lines, 60% functions, 50% branches.
+
 ### Changed
 
 - **BREAKING: Memory plugin decomposition** — `ork-memory` split into 3 independent plugins:
@@ -38,6 +49,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Marketplace version sync** — `build-plugins.sh` now auto-syncs plugin versions from `manifests/*.json` to `.claude-plugin/marketplace.json` during build (Phase 5).
 
 - **Vitest CI integration** — Added `hook-typescript-tests` job to CI pipeline (`ci.yml`) and wired into `tests/run-all-tests.sh`. 1,449 TypeScript tests now run in CI and gate merges via the summary job.
+
+- **Path prefix attack in `auto-approve-project-writes`** — Fixed vulnerability where `startsWith()` check incorrectly approved paths like `/project-malicious/file.txt` when projectDir was `/project`. Now uses `path.relative()` containment check to properly detect path escape attempts.
+
+- **Test count** — Total TypeScript tests: 1,449 → 2,165 (716 new tests including 174 E2E).
 
 ## [5.3.0] - 2026-01-27
 
