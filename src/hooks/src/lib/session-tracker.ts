@@ -157,7 +157,7 @@ export function trackEvent(
         output: sanitizeForStorage(options.output),
         duration_ms: options.duration_ms,
         success: options.success ?? true,
-        context: options.context,
+        context: options.context ? truncate(options.context, 500) : undefined,
         confidence: options.confidence,
       },
     };
