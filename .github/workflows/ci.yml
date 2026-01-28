@@ -60,38 +60,31 @@ jobs:
 
   # ============================================================================
   # STAGE 2: Unit Tests (< 5m)
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   unit-tests:
-    name: Unit Tests
+    name: Unit Tests (${{ matrix.os }}, node ${{ matrix.node-version }})
     needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['20', '22', '24']
+        exclude:
+          # Reduce matrix: Windows only on Node 22 (primary) and 20 (compat)
+          - os: windows-latest
+            node-version: '24'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            sudo apt-get update && sudo apt-get install -y jq rsync
-          else
-            brew install jq rsync
-          fi
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+          node-version: ${{ matrix.node-version }}
 
       - name: Run unit tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           # Core validation tests
@@ -144,62 +137,57 @@ jobs:
 
   # ============================================================================
   # STAGE 2b: TypeScript Hook Tests (vitest)
+  # Cross-platform with Node version matrix
   # ============================================================================
   hook-typescript-tests:
-    name: TypeScript Hook Tests (vitest)
+    name: TypeScript Tests (${{ matrix.os }}, node ${{ matrix.node-version }})
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node-version: ['20', '22', '24']
+        exclude:
+          - os: windows-latest
+            node-version: '24'
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup environment
+        uses: ./.github/actions/setup
         with:
-          node-version: '22'
-
-      - name: Install hook dependencies
-        working-directory: src/hooks
-        run: npm ci
+          node-version: ${{ matrix.node-version }}
+          build-plugins: 'false'
+          run-ci-setup: 'false'
+          install-hooks-deps: 'true'
 
       - name: Run vitest
+        shell: bash
         working-directory: src/hooks
         run: npx vitest run --reporter=verbose
 
   # ============================================================================
   # STAGE 3: Security Tests (< 3m)
   # ZERO TOLERANCE: Any failure blocks merge
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   security-tests:
-    name: Security Tests
+    name: Security Tests (${{ matrix.os }})
     needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true  # Stop immediately on security failure
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            sudo apt-get update && sudo apt-get install -y jq rsync
-          else
-            brew install jq rsync
-          fi
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run security tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/security/test-command-injection.sh
@@ -215,33 +203,24 @@ jobs:
 
   # ============================================================================
   # STAGE 4: Integration Tests (< 5m)
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   integration-tests:
-    name: Integration Tests
+    name: Integration Tests (${{ matrix.os }})
     needs: [unit-tests, security-tests]
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
-            sudo apt-get update && sudo apt-get install -y jq rsync
-          else
-            brew install jq rsync
-          fi
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run integration tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/integration/test-hook-chains.sh
@@ -257,24 +236,24 @@ jobs:
 
   # ============================================================================
   # STAGE 5: Performance Tests (< 2m)
+  # Cross-platform: ubuntu + macos
   # ============================================================================
   performance-tests:
-    name: Performance Tests
+    name: Performance Tests (${{ matrix.os }})
     needs: [unit-tests, security-tests]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run performance tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/performance/test-token-budget.sh
@@ -282,53 +261,48 @@ jobs:
 
   # ============================================================================
   # STAGE 6: Compliance Tests
+  # Cross-platform: ubuntu + macos
   # ============================================================================
   compliance-tests:
-    name: Skills Structure Compliance
+    name: Compliance Tests (${{ matrix.os }})
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run skills structure compliance tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/compliance/test-cc-216-compliance.sh
 
   # ============================================================================
-  # STAGE 6b: Mem0 Integration Tests (v4.15.1)
+  # STAGE 6b: Mem0 Integration Tests
+  # Cross-platform: ubuntu + macos
   # ============================================================================
   mem0-tests:
-    name: Mem0 Integration
+    name: Mem0 Integration (${{ matrix.os }})
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run mem0 integration tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/mem0/test-mem0-integration.sh
@@ -337,24 +311,24 @@ jobs:
 
   # ============================================================================
   # STAGE 7: Agent & Skill Validation
+  # Cross-platform: ubuntu + macos
   # ============================================================================
   agent-skill-tests:
-    name: Validate Agents & Skills
+    name: Agents & Skills (${{ matrix.os }})
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run agent tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/agents/test-agent-model-selection.sh
@@ -367,6 +341,7 @@ jobs:
           bash tests/agents/test-hook-paths.sh
 
       - name: Run skill tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/skills/test-skill-structure.sh
@@ -379,40 +354,43 @@ jobs:
           bash tests/skills/integration/test-skill-agent-integration.sh
 
       - name: Run subagent definition tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/subagents/definition/test-agent-definitions.sh
 
   # ============================================================================
   # STAGE 8: System Tests
+  # Cross-platform: ubuntu + macos
   # ============================================================================
   system-tests:
-    name: System Tests
+    name: System Tests (${{ matrix.os }})
     needs: lint
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run config tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/config/test-config-system.sh
 
       - name: Run feedback tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/feedback/test-feedback-system.sh
 
       - name: Run evaluation tests
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           bash tests/evaluations/validate-evaluations.sh
@@ -427,16 +405,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Generate hook coverage report
+        shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
           export COVERAGE_THRESHOLD=20

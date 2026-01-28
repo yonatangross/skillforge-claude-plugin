@@ -11,30 +11,33 @@ env:
   CLAUDE_PROJECT_DIR: ${{ github.workspace }}
 
 jobs:
-  # Job 1: Syntax and Structure Validation
+  # Job 1: Syntax and Structure Validation (cross-platform)
   syntax-validation:
-    name: Syntax & Structure
-    runs-on: ubuntu-latest
+    name: Syntax & Structure (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make test scripts executable
-        run: chmod +x tests/**/*.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Validate Shell Script Syntax
-        run: ./tests/unit/test-shell-syntax.sh --verbose
+        shell: bash
+        run: bash tests/unit/test-shell-syntax.sh --verbose
 
       - name: Validate JSON Syntax
-        run: ./tests/unit/test-json-validity.sh --verbose
+        shell: bash
+        run: bash tests/unit/test-json-validity.sh --verbose
 
       - name: Check Hook Executability
-        run: ./tests/unit/test-hook-executability.sh
+        shell: bash
+        run: bash tests/unit/test-hook-executability.sh
 
   # Job 2: Schema Validation
   schema-validation:
@@ -51,69 +54,56 @@ jobs:
       - name: Install jsonschema
         run: pip install jsonschema
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make test scripts executable
-        run: chmod +x tests/**/*.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Validate Context Schemas
-        run: ./tests/unit/test-context-schemas.sh --verbose
+        shell: bash
+        run: bash tests/unit/test-context-schemas.sh --verbose
 
-  # Job 3: Hook Unit Tests
+  # Job 3: Hook Unit Tests (cross-platform)
   hook-unit-tests:
-    name: Hook Unit Tests
-    runs-on: ubuntu-latest
+    name: Hook Unit Tests (${{ matrix.os }})
     needs: syntax-validation
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make scripts executable
-        run: |
-          chmod +x tests/**/*.sh
-          find src/hooks -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run Hook Unit Tests
-        run: ./tests/unit/test-hooks-unit.sh --verbose
+        shell: bash
+        run: bash tests/unit/test-hooks-unit.sh --verbose
 
-  # Job 4: Integration Tests
+  # Job 4: Integration Tests (cross-platform)
   integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
+    name: Integration Tests (${{ matrix.os }})
     needs: [syntax-validation, hook-unit-tests]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync bc
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make scripts executable
-        run: |
-          chmod +x tests/**/*.sh
-          find src/hooks -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
+      - name: Setup environment
+        uses: ./.github/actions/setup
 
       - name: Run Hook Chain Tests
-        run: ./tests/integration/test-hook-chains.sh --verbose
+        shell: bash
+        run: bash tests/integration/test-hook-chains.sh --verbose
 
       - name: Run Context System Tests
-        run: ./tests/integration/test-context-system.sh --verbose
+        shell: bash
+        run: bash tests/integration/test-context-system.sh --verbose
 
   # Job 5: Plugin Manifest Validation
   manifest-validation:
@@ -122,25 +112,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make test scripts executable
-        run: chmod +x tests/**/*.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Validate marketplace.json schema
-        run: ./tests/schemas/test-marketplace-schema.sh
+        shell: bash
+        run: bash tests/schemas/test-marketplace-schema.sh
 
       - name: Validate plugin.json schema
-        run: ./tests/schemas/test-plugin-schema.sh
+        shell: bash
+        run: bash tests/schemas/test-plugin-schema.sh
 
       - name: Validate plugin.json CC 2.1.19 format (skills/agents)
-        run: ./tests/plugins/test-plugin-json-schema.sh
+        shell: bash
+        run: bash tests/plugins/test-plugin-json-schema.sh
 
       - name: Validate plugin.json structure (new location)
+        shell: bash
         run: |
           echo "Checking plugins/ork/.claude-plugin/plugin.json..."
 
@@ -164,6 +154,7 @@ jobs:
           echo "Plugin manifest is valid!"
 
       - name: Check settings.json hook paths
+        shell: bash
         run: |
           echo "Validating hook paths in settings.json..."
 
@@ -206,16 +197,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make scripts executable
-        run: chmod +x bin/*.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Validate component counts
+        shell: bash
         run: ./bin/validate-counts.sh
 
   # Job 7: Skills Validation (flat structure)
@@ -225,13 +213,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Validate skill structure
+        shell: bash
         run: |
           echo "Validating skills (flat structure)..."
 
@@ -272,16 +260,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Make scripts executable
-        run: chmod +x bin/*.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          run-ci-setup: 'false'
 
       - name: Check for skill drift
+        shell: bash
         run: |
           echo "Checking for drift between root skills and plugin skills..."
 
@@ -291,6 +276,7 @@ jobs:
           echo "No skill drift detected!"
 
       - name: Check for orphan skills
+        shell: bash
         run: |
           echo "Checking for orphan skills in plugins..."
 
