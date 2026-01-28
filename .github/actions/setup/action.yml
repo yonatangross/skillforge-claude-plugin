@@ -22,6 +22,10 @@ inputs:
     description: 'Whether to install src/hooks npm dependencies'
     required: false
     default: 'false'
+  use-cache:
+    description: 'Whether to use npm cache'
+    required: false
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -39,12 +43,27 @@ runs:
     - name: Install system dependencies (Windows)
       if: runner.os == 'Windows'
       shell: bash
-      run: choco install jq -y
+      run: |
+        choco install jq rsync -y
+        # Verify rsync is available
+        rsync --version || echo "WARNING: rsync not found, some operations may fail"
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+
+    - name: Cache npm dependencies
+      if: inputs.use-cache == 'true'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.npm
+          src/hooks/node_modules
+        key: ${{ runner.os }}-node-${{ inputs.node-version }}-${{ hashFiles('**/package-lock.json', 'src/hooks/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ inputs.node-version }}-
+          ${{ runner.os }}-node-
 
     - name: Build plugins
       if: inputs.build-plugins == 'true'

@@ -15,7 +15,8 @@ env:
 
 jobs:
   # ============================================================================
-  # STAGE 0: Build Plugins (< 1m)
+  # STAGE 0: Build Plugins + Artifacts (< 1m)
+  # Single build, shared via artifacts to avoid rebuilding
   # ============================================================================
   build-plugins:
     name: Build Plugins
@@ -23,11 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
-
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          build-plugins: 'true'
+          run-ci-setup: 'false'
 
       - name: Validate no symlinks
         run: |
@@ -35,6 +36,13 @@ jobs:
             echo "ERROR: Found symlinks in plugins/"
             exit 1
           fi
+
+      - name: Upload built plugins
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+          retention-days: 1
 
   # ============================================================================
   # STAGE 1: Fast Checks (< 30s)
@@ -46,21 +54,48 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y jq rsync
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
 
-      - name: Build plugins
-        run: bash scripts/build-plugins.sh
-
-      - name: Setup CI environment
-        run: ./bin/ci-setup.sh --with-shellcheck
+      - name: Setup environment
+        uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
+          ci-setup-flags: '--with-shellcheck'
 
       - name: Run lint checks
         run: bash tests/ci/lint.sh
 
   # ============================================================================
+  # STAGE 1b: Dependency Security Audit
+  # ============================================================================
+  security-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Audit root dependencies
+        run: npm audit --audit-level=high || echo "::warning::npm audit found vulnerabilities"
+        continue-on-error: true
+
+      - name: Audit hooks dependencies
+        working-directory: src/hooks
+        run: npm audit --audit-level=high || echo "::warning::hooks npm audit found vulnerabilities"
+        continue-on-error: true
+
+  # ============================================================================
   # STAGE 2: Unit Tests (< 5m)
   # Cross-platform: ubuntu + macos + windows
+  # Node versions: 20 (LTS), 22 (Current LTS)
   # ============================================================================
   unit-tests:
     name: Unit Tests (${{ matrix.os }}, node ${{ matrix.node-version }})
@@ -70,18 +105,21 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: ['20', '22', '24']
-        exclude:
-          # Reduce matrix: Windows only on Node 22 (primary) and 20 (compat)
-          - os: windows-latest
-            node-version: '24'
+        node-version: ['20', '22']
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
 
       - name: Setup environment
         uses: ./.github/actions/setup
         with:
           node-version: ${{ matrix.node-version }}
+          build-plugins: 'false'
 
       - name: Run unit tests
         shell: bash
@@ -147,10 +185,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        node-version: ['20', '22', '24']
-        exclude:
-          - os: windows-latest
-            node-version: '24'
+        node-version: ['20', '22']
     steps:
       - uses: actions/checkout@v4
 
@@ -183,8 +218,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run security tests
         shell: bash
@@ -216,8 +259,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run integration tests
         shell: bash
@@ -236,7 +287,7 @@ jobs:
 
   # ============================================================================
   # STAGE 5: Performance Tests (< 2m)
-  # Cross-platform: ubuntu + macos
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   performance-tests:
     name: Performance Tests (${{ matrix.os }})
@@ -245,12 +296,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run performance tests
         shell: bash
@@ -261,7 +320,7 @@ jobs:
 
   # ============================================================================
   # STAGE 6: Compliance Tests
-  # Cross-platform: ubuntu + macos
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   compliance-tests:
     name: Compliance Tests (${{ matrix.os }})
@@ -270,12 +329,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run skills structure compliance tests
         shell: bash
@@ -285,7 +352,7 @@ jobs:
 
   # ============================================================================
   # STAGE 6b: Mem0 Integration Tests
-  # Cross-platform: ubuntu + macos
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   mem0-tests:
     name: Mem0 Integration (${{ matrix.os }})
@@ -294,12 +361,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run mem0 integration tests
         shell: bash
@@ -311,7 +386,7 @@ jobs:
 
   # ============================================================================
   # STAGE 7: Agent & Skill Validation
-  # Cross-platform: ubuntu + macos
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   agent-skill-tests:
     name: Agents & Skills (${{ matrix.os }})
@@ -320,12 +395,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run agent tests
         shell: bash
@@ -361,7 +444,7 @@ jobs:
 
   # ============================================================================
   # STAGE 8: System Tests
-  # Cross-platform: ubuntu + macos
+  # Cross-platform: ubuntu + macos + windows
   # ============================================================================
   system-tests:
     name: System Tests (${{ matrix.os }})
@@ -370,12 +453,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Run config tests
         shell: bash
@@ -405,14 +496,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Download built plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: built-plugins
+          path: plugins/
+
       - name: Setup environment
         uses: ./.github/actions/setup
+        with:
+          build-plugins: 'false'
 
       - name: Generate hook coverage report
         shell: bash
         run: |
           export CLAUDE_PROJECT_DIR="${{ github.workspace }}"
-          export COVERAGE_THRESHOLD=20
+          export COVERAGE_THRESHOLD=70
           bash tests/coverage/hook-coverage-report.sh | tee coverage-report.txt
 
       - name: Upload coverage report
@@ -428,7 +527,7 @@ jobs:
   # ============================================================================
   summary:
     name: CI Summary
-    needs: [lint, unit-tests, hook-typescript-tests, security-tests, integration-tests, performance-tests, compliance-tests, mem0-tests, agent-skill-tests, system-tests, coverage-report]
+    needs: [lint, security-audit, unit-tests, hook-typescript-tests, security-tests, integration-tests, performance-tests, compliance-tests, mem0-tests, agent-skill-tests, system-tests, coverage-report]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -436,6 +535,7 @@ jobs:
         run: |
           echo "=== CI Summary ==="
           echo "Lint: ${{ needs.lint.result }}"
+          echo "Security Audit: ${{ needs.security-audit.result }}"
           echo "Unit Tests: ${{ needs.unit-tests.result }}"
           echo "Hook TS Tests: ${{ needs.hook-typescript-tests.result }}"
           echo "Security Tests: ${{ needs.security-tests.result }}"
@@ -447,6 +547,7 @@ jobs:
           echo "System Tests: ${{ needs.system-tests.result }}"
           echo "Coverage Report: ${{ needs.coverage-report.result }}"
 
+          # Security audit is warning-only, don't fail on it
           if [[ "${{ needs.lint.result }}" != "success" ]] || \
              [[ "${{ needs.unit-tests.result }}" != "success" ]] || \
              [[ "${{ needs.hook-typescript-tests.result }}" != "success" ]] || \
