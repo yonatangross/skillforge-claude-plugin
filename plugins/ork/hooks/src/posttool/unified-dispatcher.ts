@@ -81,14 +81,21 @@ const HOOKS: HookConfig[] = [
   { name: 'realtime-sync', fn: realtimeSync, matcher: ['Bash', 'Write', 'Edit', 'Skill', 'Task'] },
 ];
 
+/** Exposed for registry wiring tests */
+export const registeredHookNames = () => HOOKS.map(h => h.name);
+
+/** Exposed for registry wiring tests */
+export const registeredHookMatchers = () => HOOKS.map(h => ({ name: h.name, matcher: h.matcher }));
+
 // -----------------------------------------------------------------------------
 // Matcher Logic
 // -----------------------------------------------------------------------------
 
 /**
  * Check if a tool matches a matcher pattern
+ * Exported for direct unit testing
  */
-function matchesTool(toolName: string, matcher: string | string[]): boolean {
+export function matchesTool(toolName: string, matcher: string | string[]): boolean {
   if (matcher === '*') return true;
 
   if (Array.isArray(matcher)) {

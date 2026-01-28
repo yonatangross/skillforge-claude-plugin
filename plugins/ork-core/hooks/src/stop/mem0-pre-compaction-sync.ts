@@ -10,7 +10,7 @@
  */
 
 import { existsSync, readFileSync, mkdirSync, appendFileSync, writeFileSync } from 'node:fs';
-import { execSync, spawn } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import type { HookInput, HookResult } from '../types.js';
 import { logHook, getProjectDir, getPluginRoot, outputSilentSuccess } from '../lib/common.js';
 
@@ -219,9 +219,36 @@ export function mem0PreCompactionSync(input: HookInput): HookResult {
       ],
       {
         detached: true,
-        stdio: 'ignore',
+        stdio: ['ignore', 'pipe', 'pipe'],
       }
     );
+
+    child.on('error', (err) => {
+      const errTimestamp = new Date().toISOString();
+      try {
+        appendFileSync(logFile, `[${errTimestamp}] Sync child process error: ${err.message}\n`);
+      } catch {
+        // Best-effort logging
+      }
+    });
+
+    if (child.stderr) {
+      let stderrData = '';
+      child.stderr.on('data', (chunk: Buffer) => {
+        stderrData += chunk.toString();
+      });
+      child.stderr.on('end', () => {
+        if (stderrData.trim()) {
+          const errTimestamp = new Date().toISOString();
+          try {
+            appendFileSync(logFile, `[${errTimestamp}] Sync stderr: ${stderrData.trim()}\n`);
+          } catch {
+            // Best-effort logging
+          }
+        }
+      });
+    }
+
     child.unref();
 
     // Mark patterns as synced

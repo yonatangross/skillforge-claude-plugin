@@ -11,7 +11,7 @@
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -147,9 +147,78 @@ process.stdin.on('error', () => {
 });
 
 /**
+ * Load hook overrides from .claude/hook-overrides.json
+ * Returns null if file doesn't exist or is invalid
+ */
+function loadOverrides(projectDir) {
+  const overridesPath = join(projectDir, '.claude', 'hook-overrides.json');
+  if (!existsSync(overridesPath)) return null;
+  try {
+    return JSON.parse(readFileSync(overridesPath, 'utf-8'));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if a hook is disabled via overrides
+ */
+function isHookDisabled(hookName, overrides) {
+  if (!overrides?.disabled) return false;
+  return Array.isArray(overrides.disabled) && overrides.disabled.includes(hookName);
+}
+
+/**
+ * Validate hook input at the boundary
+ * Returns { valid, errors, warnings } or null if input is fine
+ */
+function validateInput(input, hookName) {
+  const errors = [];
+  const warnings = [];
+
+  // Input must be a plain object
+  if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+    return { valid: false, errors: [`Input must be an object, got ${input === null ? 'null' : typeof input}`], warnings: [] };
+  }
+
+  // tool_input must be an object if present
+  if (input.tool_input !== undefined && (typeof input.tool_input !== 'object' || input.tool_input === null || Array.isArray(input.tool_input))) {
+    errors.push(`tool_input must be an object, got ${Array.isArray(input.tool_input) ? 'array' : typeof input.tool_input}`);
+  }
+
+  // Event-specific checks
+  const prefix = hookName.split('/')[0];
+  const toolEvents = ['pretool', 'posttool', 'permission', 'skill', 'agent'];
+  if (toolEvents.includes(prefix) && !input.tool_name && input.tool_name !== '') {
+    warnings.push('Missing tool_name for tool-based hook');
+  }
+
+  return { valid: errors.length === 0, errors, warnings };
+}
+
+/**
  * Execute the hook and output result
  */
 async function runHook(parsedInput) {
+  // Check hook overrides before execution
+  const projectDir = parsedInput.project_dir || process.env.CLAUDE_PROJECT_DIR || '.';
+  const overrides = loadOverrides(projectDir);
+
+  if (isHookDisabled(hookName, overrides)) {
+    console.log('{"continue":true,"suppressOutput":true}');
+    return;
+  }
+
+  // Validate input at the boundary
+  const validation = validateInput(parsedInput, hookName);
+  if (!validation.valid) {
+    console.log(JSON.stringify({
+      continue: true,
+      systemMessage: `Hook input validation failed (${hookName}): ${validation.errors.join('; ')}`,
+    }));
+    return;
+  }
+
   try {
     const result = await hookFn(parsedInput);
     console.log(JSON.stringify(result));
