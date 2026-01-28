@@ -800,6 +800,14 @@
       "source": "commit",
       "timestamp": "2026-01-26T17:46:26.124Z",
       "project": "Yad2CompetitorsScraper"
+    },
+    {
+      "text": "PR #158 merged",
+      "category": "decision",
+      "outcome": "success",
+      "source": "pr-merge",
+      "timestamp": "2026-01-28T07:39:26.829Z",
+      "project": "Yad2CompetitorsScraper"
     }
   ]
 }
