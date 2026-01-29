@@ -394,7 +394,7 @@ describe('Dispatcher Functional Tests', () => {
 
         expect(mocks.logHook).toHaveBeenCalledWith(
           'posttool-dispatcher',
-          expect.stringMatching(/2\/9 hooks failed.*audit-logger.*session-metrics|2\/9 hooks failed.*session-metrics.*audit-logger/),
+          expect.stringMatching(/2\/10 hooks failed.*audit-logger.*session-metrics|2\/10 hooks failed.*session-metrics.*audit-logger/),
         );
       });
 
