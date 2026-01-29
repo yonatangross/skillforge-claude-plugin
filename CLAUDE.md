@@ -5,9 +5,9 @@ Essential context for Claude Code when working on OrchestKit.
 ## Project Overview
 
 **OrchestKit** is a Claude Code plugin providing:
-- **182 skills**: Reusable knowledge modules
+- **185 skills**: Reusable knowledge modules
 - **35 agents**: Specialized AI personas
-- **154 hooks**: TypeScript lifecycle automation
+- **167 hooks**: TypeScript lifecycle automation
 
 **Purpose**: AI-assisted development with built-in best practices, security patterns, and quality gates.
 
@@ -17,7 +17,7 @@ Essential context for Claude Code when working on OrchestKit.
 
 ```
 src/                    ← SOURCE (edit here!)
-├── skills/             # 182 skills
+├── skills/             # 185 skills
 │   └── <skill-name>/
 │       ├── SKILL.md    # Required: frontmatter + content
 │       └── references/ # Optional: detailed guides
@@ -149,13 +149,13 @@ Use `TaskCreate` for multi-step work (3+ distinct steps). Set status to `in_prog
 See `skills/task-dependency-patterns` for comprehensive patterns.
 
 ### Skills
-182 skills available. 22 are user-invocable via `/ork:skillname`. Skills auto-suggest based on prompt content via hooks. Use `Skill` tool to invoke.
+185 skills available. 23 are user-invocable via `/ork:skillname`. Skills auto-suggest based on prompt content via hooks. Use `Skill` tool to invoke.
 
 ### Agents
 35 specialized agents. Spawn with `Task` tool using `subagent_type` parameter. Agents auto-discovered from `src/agents/*.md`. Skills in agent frontmatter are auto-injected.
 
 ### Hooks
-154 TypeScript hooks in 11 split bundles. Auto-loaded from `hooks/hooks.json`. Return `{"continue": true}` to proceed, `{"continue": false}` to block.
+167 TypeScript hooks in 11 split bundles. Auto-loaded from `hooks/hooks.json`. Return `{"continue": true}` to proceed, `{"continue": false}` to block.
 
 **Async Execution**: 6 hooks use `async: true` for non-blocking background execution (analytics, network I/O, startup tasks). See `src/hooks/README.md` for async hook patterns.
 
@@ -244,6 +244,6 @@ MEM0_API_KEY          # Optional: enables mem0 cloud memory
 
 - **Current**: 5.4.0
 - **Claude Code**: >= 2.1.22
-- **Hooks**: 154 TypeScript (11 split bundles, 6 async)
+- **Hooks**: 167 TypeScript (11 split bundles, 6 async)
 
 See `CHANGELOG.md` for detailed version history and features.

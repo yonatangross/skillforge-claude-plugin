@@ -5,6 +5,48 @@ All notable changes to the OrchestKit Claude Code Plugin will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.1] - 2026-01-29
+
+### Changed
+
+- **Plugin Consolidation** — Merged 18 fragmented plugins into 10 domain-focused plugins:
+  - `ork-rag-advanced` → merged into `ork-rag`
+  - `ork-langgraph-core` + `ork-langgraph-advanced` → `ork-langgraph`
+  - `ork-llm-core` + `ork-llm-advanced` → `ork-llm`
+  - `ork-testing-core` + `ork-testing-e2e` → `ork-testing`
+  - `ork-frontend-advanced` + `ork-frontend-performance` → `ork-frontend`
+  - `ork-backend-advanced` → merged into `ork-backend-patterns`
+  - `ork-cicd` + `ork-infrastructure` → `ork-devops`
+  - `ork-context` → merged into `ork-core`
+  - `ork-fastapi` + `ork-graphql` → `ork-api`
+  - `ork-architecture` + `ork-data-engineering` → merged appropriately
+  - `ork-workflows-core` + `ork-workflows-advanced` → `ork-workflows`
+
+- **New `ork-video` plugin** — 15 demo/video production skills extracted into dedicated plugin:
+  - demo-producer, terminal-demo-generator, remotion-composer, manim-visualizer
+  - video-storyboarding, video-pacing, narration-scripting, hook-formulas
+  - heygen-avatars, elevenlabs-narration, audio-mixing-patterns, music-sfx-selection
+  - content-type-recipes, scene-intro-cards, thumbnail-first-frame
+
+- **Skill count**: 182 → 185 (new AI observability skills: drift-detection, pii-masking-patterns, silent-failure-detection)
+
+- **Hook count**: 154 → 167 (new lifecycle hooks for video production and observability)
+
+### Added
+
+- **Manifest validation tests** — New test suite for plugin manifests:
+  - `test-skill-uniqueness.sh`: Detect duplicate skills across manifests
+  - `test-manifest-dependencies.sh`: Validate plugin dependency chains
+  - `test-marketplace-ordering.sh`: Ensure ork meta-plugin is last
+  - `test-plugin-orphan-skills.sh`: Find skills not claimed by any manifest
+
+- **npm scripts for manifest tests**: `npm run test:manifests`, `test:manifests:orphans`, etc.
+
+### Fixed
+
+- **38 orphan skills** — All skills now assigned to appropriate domain plugins
+- **19 skill warnings** — Added "Related Skills" sections and "Use when" trigger phrases to improve discoverability
+
 ## [5.4.0] - 2026-01-28
 
 ### Added
