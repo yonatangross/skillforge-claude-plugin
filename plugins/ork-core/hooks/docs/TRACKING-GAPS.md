@@ -7,7 +7,8 @@ Branch: `test/dispatcher-registry-wiring-tests`
 
 ~40% of the tracking infrastructure was initially connected. Progress tracking below.
 
-**Fixed:** 4/13 gaps (GAP-001, GAP-002, GAP-011, GAP-012)
+**Fixed:** 12/13 gaps (GAP-001 through GAP-012)
+**Deferred:** 1/13 gaps (GAP-013 - low priority code smell)
 
 ---
 
@@ -32,41 +33,32 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ## P1: High - Write-Only Storage (Dead Ends)
 
 ### GAP-003: pending-decisions.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:164` (storeDecisions)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: ~~`src/hooks/src/prompt/capture-user-intent.ts:164` (storeDecisions)~~ REMOVED
+- **Read by**: N/A (data flows through events.jsonl via trackDecisionMade)
+- **Status**: [x] Fixed - Removed storeDecisions, data tracked via session-tracker
 - **Impact**: User decisions captured but never incorporated into profile
-- **Data lost**: `what`, `rationale`, `alternatives`, `confidence`, `entities`
-- **Fix options**:
-  - A) Add reader in session-profile-aggregator to merge into profile.decisions
-  - B) Remove the write (simplify)
+- **Fix**: Removed dead-end write; decisions tracked via trackDecisionMade → events.jsonl
 
 ### GAP-004: user-preferences.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:192` (storePreferences)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: ~~`src/hooks/src/prompt/capture-user-intent.ts:192` (storePreferences)~~ REMOVED
+- **Read by**: N/A (data flows through events.jsonl via trackPreferenceStated)
+- **Status**: [x] Fixed - Removed storePreferences, data tracked via session-tracker
 - **Impact**: User preferences captured but never incorporated into profile
-- **Data lost**: `category`, `preference`, `confidence`
-- **Fix options**:
-  - A) Add reader in session-profile-aggregator to merge into profile.preferences
-  - B) Remove the write (simplify)
+- **Fix**: Removed dead-end write; preferences tracked via trackPreferenceStated → events.jsonl
 
 ### GAP-005: open-problems.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:220` (storeProblems)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts` (storeProblems)
+- **Read by**: `src/hooks/src/lib/problem-tracker.ts` (wired via GAP-011)
+- **Status**: [x] Fixed - File read by problem-tracker (wired to posttool dispatcher in GAP-011)
 - **Impact**: Problems detected but never tracked or resolved
-- **Data lost**: `text`, `entities`, `timestamp`
-- **Fix options**:
-  - A) Add reader and pair with solutions
-  - B) Remove the write (simplify)
+- **Fix**: Already wired via GAP-011 solution-detector → problem-tracker
 
 ### GAP-006: mem0-queue.jsonl never processed
 - **Written by**: `src/hooks/src/lib/memory-writer.ts:89` (queueForMem0)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Read by**: `src/hooks/src/stop/mem0-queue-sync.ts`
+- **Status**: [x] Fixed
 - **Impact**: Cloud memory sync completely broken - nothing ever uploads
-- **Fix**: Create `stop/mem0-queue-sync.ts` similar to graph-queue-sync
+- **Fix**: Created `stop/mem0-queue-sync.ts` with dispatcher wiring (gated by MEM0_API_KEY)
 
 ---
 
@@ -74,31 +66,31 @@ Branch: `test/dispatcher-registry-wiring-tests`
 
 ### GAP-007: trackSolutionFound() never called
 - **Defined**: `src/hooks/src/lib/session-tracker.ts:278-289`
-- **Called by**: Tests only
-- **Status**: [ ] Not Fixed
+- **Called by**: `src/hooks/src/lib/problem-tracker.ts:pairSolutionWithProblems`
+- **Status**: [x] Fixed - Wired to problem-tracker when solution paired
 - **Impact**: Problems reported but solutions never paired - no learning loop
-- **Fix**: Call from satisfaction-detector when positive signal follows problem
+- **Fix**: Added call to trackSolutionFound in pairSolutionWithProblems
 
 ### GAP-008: listSessionIds() never called
-- **Defined**: `src/hooks/src/lib/session-tracker.ts:490-504`
-- **Called by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Defined**: ~~`src/hooks/src/lib/session-tracker.ts:490-504`~~ REMOVED
+- **Called by**: Tests only (production code never used it)
+- **Status**: [x] Fixed - Removed dead code
 - **Impact**: Query utility exists but unused
-- **Fix**: Either use it in profile-injector or remove
+- **Fix**: Removed function and tests; cross-session queries should use profile-injector if needed
 
 ### GAP-009: getRecentUserSessions() never called
-- **Defined**: `src/hooks/src/lib/session-tracker.ts:509-532`
-- **Called by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Defined**: ~~`src/hooks/src/lib/session-tracker.ts:509-532`~~ REMOVED
+- **Called by**: Tests only (production code never used it)
+- **Status**: [x] Fixed - Removed dead code
 - **Impact**: Cross-session queries impossible
-- **Fix**: Either use it in profile-injector or remove
+- **Fix**: Removed function; functionality can be added to profile-injector if needed
 
 ### GAP-010: getRecentFlows() never called
-- **Defined**: `src/hooks/src/lib/decision-flow-tracker.ts:536-562`
-- **Called by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Defined**: ~~`src/hooks/src/lib/decision-flow-tracker.ts:536-562`~~ REMOVED
+- **Called by**: Nothing (dead code)
+- **Status**: [x] Fixed - Removed dead code
 - **Impact**: Historical workflow analysis impossible
-- **Fix**: Either use in workflow-preference-learner or remove
+- **Fix**: Removed function; cross-session flow analysis can be added to workflow-preference-learner if needed
 
 ### GAP-011: problem-tracker.ts entirely unused
 - **File**: `src/hooks/src/lib/problem-tracker.ts`
@@ -122,9 +114,14 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ### GAP-013: trackHookTriggered() exists in two places
 - **TypeScript**: `src/hooks/src/lib/session-tracker.ts:224-233`
 - **JavaScript**: `src/hooks/bin/run-hook.mjs:198-234`
-- **Status**: [ ] Not Fixed
-- **Impact**: Confusion, potential drift
-- **Fix**: run-hook.mjs should import from compiled session-tracker
+- **Status**: [ ] Deferred (P3 low priority)
+- **Impact**: Code duplication, potential drift
+- **Decision**: Keep as-is for now
+  - Both implementations are tested and working
+  - run-hook.mjs is ESM entrypoint that needs standalone implementation
+  - Consolidation would require refactoring run-hook.mjs import structure
+  - Risk of breaking hooks system outweighs benefit
+- **Future**: Consider consolidation when refactoring hook system
 
 ---
 
@@ -162,14 +159,14 @@ Branch: `test/dispatcher-registry-wiring-tests`
 |-----|-------------|-------|--------|
 | GAP-001 | graph-queue-sync dispatcher | [x] | c55d7973 |
 | GAP-002 | workflow-preference-learner dispatcher | [x] | c55d7973 |
-| GAP-003 | pending-decisions reader | [ ] | |
-| GAP-004 | user-preferences reader | [ ] | |
-| GAP-005 | open-problems reader | [ ] | |
-| GAP-006 | mem0-queue processor | [ ] | |
-| GAP-007 | trackSolutionFound caller | [ ] | |
-| GAP-008 | listSessionIds usage | [ ] | |
-| GAP-009 | getRecentUserSessions usage | [ ] | |
-| GAP-010 | getRecentFlows usage | [ ] | |
+| GAP-003 | pending-decisions reader | [x] | pending |
+| GAP-004 | user-preferences reader | [x] | pending |
+| GAP-005 | open-problems reader | [x] | bb14493c (via GAP-011) |
+| GAP-006 | mem0-queue processor | [x] | 0d0101a4 |
+| GAP-007 | trackSolutionFound caller | [x] | pending |
+| GAP-008 | listSessionIds usage | [x] | pending |
+| GAP-009 | getRecentUserSessions usage | [x] | pending |
+| GAP-010 | getRecentFlows usage | [x] | pending |
 | GAP-011 | problem-tracker module | [x] | bb14493c |
 | GAP-012 | duplicate trackSessionEnd | [x] | c69dc03d |
-| GAP-013 | trackHookTriggered consolidation | [ ] | |
+| GAP-013 | trackHookTriggered consolidation | [-] | deferred |

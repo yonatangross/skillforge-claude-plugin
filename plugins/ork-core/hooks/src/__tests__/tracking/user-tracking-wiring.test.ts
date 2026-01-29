@@ -334,4 +334,93 @@ describe('Issue #245: User Tracking Wiring', () => {
       expect(content).toContain('workflow_patterns.length > 10');
     });
   });
+
+  describe('Issue #245 GAP-001 & GAP-002: Stop Dispatcher Wiring', () => {
+    test('stop dispatcher includes graph-queue-sync hook (GAP-001)', async () => {
+      const { registeredHookNames } = await import(
+        '../../stop/unified-dispatcher.js'
+      );
+      const names = registeredHookNames();
+      expect(names).toContain('graph-queue-sync');
+    });
+
+    test('stop dispatcher includes workflow-preference-learner hook (GAP-002)', async () => {
+      const { registeredHookNames } = await import(
+        '../../stop/unified-dispatcher.js'
+      );
+      const names = registeredHookNames();
+      expect(names).toContain('workflow-preference-learner');
+    });
+
+    test('stop dispatcher imports graphQueueSync from graph-queue-sync.js', () => {
+      const dispatcherPath = path.resolve(
+        process.cwd(),
+        'src/stop/unified-dispatcher.ts'
+      );
+      const content = fs.readFileSync(dispatcherPath, 'utf-8');
+      expect(content).toContain("import { graphQueueSync } from './graph-queue-sync.js'");
+      expect(content).toContain('GAP-001');
+    });
+
+    test('stop dispatcher imports workflowPreferenceLearner from workflow-preference-learner.js', () => {
+      const dispatcherPath = path.resolve(
+        process.cwd(),
+        'src/stop/unified-dispatcher.ts'
+      );
+      const content = fs.readFileSync(dispatcherPath, 'utf-8');
+      expect(content).toContain("import { workflowPreferenceLearner } from './workflow-preference-learner.js'");
+      expect(content).toContain('GAP-002');
+    });
+
+    test('graphQueueSync is exported from graph-queue-sync', async () => {
+      const { graphQueueSync } = await import('../../stop/graph-queue-sync.js');
+      expect(typeof graphQueueSync).toBe('function');
+    });
+
+    test('workflowPreferenceLearner is exported from workflow-preference-learner', async () => {
+      const { workflowPreferenceLearner } = await import('../../stop/workflow-preference-learner.js');
+      expect(typeof workflowPreferenceLearner).toBe('function');
+    });
+  });
+
+  describe('Issue #245 GAP-011: Wire solution-detector to PostToolUse', () => {
+    test('posttool dispatcher includes solution-detector hook', async () => {
+      const { registeredHookNames } = await import(
+        '../../posttool/unified-dispatcher.js'
+      );
+      const names = registeredHookNames();
+      expect(names).toContain('solution-detector');
+    });
+
+    test('posttool dispatcher imports solutionDetector from solution-detector.js', () => {
+      const dispatcherPath = path.resolve(
+        process.cwd(),
+        'src/posttool/unified-dispatcher.ts'
+      );
+      const content = fs.readFileSync(dispatcherPath, 'utf-8');
+      expect(content).toContain("import { solutionDetector } from './solution-detector.js'");
+      expect(content).toContain('GAP-011');
+    });
+
+    test('solutionDetector is exported from solution-detector', async () => {
+      const { solutionDetector } = await import('../../posttool/solution-detector.js');
+      expect(typeof solutionDetector).toBe('function');
+    });
+
+    test('solution-detector uses pairSolutionWithProblems from problem-tracker', () => {
+      const solutionDetectorPath = path.resolve(
+        process.cwd(),
+        'src/posttool/solution-detector.ts'
+      );
+      const content = fs.readFileSync(solutionDetectorPath, 'utf-8');
+      expect(content).toContain("import {");
+      expect(content).toContain("pairSolutionWithProblems");
+      expect(content).toContain("} from '../lib/problem-tracker.js'");
+    });
+
+    test('pairSolutionWithProblems is exported from problem-tracker', async () => {
+      const { pairSolutionWithProblems } = await import('../../lib/problem-tracker.js');
+      expect(typeof pairSolutionWithProblems).toBe('function');
+    });
+  });
 });

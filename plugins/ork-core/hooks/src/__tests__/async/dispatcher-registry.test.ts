@@ -33,6 +33,8 @@ describe('Dispatcher Registry Wiring', () => {
         'memory-bridge',
         'realtime-sync',
         'user-tracking',
+        // GAP-011: Solution detector for problem-solution pairing
+        'solution-detector',
       ]);
     });
 
@@ -70,6 +72,9 @@ describe('Dispatcher Registry Wiring', () => {
 
       // User tracking (Issue #245)
       expect(byName['user-tracking']).toBe('*');
+
+      // Solution detector (GAP-011)
+      expect(byName['solution-detector']).toEqual(['Bash', 'Write', 'Edit', 'Task']);
     });
   });
 
@@ -96,6 +101,10 @@ describe('Dispatcher Registry Wiring', () => {
         'calibration-persist',
         'session-profile-aggregator',
         'session-end-tracking',
+        // Issue #245: GAP-001, GAP-002, GAP-006 - tracking system hooks
+        'graph-queue-sync',
+        'workflow-preference-learner',
+        'mem0-queue-sync',
       ]);
     });
   });
@@ -165,7 +174,7 @@ describe('Dispatcher Registry Wiring', () => {
   });
 
   describe('Cross-dispatcher consistency', () => {
-    it('total consolidated hook count is 34', () => {
+    it('total consolidated hook count is 41', () => {
       const total =
         posttoolHooks().length +
         lifecycleHooks().length +
@@ -174,7 +183,8 @@ describe('Dispatcher Registry Wiring', () => {
         notificationHooks().length +
         setupHooks().length;
 
-      expect(total).toBe(37);
+      // posttool: 16, lifecycle: 7, stop: 9, subagent-stop: 4, notification: 2, setup: 3
+      expect(total).toBe(41);
     });
   });
 });

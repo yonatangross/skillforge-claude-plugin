@@ -925,7 +925,7 @@ const bundleMap = {
 
 ---
 
-**Last Updated:** 2026-01-28
+**Last Updated:** 2026-01-26
 **Version:** 2.1.0 (Async hooks support)
 **Architecture:** 11 split bundles (381KB total) + 1 unified (324KB)
 **Hooks:** 152 TypeScript hooks (6 async)

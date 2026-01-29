@@ -325,5 +325,5 @@ When converting a sync hook to async:
 
 ---
 
-**Last Updated:** 2026-01-28
+**Last Updated:** 2026-01-26
 **CC Version:** >= 2.1.19

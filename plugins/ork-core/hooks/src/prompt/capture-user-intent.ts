@@ -44,42 +44,13 @@ import { join, dirname } from 'node:path';
 
 const HOOK_NAME = 'capture-user-intent';
 const MIN_PROMPT_LENGTH = 15; // Skip very short prompts
-const MIN_CONFIDENCE_FOR_STORAGE = 0.6; // Only store reasonably confident intents
 
 // =============================================================================
-// STORAGE
+// STORAGE TYPES
 // =============================================================================
-
-/**
- * Stored decision record
- */
-interface StoredDecision {
-  id: string;
-  timestamp: string;
-  session_id: string;
-  type: 'decision';
-  text: string;
-  confidence: number;
-  entities: string[];
-  rationale?: string;
-  alternatives?: string[];
-  project: string;
-  status: 'pending' | 'confirmed' | 'applied';
-}
-
-/**
- * Stored preference record
- */
-interface StoredPreference {
-  id: string;
-  timestamp: string;
-  session_id: string;
-  type: 'preference';
-  text: string;
-  confidence: number;
-  entities: string[];
-  project: string;
-}
+// GAP-003/004 FIX: Removed StoredDecision and StoredPreference interfaces
+// These types were only used by the now-removed storeDecisions/storePreferences functions
+// Decision/preference data flows through events.jsonl via session-tracker
 
 /**
  * Stored problem record for solution pairing
@@ -132,76 +103,13 @@ function appendToJsonl(filePath: string, record: unknown): boolean {
   }
 }
 
-/**
- * Store decisions to pending file
- */
-function storeDecisions(decisions: UserIntent[], sessionId: string): number {
-  if (decisions.length === 0) return 0;
-
-  const projectDir = getProjectDir();
-  const filePath = join(projectDir, '.claude', 'memory', 'pending-decisions.jsonl');
-  const project = getProjectName();
-  const timestamp = new Date().toISOString();
-  let stored = 0;
-
-  for (const decision of decisions) {
-    if (decision.confidence < MIN_CONFIDENCE_FOR_STORAGE) continue;
-
-    const record: StoredDecision = {
-      id: generateId('dec'),
-      timestamp,
-      session_id: sessionId,
-      type: 'decision',
-      text: decision.text,
-      confidence: decision.confidence,
-      entities: decision.entities,
-      rationale: decision.rationale,
-      alternatives: decision.alternatives,
-      project,
-      status: 'pending',
-    };
-
-    if (appendToJsonl(filePath, record)) {
-      stored++;
-    }
-  }
-
-  return stored;
-}
-
-/**
- * Store preferences
- */
-function storePreferences(preferences: UserIntent[], sessionId: string): number {
-  if (preferences.length === 0) return 0;
-
-  const projectDir = getProjectDir();
-  const filePath = join(projectDir, '.claude', 'memory', 'user-preferences.jsonl');
-  const project = getProjectName();
-  const timestamp = new Date().toISOString();
-  let stored = 0;
-
-  for (const pref of preferences) {
-    if (pref.confidence < MIN_CONFIDENCE_FOR_STORAGE) continue;
-
-    const record: StoredPreference = {
-      id: generateId('pref'),
-      timestamp,
-      session_id: sessionId,
-      type: 'preference',
-      text: pref.text,
-      confidence: pref.confidence,
-      entities: pref.entities,
-      project,
-    };
-
-    if (appendToJsonl(filePath, record)) {
-      stored++;
-    }
-  }
-
-  return stored;
-}
+// =============================================================================
+// GAP-003/004 FIX: Removed storeDecisions() and storePreferences()
+// These functions wrote to pending-decisions.jsonl and user-preferences.jsonl
+// but those files were never read (write-only dead ends).
+// Decision/preference data is now tracked via trackDecisionMade/trackPreferenceStated
+// which writes to events.jsonl and feeds into user profile aggregation.
+// =============================================================================
 
 /**
  * Store problems for later solution pairing
@@ -311,21 +219,22 @@ export function captureUserIntent(input: HookInput): HookResult {
     return outputSilentSuccess();
   }
 
-  // Store intents (non-blocking, fire-and-forget)
-  const decisionsStored = storeDecisions(result.decisions, sessionId);
-  const preferencesStored = storePreferences(result.preferences, sessionId);
-  const problemsStored = storeProblems(result.problems, sessionId);
-
   // Track intents in session tracker for user profile aggregation
+  // Note: decisions and preferences go to events.jsonl via trackDecisionMade/trackPreferenceStated
+  // GAP-003/004 fix: Removed storeDecisions/storePreferences (wrote to never-read files)
   trackIntentsInSession(result);
 
-  const totalStored = decisionsStored + preferencesStored + problemsStored;
+  // Store problems to open-problems.jsonl for problem-tracker.ts (GAP-005 wired via GAP-011)
+  const problemsStored = storeProblems(result.problems, sessionId);
 
-  if (totalStored > 0) {
+  if (problemsStored > 0) {
+    logHook(HOOK_NAME, `Captured: ${problemsStored} problems`, 'info');
+  }
+  if (result.decisions.length > 0 || result.preferences.length > 0) {
     logHook(
       HOOK_NAME,
-      `Captured: ${decisionsStored} decisions, ${preferencesStored} preferences, ${problemsStored} problems`,
-      'info'
+      `Tracked: ${result.decisions.length} decisions, ${result.preferences.length} preferences (to events.jsonl)`,
+      'debug'
     );
   }
 
