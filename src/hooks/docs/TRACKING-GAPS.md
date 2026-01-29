@@ -7,7 +7,7 @@ Branch: `test/dispatcher-registry-wiring-tests`
 
 ~40% of the tracking infrastructure was initially connected. Progress tracking below.
 
-**Fixed:** 2/13 gaps (GAP-001, GAP-002)
+**Fixed:** 3/13 gaps (GAP-001, GAP-002, GAP-012)
 
 ---
 
@@ -115,9 +115,9 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ### GAP-012: Duplicate trackSessionEnd() calls
 - **Location 1**: `src/hooks/src/stop/session-end-tracking.ts:17`
 - **Location 2**: `src/hooks/src/stop/session-profile-aggregator.ts:32`
-- **Status**: [ ] Not Fixed
+- **Status**: [x] Fixed
 - **Impact**: `session_end` event logged twice per session
-- **Fix**: Remove from one location (keep in session-profile-aggregator)
+- **Fix**: Removed from session-profile-aggregator (kept in session-end-tracking)
 
 ### GAP-013: trackHookTriggered() exists in two places
 - **TypeScript**: `src/hooks/src/lib/session-tracker.ts:224-233`
@@ -171,5 +171,5 @@ Branch: `test/dispatcher-registry-wiring-tests`
 | GAP-009 | getRecentUserSessions usage | [ ] | |
 | GAP-010 | getRecentFlows usage | [ ] | |
 | GAP-011 | problem-tracker module | [ ] | |
-| GAP-012 | duplicate trackSessionEnd | [ ] | |
+| GAP-012 | duplicate trackSessionEnd | [x] | pending |
 | GAP-013 | trackHookTriggered consolidation | [ ] | |

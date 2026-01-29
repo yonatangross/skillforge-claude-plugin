@@ -15,7 +15,8 @@
 import type { HookInput, HookResult } from '../types.js';
 import { logHook, outputSilentSuccess } from '../lib/common.js';
 import { resolveUserIdentity, canShare, getPrivacySettings } from '../lib/user-identity.js';
-import { generateSessionSummary, trackSessionEnd } from '../lib/session-tracker.js';
+// GAP-012: Removed trackSessionEnd import - handled by session-end-tracking.ts
+import { generateSessionSummary } from '../lib/session-tracker.js';
 import {
   loadUserProfile,
   saveUserProfile,
@@ -28,8 +29,8 @@ import {
  */
 export function sessionProfileAggregator(input: HookInput): HookResult {
   try {
-    // Track session end event
-    trackSessionEnd();
+    // GAP-012: trackSessionEnd() removed - handled by session-end-tracking.ts hook
+    // Both hooks run in Stop dispatcher, avoiding duplicate session_end events
 
     // Get user identity
     const identity = resolveUserIdentity();
