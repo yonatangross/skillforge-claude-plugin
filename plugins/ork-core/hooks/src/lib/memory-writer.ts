@@ -38,6 +38,8 @@ import {
   trackDecisionMade,
   trackPreferenceStated,
 } from './session-tracker.js';
+import { buildRelatesWithStrategy } from './relates-to-scaling.js';
+import { inferEntityType as inferEntityTypeFromRegistry } from './technology-registry.js';
 
 // =============================================================================
 // TYPES
@@ -262,12 +264,16 @@ export function buildGraphOperations(decision: DecisionRecord): QueuedGraphOpera
   // 3. Create relations
   const relations: GraphRelation[] = [];
 
-  // Link decision to entities with CHOSE or MENTIONS
+  // Link decision to entities with CHOSE, or preferences with PREFERS
   for (const entity of decision.entities) {
+    const relationType: RelationType =
+      decision.type === 'decision' ? 'CHOSE'
+      : decision.type === 'preference' ? 'PREFERS'
+      : 'MENTIONS';
     relations.push({
       from: decision.id,
       to: entity,
-      relationType: decision.type === 'decision' ? 'CHOSE' : 'MENTIONS',
+      relationType,
     });
   }
 
@@ -291,6 +297,26 @@ export function buildGraphOperations(decision: DecisionRecord): QueuedGraphOpera
         relationType: 'CONSTRAINT',
       });
     }
+  }
+
+  // Create TRADEOFF relations
+  if (decision.content.tradeoffs?.length) {
+    for (const tradeoff of decision.content.tradeoffs) {
+      relations.push({
+        from: decision.id,
+        to: tradeoff,
+        relationType: 'TRADEOFF',
+      });
+    }
+  }
+
+  // Create RELATES_TO between co-occurring entities (cross-links)
+  // Uses scaling strategy to avoid O(n²) explosion for large entity sets
+  // - ≤10 entities: all pairs (max 45 relations)
+  // - >10 entities: weighted importance strategy with topk fallback
+  if (decision.entities.length >= 2) {
+    const relatesToRelations = buildRelatesWithStrategy(decision.entities);
+    relations.push(...relatesToRelations);
   }
 
   // Add any explicit relations from the record
@@ -362,35 +388,17 @@ function capitalizeEntityType(type: string): EntityType {
 
 /**
  * Infer entity type from name
+ * Uses technology-registry.ts as single source of truth
  */
 function inferEntityType(name: string): EntityType {
-  const nameLower = name.toLowerCase();
-
-  // Technologies
-  const techs = [
-    'postgresql', 'postgres', 'redis', 'mongodb', 'fastapi', 'django', 'react',
-    'vue', 'angular', 'typescript', 'python', 'docker', 'kubernetes',
-  ];
-  if (techs.some(t => nameLower.includes(t))) {
-    return 'Technology';
+  // Use centralized registry for accurate type inference
+  const registryType = inferEntityTypeFromRegistry(name);
+  if (registryType) {
+    return registryType;
   }
 
-  // Patterns
-  const patterns = [
-    'pagination', 'pattern', 'architecture', 'cqrs', 'saga', 'circuit',
-    'injection', 'sourcing', 'caching', 'rag',
-  ];
-  if (patterns.some(p => nameLower.includes(p))) {
-    return 'Pattern';
-  }
-
-  // Tools
-  const tools = ['grep', 'read', 'write', 'bash', 'git', 'npm', 'jest', 'pytest'];
-  if (tools.some(t => nameLower.includes(t))) {
-    return 'Tool';
-  }
-
-  return 'Technology'; // Default
+  // Fallback: Default to Technology for unknown entities
+  return 'Technology';
 }
 
 /**

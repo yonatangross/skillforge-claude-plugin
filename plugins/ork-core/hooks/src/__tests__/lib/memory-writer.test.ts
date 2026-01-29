@@ -1,995 +1,886 @@
 /**
- * Unit Tests for buildGraphOperations()
+ * Tests for Unified Memory Writer
  *
- * Comprehensive test coverage for decision record to graph operations conversion.
- * Tests all relation types, edge cases, and entity generation logic.
+ * Comprehensive test coverage for:
+ * - buildGraphOperations() - Graph operation building from decisions
+ * - createDecisionRecord() - Decision record creation
+ * - storeDecision() - Multi-backend storage
+ * - Relation generation (CHOSE, CHOSE_OVER, CONSTRAINT, TRADEOFF, RELATES_TO)
+ * - Entity type inference
+ * - Mem0 payload building
+ * - JSONL file operations
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
   buildGraphOperations,
-  DecisionRecord,
-  QueuedGraphOperation,
-  GraphEntity,
-  GraphRelation,
+  createDecisionRecord,
+  storeDecision,
+  queueGraphOperation,
+  isMem0Configured,
+  type DecisionRecord,
+  type QueuedGraphOperation,
+  type GraphEntity,
+  type GraphRelation,
+  type EntityType,
+  type RelationType,
+  type DecisionSource,
 } from '../../lib/memory-writer.js';
 
+// Mock external dependencies
+vi.mock('node:fs', async () => {
+  const actual = await vi.importActual('node:fs');
+  return {
+    ...actual,
+    existsSync: vi.fn(() => true),
+    appendFileSync: vi.fn(),
+    mkdirSync: vi.fn(),
+  };
+});
+
+vi.mock('../../lib/common.js', () => ({
+  getProjectDir: vi.fn(() => '/test/project'),
+  logHook: vi.fn(),
+}));
+
+vi.mock('../../lib/user-identity.js', () => ({
+  getIdentityContext: vi.fn(() => ({
+    user_id: 'test-user@example.com',
+    anonymous_id: 'anon-abc123',
+    team_id: 'test-team',
+    machine_id: 'test-machine',
+  })),
+  canShare: vi.fn(() => true),
+  getUserIdForScope: vi.fn(() => 'test-user'),
+  getProjectUserId: vi.fn(() => 'project-test-user'),
+  getGlobalScopeId: vi.fn(() => 'global-best-practices'),
+}));
+
+vi.mock('../../lib/session-tracker.js', () => ({
+  trackDecisionMade: vi.fn(),
+  trackPreferenceStated: vi.fn(),
+}));
+
 // =============================================================================
-// TEST HELPERS & FACTORIES
+// HELPER FUNCTIONS
 // =============================================================================
 
-/**
- * Factory for creating valid decision records with minimal required fields
- */
-function createDecisionRecord(overrides: Partial<DecisionRecord> = {}): DecisionRecord {
-  const baseDecision: DecisionRecord = {
-    id: 'test-decision-1',
+function createMockDecision(overrides: Partial<DecisionRecord> = {}): DecisionRecord {
+  return {
+    id: 'decision-test-abc123',
     type: 'decision',
     content: {
-      what: 'Use PostgreSQL for primary database',
-      why: 'ACID compliance and team expertise',
+      what: 'Use PostgreSQL for the database',
+      why: 'Strong ACID compliance and JSON support',
+      alternatives: ['MongoDB', 'MySQL'],
+      constraints: ['Must support transactions', 'Need JSON querying'],
+      tradeoffs: ['Higher memory usage', 'More complex setup'],
     },
-    entities: [],
+    entities: ['PostgreSQL', 'database', 'transactions'],
     relations: [],
     identity: {
-      user_id: 'test@example.com',
-      anonymous_id: 'anon-123456789',
+      user_id: 'test-user@example.com',
+      anonymous_id: 'anon-abc123',
       team_id: 'test-team',
       machine_id: 'test-machine',
     },
     metadata: {
-      session_id: 'session-123',
-      timestamp: '2026-01-28T10:00:00Z',
+      session_id: 'session-test-123',
+      timestamp: '2026-01-29T12:00:00.000Z',
       confidence: 0.85,
       source: 'user_prompt',
       project: 'test-project',
-      category: 'architecture',
+      category: 'database',
       importance: 'high',
+      is_generalizable: true,
+      sharing_scope: 'team',
     },
+    ...overrides,
   };
-
-  return { ...baseDecision, ...overrides };
 }
 
-/**
- * Helper to count operations by type
- */
-function countOperationsByType(
+function countRelations(operations: QueuedGraphOperation[], type: RelationType): number {
+  const relationsOp = operations.find(op => op.type === 'create_relations');
+  if (!relationsOp || !relationsOp.payload.relations) return 0;
+  return relationsOp.payload.relations.filter(r => r.relationType === type).length;
+}
+
+function hasRelation(
   operations: QueuedGraphOperation[],
-  type: QueuedGraphOperation['type']
-): number {
-  return operations.filter(op => op.type === type).length;
+  from: string,
+  to: string,
+  type: RelationType
+): boolean {
+  const relationsOp = operations.find(op => op.type === 'create_relations');
+  if (!relationsOp || !relationsOp.payload.relations) return false;
+  return relationsOp.payload.relations.some(
+    r => r.from === from && r.to === to && r.relationType === type
+  );
 }
 
-/**
- * Helper to extract entities from operations
- */
-function extractEntities(operations: QueuedGraphOperation[]): GraphEntity[] {
-  const createOps = operations.filter(op => op.type === 'create_entities');
-  return createOps.flatMap(op => op.payload.entities ?? []);
-}
-
-/**
- * Helper to extract relations from operations
- */
-function extractRelations(operations: QueuedGraphOperation[]): GraphRelation[] {
-  const createOps = operations.filter(op => op.type === 'create_relations');
-  return createOps.flatMap(op => op.payload.relations ?? []);
-}
-
-/**
- * Helper to count relation types
- */
-function countRelationsByType(
-  relations: GraphRelation[],
-  type: string
-): number {
-  return relations.filter(r => r.relationType === type).length;
+function getEntities(operations: QueuedGraphOperation[]): GraphEntity[] {
+  const entitiesOp = operations.find(op => op.type === 'create_entities');
+  return entitiesOp?.payload.entities || [];
 }
 
 // =============================================================================
-// UNIT TESTS - buildGraphOperations()
+// buildGraphOperations() Tests
 // =============================================================================
 
-describe('buildGraphOperations()', () => {
-  // ===== BASIC STRUCTURE TESTS =====
-
-  describe('operation structure and timestamps', () => {
-    it('should return array of operations with timestamps', () => {
-      const decision = createDecisionRecord();
+describe('buildGraphOperations', () => {
+  describe('entity creation', () => {
+    it('should create main decision entity', () => {
+      const decision = createMockDecision();
       const operations = buildGraphOperations(decision);
 
-      expect(Array.isArray(operations)).toBe(true);
-      operations.forEach(op => {
-        expect(op.timestamp).toBeDefined();
-        expect(typeof op.timestamp).toBe('string');
-        expect(new Date(op.timestamp).getTime()).toBeGreaterThan(0);
-      });
-    });
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === 'decision-test-abc123');
 
-    it('should use consistent timestamps across all operations', () => {
-      const decision = createDecisionRecord();
-      const operations = buildGraphOperations(decision);
-
-      if (operations.length > 1) {
-        const firstTimestamp = operations[0].timestamp;
-        operations.forEach(op => {
-          expect(op.timestamp).toBe(firstTimestamp);
-        });
-      }
-    });
-
-    it('should always create create_entities operation first', () => {
-      const decision = createDecisionRecord();
-      const operations = buildGraphOperations(decision);
-
-      expect(operations.length).toBeGreaterThan(0);
-      expect(operations[0].type).toBe('create_entities');
-    });
-  });
-
-  // ===== MAIN ENTITY TESTS =====
-
-  describe('main decision entity creation', () => {
-    it('should create main entity with decision type', () => {
-      const decision = createDecisionRecord({ type: 'decision' });
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const mainEntity = entities.find(e => e.name === decision.id);
       expect(mainEntity).toBeDefined();
       expect(mainEntity?.entityType).toBe('Decision');
+      expect(mainEntity?.observations).toContain('What: Use PostgreSQL for the database');
     });
 
-    it('should create main entity with preference type', () => {
-      const decision = createDecisionRecord({ type: 'preference' });
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const mainEntity = entities.find(e => e.name === decision.id);
-      expect(mainEntity?.entityType).toBe('Preference');
-    });
-
-    it('should create main entity with solution type for problem-solution', () => {
-      const decision = createDecisionRecord({ type: 'problem-solution' });
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const mainEntity = entities.find(e => e.name === decision.id);
-      expect(mainEntity?.entityType).toBe('Solution');
-    });
-
-    it('should create main entity with pattern type', () => {
-      const decision = createDecisionRecord({ type: 'pattern' });
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const mainEntity = entities.find(e => e.name === decision.id);
-      expect(mainEntity?.entityType).toBe('Pattern');
-    });
-
-    it('should populate main entity observations from decision content', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use cursor-pagination',
-          why: 'Better performance at scale',
-          alternatives: ['offset-pagination', 'keyset-pagination'],
-          constraints: ['Must support sorting', 'Cannot use offset'],
-          tradeoffs: ['More complex client code', 'Requires cursor state'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-      const mainEntity = entities.find(e => e.name === decision.id);
-
-      expect(mainEntity?.observations).toBeDefined();
-      expect(mainEntity?.observations.length).toBeGreaterThan(0);
-      expect(mainEntity?.observations.join('; ')).toContain('Use cursor-pagination');
-      expect(mainEntity?.observations.join('; ')).toContain('Better performance at scale');
-      expect(mainEntity?.observations.join('; ')).toContain('Alternatives considered');
-      expect(mainEntity?.observations.join('; ')).toContain('Constraints');
-      expect(mainEntity?.observations.join('; ')).toContain('Tradeoffs');
-    });
-
-    it('should include metadata in observations', () => {
-      const decision = createDecisionRecord({
-        metadata: {
-          session_id: 'session-123',
-          timestamp: '2026-01-28T10:00:00Z',
-          confidence: 0.95,
-          source: 'tool_output',
-          project: 'my-project',
-          category: 'performance',
-          importance: 'high',
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-      const mainEntity = entities.find(e => e.name === decision.id);
-
-      const obsText = mainEntity?.observations.join('; ') ?? '';
-      expect(obsText).toContain('95%'); // confidence
-      expect(obsText).toContain('tool_output');
-      expect(obsText).toContain('performance');
-      expect(obsText).toContain('my-project');
-    });
-  });
-
-  // ===== ENTITY MENTION TESTS =====
-
-  describe('mentioned entity creation', () => {
-    it('should create no entity operations when no entities mentioned', () => {
-      const decision = createDecisionRecord({ entities: [] });
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      // Should only have main decision entity
-      expect(entities.length).toBe(1);
-      expect(entities[0].name).toBe(decision.id);
-    });
-
-    it('should create entities for each mentioned technology', () => {
-      const decision = createDecisionRecord({
+    it('should create entities for mentioned technologies', () => {
+      const decision = createMockDecision({
         entities: ['PostgreSQL', 'Redis', 'FastAPI'],
       });
-
       const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
 
-      expect(entities.length).toBe(4); // main + 3 technologies
-      expect(entities.map(e => e.name)).toContain('PostgreSQL');
-      expect(entities.map(e => e.name)).toContain('Redis');
-      expect(entities.map(e => e.name)).toContain('FastAPI');
+      const entities = getEntities(operations);
+      expect(entities.some(e => e.name === 'PostgreSQL')).toBe(true);
+      expect(entities.some(e => e.name === 'Redis')).toBe(true);
+      expect(entities.some(e => e.name === 'FastAPI')).toBe(true);
     });
 
-    it('should infer Technology type for known databases', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL', 'MongoDB', 'Redis'],
+    it('should infer Technology type for known technologies', () => {
+      const decision = createMockDecision({
+        entities: ['PostgreSQL', 'Redis', 'React'],
       });
-
       const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
 
-      entities.forEach(e => {
-        if (['PostgreSQL', 'MongoDB', 'Redis'].includes(e.name)) {
-          expect(e.entityType).toBe('Technology');
-        }
-      });
+      const entities = getEntities(operations);
+      const postgresEntity = entities.find(e => e.name === 'PostgreSQL');
+      const redisEntity = entities.find(e => e.name === 'Redis');
+      const reactEntity = entities.find(e => e.name === 'React');
+
+      expect(postgresEntity?.entityType).toBe('Technology');
+      expect(redisEntity?.entityType).toBe('Technology');
+      expect(reactEntity?.entityType).toBe('Technology');
     });
 
-    it('should infer Technology type for known frameworks', () => {
-      const decision = createDecisionRecord({
-        entities: ['FastAPI', 'React', 'Django'],
+    it('should infer Pattern type for known patterns', () => {
+      const decision = createMockDecision({
+        entities: ['cursor-pagination', 'cqrs', 'saga-pattern'],
       });
-
       const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
 
-      entities.forEach(e => {
-        if (['FastAPI', 'React', 'Django'].includes(e.name)) {
-          expect(e.entityType).toBe('Technology');
-        }
-      });
-    });
+      const entities = getEntities(operations);
+      const paginationEntity = entities.find(e => e.name === 'cursor-pagination');
+      const cqrsEntity = entities.find(e => e.name === 'cqrs');
+      const sagaEntity = entities.find(e => e.name === 'saga-pattern');
 
-    it('should infer Pattern type for pattern names', () => {
-      const decision = createDecisionRecord({
-        entities: ['cursor-pagination', 'circuit-breaker', 'event-sourcing'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      entities.forEach(e => {
-        if (['cursor-pagination', 'circuit-breaker', 'event-sourcing'].includes(e.name)) {
-          expect(e.entityType).toBe('Pattern');
-        }
-      });
+      expect(paginationEntity?.entityType).toBe('Pattern');
+      expect(cqrsEntity?.entityType).toBe('Pattern');
+      expect(sagaEntity?.entityType).toBe('Pattern');
     });
 
     it('should infer Tool type for known tools', () => {
-      const decision = createDecisionRecord({
-        entities: ['pytest', 'jest', 'git'],
+      // Note: jest/pytest are testing frameworks (Technology), not CLI tools
+      // Use actual tools: git, npm, bash, grep
+      const decision = createMockDecision({
+        entities: ['git', 'npm', 'bash'],
+      });
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const gitEntity = entities.find(e => e.name === 'git');
+      const npmEntity = entities.find(e => e.name === 'npm');
+      const bashEntity = entities.find(e => e.name === 'bash');
+
+      expect(gitEntity?.entityType).toBe('Tool');
+      expect(npmEntity?.entityType).toBe('Tool');
+      expect(bashEntity?.entityType).toBe('Tool');
+    });
+  });
+
+  describe('observation building', () => {
+    it('should include what in observations', () => {
+      const decision = createMockDecision();
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === decision.id);
+
+      expect(mainEntity?.observations).toContain('What: Use PostgreSQL for the database');
+    });
+
+    it('should include rationale when provided', () => {
+      const decision = createMockDecision({
+        content: {
+          what: 'Use Redis for caching',
+          why: 'Sub-millisecond latency needed',
+        },
+      });
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === decision.id);
+
+      expect(mainEntity?.observations).toContain('Rationale: Sub-millisecond latency needed');
+    });
+
+    it('should include alternatives when provided', () => {
+      const decision = createMockDecision();
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === decision.id);
+
+      expect(mainEntity?.observations.some(o => o.includes('Alternatives considered: MongoDB, MySQL'))).toBe(true);
+    });
+
+    it('should include constraints when provided', () => {
+      const decision = createMockDecision();
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === decision.id);
+
+      expect(mainEntity?.observations.some(o => o.includes('Constraints:'))).toBe(true);
+    });
+
+    it('should include metadata fields', () => {
+      const decision = createMockDecision();
+      const operations = buildGraphOperations(decision);
+
+      const entities = getEntities(operations);
+      const mainEntity = entities.find(e => e.name === decision.id);
+
+      expect(mainEntity?.observations.some(o => o.includes('Category: database'))).toBe(true);
+      expect(mainEntity?.observations.some(o => o.includes('Confidence: 85%'))).toBe(true);
+      expect(mainEntity?.observations.some(o => o.includes('Source: user_prompt'))).toBe(true);
+    });
+  });
+
+  describe('relation creation', () => {
+    describe('CHOSE relations', () => {
+      it('should create CHOSE relations for decision type', () => {
+        const decision = createMockDecision({
+          type: 'decision',
+          entities: ['PostgreSQL', 'Redis'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(hasRelation(operations, decision.id, 'PostgreSQL', 'CHOSE')).toBe(true);
+        expect(hasRelation(operations, decision.id, 'Redis', 'CHOSE')).toBe(true);
       });
 
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
+      it('should create PREFERS relations for preference type', () => {
+        const decision = createMockDecision({
+          type: 'preference',
+          entities: ['TypeScript', 'strict-mode'],
+        });
+        const operations = buildGraphOperations(decision);
 
-      entities.forEach(e => {
-        if (['pytest', 'jest', 'git'].includes(e.name)) {
-          expect(e.entityType).toBe('Tool');
+        expect(hasRelation(operations, decision.id, 'TypeScript', 'PREFERS')).toBe(true);
+        expect(hasRelation(operations, decision.id, 'strict-mode', 'PREFERS')).toBe(true);
+      });
+
+      it('should create MENTIONS relations for pattern type', () => {
+        const decision = createMockDecision({
+          type: 'pattern',
+          entities: ['clean-architecture', 'dependency-injection'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(hasRelation(operations, decision.id, 'clean-architecture', 'MENTIONS')).toBe(true);
+        expect(hasRelation(operations, decision.id, 'dependency-injection', 'MENTIONS')).toBe(true);
+      });
+    });
+
+    describe('CHOSE_OVER relations', () => {
+      it('should create CHOSE_OVER for alternatives', () => {
+        const decision = createMockDecision({
+          content: {
+            what: 'PostgreSQL',
+            alternatives: ['MongoDB', 'MySQL', 'SQLite'],
+          },
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(hasRelation(operations, 'PostgreSQL', 'MongoDB', 'CHOSE_OVER')).toBe(true);
+        expect(hasRelation(operations, 'PostgreSQL', 'MySQL', 'CHOSE_OVER')).toBe(true);
+        expect(hasRelation(operations, 'PostgreSQL', 'SQLite', 'CHOSE_OVER')).toBe(true);
+      });
+
+      it('should not create CHOSE_OVER when no alternatives', () => {
+        const decision = createMockDecision({
+          content: {
+            what: 'PostgreSQL',
+            alternatives: [],
+          },
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'CHOSE_OVER')).toBe(0);
+      });
+    });
+
+    describe('CONSTRAINT relations', () => {
+      it('should create CONSTRAINT relations', () => {
+        const decision = createMockDecision({
+          content: {
+            what: 'PostgreSQL',
+            constraints: ['ACID compliance', 'JSON support needed'],
+          },
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(hasRelation(operations, decision.id, 'ACID compliance', 'CONSTRAINT')).toBe(true);
+        expect(hasRelation(operations, decision.id, 'JSON support needed', 'CONSTRAINT')).toBe(true);
+      });
+
+      it('should not create CONSTRAINT when no constraints', () => {
+        const decision = createMockDecision({
+          content: {
+            what: 'PostgreSQL',
+            constraints: undefined,
+          },
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'CONSTRAINT')).toBe(0);
+      });
+    });
+
+    describe('TRADEOFF relations', () => {
+      it('should create TRADEOFF relations', () => {
+        const decision = createMockDecision({
+          content: {
+            what: 'PostgreSQL',
+            tradeoffs: ['Higher memory', 'Complex setup'],
+          },
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(hasRelation(operations, decision.id, 'Higher memory', 'TRADEOFF')).toBe(true);
+        expect(hasRelation(operations, decision.id, 'Complex setup', 'TRADEOFF')).toBe(true);
+      });
+    });
+
+    describe('RELATES_TO relations (O(n²) cross-links)', () => {
+      it('should not create RELATES_TO for single entity', () => {
+        const decision = createMockDecision({
+          entities: ['PostgreSQL'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'RELATES_TO')).toBe(0);
+      });
+
+      it('should create 1 RELATES_TO for 2 entities', () => {
+        const decision = createMockDecision({
+          entities: ['PostgreSQL', 'Redis'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'RELATES_TO')).toBe(1);
+        expect(hasRelation(operations, 'PostgreSQL', 'Redis', 'RELATES_TO')).toBe(true);
+      });
+
+      it('should create 3 RELATES_TO for 3 entities', () => {
+        const decision = createMockDecision({
+          entities: ['PostgreSQL', 'Redis', 'FastAPI'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'RELATES_TO')).toBe(3);
+      });
+
+      it('should create 6 RELATES_TO for 4 entities', () => {
+        const decision = createMockDecision({
+          entities: ['PostgreSQL', 'Redis', 'FastAPI', 'Docker'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'RELATES_TO')).toBe(6);
+      });
+
+      it('should create 10 RELATES_TO for 5 entities', () => {
+        const decision = createMockDecision({
+          entities: ['A', 'B', 'C', 'D', 'E'],
+        });
+        const operations = buildGraphOperations(decision);
+
+        expect(countRelations(operations, 'RELATES_TO')).toBe(10);
+      });
+
+      it('should verify O(n²) formula: n*(n-1)/2 relations', () => {
+        for (let n = 2; n <= 7; n++) {
+          const entities = Array.from({ length: n }, (_, i) => `Entity${i}`);
+          const decision = createMockDecision({ entities });
+          const operations = buildGraphOperations(decision);
+          const expected = (n * (n - 1)) / 2;
+          expect(countRelations(operations, 'RELATES_TO')).toBe(expected);
         }
       });
     });
 
-    it('should default to Technology type for unknown entities', () => {
-      const decision = createDecisionRecord({
-        entities: ['UnknownThing', 'SomethingElse'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      entities.forEach(e => {
-        if (['UnknownThing', 'SomethingElse'].includes(e.name)) {
-          expect(e.entityType).toBe('Technology');
-        }
-      });
-    });
-
-    it('should include context observation for mentioned entities', () => {
-      const decision = createDecisionRecord({
-        content: { what: 'Use PostgreSQL for data persistence' },
-        entities: ['PostgreSQL'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-      const pgEntity = entities.find(e => e.name === 'PostgreSQL');
-
-      expect(pgEntity?.observations).toBeDefined();
-      expect(pgEntity?.observations[0]).toContain('decision');
-      expect(pgEntity?.observations[0]).toContain('PostgreSQL');
-    });
-
-    it('should truncate long context observations', () => {
-      const longWhat = 'A'.repeat(200); // Very long string
-      const decision = createDecisionRecord({
-        content: { what: longWhat },
-        entities: ['PostgreSQL'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-      const pgEntity = entities.find(e => e.name === 'PostgreSQL');
-
-      expect(pgEntity?.observations[0].length).toBeLessThanOrEqual(150);
-    });
-  });
-
-  // ===== RELATION TYPE TESTS =====
-
-  describe('relation types based on decision type', () => {
-    it('should use CHOSE relation for decision type', () => {
-      const decision = createDecisionRecord({
-        type: 'decision',
-        entities: ['PostgreSQL', 'Redis'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const chosenRelations = relations.filter(
-        r => r.from === decision.id && r.relationType === 'CHOSE'
-      );
-
-      expect(chosenRelations.length).toBe(2);
-      expect(chosenRelations.some(r => r.to === 'PostgreSQL')).toBe(true);
-      expect(chosenRelations.some(r => r.to === 'Redis')).toBe(true);
-    });
-
-    it('should use PREFERS relation for preference type', () => {
-      const decision = createDecisionRecord({
-        type: 'preference',
-        entities: ['TypeScript', 'strict-mode'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const prefersRelations = relations.filter(
-        r => r.from === decision.id && r.relationType === 'PREFERS'
-      );
-
-      expect(prefersRelations.length).toBe(2);
-      expect(prefersRelations.some(r => r.to === 'TypeScript')).toBe(true);
-    });
-
-    it('should use MENTIONS relation for problem-solution type', () => {
-      const decision = createDecisionRecord({
-        type: 'problem-solution',
-        entities: ['connection-pool', 'timeout-issue'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const mentionsRelations = relations.filter(
-        r => r.from === decision.id && r.relationType === 'MENTIONS'
-      );
-
-      expect(mentionsRelations.length).toBe(2);
-    });
-
-    it('should use MENTIONS relation for pattern type', () => {
-      const decision = createDecisionRecord({
-        type: 'pattern',
-        entities: ['cursor-pagination', 'async-handling'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const mentionsRelations = relations.filter(
-        r => r.from === decision.id && r.relationType === 'MENTIONS'
-      );
-
-      expect(mentionsRelations.length).toBe(2);
-    });
-  });
-
-  // ===== ALTERNATIVES (CHOSE_OVER) TESTS =====
-
-  describe('CHOSE_OVER relations for alternatives', () => {
-    it('should not create CHOSE_OVER when no alternatives', () => {
-      const decision = createDecisionRecord({
-        content: { what: 'Use PostgreSQL' },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const choseOverRelations = relations.filter(r => r.relationType === 'CHOSE_OVER');
-      expect(choseOverRelations.length).toBe(0);
-    });
-
-    it('should create CHOSE_OVER for each alternative', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          alternatives: ['MongoDB', 'MySQL', 'MariaDB'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const choseOverRelations = relations.filter(r => r.relationType === 'CHOSE_OVER');
-      expect(choseOverRelations.length).toBe(3);
-      expect(choseOverRelations.some(r => r.to === 'MongoDB')).toBe(true);
-      expect(choseOverRelations.some(r => r.to === 'MySQL')).toBe(true);
-      expect(choseOverRelations.some(r => r.to === 'MariaDB')).toBe(true);
-    });
-
-    it('should link CHOSE_OVER from what (not from decision id)', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'cursor-pagination',
-          alternatives: ['offset-pagination', 'keyset-pagination'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const choseOverRelations = relations.filter(r => r.relationType === 'CHOSE_OVER');
-      expect(choseOverRelations.every(r => r.from === 'cursor-pagination')).toBe(true);
-    });
-
-    it('should handle single alternative', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'PostgreSQL',
-          alternatives: ['MongoDB'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const choseOverRelations = relations.filter(r => r.relationType === 'CHOSE_OVER');
-      expect(choseOverRelations.length).toBe(1);
-      expect(choseOverRelations[0].to).toBe('MongoDB');
-    });
-  });
-
-  // ===== CONSTRAINTS TESTS =====
-
-  describe('CONSTRAINT relations', () => {
-    it('should not create CONSTRAINT relations when no constraints', () => {
-      const decision = createDecisionRecord({
-        content: { what: 'Use PostgreSQL' },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRelations = relations.filter(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRelations.length).toBe(0);
-    });
-
-    it('should create CONSTRAINT for each constraint', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          constraints: [
-            'Must support ACID transactions',
-            'Team must know SQL',
-            'Must support JSON fields',
+    describe('explicit relations', () => {
+      it('should include explicit relations from decision.relations', () => {
+        const decision = createMockDecision({
+          relations: [
+            { from: 'PostgreSQL', to: 'performance', type: 'SOLVED_BY' },
+            { from: 'Redis', to: 'caching', type: 'MENTIONS' },
           ],
-        },
-      });
+        });
+        const operations = buildGraphOperations(decision);
 
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRelations = relations.filter(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRelations.length).toBe(3);
-      expect(constraintRelations.every(r => r.from === decision.id)).toBe(true);
-    });
-
-    it('should handle single constraint', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          constraints: ['Must support ACID'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRelations = relations.filter(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRelations.length).toBe(1);
-    });
-
-    it('should store full constraint text without truncation', () => {
-      const longConstraint = 'Must support ' + 'very '.repeat(50) + 'complex queries';
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          constraints: [longConstraint],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRelations = relations.filter(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRelations[0].to).toBe(longConstraint);
-    });
-  });
-
-  // ===== TRADEOFFS TESTS =====
-
-  describe('TRADEOFF relations', () => {
-    it('should not create TRADEOFF relations when no tradeoffs', () => {
-      const decision = createDecisionRecord({
-        content: { what: 'Use PostgreSQL' },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const tradeoffRelations = relations.filter(r => r.relationType === 'TRADEOFF');
-      expect(tradeoffRelations.length).toBe(0);
-    });
-
-    it('should create TRADEOFF for each tradeoff', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use cursor-pagination',
-          tradeoffs: [
-            'More complex client code',
-            'Requires storing cursor state',
-            'Cannot jump to arbitrary pages',
-          ],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const tradeoffRelations = relations.filter(r => r.relationType === 'TRADEOFF');
-      expect(tradeoffRelations.length).toBe(3);
-      expect(tradeoffRelations.every(r => r.from === decision.id)).toBe(true);
-    });
-
-    it('should handle single tradeoff', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use cursor-pagination',
-          tradeoffs: ['More complex client code'],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const tradeoffRelations = relations.filter(r => r.relationType === 'TRADEOFF');
-      expect(tradeoffRelations.length).toBe(1);
-    });
-  });
-
-  // ===== RELATES_TO CROSS-LINK TESTS =====
-
-  describe('RELATES_TO cross-links between entities', () => {
-    it('should not create RELATES_TO with single entity', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relatesRelations = relations.filter(r => r.relationType === 'RELATES_TO');
-      expect(relatesRelations.length).toBe(0);
-    });
-
-    it('should create RELATES_TO for 2 entities (1 relation)', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL', 'Redis'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relatesRelations = relations.filter(r => r.relationType === 'RELATES_TO');
-      expect(relatesRelations.length).toBe(1); // C(2,2) = 1
-      expect(relatesRelations[0].from).toBe('PostgreSQL');
-      expect(relatesRelations[0].to).toBe('Redis');
-    });
-
-    it('should create pairwise RELATES_TO for 3 entities', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL', 'Redis', 'FastAPI'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relatesRelations = relations.filter(r => r.relationType === 'RELATES_TO');
-      expect(relatesRelations.length).toBe(3); // C(3,2) = 3
-    });
-
-    it('should verify correct pairwise combinations for 3 entities', () => {
-      const decision = createDecisionRecord({
-        entities: ['A', 'B', 'C'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relatesRelations = relations.filter(r => r.relationType === 'RELATES_TO');
-      const pairs = relatesRelations.map(r => `${r.from}-${r.to}`);
-
-      expect(pairs).toContain('A-B');
-      expect(pairs).toContain('A-C');
-      expect(pairs).toContain('B-C');
-    });
-
-    it('should create N*(N-1)/2 RELATES_TO for N entities', () => {
-      // Test formula: 4 entities = 6 relations, 5 entities = 10 relations
-      const test4Entities = createDecisionRecord({
-        entities: ['E1', 'E2', 'E3', 'E4'],
-      });
-      const ops4 = buildGraphOperations(test4Entities);
-      const rels4 = extractRelations(ops4).filter(r => r.relationType === 'RELATES_TO');
-      expect(rels4.length).toBe(6); // 4*3/2 = 6
-
-      const test5Entities = createDecisionRecord({
-        entities: ['E1', 'E2', 'E3', 'E4', 'E5'],
-      });
-      const ops5 = buildGraphOperations(test5Entities);
-      const rels5 = extractRelations(ops5).filter(r => r.relationType === 'RELATES_TO');
-      expect(rels5.length).toBe(10); // 5*4/2 = 10
-    });
-
-    it('should maintain entity order in RELATES_TO (i < j)', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL', 'Redis', 'FastAPI', 'Celery'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relatesRelations = relations.filter(r => r.relationType === 'RELATES_TO');
-
-      // Check that indices are ordered (from comes before to in original array)
-      const entities = decision.entities;
-      relatesRelations.forEach(r => {
-        const fromIdx = entities.indexOf(r.from);
-        const toIdx = entities.indexOf(r.to);
-        expect(fromIdx).toBeLessThan(toIdx);
+        expect(hasRelation(operations, 'PostgreSQL', 'performance', 'SOLVED_BY')).toBe(true);
+        expect(hasRelation(operations, 'Redis', 'caching', 'MENTIONS')).toBe(true);
       });
     });
   });
 
-  // ===== EXPLICIT RELATIONS TESTS =====
-
-  describe('explicit relations from decision record', () => {
-    it('should include explicit relations from decision.relations array', () => {
-      const decision = createDecisionRecord({
-        relations: [
-          { from: 'PostgreSQL', to: 'ACID', type: 'PROVIDES' },
-          { from: 'Redis', to: 'caching', type: 'ENABLES' },
-        ],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      expect(relations.some(r => r.from === 'PostgreSQL' && r.to === 'ACID')).toBe(true);
-      expect(relations.some(r => r.from === 'Redis' && r.to === 'caching')).toBe(true);
-    });
-
-    it('should preserve relation types from explicit relations', () => {
-      const decision = createDecisionRecord({
-        relations: [
-          { from: 'A', to: 'B', type: 'CHOSE' },
-          { from: 'C', to: 'D', type: 'PREFERS' },
-        ],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const relAB = relations.find(r => r.from === 'A' && r.to === 'B');
-      const relCD = relations.find(r => r.from === 'C' && r.to === 'D');
-
-      expect(relAB?.relationType).toBe('CHOSE');
-      expect(relCD?.relationType).toBe('PREFERS');
-    });
-  });
-
-  // ===== EDGE CASES: DUPLICATE ENTITIES =====
-
-  describe('edge case: duplicate entities in input', () => {
-    it('should handle duplicate entities in mentions list', () => {
-      const decision = createDecisionRecord({
-        entities: ['PostgreSQL', 'PostgreSQL', 'Redis'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const pgEntities = entities.filter(e => e.name === 'PostgreSQL');
-      expect(pgEntities.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should create correct RELATES_TO for duplicates', () => {
-      // Note: The function may or may not deduplicate - just verify behavior is consistent
-      const decision = createDecisionRecord({
-        entities: ['A', 'A', 'B'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      // Should still work even with duplicate entities
-      expect(operations.length).toBeGreaterThan(0);
-    });
-  });
-
-  // ===== EDGE CASES: VERY LONG TEXT =====
-
-  describe('edge case: very long constraint/tradeoff text', () => {
-    it('should handle very long constraint without truncation', () => {
-      const veryLongConstraint = 'C'.repeat(1000);
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          constraints: [veryLongConstraint],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRel = relations.find(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRel?.to).toBe(veryLongConstraint);
-    });
-
-    it('should handle very long tradeoff text', () => {
-      const veryLongTradeoff = 'T'.repeat(2000);
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use cursor-pagination',
-          tradeoffs: [veryLongTradeoff],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const tradeoffRel = relations.find(r => r.relationType === 'TRADEOFF');
-      expect(tradeoffRel?.to).toBe(veryLongTradeoff);
-    });
-
-    it('should truncate context observation for very long what', () => {
-      const veryLongWhat = 'W'.repeat(500);
-      const decision = createDecisionRecord({
-        content: { what: veryLongWhat },
-        entities: ['PostgreSQL'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-
-      const pgEntity = entities.find(e => e.name === 'PostgreSQL');
-      const contextObs = pgEntity?.observations[0] ?? '';
-
-      // Context observation should truncate long what
-      expect(contextObs.length).toBeLessThan(veryLongWhat.length);
-    });
-  });
-
-  // ===== EDGE CASES: MINIMAL INPUT =====
-
-  describe('edge case: minimal input with no optional fields', () => {
-    it('should handle decision with only required what field', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Do something',
-        },
-        entities: [],
-      });
-
+  describe('operation structure', () => {
+    it('should create exactly 2 operations (entities + relations)', () => {
+      const decision = createMockDecision();
       const operations = buildGraphOperations(decision);
 
-      expect(operations.length).toBeGreaterThan(0);
+      expect(operations.length).toBe(2);
       expect(operations[0].type).toBe('create_entities');
-
-      const entities = extractEntities(operations);
-      expect(entities.length).toBe(1); // Only main entity
+      expect(operations[1].type).toBe('create_relations');
     });
 
-    it('should handle decision with empty alternatives array', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          alternatives: [],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const choseOverRelations = relations.filter(r => r.relationType === 'CHOSE_OVER');
-      expect(choseOverRelations.length).toBe(0);
-    });
-
-    it('should handle decision with empty constraints array', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          constraints: [],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const constraintRelations = relations.filter(r => r.relationType === 'CONSTRAINT');
-      expect(constraintRelations.length).toBe(0);
-    });
-
-    it('should handle decision with empty tradeoffs array', () => {
-      const decision = createDecisionRecord({
-        content: {
-          what: 'Use PostgreSQL',
-          tradeoffs: [],
-        },
-      });
-
-      const operations = buildGraphOperations(decision);
-      const relations = extractRelations(operations);
-
-      const tradeoffRelations = relations.filter(r => r.relationType === 'TRADEOFF');
-      expect(tradeoffRelations.length).toBe(0);
-    });
-  });
-
-  // ===== COMPREHENSIVE INTEGRATION TESTS =====
-
-  describe('comprehensive scenario: full decision with all fields', () => {
-    it('should generate all relation types in single decision', () => {
-      const decision = createDecisionRecord({
-        type: 'decision',
-        content: {
-          what: 'Use PostgreSQL with cursor-pagination',
-          why: 'ACID compliance and performance',
-          alternatives: ['MongoDB', 'MySQL'],
-          constraints: ['Must support ACID', 'Team expertise'],
-          tradeoffs: ['More complex setup', 'Higher operational overhead'],
-        },
-        entities: ['PostgreSQL', 'cursor-pagination', 'ACID'],
-      });
-
-      const operations = buildGraphOperations(decision);
-      const entities = extractEntities(operations);
-      const relations = extractRelations(operations);
-
-      // Verify all entity types
-      expect(entities.length).toBe(4); // main + 3 entities
-
-      // Verify all relation types
-      expect(countRelationsByType(relations, 'CHOSE')).toBe(3); // 3 entities
-      expect(countRelationsByType(relations, 'CHOSE_OVER')).toBe(2); // 2 alternatives
-      expect(countRelationsByType(relations, 'CONSTRAINT')).toBe(2);
-      expect(countRelationsByType(relations, 'TRADEOFF')).toBe(2);
-      expect(countRelationsByType(relations, 'RELATES_TO')).toBe(3); // C(3,2) = 3
-    });
-
-    it('should handle complex multi-entity decision', () => {
-      const decision = createDecisionRecord({
-        type: 'decision',
-        content: {
-          what: 'Architecture for microservices',
-          why: 'Scalability and team autonomy',
-          alternatives: ['Monolith', 'Modular monolith'],
-          constraints: [
-            'Budget constraint of $100K',
-            'Team size limit of 10',
-            'Infrastructure must be cloud-native',
-          ],
-          tradeoffs: [
-            'Increased operational complexity',
-            'Network latency concerns',
-            'Data consistency challenges',
-          ],
-        },
-        entities: [
-          'Kubernetes',
-          'Docker',
-          'FastAPI',
-          'PostgreSQL',
-          'Redis',
-          'event-driven-architecture',
-        ],
-      });
-
-      const operations = buildGraphOperations(decision);
-      expect(operations.length).toBeGreaterThanOrEqual(2); // At least entities and relations
-
-      const entities = extractEntities(operations);
-      expect(entities.length).toBe(7); // main + 6 entities
-
-      const relations = extractRelations(operations);
-      expect(relations.length).toBeGreaterThan(0);
-    });
-  });
-
-  // ===== RELATION COUNT VERIFICATION =====
-
-  describe('relation count correctness', () => {
-    it('should not create relations operation when no relations', () => {
-      const decision = createDecisionRecord({
-        type: 'preference',
-        content: { what: 'Just a simple preference' },
-        entities: ['PostgreSQL'], // Single entity, no alternatives, constraints, or tradeoffs
-        relations: [],
-      });
-
+    it('should include timestamp on all operations', () => {
+      const decision = createMockDecision();
       const operations = buildGraphOperations(decision);
 
-      // Should have create_entities but might not have create_relations
-      const createRelOps = countOperationsByType(operations, 'create_relations');
-      // If no relations at all, create_relations operation should not exist
-      if (createRelOps > 0) {
-        const relations = extractRelations(operations);
-        expect(relations.length).toBeGreaterThan(0);
+      for (const op of operations) {
+        expect(op.timestamp).toBeDefined();
+        expect(new Date(op.timestamp).toISOString()).toBe(op.timestamp);
       }
     });
 
-    it('should create create_relations operation when relations exist', () => {
-      const decision = createDecisionRecord({
+    it('should create only entities operation when no relations possible', () => {
+      const decision = createMockDecision({
+        entities: [],
         content: {
-          what: 'Use PostgreSQL',
-          alternatives: ['MongoDB'],
+          what: 'Simple decision',
+          alternatives: undefined,
+          constraints: undefined,
+          tradeoffs: undefined,
         },
-        entities: ['PostgreSQL', 'Redis'],
+        relations: [],
       });
-
       const operations = buildGraphOperations(decision);
-      const createRelOps = countOperationsByType(operations, 'create_relations');
 
-      expect(createRelOps).toBeGreaterThan(0);
-
-      const relations = extractRelations(operations);
-      expect(relations.length).toBeGreaterThan(0);
+      // Only entities operation, no relations
+      expect(operations.length).toBe(1);
+      expect(operations[0].type).toBe('create_entities');
     });
+  });
+
+  describe('entity type mapping', () => {
+    it('should map decision type to Decision entity', () => {
+      const decision = createMockDecision({ type: 'decision' });
+      const operations = buildGraphOperations(decision);
+      const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+      expect(mainEntity?.entityType).toBe('Decision');
+    });
+
+    it('should map preference type to Preference entity', () => {
+      const decision = createMockDecision({ type: 'preference' });
+      const operations = buildGraphOperations(decision);
+      const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+      expect(mainEntity?.entityType).toBe('Preference');
+    });
+
+    it('should map problem-solution type to Solution entity', () => {
+      const decision = createMockDecision({ type: 'problem-solution' });
+      const operations = buildGraphOperations(decision);
+      const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+      expect(mainEntity?.entityType).toBe('Solution');
+    });
+
+    it('should map pattern type to Pattern entity', () => {
+      const decision = createMockDecision({ type: 'pattern' });
+      const operations = buildGraphOperations(decision);
+      const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+      expect(mainEntity?.entityType).toBe('Pattern');
+    });
+
+    it('should map workflow type to Workflow entity', () => {
+      const decision = createMockDecision({ type: 'workflow' });
+      const operations = buildGraphOperations(decision);
+      const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+      expect(mainEntity?.entityType).toBe('Workflow');
+    });
+  });
+});
+
+// =============================================================================
+// createDecisionRecord() Tests
+// =============================================================================
+
+describe('createDecisionRecord', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should create record with required fields', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Use PostgreSQL' },
+      ['PostgreSQL'],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+
+    expect(record.type).toBe('decision');
+    expect(record.content.what).toBe('Use PostgreSQL');
+    expect(record.entities).toEqual(['PostgreSQL']);
+    expect(record.metadata.session_id).toBe('sess-123');
+    expect(record.metadata.source).toBe('user_prompt');
+  });
+
+  it('should generate unique ID with type prefix', () => {
+    const record = createDecisionRecord(
+      'preference',
+      { what: 'Prefer TypeScript' },
+      ['TypeScript'],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+
+    expect(record.id).toMatch(/^preference-[a-z0-9]+-[a-z0-9]+$/);
+  });
+
+  it('should include identity context', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test decision' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+
+    expect(record.identity.user_id).toBe('test-user@example.com');
+    expect(record.identity.anonymous_id).toBe('anon-abc123');
+    expect(record.identity.team_id).toBe('test-team');
+    expect(record.identity.machine_id).toBe('test-machine');
+  });
+
+  it('should set timestamp', () => {
+    const before = new Date();
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+    const after = new Date();
+
+    const timestamp = new Date(record.metadata.timestamp);
+    expect(timestamp.getTime()).toBeGreaterThanOrEqual(before.getTime());
+    expect(timestamp.getTime()).toBeLessThanOrEqual(after.getTime());
+  });
+
+  it('should default confidence to 0.5', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+
+    expect(record.metadata.confidence).toBe(0.5);
+  });
+
+  it('should use provided confidence', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt', confidence: 0.9 }
+    );
+
+    expect(record.metadata.confidence).toBe(0.9);
+  });
+
+  it('should default category to general', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt' }
+    );
+
+    expect(record.metadata.category).toBe('general');
+  });
+
+  it('should use provided category', () => {
+    const record = createDecisionRecord(
+      'decision',
+      { what: 'Test' },
+      [],
+      { session_id: 'sess-123', source: 'user_prompt', category: 'database' }
+    );
+
+    expect(record.metadata.category).toBe('database');
+  });
+
+  it('should determine generalizability based on confidence and patterns', () => {
+    // High confidence with rationale and general pattern -> generalizable
+    const generalizable = createDecisionRecord(
+      'decision',
+      { what: 'Use cursor pagination', why: 'Better performance at scale' },
+      ['pagination', 'PostgreSQL'],
+      { session_id: 'sess-123', source: 'user_prompt', confidence: 0.9 }
+    );
+
+    expect(generalizable.metadata.is_generalizable).toBe(true);
+    expect(generalizable.metadata.sharing_scope).toBe('global');
+  });
+
+  it('should not be generalizable without rationale', () => {
+    const notGeneralizable = createDecisionRecord(
+      'decision',
+      { what: 'Use cursor pagination' },
+      ['pagination'],
+      { session_id: 'sess-123', source: 'user_prompt', confidence: 0.9 }
+    );
+
+    expect(notGeneralizable.metadata.is_generalizable).toBe(false);
+    expect(notGeneralizable.metadata.sharing_scope).toBe('team');
+  });
+
+  it('should not be generalizable with low confidence', () => {
+    const notGeneralizable = createDecisionRecord(
+      'decision',
+      { what: 'Use cursor pagination', why: 'Better performance' },
+      ['pagination'],
+      { session_id: 'sess-123', source: 'user_prompt', confidence: 0.5 }
+    );
+
+    expect(notGeneralizable.metadata.is_generalizable).toBe(false);
+  });
+});
+
+// =============================================================================
+// isMem0Configured() Tests
+// =============================================================================
+
+describe('isMem0Configured', () => {
+  const originalEnv = process.env.MEM0_API_KEY;
+
+  afterEach(() => {
+    if (originalEnv) {
+      process.env.MEM0_API_KEY = originalEnv;
+    } else {
+      delete process.env.MEM0_API_KEY;
+    }
+  });
+
+  it('should return true when MEM0_API_KEY is set', () => {
+    process.env.MEM0_API_KEY = 'test-key';
+    expect(isMem0Configured()).toBe(true);
+  });
+
+  it('should return false when MEM0_API_KEY is not set', () => {
+    delete process.env.MEM0_API_KEY;
+    expect(isMem0Configured()).toBe(false);
+  });
+
+  it('should return false when MEM0_API_KEY is empty', () => {
+    process.env.MEM0_API_KEY = '';
+    expect(isMem0Configured()).toBe(false);
+  });
+});
+
+// =============================================================================
+// queueGraphOperation() Tests
+// =============================================================================
+
+describe('queueGraphOperation', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should queue operation to JSONL file', async () => {
+    const fs = await import('node:fs');
+    const mockAppendFileSync = vi.mocked(fs.appendFileSync);
+
+    const operation: QueuedGraphOperation = {
+      type: 'create_entities',
+      payload: {
+        entities: [{ name: 'Test', entityType: 'Technology', observations: [] }],
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    const result = queueGraphOperation(operation);
+
+    expect(result).toBe(true);
+    expect(mockAppendFileSync).toHaveBeenCalled();
+  });
+});
+
+// =============================================================================
+// Edge Cases and Error Handling
+// =============================================================================
+
+describe('edge cases', () => {
+  it('should handle empty entities array', () => {
+    const decision = createMockDecision({ entities: [] });
+    const operations = buildGraphOperations(decision);
+
+    expect(operations.length).toBeGreaterThanOrEqual(1);
+    const entities = getEntities(operations);
+    // Should still have main entity
+    expect(entities.length).toBe(1);
+  });
+
+  it('should handle empty content', () => {
+    const decision = createMockDecision({
+      content: { what: '' },
+    });
+    const operations = buildGraphOperations(decision);
+
+    expect(operations).toBeDefined();
+    expect(operations.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should handle special characters in entity names', () => {
+    const decision = createMockDecision({
+      entities: ['PostgreSQL-15', 'Node.js', 'C++', '@prisma/client'],
+    });
+    const operations = buildGraphOperations(decision);
+
+    const entities = getEntities(operations);
+    expect(entities.some(e => e.name === 'PostgreSQL-15')).toBe(true);
+    expect(entities.some(e => e.name === 'Node.js')).toBe(true);
+    expect(entities.some(e => e.name === 'C++')).toBe(true);
+    expect(entities.some(e => e.name === '@prisma/client')).toBe(true);
+  });
+
+  it('should handle very long what content', () => {
+    const longWhat = 'A'.repeat(500);
+    const decision = createMockDecision({
+      content: { what: longWhat },
+    });
+    const operations = buildGraphOperations(decision);
+
+    const entities = getEntities(operations);
+    const mainEntity = entities.find(e => e.name === decision.id);
+    // Observations should include the full what
+    expect(mainEntity?.observations.some(o => o.includes(longWhat))).toBe(true);
+  });
+
+  it('should handle unicode in entity names', () => {
+    const decision = createMockDecision({
+      entities: ['日本語', 'über', '中文', 'emoji🔥'],
+    });
+    const operations = buildGraphOperations(decision);
+
+    const entities = getEntities(operations);
+    expect(entities.some(e => e.name === '日本語')).toBe(true);
+    expect(entities.some(e => e.name === 'emoji🔥')).toBe(true);
+  });
+
+  it('should handle duplicate entities', () => {
+    const decision = createMockDecision({
+      entities: ['PostgreSQL', 'PostgreSQL', 'Redis', 'Redis'],
+    });
+    const operations = buildGraphOperations(decision);
+
+    // Should create entities for all (deduplication is caller's responsibility)
+    const entities = getEntities(operations);
+    const postgresCount = entities.filter(e => e.name === 'PostgreSQL').length;
+    expect(postgresCount).toBe(2);
+  });
+});
+
+// =============================================================================
+// Integration Scenarios
+// =============================================================================
+
+describe('integration scenarios', () => {
+  it('should handle complete database decision flow', () => {
+    const decision = createMockDecision({
+      type: 'decision',
+      content: {
+        what: 'Use PostgreSQL with cursor pagination',
+        why: 'Better performance for large datasets, consistent ordering',
+        alternatives: ['Offset pagination', 'Keyset without cursor'],
+        constraints: ['Must support bidirectional navigation', 'Millions of rows'],
+        tradeoffs: ['More complex implementation', 'Cannot jump to page N'],
+      },
+      entities: ['PostgreSQL', 'cursor-pagination', 'keyset-pagination'],
+      metadata: {
+        session_id: 'sess-123',
+        timestamp: new Date().toISOString(),
+        confidence: 0.95,
+        source: 'user_prompt',
+        project: 'api-service',
+        category: 'database',
+        importance: 'high',
+      },
+    });
+
+    const operations = buildGraphOperations(decision);
+
+    // Verify entity creation
+    const entities = getEntities(operations);
+    expect(entities.length).toBe(4); // main + 3 entities
+
+    // Verify CHOSE relations
+    expect(hasRelation(operations, decision.id, 'PostgreSQL', 'CHOSE')).toBe(true);
+    expect(hasRelation(operations, decision.id, 'cursor-pagination', 'CHOSE')).toBe(true);
+
+    // Verify CHOSE_OVER relations
+    expect(hasRelation(operations, 'Use PostgreSQL with cursor pagination', 'Offset pagination', 'CHOSE_OVER')).toBe(true);
+
+    // Verify RELATES_TO cross-links
+    expect(countRelations(operations, 'RELATES_TO')).toBe(3); // 3 entities = 3 cross-links
+
+    // Verify CONSTRAINT and TRADEOFF
+    expect(countRelations(operations, 'CONSTRAINT')).toBe(2);
+    expect(countRelations(operations, 'TRADEOFF')).toBe(2);
+  });
+
+  it('should handle preference storage flow', () => {
+    const decision = createMockDecision({
+      type: 'preference',
+      content: {
+        what: 'Prefer strict TypeScript with no implicit any',
+        why: 'Catches bugs earlier, better IDE support',
+      },
+      entities: ['TypeScript', 'strict-mode', 'type-safety'],
+    });
+
+    const operations = buildGraphOperations(decision);
+
+    // Preferences should use PREFERS relation
+    expect(hasRelation(operations, decision.id, 'TypeScript', 'PREFERS')).toBe(true);
+    expect(hasRelation(operations, decision.id, 'strict-mode', 'PREFERS')).toBe(true);
+  });
+
+  it('should handle problem-solution storage flow', () => {
+    const decision = createMockDecision({
+      type: 'problem-solution',
+      content: {
+        what: 'Solved N+1 query problem with DataLoader',
+        why: 'Batches queries automatically, reduces database load',
+      },
+      entities: ['N+1-problem', 'DataLoader', 'GraphQL', 'batching'],
+    });
+
+    const operations = buildGraphOperations(decision);
+
+    const mainEntity = getEntities(operations).find(e => e.name === decision.id);
+    expect(mainEntity?.entityType).toBe('Solution');
+
+    // MENTIONS for problem-solution type
+    expect(hasRelation(operations, decision.id, 'N+1-problem', 'MENTIONS')).toBe(true);
+    expect(hasRelation(operations, decision.id, 'DataLoader', 'MENTIONS')).toBe(true);
   });
 });

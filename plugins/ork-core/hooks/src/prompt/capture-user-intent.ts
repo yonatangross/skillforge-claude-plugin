@@ -11,9 +11,9 @@
  * - Store with rationale ("because...") when present
  *
  * Storage:
- * - Decisions → .claude/memory/pending-decisions.jsonl
- * - Preferences → .claude/memory/user-preferences.jsonl
- * - Problems → .claude/memory/open-problems.jsonl
+ * - Decisions/Preferences -> decisions.jsonl + graph-queue.jsonl + mem0-queue.jsonl
+ *   (via createDecisionRecord + storeDecision from memory-writer)
+ * - Problems -> .claude/memory/open-problems.jsonl + session tracker
  *
  * CC 2.1.16 Compliant - Uses outputSilentSuccess for non-blocking capture
  */
@@ -31,10 +31,12 @@ import {
   type IntentDetectionResult,
 } from '../lib/user-intent-detector.js';
 import {
-  trackDecisionMade,
-  trackPreferenceStated,
   trackProblemReported,
 } from '../lib/session-tracker.js';
+import {
+  createDecisionRecord,
+  storeDecision,
+} from '../lib/memory-writer.js';
 import { existsSync, appendFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 
@@ -48,9 +50,6 @@ const MIN_PROMPT_LENGTH = 15; // Skip very short prompts
 // =============================================================================
 // STORAGE TYPES
 // =============================================================================
-// GAP-003/004 FIX: Removed StoredDecision and StoredPreference interfaces
-// These types were only used by the now-removed storeDecisions/storePreferences functions
-// Decision/preference data flows through events.jsonl via session-tracker
 
 /**
  * Stored problem record for solution pairing
@@ -103,14 +102,6 @@ function appendToJsonl(filePath: string, record: unknown): boolean {
   }
 }
 
-// =============================================================================
-// GAP-003/004 FIX: Removed storeDecisions() and storePreferences()
-// These functions wrote to pending-decisions.jsonl and user-preferences.jsonl
-// but those files were never read (write-only dead ends).
-// Decision/preference data is now tracked via trackDecisionMade/trackPreferenceStated
-// which writes to events.jsonl and feeds into user profile aggregation.
-// =============================================================================
-
 /**
  * Store problems for later solution pairing
  */
@@ -145,38 +136,105 @@ function storeProblems(problems: UserIntent[], sessionId: string): number {
 }
 
 // =============================================================================
-// SESSION TRACKING INTEGRATION
+// CATEGORY INFERENCE
 // =============================================================================
 
 /**
- * Track detected intents in the session tracker for user profile aggregation.
- * This bridges the intent detection to the centralized session event tracking.
+ * Infer decision category from entities
  */
-function trackIntentsInSession(result: IntentDetectionResult): void {
+function inferCategory(entities: string[]): string {
+  if (entities.length === 0) return 'general';
+
+  const entityStr = entities.join(' ').toLowerCase();
+
+  const categoryMap: Array<[string[], string]> = [
+    [['postgresql', 'postgres', 'mysql', 'sqlite', 'mongodb', 'redis', 'database', 'db'], 'database'],
+    [['react', 'vue', 'angular', 'svelte', 'frontend', 'css', 'tailwind', 'ui'], 'frontend'],
+    [['fastapi', 'django', 'express', 'nest', 'backend', 'api', 'rest', 'graphql'], 'backend'],
+    [['docker', 'kubernetes', 'k8s', 'ci', 'cd', 'deploy', 'infrastructure'], 'infrastructure'],
+    [['test', 'jest', 'vitest', 'pytest', 'testing', 'coverage'], 'testing'],
+    [['typescript', 'python', 'rust', 'go', 'java', 'language'], 'language'],
+    [['auth', 'security', 'jwt', 'oauth', 'encryption'], 'security'],
+    [['cache', 'caching', 'performance', 'optimization'], 'performance'],
+    [['architecture', 'pattern', 'design', 'structure'], 'architecture'],
+  ];
+
+  for (const [keywords, category] of categoryMap) {
+    if (keywords.some(kw => entityStr.includes(kw))) {
+      return category;
+    }
+  }
+
+  return 'general';
+}
+
+// =============================================================================
+// DECISION/PREFERENCE STORAGE VIA MEMORY PIPELINE
+// =============================================================================
+
+/**
+ * Store decisions and preferences through the memory pipeline.
+ * Creates DecisionRecords and fires storeDecision() for each.
+ * createDecisionRecord() internally calls trackDecisionMade/trackPreferenceStated
+ * for session profile aggregation (lines 574-578 of memory-writer.ts).
+ */
+function storeDecisionsAndPreferences(
+  result: IntentDetectionResult,
+  sessionId: string
+): void {
   try {
-    // Track decisions with rationale
+    // Store decisions through the memory pipeline
     for (const decision of result.decisions) {
-      trackDecisionMade(
-        decision.text,
-        decision.rationale,
-        decision.confidence
+      const record = createDecisionRecord(
+        'decision',
+        {
+          what: decision.text,
+          why: decision.rationale,
+          ...(decision.alternatives?.length ? { alternatives: decision.alternatives } : {}),
+          ...(decision.constraints?.length ? { constraints: decision.constraints } : {}),
+          ...(decision.tradeoffs?.length ? { tradeoffs: decision.tradeoffs } : {}),
+        },
+        decision.entities,
+        {
+          session_id: sessionId,
+          source: 'user_prompt',
+          confidence: decision.confidence,
+          category: inferCategory(decision.entities),
+        }
       );
+      // Fire-and-forget: hook is async:true with timeout:30 in hooks.json
+      storeDecision(record).catch((err) => {
+        logHook(HOOK_NAME, `storeDecision failed for decision: ${err}`, 'warn');
+      });
     }
 
-    // Track preferences
+    // Store preferences through the memory pipeline
     for (const preference of result.preferences) {
-      trackPreferenceStated(
-        preference.text,
-        preference.confidence
+      const record = createDecisionRecord(
+        'preference',
+        {
+          what: preference.text,
+        },
+        preference.entities,
+        {
+          session_id: sessionId,
+          source: 'user_prompt',
+          confidence: preference.confidence,
+          category: inferCategory(preference.entities),
+        }
       );
+      // Fire-and-forget
+      storeDecision(record).catch((err) => {
+        logHook(HOOK_NAME, `storeDecision failed for preference: ${err}`, 'warn');
+      });
     }
 
-    // Track problems for later solution pairing
+    // Track problems via session tracker (problems don't go through DecisionRecord pipeline)
     for (const problem of result.problems) {
       trackProblemReported(problem.text);
     }
   } catch (err) {
-    logHook(HOOK_NAME, `Session tracking failed: ${err}`, 'warn');
+    logHook(HOOK_NAME, `Memory pipeline storage failed: ${err}`, 'warn');
   }
 }
 
@@ -219,10 +277,9 @@ export function captureUserIntent(input: HookInput): HookResult {
     return outputSilentSuccess();
   }
 
-  // Track intents in session tracker for user profile aggregation
-  // Note: decisions and preferences go to events.jsonl via trackDecisionMade/trackPreferenceStated
-  // GAP-003/004 fix: Removed storeDecisions/storePreferences (wrote to never-read files)
-  trackIntentsInSession(result);
+  // Store decisions and preferences through memory pipeline
+  // (createDecisionRecord internally tracks to session events for profile aggregation)
+  storeDecisionsAndPreferences(result, sessionId);
 
   // Store problems to open-problems.jsonl for problem-tracker.ts (GAP-005 wired via GAP-011)
   const problemsStored = storeProblems(result.problems, sessionId);
@@ -233,7 +290,7 @@ export function captureUserIntent(input: HookInput): HookResult {
   if (result.decisions.length > 0 || result.preferences.length > 0) {
     logHook(
       HOOK_NAME,
-      `Tracked: ${result.decisions.length} decisions, ${result.preferences.length} preferences (to events.jsonl)`,
+      `Tracked: ${result.decisions.length} decisions, ${result.preferences.length} preferences (to decisions.jsonl + queues)`,
       'debug'
     );
   }
