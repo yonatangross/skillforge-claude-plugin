@@ -7,7 +7,7 @@ Branch: `test/dispatcher-registry-wiring-tests`
 
 ~40% of the tracking infrastructure was initially connected. Progress tracking below.
 
-**Fixed:** 5/13 gaps (GAP-001, GAP-002, GAP-006, GAP-011, GAP-012)
+**Fixed:** 8/13 gaps (GAP-001, GAP-002, GAP-003, GAP-004, GAP-005, GAP-006, GAP-011, GAP-012)
 
 ---
 
@@ -32,34 +32,25 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ## P1: High - Write-Only Storage (Dead Ends)
 
 ### GAP-003: pending-decisions.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:164` (storeDecisions)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: ~~`src/hooks/src/prompt/capture-user-intent.ts:164` (storeDecisions)~~ REMOVED
+- **Read by**: N/A (data flows through events.jsonl via trackDecisionMade)
+- **Status**: [x] Fixed - Removed storeDecisions, data tracked via session-tracker
 - **Impact**: User decisions captured but never incorporated into profile
-- **Data lost**: `what`, `rationale`, `alternatives`, `confidence`, `entities`
-- **Fix options**:
-  - A) Add reader in session-profile-aggregator to merge into profile.decisions
-  - B) Remove the write (simplify)
+- **Fix**: Removed dead-end write; decisions tracked via trackDecisionMade → events.jsonl
 
 ### GAP-004: user-preferences.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:192` (storePreferences)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: ~~`src/hooks/src/prompt/capture-user-intent.ts:192` (storePreferences)~~ REMOVED
+- **Read by**: N/A (data flows through events.jsonl via trackPreferenceStated)
+- **Status**: [x] Fixed - Removed storePreferences, data tracked via session-tracker
 - **Impact**: User preferences captured but never incorporated into profile
-- **Data lost**: `category`, `preference`, `confidence`
-- **Fix options**:
-  - A) Add reader in session-profile-aggregator to merge into profile.preferences
-  - B) Remove the write (simplify)
+- **Fix**: Removed dead-end write; preferences tracked via trackPreferenceStated → events.jsonl
 
 ### GAP-005: open-problems.jsonl never read
-- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts:220` (storeProblems)
-- **Read by**: NOTHING
-- **Status**: [ ] Not Fixed
+- **Written by**: `src/hooks/src/prompt/capture-user-intent.ts` (storeProblems)
+- **Read by**: `src/hooks/src/lib/problem-tracker.ts` (wired via GAP-011)
+- **Status**: [x] Fixed - File read by problem-tracker (wired to posttool dispatcher in GAP-011)
 - **Impact**: Problems detected but never tracked or resolved
-- **Data lost**: `text`, `entities`, `timestamp`
-- **Fix options**:
-  - A) Add reader and pair with solutions
-  - B) Remove the write (simplify)
+- **Fix**: Already wired via GAP-011 solution-detector → problem-tracker
 
 ### GAP-006: mem0-queue.jsonl never processed
 - **Written by**: `src/hooks/src/lib/memory-writer.ts:89` (queueForMem0)
@@ -162,10 +153,10 @@ Branch: `test/dispatcher-registry-wiring-tests`
 |-----|-------------|-------|--------|
 | GAP-001 | graph-queue-sync dispatcher | [x] | c55d7973 |
 | GAP-002 | workflow-preference-learner dispatcher | [x] | c55d7973 |
-| GAP-003 | pending-decisions reader | [ ] | |
-| GAP-004 | user-preferences reader | [ ] | |
-| GAP-005 | open-problems reader | [ ] | |
-| GAP-006 | mem0-queue processor | [x] | pending |
+| GAP-003 | pending-decisions reader | [x] | pending |
+| GAP-004 | user-preferences reader | [x] | pending |
+| GAP-005 | open-problems reader | [x] | bb14493c (via GAP-011) |
+| GAP-006 | mem0-queue processor | [x] | 0d0101a4 |
 | GAP-007 | trackSolutionFound caller | [ ] | |
 | GAP-008 | listSessionIds usage | [ ] | |
 | GAP-009 | getRecentUserSessions usage | [ ] | |
