@@ -1,6 +1,6 @@
 ---
 name: demo-producer
-description: Create polished demo videos for anything - skills, plugins, coding tutorials, CLI tools, or any custom content. Interactive workflow with format selection.
+description: Create polished demo videos for anything. Use when producing skill showcases, plugin demos, tutorials, or CLI tool demonstrations with VHS and Remotion
 user-invocable: true
 context: fork
 version: 1.0.0

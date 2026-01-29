@@ -1,6 +1,6 @@
 ---
 name: audio-mixing-patterns
-description: ffmpeg audio mixing patterns for video production - narration/music balancing, ducking, and precise timing
+description: ffmpeg audio mixing patterns for video production. Use when mixing narration with music, implementing ducking, or balancing volume levels for demos
 tags: [video, audio, ffmpeg, mixing, ducking, narration, music]
 user-invocable: false
 version: 1.0.0

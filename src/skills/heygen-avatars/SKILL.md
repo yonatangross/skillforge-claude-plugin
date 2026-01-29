@@ -70,3 +70,10 @@ Read individual rule files for detailed explanations and code examples:
 
 ### Integration
 - [rules/remotion-integration.md](rules/remotion-integration.md) - Using HeyGen avatar videos in Remotion compositions
+
+## Related Skills
+
+- `remotion-composer`: Video composition for combining HeyGen avatars with other assets
+- `elevenlabs-narration`: Alternative TTS for narration without avatars
+- `demo-producer`: Full demo pipeline that can include avatar segments
+- `video-pacing`: Timing patterns for avatar-based content

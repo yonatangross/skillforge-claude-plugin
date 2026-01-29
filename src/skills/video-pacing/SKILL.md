@@ -1,6 +1,6 @@
 ---
 name: video-pacing
-description: Video rhythm and timing rules for maximum engagement - cut frequency, attention curves, and platform-specific pacing patterns
+description: Video rhythm and timing for maximum engagement. Use when planning cut frequency, optimizing retention, or adapting pacing for different platforms
 tags: [video, pacing, rhythm, editing, attention, engagement]
 user-invocable: false
 version: 1.0.0

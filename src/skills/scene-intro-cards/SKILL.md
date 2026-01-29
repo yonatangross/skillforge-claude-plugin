@@ -1,6 +1,6 @@
 ---
 name: scene-intro-cards
-description: Transitional intro cards between video scenes - templates, animations, and timing patterns
+description: Transitional intro cards between video scenes. Use when adding "Coming Up Next" cards, scene transitions, or visual breathing room in demos
 tags: [video, remotion, transitions, cards, animation, scenes]
 user-invocable: false
 version: 1.0.0

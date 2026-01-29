@@ -1,6 +1,6 @@
 ---
 name: video-storyboarding
-description: Pre-production planning for tech demo videos using AIDA framework, scene templates, and shot planning for compelling narratives
+description: Pre-production planning for tech demo videos. Use when planning scenes, structuring narrative flow, or applying AIDA framework to video content
 tags: [video, storyboard, pre-production, planning, narrative, remotion]
 user-invocable: false
 version: 1.0.0
