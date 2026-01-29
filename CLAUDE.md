@@ -151,6 +151,16 @@ See `skills/task-dependency-patterns` for comprehensive patterns.
 ### Skills
 185 skills available. 23 are user-invocable via `/ork:skillname`. Skills auto-suggest based on prompt content via hooks. Use `Skill` tool to invoke.
 
+**Skill Types:**
+| Type | Count | Frontmatter | Description |
+|------|-------|-------------|-------------|
+| Command | 23 | `user-invocable: true` | User runs via `/ork:name` |
+| Reference | 162 | `user-invocable: false`, `context: fork` | Knowledge for agents, auto-injected |
+
+**Key Fields:**
+- `context: fork` — Required for CC 2.1.0+. Skill runs in isolated context.
+- `agent: <name>` — Which agent primarily uses this skill (e.g., `agent: demo-producer`)
+
 ### Agents
 35 specialized agents. Spawn with `Task` tool using `subagent_type` parameter. Agents auto-discovered from `src/agents/*.md`. Skills in agent frontmatter are auto-injected.
 

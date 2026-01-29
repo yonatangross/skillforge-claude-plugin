@@ -2,6 +2,8 @@
 name: hook-formulas
 description: Proven formulas for video hooks that stop the scroll. Use when writing opening lines, creating attention-grabbing intros, or optimizing first 3 seconds
 tags: [video, hooks, marketing, attention, copywriting, social-media]
+context: fork
+agent: demo-producer
 user-invocable: false
 version: 1.0.0
 ---
