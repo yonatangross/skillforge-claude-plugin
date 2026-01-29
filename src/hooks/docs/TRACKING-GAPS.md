@@ -8,6 +8,7 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ~40% of the tracking infrastructure was initially connected. Progress tracking below.
 
 **Fixed:** 12/13 gaps (GAP-001 through GAP-012)
+**Deferred:** 1/13 gaps (GAP-013 - low priority code smell)
 
 ---
 
@@ -113,9 +114,14 @@ Branch: `test/dispatcher-registry-wiring-tests`
 ### GAP-013: trackHookTriggered() exists in two places
 - **TypeScript**: `src/hooks/src/lib/session-tracker.ts:224-233`
 - **JavaScript**: `src/hooks/bin/run-hook.mjs:198-234`
-- **Status**: [ ] Not Fixed
-- **Impact**: Confusion, potential drift
-- **Fix**: run-hook.mjs should import from compiled session-tracker
+- **Status**: [ ] Deferred (P3 low priority)
+- **Impact**: Code duplication, potential drift
+- **Decision**: Keep as-is for now
+  - Both implementations are tested and working
+  - run-hook.mjs is ESM entrypoint that needs standalone implementation
+  - Consolidation would require refactoring run-hook.mjs import structure
+  - Risk of breaking hooks system outweighs benefit
+- **Future**: Consider consolidation when refactoring hook system
 
 ---
 
@@ -163,4 +169,4 @@ Branch: `test/dispatcher-registry-wiring-tests`
 | GAP-010 | getRecentFlows usage | [x] | pending |
 | GAP-011 | problem-tracker module | [x] | bb14493c |
 | GAP-012 | duplicate trackSessionEnd | [x] | c69dc03d |
-| GAP-013 | trackHookTriggered consolidation | [ ] | |
+| GAP-013 | trackHookTriggered consolidation | [-] | deferred |
