@@ -20,12 +20,13 @@ const mocks = vi.hoisted(() => {
   const fn = () => vi.fn(() => s);
   return {
     logHook: vi.fn(),
-    // posttool (14)
+    // posttool (17) - Issue #243: now includes userTracking, solutionDetector, toolPreferenceLearner
     sessionMetrics: fn(), auditLogger: fn(), calibrationTracker: fn(),
     patternExtractor: fn(), issueProgressCommenter: fn(), issueSubtaskUpdater: fn(),
     mem0WebhookHandler: fn(), codeStyleLearner: fn(), namingConventionLearner: fn(),
     skillEditTracker: fn(), coordinationHeartbeat: fn(), skillUsageOptimizer: fn(),
-    memoryBridge: fn(), realtimeSync: fn(),
+    memoryBridge: fn(), realtimeSync: fn(), userTracking: fn(), solutionDetector: fn(),
+    toolPreferenceLearner: fn(),
     // lifecycle (6)
     mem0ContextRetrieval: fn(), mem0AnalyticsTracker: fn(), patternSyncPull: fn(),
     multiInstanceInit: fn(), instanceHeartbeat: fn(), sessionEnvSetup: fn(),
@@ -64,6 +65,9 @@ vi.mock('../../posttool/coordination-heartbeat.js', () => ({ coordinationHeartbe
 vi.mock('../../posttool/skill/skill-usage-optimizer.js', () => ({ skillUsageOptimizer: mocks.skillUsageOptimizer }));
 vi.mock('../../posttool/memory-bridge.js', () => ({ memoryBridge: mocks.memoryBridge }));
 vi.mock('../../posttool/realtime-sync.js', () => ({ realtimeSync: mocks.realtimeSync }));
+vi.mock('../../posttool/user-tracking.js', () => ({ userTracking: mocks.userTracking }));
+vi.mock('../../posttool/solution-detector.js', () => ({ solutionDetector: mocks.solutionDetector }));
+vi.mock('../../posttool/tool-preference-learner.js', () => ({ toolPreferenceLearner: mocks.toolPreferenceLearner }));
 
 // lifecycle hooks
 vi.mock('../../lifecycle/mem0-context-retrieval.js', () => ({ mem0ContextRetrieval: mocks.mem0ContextRetrieval }));
@@ -392,9 +396,10 @@ describe('Dispatcher Functional Tests', () => {
 
         await unifiedDispatcher(input('Bash'));
 
+        // Issue #243: Now 11 hooks for Bash (was 10) after adding tool-preference-learner
         expect(mocks.logHook).toHaveBeenCalledWith(
           'posttool-dispatcher',
-          expect.stringMatching(/2\/10 hooks failed.*audit-logger.*session-metrics|2\/10 hooks failed.*session-metrics.*audit-logger/),
+          expect.stringMatching(/2\/11 hooks failed.*audit-logger.*session-metrics|2\/11 hooks failed.*session-metrics.*audit-logger/),
         );
       });
 

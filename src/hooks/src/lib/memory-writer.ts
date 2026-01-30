@@ -262,12 +262,16 @@ export function buildGraphOperations(decision: DecisionRecord): QueuedGraphOpera
   // 3. Create relations
   const relations: GraphRelation[] = [];
 
-  // Link decision to entities with CHOSE or MENTIONS
+  // Link decision to entities with CHOSE, or preferences with PREFERS
   for (const entity of decision.entities) {
+    const relationType: RelationType =
+      decision.type === 'decision' ? 'CHOSE'
+      : decision.type === 'preference' ? 'PREFERS'
+      : 'MENTIONS';
     relations.push({
       from: decision.id,
       to: entity,
-      relationType: decision.type === 'decision' ? 'CHOSE' : 'MENTIONS',
+      relationType,
     });
   }
 
@@ -290,6 +294,30 @@ export function buildGraphOperations(decision: DecisionRecord): QueuedGraphOpera
         to: constraint,
         relationType: 'CONSTRAINT',
       });
+    }
+  }
+
+  // Create TRADEOFF relations
+  if (decision.content.tradeoffs?.length) {
+    for (const tradeoff of decision.content.tradeoffs) {
+      relations.push({
+        from: decision.id,
+        to: tradeoff,
+        relationType: 'TRADEOFF',
+      });
+    }
+  }
+
+  // Create RELATES_TO between co-occurring entities (cross-links)
+  if (decision.entities.length >= 2) {
+    for (let i = 0; i < decision.entities.length; i++) {
+      for (let j = i + 1; j < decision.entities.length; j++) {
+        relations.push({
+          from: decision.entities[i],
+          to: decision.entities[j],
+          relationType: 'RELATES_TO',
+        });
+      }
     }
   }
 

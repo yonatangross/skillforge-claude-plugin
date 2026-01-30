@@ -98,28 +98,31 @@ function isValidSessionId(sessionId: string): boolean {
 
 /**
  * Get session storage directory
+ * @param sessionId - Optional session ID (defaults to env var)
+ * @param projectDir - Optional project directory (defaults to env var)
  */
-function getSessionDir(sessionId?: string): string {
+function getSessionDir(sessionId?: string, projectDir?: string): string {
   const sid = sessionId || getSessionId();
+  const pDir = projectDir || getProjectDir();
   // Validate session ID to prevent path traversal (SEC-002)
   if (!isValidSessionId(sid)) {
     throw new Error(`Invalid session ID format`);
   }
-  return `${getProjectDir()}/.claude/memory/sessions/${sid}`;
+  return `${pDir}/.claude/memory/sessions/${sid}`;
 }
 
 /**
  * Get events file path for a session
  */
-function getEventsPath(sessionId?: string): string {
-  return `${getSessionDir(sessionId)}/events.jsonl`;
+function getEventsPath(sessionId?: string, projectDir?: string): string {
+  return `${getSessionDir(sessionId, projectDir)}/events.jsonl`;
 }
 
 /**
  * Ensure session directory exists
  */
-function ensureSessionDir(sessionId?: string): void {
-  const dir = getSessionDir(sessionId);
+function ensureSessionDir(sessionId?: string, projectDir?: string): void {
+  const dir = getSessionDir(sessionId, projectDir);
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
   }

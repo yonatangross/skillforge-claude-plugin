@@ -35,6 +35,10 @@ export interface UserIntent {
   rationale?: string;
   /** For decisions: what was chosen over what */
   alternatives?: string[];
+  /** Constraints mentioned (must/need to/required) */
+  constraints?: string[];
+  /** Tradeoffs accepted (but/however/downside) */
+  tradeoffs?: string[];
   /** Original match position */
   position: number;
 }
@@ -141,28 +145,77 @@ const RATIONALE_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Known entities for extraction
+ * Constraint patterns - extract "must/need to/required" clauses
+ * Group 1 or 2 captures the constraint text
  */
-const KNOWN_TECHNOLOGIES = [
-  // Databases
-  'postgresql', 'postgres', 'pgvector', 'redis', 'mongodb', 'sqlite', 'mysql', 'dynamodb',
-  // Frameworks
-  'fastapi', 'django', 'flask', 'express', 'nextjs', 'nest', 'spring', 'rails',
-  // Frontend
-  'react', 'vue', 'angular', 'svelte', 'solid', 'qwik', 'astro',
-  // Languages
-  'typescript', 'python', 'javascript', 'rust', 'go', 'java', 'kotlin',
-  // Auth
-  'jwt', 'oauth', 'oauth2', 'passkeys', 'saml', 'oidc',
-  // AI/ML
-  'langchain', 'langgraph', 'langfuse', 'openai', 'anthropic', 'llama',
-  // Infrastructure
-  'docker', 'kubernetes', 'k8s', 'terraform', 'aws', 'gcp', 'azure',
-  // Testing
-  'pytest', 'jest', 'vitest', 'playwright', 'cypress', 'msw',
-  // Tools
-  'webpack', 'vite', 'esbuild', 'turbopack', 'bun', 'pnpm', 'yarn',
+const CONSTRAINT_PATTERNS: RegExp[] = [
+  /\b(?:must|need to|required|constraint|requirement)\s+([^.,!?\n]+)/gi,
+  /\b(?:have to|has to)\s+([^.,!?\n]+)/gi,
+  /\b(?:mandatory|essential)\s+([^.,!?\n]+)/gi,
 ];
+
+/**
+ * Tradeoff patterns - extract "but/however/downside" clauses
+ * Group 1 or 2 captures the tradeoff text
+ */
+const TRADEOFF_PATTERNS: RegExp[] = [
+  /\b(?:tradeoff|trade-off|downside|drawback)\s*:?\s+([^.,!?\n]+)/gi,
+  /\bbut\s+([^.,!?\n]+)/gi,
+  /\bhowever\s+([^.,!?\n]+)/gi,
+  /\balthough\s+([^.,!?\n]+)/gi,
+  /\b(?:cost|limitation)\s+is\s+([^.,!?\n]+)/gi,
+];
+
+/**
+ * Technology aliases → canonical name mapping.
+ * Each key is an alias (or the canonical name itself).
+ * Value is the canonical name emitted as the entity.
+ * This deduplicates "postgres"/"postgresql" and similar variants.
+ */
+const TECHNOLOGY_ALIASES: Record<string, string> = {
+  // Databases
+  postgresql: 'postgresql', postgres: 'postgresql',
+  pgvector: 'pgvector', redis: 'redis', mongodb: 'mongodb',
+  sqlite: 'sqlite', mysql: 'mysql', dynamodb: 'dynamodb',
+  // Frameworks
+  fastapi: 'fastapi', django: 'django', flask: 'flask',
+  express: 'express', nextjs: 'nextjs', 'next.js': 'nextjs',
+  nest: 'nest', nestjs: 'nest', spring: 'spring', rails: 'rails',
+  // Frontend
+  react: 'react', vue: 'vue', angular: 'angular', svelte: 'svelte',
+  solid: 'solid', qwik: 'qwik', astro: 'astro',
+  // Languages
+  typescript: 'typescript', python: 'python', javascript: 'javascript',
+  rust: 'rust', go: 'go', java: 'java', kotlin: 'kotlin',
+  // Auth
+  jwt: 'jwt', oauth: 'oauth2', oauth2: 'oauth2', passkeys: 'passkeys',
+  saml: 'saml', oidc: 'oauth2',
+  // AI/ML
+  langchain: 'langchain', langgraph: 'langgraph', langfuse: 'langfuse',
+  openai: 'openai', anthropic: 'anthropic', llama: 'llama',
+  // Infrastructure
+  docker: 'docker', kubernetes: 'kubernetes', k8s: 'kubernetes',
+  terraform: 'terraform', aws: 'aws', gcp: 'gcp', azure: 'azure',
+  // Testing
+  pytest: 'pytest', jest: 'jest', vitest: 'vitest',
+  playwright: 'playwright', cypress: 'cypress', msw: 'msw',
+  // Tools
+  webpack: 'webpack', vite: 'vite', esbuild: 'esbuild',
+  turbopack: 'turbopack', bun: 'bun', pnpm: 'pnpm', yarn: 'yarn',
+};
+
+/**
+ * Pre-compiled word-boundary regex for each alias.
+ * Uses \b for most terms; special handling for short terms
+ * that could match as substrings (e.g. "go" in "going").
+ */
+const TECHNOLOGY_REGEX_MAP: Array<[RegExp, string]> = Object.entries(TECHNOLOGY_ALIASES).map(
+  ([alias, canonical]) => {
+    // Escape regex special chars (e.g. "next.js")
+    const escaped = alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return [new RegExp(`\\b${escaped}\\b`, 'i'), canonical];
+  }
+);
 
 const KNOWN_PATTERNS = [
   'cursor-pagination', 'offset-pagination', 'keyset-pagination',
@@ -187,28 +240,31 @@ const KNOWN_TOOLS = [
 // =============================================================================
 
 /**
- * Extract entities (technologies, patterns, tools) from text
+ * Extract entities (technologies, patterns, tools) from text.
+ * Uses word-boundary regex to avoid false positives (e.g. "java" from "javascript")
+ * and canonical aliases to deduplicate (e.g. "postgres"/"postgresql" → "postgresql").
  */
 export function extractEntities(text: string): string[] {
-  const textLower = text.toLowerCase();
   const entities: Set<string> = new Set();
 
-  for (const tech of KNOWN_TECHNOLOGIES) {
-    if (textLower.includes(tech)) {
-      entities.add(tech);
+  // Technologies: word-boundary matching with alias deduplication
+  for (const [regex, canonical] of TECHNOLOGY_REGEX_MAP) {
+    if (regex.test(text)) {
+      entities.add(canonical);
     }
   }
 
+  // Patterns: regex with hyphenated/space-separated support
   for (const pattern of KNOWN_PATTERNS) {
-    // Handle hyphenated and space-separated versions
     const normalized = pattern.replace(/-/g, '[- ]?');
-    if (new RegExp(normalized, 'i').test(text)) {
+    if (new RegExp(`\\b${normalized}\\b`, 'i').test(text)) {
       entities.add(pattern);
     }
   }
 
+  // Tools: word-boundary matching
   for (const tool of KNOWN_TOOLS) {
-    if (textLower.includes(tool)) {
+    if (new RegExp(`\\b${tool}\\b`, 'i').test(text)) {
       entities.add(tool);
     }
   }
@@ -233,6 +289,53 @@ export function extractRationale(text: string, matchIndex: number): string | und
   }
 
   return undefined;
+}
+
+/**
+ * Extract constraints from text near a match position
+ */
+export function extractConstraints(text: string, matchIndex: number): string[] {
+  const windowStart = Math.max(0, matchIndex - 50);
+  const windowEnd = Math.min(text.length, matchIndex + 400);
+  const window = text.slice(windowStart, windowEnd);
+  const constraints: string[] = [];
+
+  for (const pattern of CONSTRAINT_PATTERNS) {
+    // Reset lastIndex for global patterns
+    pattern.lastIndex = 0;
+    const matches = window.matchAll(pattern);
+    for (const match of matches) {
+      const captured = (match[1] || match[2] || '').trim().slice(0, 200);
+      if (captured.length > 5) {
+        constraints.push(captured);
+      }
+    }
+  }
+
+  return [...new Set(constraints)].slice(0, 5);
+}
+
+/**
+ * Extract tradeoffs from text near a match position
+ */
+export function extractTradeoffs(text: string, matchIndex: number): string[] {
+  const windowStart = Math.max(0, matchIndex - 50);
+  const windowEnd = Math.min(text.length, matchIndex + 400);
+  const window = text.slice(windowStart, windowEnd);
+  const tradeoffs: string[] = [];
+
+  for (const pattern of TRADEOFF_PATTERNS) {
+    pattern.lastIndex = 0;
+    const matches = window.matchAll(pattern);
+    for (const match of matches) {
+      const captured = (match[1] || match[2] || '').trim().slice(0, 200);
+      if (captured.length > 5) {
+        tradeoffs.push(captured);
+      }
+    }
+  }
+
+  return [...new Set(tradeoffs)].slice(0, 5);
 }
 
 /**
@@ -323,6 +426,8 @@ export function detectUserIntent(prompt: string): IntentDetectionResult {
 
       const rationale = extractRationale(prompt, position);
       const entities = extractEntities(matchText + (rationale || ''));
+      const constraints = extractConstraints(prompt, position);
+      const tradeoffs = extractTradeoffs(prompt, position);
 
       const confidence = calculateConfidence(
         matchText,
@@ -338,6 +443,8 @@ export function detectUserIntent(prompt: string): IntentDetectionResult {
         entities,
         rationale,
         alternatives,
+        ...(constraints.length > 0 ? { constraints } : {}),
+        ...(tradeoffs.length > 0 ? { tradeoffs } : {}),
         position,
       });
     }

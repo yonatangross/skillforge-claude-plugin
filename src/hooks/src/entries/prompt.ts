@@ -38,6 +38,9 @@ import { skillResolver } from '../prompt/skill-resolver.js';
 // Intelligent Decision Capture System (Issue #245)
 import { captureUserIntent } from '../prompt/capture-user-intent.js';
 
+// Memory Context Loader (Issue #245 - session-start memory loading)
+import { memoryContextLoader } from '../prompt/memory-context-loader.js';
+
 // Profile Injection (Issue #245 Phase 6.1)
 import { profileInjector } from '../prompt/profile-injector.js';
 
@@ -65,6 +68,8 @@ export const hooks: Record<string, HookFn> = {
   'prompt/skill-resolver': skillResolver,
   // Intelligent Decision Capture System
   'prompt/capture-user-intent': captureUserIntent,
+  // Memory Context Loader (Issue #245 - session-start memory loading)
+  'prompt/memory-context-loader': memoryContextLoader,
   // Profile Injection (Issue #245 Phase 6.1)
   'prompt/profile-injector': profileInjector,
   // Communication Style Tracker (Issue #245 Phase 2.2)

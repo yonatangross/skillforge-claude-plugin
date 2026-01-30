@@ -16,6 +16,8 @@ import {
   detectUserIntent,
   extractEntities,
   extractRationale,
+  extractConstraints,
+  extractTradeoffs,
   hasDecisionLanguage,
   hasProblemLanguage,
   hasQuestionLanguage,
@@ -630,6 +632,68 @@ describe('extractEntities', () => {
     });
   });
 
+  describe('word-boundary matching (no false positives)', () => {
+    it('should NOT extract "java" from "JavaScript"', () => {
+      const entities = extractEntities('We use JavaScript for the frontend');
+      expect(entities).toContain('javascript');
+      expect(entities).not.toContain('java');
+    });
+
+    it('should NOT extract "go" from "going"', () => {
+      const entities = extractEntities('going with this approach for now');
+      expect(entities).not.toContain('go');
+    });
+
+    it('should NOT extract "nest" from "nested"', () => {
+      const entities = extractEntities('Using nested structures in the config');
+      expect(entities).not.toContain('nest');
+    });
+
+    it('should NOT extract "react" from "reactive"', () => {
+      const entities = extractEntities('The reactive approach is better');
+      expect(entities).not.toContain('react');
+    });
+
+    it('should extract "java" when it stands alone', () => {
+      const entities = extractEntities('We use Java for the backend');
+      expect(entities).toContain('java');
+      expect(entities).not.toContain('javascript');
+    });
+
+    it('should extract "go" when it stands alone', () => {
+      const entities = extractEntities('We chose Go for the microservices');
+      expect(entities).toContain('go');
+    });
+
+    it('should extract "nest" when it refers to NestJS', () => {
+      const entities = extractEntities('Using Nest for the API layer');
+      expect(entities).toContain('nest');
+    });
+  });
+
+  describe('alias deduplication', () => {
+    it('should deduplicate "postgres" and "postgresql" to "postgresql"', () => {
+      const entities = extractEntities('Migrating from postgres to PostgreSQL 16');
+      expect(entities).toContain('postgresql');
+      expect(entities.filter(e => e === 'postgresql').length).toBe(1);
+      expect(entities).not.toContain('postgres');
+    });
+
+    it('should deduplicate "k8s" and "kubernetes" to "kubernetes"', () => {
+      const entities = extractEntities('Deploy on k8s using Kubernetes manifests');
+      expect(entities).toContain('kubernetes');
+      expect(entities.filter(e => e === 'kubernetes').length).toBe(1);
+      expect(entities).not.toContain('k8s');
+    });
+
+    it('should deduplicate "oauth" and "oauth2" to "oauth2"', () => {
+      const entities = extractEntities('Using OAuth for auth, specifically OAuth2 flows');
+      expect(entities).toContain('oauth2');
+      expect(entities.filter(e => e === 'oauth2').length).toBe(1);
+      expect(entities).not.toContain('oauth');
+    });
+  });
+
   describe('edge cases', () => {
     it('should handle empty text', () => {
       const entities = extractEntities('');
@@ -906,5 +970,142 @@ describe('integration tests', () => {
       expect(Array.isArray(intent.entities)).toBe(true);
       expect(typeof intent.position).toBe('number');
     });
+  });
+});
+
+// =============================================================================
+// extractConstraints() - Constraint Extraction
+// =============================================================================
+
+describe('extractConstraints', () => {
+  it('should extract "must" constraint', () => {
+    const text = 'I chose PostgreSQL because we must support JSON queries';
+    const constraints = extractConstraints(text, 0);
+    expect(constraints.length).toBeGreaterThan(0);
+    expect(constraints[0]).toContain('support JSON queries');
+  });
+
+  it('should extract "need to" constraint', () => {
+    const text = 'Going with Redis since we need to handle 10k requests per second';
+    const constraints = extractConstraints(text, 0);
+    expect(constraints.length).toBeGreaterThan(0);
+    expect(constraints[0]).toContain('handle 10k requests');
+  });
+
+  it('should extract "required" constraint', () => {
+    const text = 'Using TypeScript because type safety is required for this project';
+    const constraints = extractConstraints(text, 0);
+    expect(constraints.length).toBeGreaterThan(0);
+  });
+
+  it('should return empty array when no constraints found', () => {
+    const text = 'I chose PostgreSQL for the project';
+    const constraints = extractConstraints(text, 0);
+    expect(constraints).toEqual([]);
+  });
+
+  it('should deduplicate identical constraints', () => {
+    const text = 'We must support JSON and we must support JSON queries';
+    const constraints = extractConstraints(text, 0);
+    const unique = new Set(constraints);
+    expect(constraints.length).toBe(unique.size);
+  });
+
+  it('should limit to 5 constraints', () => {
+    const text = Array.from({ length: 10 }, (_, i) =>
+      `must handle requirement ${i} properly`
+    ).join('. ');
+    const constraints = extractConstraints(text, 0);
+    expect(constraints.length).toBeLessThanOrEqual(5);
+  });
+});
+
+// =============================================================================
+// extractTradeoffs() - Tradeoff Extraction
+// =============================================================================
+
+describe('extractTradeoffs', () => {
+  it('should extract "but" tradeoff', () => {
+    const text = 'I chose PostgreSQL for features but it uses more memory';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeGreaterThan(0);
+    expect(tradeoffs[0]).toContain('uses more memory');
+  });
+
+  it('should extract "however" tradeoff', () => {
+    const text = 'Going with microservices however it increases complexity';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeGreaterThan(0);
+    expect(tradeoffs[0]).toContain('increases complexity');
+  });
+
+  it('should extract "tradeoff" keyword', () => {
+    const text = 'The tradeoff is slower writes for faster reads';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeGreaterThan(0);
+  });
+
+  it('should extract "downside" keyword', () => {
+    const text = 'The downside is higher latency for some queries';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeGreaterThan(0);
+    expect(tradeoffs[0]).toContain('higher latency');
+  });
+
+  it('should extract "although" tradeoff', () => {
+    const text = 'Using Redis although it requires more infrastructure';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeGreaterThan(0);
+    expect(tradeoffs[0]).toContain('requires more infrastructure');
+  });
+
+  it('should return empty array when no tradeoffs found', () => {
+    const text = 'I chose PostgreSQL for the project';
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs).toEqual([]);
+  });
+
+  it('should limit to 5 tradeoffs', () => {
+    const text = Array.from({ length: 10 }, (_, i) =>
+      `however it has limitation ${i} to consider`
+    ).join('. ');
+    const tradeoffs = extractTradeoffs(text, 0);
+    expect(tradeoffs.length).toBeLessThanOrEqual(5);
+  });
+});
+
+// =============================================================================
+// Decision detection with constraints/tradeoffs
+// =============================================================================
+
+describe('detectUserIntent - constraints and tradeoffs on decisions', () => {
+  it('should attach constraints to decisions', () => {
+    const result = detectUserIntent(
+      'I decided to use PostgreSQL because we must support JSONB queries'
+    );
+    expect(result.decisions.length).toBeGreaterThan(0);
+    expect(result.decisions[0].constraints).toBeDefined();
+    expect(result.decisions[0].constraints!.length).toBeGreaterThan(0);
+  });
+
+  it('should attach tradeoffs to decisions', () => {
+    const result = detectUserIntent(
+      'I decided to use microservices however it increases deployment complexity'
+    );
+    expect(result.decisions.length).toBeGreaterThan(0);
+    expect(result.decisions[0].tradeoffs).toBeDefined();
+    expect(result.decisions[0].tradeoffs!.length).toBeGreaterThan(0);
+  });
+
+  it('should not attach empty constraints array', () => {
+    const result = detectUserIntent('I decided to use PostgreSQL for this project');
+    expect(result.decisions.length).toBeGreaterThan(0);
+    expect(result.decisions[0].constraints).toBeUndefined();
+  });
+
+  it('should not attach empty tradeoffs array', () => {
+    const result = detectUserIntent('I decided to use PostgreSQL for this project');
+    expect(result.decisions.length).toBeGreaterThan(0);
+    expect(result.decisions[0].tradeoffs).toBeUndefined();
   });
 });

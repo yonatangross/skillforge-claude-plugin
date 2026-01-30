@@ -57,8 +57,10 @@ describe('Dispatcher Registry Wiring E2E', () => {
       expect(hooksConfig.hooks[event].length, `${event} should have at least one hook group`).toBeGreaterThan(0);
     });
 
-    it('should have unified dispatcher for each async event', () => {
-      const asyncEvents = ['SessionStart', 'PostToolUse', 'Stop', 'SubagentStop', 'Notification', 'Setup'];
+    it('should have unified dispatcher using silent runner for each event (Issue #243)', () => {
+      // Issue #243: Async hooks converted to fire-and-forget using run-hook-silent.mjs
+      // This eliminates "Async hook X completed" messages while still running async work
+      const silentEvents = ['SessionStart', 'PostToolUse', 'Stop', 'SubagentStop', 'Notification', 'Setup'];
       const expectedDispatcherPaths: Record<string, string> = {
         SessionStart: 'lifecycle/unified-dispatcher',
         PostToolUse: 'posttool/unified-dispatcher',
@@ -68,13 +70,15 @@ describe('Dispatcher Registry Wiring E2E', () => {
         Setup: 'setup/unified-dispatcher',
       };
 
-      for (const event of asyncEvents) {
+      for (const event of silentEvents) {
         const groups = hooksConfig.hooks[event] || [];
         const allHooks = groups.flatMap(g => g.hooks);
         const dispatcher = allHooks.find(h => h.command.includes(expectedDispatcherPaths[event]));
 
         expect(dispatcher, `${event} should have unified dispatcher at ${expectedDispatcherPaths[event]}`).toBeDefined();
-        expect(dispatcher?.async, `${event} dispatcher should be async`).toBe(true);
+        // Should use silent runner (not async flag) to avoid terminal spam
+        expect(dispatcher?.command, `${event} dispatcher should use run-hook-silent.mjs`).toContain('run-hook-silent.mjs');
+        expect(dispatcher?.async, `${event} dispatcher should NOT have async flag`).toBeUndefined();
       }
     });
   });
@@ -196,8 +200,9 @@ describe('Dispatcher Registry Wiring E2E', () => {
     });
   });
 
-  describe('Timeout Configuration', () => {
-    it('should have appropriate timeouts for all async hooks', () => {
+  describe('Silent Hook Configuration (Issue #243)', () => {
+    it('should have NO async hooks (all use silent runner)', () => {
+      // Issue #243: All async hooks converted to fire-and-forget using run-hook-silent.mjs
       const allHooks: Hook[] = [];
       for (const eventGroups of Object.values(hooksConfig.hooks)) {
         for (const group of eventGroups) {
@@ -206,21 +211,16 @@ describe('Dispatcher Registry Wiring E2E', () => {
       }
 
       const asyncHooks = allHooks.filter(h => h.async === true);
-
-      for (const hook of asyncHooks) {
-        expect(hook.timeout, `Async hook ${hook.command} should have timeout`).toBeDefined();
-        expect(hook.timeout, `Timeout should be positive for ${hook.command}`).toBeGreaterThan(0);
-        expect(hook.timeout, `Timeout should not exceed 120s for ${hook.command}`).toBeLessThanOrEqual(120);
-      }
+      expect(asyncHooks.length, 'Should have no async hooks (use silent runner instead)').toBe(0);
     });
 
-    it('should have notification dispatcher with shorter timeout', () => {
+    it('should have notification dispatcher using silent runner', () => {
       const notificationGroups = hooksConfig.hooks.Notification || [];
       const allHooks = notificationGroups.flatMap(g => g.hooks);
       const dispatcher = allHooks.find(h => h.command.includes('notification/unified-dispatcher'));
 
       expect(dispatcher, 'Notification dispatcher should exist').toBeDefined();
-      expect(dispatcher?.timeout, 'Notification timeout should be ≤30s').toBeLessThanOrEqual(30);
+      expect(dispatcher?.command, 'Notification should use silent runner').toContain('run-hook-silent.mjs');
     });
   });
 
@@ -251,10 +251,10 @@ describe('Dispatcher Registry Wiring E2E', () => {
       expect(startGroups.length, 'SubagentStart should have hooks').toBeGreaterThan(0);
       expect(stopGroups.length, 'SubagentStop should have hooks').toBeGreaterThan(0);
 
-      // Stop dispatcher should be async
+      // Issue #243: Stop dispatcher should use silent runner (not async flag)
       const stopHooks = stopGroups.flatMap(g => g.hooks);
       const stopDispatcher = stopHooks.find(h => h.command.includes('unified-dispatcher'));
-      expect(stopDispatcher?.async, 'SubagentStop dispatcher should be async').toBe(true);
+      expect(stopDispatcher?.command, 'SubagentStop dispatcher should use silent runner').toContain('run-hook-silent.mjs');
     });
 
     it('should have memory injection in SubagentStart', () => {
@@ -280,8 +280,10 @@ describe('Dispatcher Registry Wiring E2E', () => {
         }
       }
 
-      // 10 async hooks expected (unified dispatchers + extras)
-      expect(asyncCount).toBe(10);
+      // Issue #243: All async hooks converted to fire-and-forget silent pattern.
+      // Now using run-hook-silent.mjs which spawns detached background processes.
+      // No "Async hook X completed" messages are printed since hooks are now sync.
+      expect(asyncCount).toBe(0);
     });
 
     it('should have hooks for all critical security operations', () => {

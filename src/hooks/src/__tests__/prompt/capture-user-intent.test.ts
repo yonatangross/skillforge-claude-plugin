@@ -22,9 +22,21 @@ vi.mock('../../lib/common.js', () => ({
 
 // Mock session-tracker.ts functions
 vi.mock('../../lib/session-tracker.js', () => ({
-  trackDecisionMade: vi.fn(),
-  trackPreferenceStated: vi.fn(),
   trackProblemReported: vi.fn(),
+}));
+
+// Mock memory-writer.ts functions
+vi.mock('../../lib/memory-writer.js', () => ({
+  createDecisionRecord: vi.fn((_type: string, _content: unknown, _entities: string[], _meta: unknown) => ({
+    id: 'mock-record-id',
+    type: _type,
+    content: _content,
+    entities: _entities,
+    relations: [],
+    identity: { user_id: 'test', anonymous_id: 'anon', machine_id: 'machine' },
+    metadata: { session_id: 'test', timestamp: '2025-01-01T00:00:00.000Z', confidence: 0.8, source: 'user_prompt', project: 'test', category: 'general' },
+  })),
+  storeDecision: vi.fn(() => Promise.resolve({ local: true, graph_queued: true, mem0_queued: false })),
 }));
 
 // Mock user-intent-detector.ts
@@ -54,14 +66,15 @@ vi.mock('node:fs', async () => {
 import {
   outputSilentSuccess,
   getProjectDir,
-  getSessionId,
   logHook,
 } from '../../lib/common.js';
 import {
-  trackDecisionMade,
-  trackPreferenceStated,
   trackProblemReported,
 } from '../../lib/session-tracker.js';
+import {
+  createDecisionRecord,
+  storeDecision,
+} from '../../lib/memory-writer.js';
 import { detectUserIntent } from '../../lib/user-intent-detector.js';
 import { existsSync, appendFileSync, mkdirSync } from 'node:fs';
 
@@ -91,7 +104,7 @@ function createPromptInput(prompt: string, overrides: Partial<HookInput> = {}): 
  * Create mock intent detection result
  */
 function createMockIntentResult(options: {
-  decisions?: Array<{ text: string; confidence: number; rationale?: string; entities?: string[] }>;
+  decisions?: Array<{ text: string; confidence: number; rationale?: string; entities?: string[]; alternatives?: string[]; constraints?: string[]; tradeoffs?: string[] }>;
   preferences?: Array<{ text: string; confidence: number; entities?: string[] }>;
   problems?: Array<{ text: string; confidence: number; entities?: string[] }>;
 } = {}) {
@@ -101,6 +114,9 @@ function createMockIntentResult(options: {
     confidence: d.confidence,
     rationale: d.rationale,
     entities: d.entities || [],
+    ...(d.alternatives?.length ? { alternatives: d.alternatives } : {}),
+    ...(d.constraints?.length ? { constraints: d.constraints } : {}),
+    ...(d.tradeoffs?.length ? { tradeoffs: d.tradeoffs } : {}),
     position: i * 50,
   }));
 
@@ -141,8 +157,8 @@ function createMockIntentResult(options: {
 describe('prompt/capture-user-intent', () => {
   const mockOutputSilentSuccess = vi.mocked(outputSilentSuccess);
   const mockDetectUserIntent = vi.mocked(detectUserIntent);
-  const mockTrackDecisionMade = vi.mocked(trackDecisionMade);
-  const mockTrackPreferenceStated = vi.mocked(trackPreferenceStated);
+  const mockCreateDecisionRecord = vi.mocked(createDecisionRecord);
+  const mockStoreDecision = vi.mocked(storeDecision);
   const mockTrackProblemReported = vi.mocked(trackProblemReported);
   const mockLogHook = vi.mocked(logHook);
   const mockExistsSync = vi.mocked(existsSync);
@@ -151,9 +167,20 @@ describe('prompt/capture-user-intent', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.restoreAllMocks();
     mockOutputSilentSuccess.mockReturnValue({ continue: true, suppressOutput: true });
     mockDetectUserIntent.mockReturnValue(createMockIntentResult());
     mockExistsSync.mockReturnValue(true);
+    mockStoreDecision.mockResolvedValue({ local: true, graph_queued: true, mem0_queued: false });
+    mockCreateDecisionRecord.mockImplementation((_type: string, _content: unknown, _entities: string[], _meta: unknown) => ({
+      id: 'mock-record-id',
+      type: _type as 'decision' | 'preference',
+      content: _content as { what: string; why?: string },
+      entities: _entities,
+      relations: [],
+      identity: { user_id: 'test', anonymous_id: 'anon', machine_id: 'machine' },
+      metadata: { session_id: 'test', timestamp: '2025-01-01T00:00:00.000Z', confidence: 0.8, source: 'user_prompt' as const, project: 'test', category: 'general' },
+    }));
   });
 
   afterEach(() => {
@@ -242,10 +269,10 @@ describe('prompt/capture-user-intent', () => {
   });
 
   // ===========================================================================
-  // 3. Detect decisions and track via trackDecisionMade
+  // 3. Detect decisions and store via createDecisionRecord + storeDecision
   // ===========================================================================
   describe('detect decisions', () => {
-    it('should track decisions via trackDecisionMade', () => {
+    it('should create a decision record and store it', () => {
       const mockResult = createMockIntentResult({
         decisions: [
           {
@@ -261,18 +288,28 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('I chose PostgreSQL for the database because of better JSON support');
       captureUserIntent(input);
 
-      expect(mockTrackDecisionMade).toHaveBeenCalledWith(
-        'I chose PostgreSQL for the database',
-        'better JSON support',
-        0.85
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        {
+          what: 'I chose PostgreSQL for the database',
+          why: 'better JSON support',
+        },
+        ['postgresql'],
+        expect.objectContaining({
+          session_id: 'test-session-123',
+          source: 'user_prompt',
+          confidence: 0.85,
+          category: 'database',
+        })
       );
+      expect(mockStoreDecision).toHaveBeenCalled();
     });
 
-    it('should track multiple decisions', () => {
+    it('should store multiple decisions', () => {
       const mockResult = createMockIntentResult({
         decisions: [
           { text: 'Let us use cursor pagination', confidence: 0.8 },
-          { text: 'Selected FastAPI for the backend', confidence: 0.9, rationale: 'async support' },
+          { text: 'Selected FastAPI for the backend', confidence: 0.9, rationale: 'async support', entities: ['fastapi'] },
         ],
       });
       mockDetectUserIntent.mockReturnValue(mockResult);
@@ -280,25 +317,14 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('Let us use cursor pagination. Selected FastAPI for the backend.');
       captureUserIntent(input);
 
-      expect(mockTrackDecisionMade).toHaveBeenCalledTimes(2);
-      expect(mockTrackDecisionMade).toHaveBeenNthCalledWith(
-        1,
-        'Let us use cursor pagination',
-        undefined,
-        0.8
-      );
-      expect(mockTrackDecisionMade).toHaveBeenNthCalledWith(
-        2,
-        'Selected FastAPI for the backend',
-        'async support',
-        0.9
-      );
+      expect(mockCreateDecisionRecord).toHaveBeenCalledTimes(2);
+      expect(mockStoreDecision).toHaveBeenCalledTimes(2);
     });
 
-    it('should track decisions without rationale', () => {
+    it('should store decisions without rationale', () => {
       const mockResult = createMockIntentResult({
         decisions: [
-          { text: 'Using TypeScript for all code', confidence: 0.75 },
+          { text: 'Using TypeScript for all code', confidence: 0.75, entities: ['typescript'] },
         ],
       });
       mockDetectUserIntent.mockReturnValue(mockResult);
@@ -306,22 +332,30 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('Using TypeScript for all code in this project');
       captureUserIntent(input);
 
-      expect(mockTrackDecisionMade).toHaveBeenCalledWith(
-        'Using TypeScript for all code',
-        undefined,
-        0.75
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        {
+          what: 'Using TypeScript for all code',
+          why: undefined,
+        },
+        ['typescript'],
+        expect.objectContaining({
+          source: 'user_prompt',
+          confidence: 0.75,
+          category: 'language',
+        })
       );
     });
   });
 
   // ===========================================================================
-  // 4. Detect preferences and track via trackPreferenceStated
+  // 4. Detect preferences and store via createDecisionRecord + storeDecision
   // ===========================================================================
   describe('detect preferences', () => {
-    it('should track preferences via trackPreferenceStated', () => {
+    it('should create a preference record and store it', () => {
       const mockResult = createMockIntentResult({
         preferences: [
-          { text: 'I prefer TypeScript over JavaScript', confidence: 0.9 },
+          { text: 'I prefer TypeScript over JavaScript', confidence: 0.9, entities: ['typescript'] },
         ],
       });
       mockDetectUserIntent.mockReturnValue(mockResult);
@@ -329,13 +363,21 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('I prefer TypeScript over JavaScript for type safety');
       captureUserIntent(input);
 
-      expect(mockTrackPreferenceStated).toHaveBeenCalledWith(
-        'I prefer TypeScript over JavaScript',
-        0.9
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'preference',
+        {
+          what: 'I prefer TypeScript over JavaScript',
+        },
+        ['typescript'],
+        expect.objectContaining({
+          source: 'user_prompt',
+          confidence: 0.9,
+        })
       );
+      expect(mockStoreDecision).toHaveBeenCalled();
     });
 
-    it('should track multiple preferences', () => {
+    it('should store multiple preferences', () => {
       const mockResult = createMockIntentResult({
         preferences: [
           { text: 'I always use tabs', confidence: 0.8 },
@@ -347,9 +389,8 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('I always use tabs for indentation. I prefer kebab-case for naming.');
       captureUserIntent(input);
 
-      expect(mockTrackPreferenceStated).toHaveBeenCalledTimes(2);
-      expect(mockTrackPreferenceStated).toHaveBeenNthCalledWith(1, 'I always use tabs', 0.8);
-      expect(mockTrackPreferenceStated).toHaveBeenNthCalledWith(2, 'I prefer kebab-case', 0.85);
+      expect(mockCreateDecisionRecord).toHaveBeenCalledTimes(2);
+      expect(mockStoreDecision).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -445,6 +486,23 @@ describe('prompt/capture-user-intent', () => {
         'info'
       );
     });
+
+    it('should not use createDecisionRecord for problems', () => {
+      const mockResult = createMockIntentResult({
+        problems: [
+          { text: 'Only a problem here', confidence: 0.75, entities: [] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Only a problem here with the build system');
+      captureUserIntent(input);
+
+      // Problems go through trackProblemReported, not createDecisionRecord
+      expect(mockCreateDecisionRecord).not.toHaveBeenCalled();
+      expect(mockStoreDecision).not.toHaveBeenCalled();
+      expect(mockTrackProblemReported).toHaveBeenCalledWith('Only a problem here');
+    });
   });
 
   // ===========================================================================
@@ -454,10 +512,10 @@ describe('prompt/capture-user-intent', () => {
     it('should handle prompt with decision, preference, and problem', () => {
       const mockResult = createMockIntentResult({
         decisions: [
-          { text: 'I chose FastAPI', confidence: 0.85, rationale: 'async support' },
+          { text: 'I chose FastAPI', confidence: 0.85, rationale: 'async support', entities: ['fastapi'] },
         ],
         preferences: [
-          { text: 'I prefer pytest for testing', confidence: 0.9 },
+          { text: 'I prefer pytest for testing', confidence: 0.9, entities: ['pytest'] },
         ],
         problems: [
           { text: 'The build is failing', confidence: 0.75, entities: [] },
@@ -470,15 +528,17 @@ describe('prompt/capture-user-intent', () => {
       );
       captureUserIntent(input);
 
-      expect(mockTrackDecisionMade).toHaveBeenCalledTimes(1);
-      expect(mockTrackPreferenceStated).toHaveBeenCalledTimes(1);
+      // Decisions and preferences go through memory pipeline
+      expect(mockCreateDecisionRecord).toHaveBeenCalledTimes(2); // 1 decision + 1 preference
+      expect(mockStoreDecision).toHaveBeenCalledTimes(2);
+      // Problems go through session tracker
       expect(mockTrackProblemReported).toHaveBeenCalledTimes(1);
     });
 
     it('should handle prompt with only decisions and preferences', () => {
       const mockResult = createMockIntentResult({
         decisions: [
-          { text: 'Using Redis for caching', confidence: 0.8 },
+          { text: 'Using Redis for caching', confidence: 0.8, entities: ['redis'] },
         ],
         preferences: [
           { text: 'I prefer explicit imports', confidence: 0.85 },
@@ -489,15 +549,15 @@ describe('prompt/capture-user-intent', () => {
       const input = createPromptInput('Using Redis for caching. I prefer explicit imports in all files.');
       captureUserIntent(input);
 
-      expect(mockTrackDecisionMade).toHaveBeenCalledTimes(1);
-      expect(mockTrackPreferenceStated).toHaveBeenCalledTimes(1);
+      expect(mockCreateDecisionRecord).toHaveBeenCalledTimes(2);
+      expect(mockStoreDecision).toHaveBeenCalledTimes(2);
       expect(mockTrackProblemReported).not.toHaveBeenCalled();
     });
 
     it('should log when decisions and preferences are tracked', () => {
       const mockResult = createMockIntentResult({
         decisions: [
-          { text: 'Using Vitest', confidence: 0.85 },
+          { text: 'Using Vitest', confidence: 0.85, entities: ['vitest'] },
         ],
         preferences: [
           { text: 'I prefer camelCase', confidence: 0.8 },
@@ -510,7 +570,7 @@ describe('prompt/capture-user-intent', () => {
 
       expect(mockLogHook).toHaveBeenCalledWith(
         'capture-user-intent',
-        'Tracked: 1 decisions, 1 preferences (to events.jsonl)',
+        'Tracked: 1 decisions, 1 preferences (to decisions.jsonl + queues)',
         'debug'
       );
     });
@@ -537,21 +597,38 @@ describe('prompt/capture-user-intent', () => {
       );
     });
 
-    it('should continue processing when session tracking fails', () => {
+    it('should continue processing when storeDecision rejects', () => {
       const mockResult = createMockIntentResult({
         decisions: [
-          { text: 'Using PostgreSQL', confidence: 0.85 },
+          { text: 'Using PostgreSQL', confidence: 0.85, entities: ['postgresql'] },
         ],
       });
       mockDetectUserIntent.mockReturnValue(mockResult);
-      mockTrackDecisionMade.mockImplementation(() => {
-        throw new Error('Tracking failed');
+      mockStoreDecision.mockRejectedValue(new Error('Storage failed'));
+
+      const input = createPromptInput('Using PostgreSQL for the database');
+      const result = captureUserIntent(input);
+
+      // Should still return silent success despite storage error
+      expect(result.continue).toBe(true);
+      expect(result.suppressOutput).toBe(true);
+    });
+
+    it('should continue processing when createDecisionRecord throws', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'Using PostgreSQL', confidence: 0.85, entities: ['postgresql'] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+      mockCreateDecisionRecord.mockImplementation(() => {
+        throw new Error('Record creation failed');
       });
 
       const input = createPromptInput('Using PostgreSQL for the database');
       const result = captureUserIntent(input);
 
-      // Should still return silent success despite tracking error
+      // Should still return silent success due to try/catch in storeDecisionsAndPreferences
       expect(result.continue).toBe(true);
       expect(result.suppressOutput).toBe(true);
     });
@@ -743,15 +820,15 @@ describe('prompt/capture-user-intent', () => {
 
       expect(result.continue).toBe(true);
       expect(result.suppressOutput).toBe(true);
-      expect(mockTrackDecisionMade).not.toHaveBeenCalled();
-      expect(mockTrackPreferenceStated).not.toHaveBeenCalled();
+      expect(mockCreateDecisionRecord).not.toHaveBeenCalled();
+      expect(mockStoreDecision).not.toHaveBeenCalled();
       expect(mockTrackProblemReported).not.toHaveBeenCalled();
     });
 
     it('should not write to JSONL when no problems', () => {
       mockDetectUserIntent.mockReturnValue(createMockIntentResult({
         decisions: [
-          { text: 'Using React', confidence: 0.85 },
+          { text: 'Using React', confidence: 0.85, entities: ['react'] },
         ],
       }));
 
@@ -831,7 +908,7 @@ describe('prompt/capture-user-intent', () => {
 
     it('should always suppress output for non-blocking capture', () => {
       const mockResult = createMockIntentResult({
-        decisions: [{ text: 'Test decision', confidence: 0.85 }],
+        decisions: [{ text: 'Test decision', confidence: 0.85, entities: [] }],
         preferences: [{ text: 'Test preference', confidence: 0.8 }],
         problems: [{ text: 'Test problem', confidence: 0.75, entities: [] }],
       });
@@ -841,6 +918,228 @@ describe('prompt/capture-user-intent', () => {
       const result = captureUserIntent(input);
 
       expect(result.suppressOutput).toBe(true);
+    });
+  });
+
+  // ===========================================================================
+  // inferCategory tests
+  // ===========================================================================
+  describe('inferCategory via createDecisionRecord calls', () => {
+    it('should infer database category from postgresql entity', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'Using PostgreSQL', confidence: 0.85, entities: ['postgresql'] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using PostgreSQL for the database');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.any(Object),
+        ['postgresql'],
+        expect.objectContaining({ category: 'database' })
+      );
+    });
+
+    it('should infer frontend category from react entity', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'Using React', confidence: 0.85, entities: ['react'] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using React for the frontend');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.any(Object),
+        ['react'],
+        expect.objectContaining({ category: 'frontend' })
+      );
+    });
+
+    it('should infer general category for unknown entities', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'Using foobar', confidence: 0.85, entities: ['foobar'] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using foobar for everything');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.any(Object),
+        ['foobar'],
+        expect.objectContaining({ category: 'general' })
+      );
+    });
+
+    it('should infer general category when no entities', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'I decided on this approach', confidence: 0.8, entities: [] },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('I decided on this approach for the project');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.any(Object),
+        [],
+        expect.objectContaining({ category: 'general' })
+      );
+    });
+  });
+
+  // ===========================================================================
+  // No double-tracking (createDecisionRecord handles session tracking internally)
+  // ===========================================================================
+  describe('no double-tracking', () => {
+    it('should not directly call trackDecisionMade or trackPreferenceStated', () => {
+      // These are now called internally by createDecisionRecord in memory-writer.ts
+      // The hook should NOT call them directly
+      const mockResult = createMockIntentResult({
+        decisions: [
+          { text: 'Using PostgreSQL', confidence: 0.85, entities: ['postgresql'] },
+        ],
+        preferences: [
+          { text: 'I prefer tabs', confidence: 0.8 },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using PostgreSQL. I prefer tabs.');
+      captureUserIntent(input);
+
+      // createDecisionRecord is called (which internally calls trackDecisionMade/trackPreferenceStated)
+      expect(mockCreateDecisionRecord).toHaveBeenCalledTimes(2);
+      // trackProblemReported is NOT called since there are no problems
+      expect(mockTrackProblemReported).not.toHaveBeenCalled();
+    });
+  });
+
+  // ===========================================================================
+  // Alternatives/Constraints/Tradeoffs pass-through to createDecisionRecord
+  // ===========================================================================
+  describe('alternatives/constraints/tradeoffs pass-through', () => {
+    it('should pass alternatives to content when present', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          {
+            text: 'Chose PostgreSQL over MySQL',
+            confidence: 0.9,
+            rationale: 'better JSON support',
+            entities: ['postgresql'],
+            alternatives: ['MySQL'],
+          },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Chose PostgreSQL over MySQL because better JSON support');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.objectContaining({
+          what: 'Chose PostgreSQL over MySQL',
+          why: 'better JSON support',
+          alternatives: ['MySQL'],
+        }),
+        ['postgresql'],
+        expect.any(Object)
+      );
+    });
+
+    it('should pass constraints to content when present', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          {
+            text: 'Using PostgreSQL for the database',
+            confidence: 0.85,
+            entities: ['postgresql'],
+            constraints: ['support JSONB queries'],
+          },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using PostgreSQL because we must support JSONB queries');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.objectContaining({
+          what: 'Using PostgreSQL for the database',
+          constraints: ['support JSONB queries'],
+        }),
+        ['postgresql'],
+        expect.any(Object)
+      );
+    });
+
+    it('should pass tradeoffs to content when present', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          {
+            text: 'Going with microservices architecture',
+            confidence: 0.8,
+            entities: ['microservices'],
+            tradeoffs: ['it increases deployment complexity'],
+          },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Going with microservices however it increases deployment complexity');
+      captureUserIntent(input);
+
+      expect(mockCreateDecisionRecord).toHaveBeenCalledWith(
+        'decision',
+        expect.objectContaining({
+          what: 'Going with microservices architecture',
+          tradeoffs: ['it increases deployment complexity'],
+        }),
+        ['microservices'],
+        expect.any(Object)
+      );
+    });
+
+    it('should not include alternatives/constraints/tradeoffs when empty', () => {
+      const mockResult = createMockIntentResult({
+        decisions: [
+          {
+            text: 'Using Redis for caching',
+            confidence: 0.85,
+            entities: ['redis'],
+            // No alternatives, constraints, or tradeoffs
+          },
+        ],
+      });
+      mockDetectUserIntent.mockReturnValue(mockResult);
+
+      const input = createPromptInput('Using Redis for caching in production');
+      captureUserIntent(input);
+
+      const callContent = mockCreateDecisionRecord.mock.calls[0][1] as Record<string, unknown>;
+      expect(callContent).toEqual({
+        what: 'Using Redis for caching',
+        why: undefined,
+      });
+      expect(callContent).not.toHaveProperty('alternatives');
+      expect(callContent).not.toHaveProperty('constraints');
+      expect(callContent).not.toHaveProperty('tradeoffs');
     });
   });
 
@@ -910,8 +1209,8 @@ describe('prompt/capture-user-intent', () => {
       const result = captureUserIntent(input);
 
       expect(result.continue).toBe(true);
-      expect(mockTrackDecisionMade).not.toHaveBeenCalled();
-      expect(mockTrackPreferenceStated).not.toHaveBeenCalled();
+      expect(mockCreateDecisionRecord).not.toHaveBeenCalled();
+      expect(mockStoreDecision).not.toHaveBeenCalled();
       expect(mockTrackProblemReported).not.toHaveBeenCalled();
     });
   });
