@@ -41,6 +41,10 @@ const DISPATCHERS = {
   'prompt': async (input) => {
     const { captureUserIntent } = await import('../dist/prompt.mjs');
     return captureUserIntent(input);
+  },
+  'stop': async (input) => {
+    const { unifiedStopDispatcher } = await import('../dist/stop.mjs');
+    return unifiedStopDispatcher(input);
   }
 };
 
