@@ -38,8 +38,6 @@ import {
   trackDecisionMade,
   trackPreferenceStated,
 } from './session-tracker.js';
-import { buildRelatesWithStrategy } from './relates-to-scaling.js';
-import { inferEntityType as inferEntityTypeFromRegistry } from './technology-registry.js';
 
 // =============================================================================
 // TYPES
@@ -311,12 +309,16 @@ export function buildGraphOperations(decision: DecisionRecord): QueuedGraphOpera
   }
 
   // Create RELATES_TO between co-occurring entities (cross-links)
-  // Uses scaling strategy to avoid O(n²) explosion for large entity sets
-  // - ≤10 entities: all pairs (max 45 relations)
-  // - >10 entities: weighted importance strategy with topk fallback
   if (decision.entities.length >= 2) {
-    const relatesToRelations = buildRelatesWithStrategy(decision.entities);
-    relations.push(...relatesToRelations);
+    for (let i = 0; i < decision.entities.length; i++) {
+      for (let j = i + 1; j < decision.entities.length; j++) {
+        relations.push({
+          from: decision.entities[i],
+          to: decision.entities[j],
+          relationType: 'RELATES_TO',
+        });
+      }
+    }
   }
 
   // Add any explicit relations from the record
@@ -388,17 +390,35 @@ function capitalizeEntityType(type: string): EntityType {
 
 /**
  * Infer entity type from name
- * Uses technology-registry.ts as single source of truth
  */
 function inferEntityType(name: string): EntityType {
-  // Use centralized registry for accurate type inference
-  const registryType = inferEntityTypeFromRegistry(name);
-  if (registryType) {
-    return registryType;
+  const nameLower = name.toLowerCase();
+
+  // Technologies
+  const techs = [
+    'postgresql', 'postgres', 'redis', 'mongodb', 'fastapi', 'django', 'react',
+    'vue', 'angular', 'typescript', 'python', 'docker', 'kubernetes',
+  ];
+  if (techs.some(t => nameLower.includes(t))) {
+    return 'Technology';
   }
 
-  // Fallback: Default to Technology for unknown entities
-  return 'Technology';
+  // Patterns
+  const patterns = [
+    'pagination', 'pattern', 'architecture', 'cqrs', 'saga', 'circuit',
+    'injection', 'sourcing', 'caching', 'rag',
+  ];
+  if (patterns.some(p => nameLower.includes(p))) {
+    return 'Pattern';
+  }
+
+  // Tools
+  const tools = ['grep', 'read', 'write', 'bash', 'git', 'npm', 'jest', 'pytest'];
+  if (tools.some(t => nameLower.includes(t))) {
+    return 'Tool';
+  }
+
+  return 'Technology'; // Default
 }
 
 /**

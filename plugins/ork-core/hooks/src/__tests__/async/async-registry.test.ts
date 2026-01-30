@@ -36,12 +36,12 @@ describe('Async Hooks Registry', () => {
     hooksConfig = JSON.parse(content);
   });
 
-  describe('Async Hook Configuration', () => {
-    it('should have async: true for all unified dispatchers', () => {
-      // Post-consolidation (Issue #235): individual async hooks were absorbed
-      // into unified dispatchers. Each event's async work is routed through
-      // a single dispatcher entry in hooks.json.
-      const expectedAsyncDispatchers = [
+  describe('Silent Hook Configuration (Issue #243)', () => {
+    it('should have unified dispatchers using silent runner (not async flag)', () => {
+      // Issue #243: Async hooks converted to fire-and-forget using run-hook-silent.mjs
+      // This eliminates "Async hook X completed" messages while still running async work
+      // in detached background processes.
+      const expectedSilentDispatchers = [
         { path: 'lifecycle/unified-dispatcher', event: 'SessionStart' },
         { path: 'posttool/unified-dispatcher', event: 'PostToolUse' },
         { path: 'stop/unified-dispatcher', event: 'Stop' },
@@ -57,14 +57,15 @@ describe('Async Hooks Registry', () => {
         }
       }
 
-      for (const { path: hookPath, event } of expectedAsyncDispatchers) {
+      for (const { path: hookPath, event } of expectedSilentDispatchers) {
         const hook = allHooks.find(h => h.command.includes(hookPath));
         expect(hook, `Dispatcher ${hookPath} (${event}) should exist in hooks.json`).toBeDefined();
-        expect(hook?.async, `Dispatcher ${hookPath} (${event}) should have async: true`).toBe(true);
+        expect(hook?.command, `Dispatcher ${hookPath} (${event}) should use run-hook-silent.mjs`).toContain('run-hook-silent.mjs');
+        expect(hook?.async, `Dispatcher ${hookPath} (${event}) should NOT have async flag`).toBeUndefined();
       }
     });
 
-    it('should have timeout configured for all async hooks', () => {
+    it('should have NO async hooks (all use silent runner)', () => {
       const allHooks: Hook[] = [];
       for (const eventGroups of Object.values(hooksConfig.hooks)) {
         for (const group of eventGroups) {
@@ -73,10 +74,7 @@ describe('Async Hooks Registry', () => {
       }
 
       const asyncHooks = allHooks.filter(h => h.async === true);
-      for (const hook of asyncHooks) {
-        expect(hook.timeout, `Async hook should have timeout: ${hook.command}`).toBeDefined();
-        expect(hook.timeout, `Timeout should be positive: ${hook.command}`).toBeGreaterThan(0);
-      }
+      expect(asyncHooks.length, 'All async hooks should be converted to silent pattern').toBe(0);
     });
 
     it('should NOT have async: true for blocking hooks', () => {
@@ -123,10 +121,10 @@ describe('Async Hooks Registry', () => {
         }
       }
 
-      // Post-consolidation (Issue #235): unified dispatchers
-      // (lifecycle, posttool, stop, subagent-stop, notification, setup, + others)
-      // Any change to this count should be deliberate.
-      expect(asyncCount).toBe(10);
+      // Issue #243: All async hooks converted to fire-and-forget silent pattern.
+      // Now using run-hook-silent.mjs which spawns detached background processes.
+      // No "Async hook X completed" messages are printed since hooks are now sync.
+      expect(asyncCount).toBe(0);
     });
   });
 
@@ -167,8 +165,10 @@ describe('Async Hooks Registry', () => {
     });
   });
 
-  describe('Timeout Values', () => {
-    it('should have appropriate timeout values for all unified dispatchers', () => {
+  describe('Silent Runner Configuration (Issue #243)', () => {
+    it('should have NO timeout values (silent runner manages its own lifecycle)', () => {
+      // Issue #243: Silent runner hooks don't use timeout field
+      // Background processes manage their own lifecycle independently
       const allHooks: Hook[] = [];
       for (const eventGroups of Object.values(hooksConfig.hooks)) {
         for (const group of eventGroups) {
@@ -176,20 +176,21 @@ describe('Async Hooks Registry', () => {
         }
       }
 
-      // All dispatchers and their expected timeouts
-      const expectedTimeouts: Record<string, number> = {
-        'lifecycle/unified-dispatcher': 60,
-        'posttool/unified-dispatcher': 60,
-        'stop/unified-dispatcher': 60,
-        'subagent-stop/unified-dispatcher': 60,
-        'notification/unified-dispatcher': 30, // Shorter: notifications are lightweight
-        'setup/unified-dispatcher': 60,
-      };
+      // All dispatchers should use silent runner (no timeout field)
+      const silentDispatchers = [
+        'lifecycle/unified-dispatcher',
+        'posttool/unified-dispatcher',
+        'stop/unified-dispatcher',
+        'subagent-stop/unified-dispatcher',
+        'notification/unified-dispatcher',
+        'setup/unified-dispatcher',
+      ];
 
-      for (const [hookPath, expectedTimeout] of Object.entries(expectedTimeouts)) {
+      for (const hookPath of silentDispatchers) {
         const hook = allHooks.find(h => h.command.includes(hookPath));
         expect(hook, `Dispatcher ${hookPath} should exist`).toBeDefined();
-        expect(hook!.timeout, `${hookPath} should have ${expectedTimeout}s timeout`).toBe(expectedTimeout);
+        expect(hook!.command, `${hookPath} should use run-hook-silent.mjs`).toContain('run-hook-silent.mjs');
+        expect(hook!.timeout, `${hookPath} should NOT have timeout (silent runner)`).toBeUndefined();
       }
     });
   });

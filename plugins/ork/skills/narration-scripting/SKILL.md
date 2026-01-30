@@ -2,6 +2,8 @@
 name: narration-scripting
 description: Scene-by-scene narration scripts for videos. Use when writing voiceover scripts, adding timing markers, or creating CTA patterns for demos
 tags: [video, narration, script, timing, pacing, copywriting]
+context: fork
+agent: demo-producer
 user-invocable: false
 version: 1.0.0
 ---

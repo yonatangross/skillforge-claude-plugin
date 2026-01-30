@@ -10,19 +10,8 @@
  * - Capture rationale ("because", "since", "to avoid")
  * - Extract mentioned entities (technologies, patterns, tools)
  *
- * Uses technology-registry.ts as single source of truth for:
- * - Technology aliases (postgres → postgresql, k8s → kubernetes)
- * - Known patterns (cursor-pagination, clean-architecture)
- * - Known tools (git, npm, claude)
- *
  * CC 2.1.16 Compliant
  */
-
-import {
-  getTechnologyAliasMap,
-  getPatternsList,
-  getToolsList,
-} from './technology-registry.js';
 
 // =============================================================================
 // TYPES
@@ -179,10 +168,41 @@ const TRADEOFF_PATTERNS: RegExp[] = [
 
 /**
  * Technology aliases → canonical name mapping.
- * Loaded from technology-registry.ts (single source of truth).
- * Deduplicates "postgres"/"postgresql" and similar variants.
+ * Each key is an alias (or the canonical name itself).
+ * Value is the canonical name emitted as the entity.
+ * This deduplicates "postgres"/"postgresql" and similar variants.
  */
-const TECHNOLOGY_ALIASES: Record<string, string> = getTechnologyAliasMap();
+const TECHNOLOGY_ALIASES: Record<string, string> = {
+  // Databases
+  postgresql: 'postgresql', postgres: 'postgresql',
+  pgvector: 'pgvector', redis: 'redis', mongodb: 'mongodb',
+  sqlite: 'sqlite', mysql: 'mysql', dynamodb: 'dynamodb',
+  // Frameworks
+  fastapi: 'fastapi', django: 'django', flask: 'flask',
+  express: 'express', nextjs: 'nextjs', 'next.js': 'nextjs',
+  nest: 'nest', nestjs: 'nest', spring: 'spring', rails: 'rails',
+  // Frontend
+  react: 'react', vue: 'vue', angular: 'angular', svelte: 'svelte',
+  solid: 'solid', qwik: 'qwik', astro: 'astro',
+  // Languages
+  typescript: 'typescript', python: 'python', javascript: 'javascript',
+  rust: 'rust', go: 'go', java: 'java', kotlin: 'kotlin',
+  // Auth
+  jwt: 'jwt', oauth: 'oauth2', oauth2: 'oauth2', passkeys: 'passkeys',
+  saml: 'saml', oidc: 'oauth2',
+  // AI/ML
+  langchain: 'langchain', langgraph: 'langgraph', langfuse: 'langfuse',
+  openai: 'openai', anthropic: 'anthropic', llama: 'llama',
+  // Infrastructure
+  docker: 'docker', kubernetes: 'kubernetes', k8s: 'kubernetes',
+  terraform: 'terraform', aws: 'aws', gcp: 'gcp', azure: 'azure',
+  // Testing
+  pytest: 'pytest', jest: 'jest', vitest: 'vitest',
+  playwright: 'playwright', cypress: 'cypress', msw: 'msw',
+  // Tools
+  webpack: 'webpack', vite: 'vite', esbuild: 'esbuild',
+  turbopack: 'turbopack', bun: 'bun', pnpm: 'pnpm', yarn: 'yarn',
+};
 
 /**
  * Pre-compiled word-boundary regex for each alias.
@@ -197,17 +217,23 @@ const TECHNOLOGY_REGEX_MAP: Array<[RegExp, string]> = Object.entries(TECHNOLOGY_
   }
 );
 
-/**
- * Known patterns list.
- * Loaded from technology-registry.ts (single source of truth).
- */
-const KNOWN_PATTERNS = getPatternsList();
+const KNOWN_PATTERNS = [
+  'cursor-pagination', 'offset-pagination', 'keyset-pagination',
+  'repository-pattern', 'service-layer', 'clean-architecture',
+  'dependency-injection', 'event-sourcing', 'cqrs', 'saga-pattern',
+  'circuit-breaker', 'rate-limiting', 'retry-pattern',
+  'cache-aside', 'write-through', 'read-through',
+  'rag', 'semantic-search', 'vector-search',
+  'tdd', 'bdd', 'ddd',
+  'microservices', 'monolith', 'serverless',
+  'rest', 'graphql', 'grpc', 'websocket', 'sse',
+];
 
-/**
- * Known tools list.
- * Loaded from technology-registry.ts (single source of truth).
- */
-const KNOWN_TOOLS = getToolsList();
+const KNOWN_TOOLS = [
+  'grep', 'read', 'write', 'edit', 'glob', 'bash', 'task',
+  'git', 'gh', 'npm', 'yarn', 'pnpm',
+  'claude', 'cursor', 'vscode', 'vim', 'neovim',
+];
 
 // =============================================================================
 // EXTRACTION FUNCTIONS

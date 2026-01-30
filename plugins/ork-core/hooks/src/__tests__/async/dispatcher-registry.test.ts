@@ -35,6 +35,8 @@ describe('Dispatcher Registry Wiring', () => {
         'user-tracking',
         // GAP-011: Solution detector for problem-solution pairing
         'solution-detector',
+        // Issue #243: Tool preference learner moved here to reduce async hook spam
+        'tool-preference-learner',
       ]);
     });
 
@@ -183,8 +185,8 @@ describe('Dispatcher Registry Wiring', () => {
         notificationHooks().length +
         setupHooks().length;
 
-      // posttool: 16, lifecycle: 7, stop: 9, subagent-stop: 4, notification: 2, setup: 3
-      expect(total).toBe(41);
+      // posttool: 17 (Issue #243: +1 tool-preference-learner), lifecycle: 7, stop: 9, subagent-stop: 4, notification: 2, setup: 3
+      expect(total).toBe(42);
     });
   });
 });

@@ -3,6 +3,10 @@
  *
  * Config for the new phase-centric template where all 3 complexity levels
  * progress through the SAME PHASE at the SAME TIME.
+ *
+ * VISUALIZATION OPTIONS:
+ * - summaryVisualization: "graph" (default) - Network graph showing architecture
+ * - summaryVisualization: "pipeline" - Linear pipeline flow showing stages
  */
 
 import type { z } from "zod";
@@ -14,6 +18,10 @@ export const implementSkillPhasesConfig: z.infer<typeof skillPhaseDemoSchema> = 
   hook: "Add auth in seconds, not hours",
   tagline: "Same skill. Any complexity. Production ready.",
   primaryColor: "#8b5cf6",
+
+  // Switch between "graph" (network diagram) and "pipeline" (linear flow)
+  // summaryVisualization: "graph", // default - shows interconnected architecture
+  // summaryVisualization: "pipeline", // alternative - shows linear stages
 
   levelDescriptions: {
     simple: "JWT validation",
@@ -227,6 +235,10 @@ export const implementSkillPhasesConfig: z.infer<typeof skillPhaseDemoSchema> = 
         "Expiry checking",
         "User extraction",
       ],
+      files: [
+        "middleware.ts",
+        "auth.test.ts",
+      ],
       stats: {
         files: 2,
         tests: 4,
@@ -241,6 +253,12 @@ export const implementSkillPhasesConfig: z.infer<typeof skillPhaseDemoSchema> = 
         "Refresh token flow",
         "Session management",
       ],
+      files: [
+        "middleware.ts",
+        "jwt.service.ts",
+        "oauth.provider.ts",
+        "oauth.test.ts",
+      ],
       stats: {
         files: 4,
         tests: 18,
@@ -254,6 +272,14 @@ export const implementSkillPhasesConfig: z.infer<typeof skillPhaseDemoSchema> = 
         "SMS backup codes",
         "Hardware key support",
         "Audit logging",
+      ],
+      files: [
+        "middleware.ts",
+        "jwt.service.ts",
+        "oauth.provider.ts",
+        "mfa.service.ts",
+        "session.store.ts",
+        "mfa.test.ts",
       ],
       stats: {
         files: 6,

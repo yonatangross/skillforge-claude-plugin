@@ -521,6 +521,7 @@ export const RemotionRoot: React.FC = () => {
       {/* ==================== SKILL PHASE DEMO (NEW GENERIC TEMPLATE) ==================== */}
 
       {/* /implement SkillPhaseDemo - 3 terminals side by side, same phase at same time */}
+      {/* Adaptive visualization auto-selects best format per complexity level */}
       <Composition
         id="ImplementSkillPhaseDemo"
         component={SkillPhaseDemo}

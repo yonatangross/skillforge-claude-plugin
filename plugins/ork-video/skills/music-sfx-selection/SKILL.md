@@ -2,6 +2,8 @@
 name: music-sfx-selection
 description: Audio selection for tech demo videos. Use when choosing background music, timing SFX, setting volume levels, or matching mood to content
 tags: [video, audio, music, sfx, sound-design, mixing]
+context: fork
+agent: demo-producer
 user-invocable: false
 version: 1.0.0
 ---
