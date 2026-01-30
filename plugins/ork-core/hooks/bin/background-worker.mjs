@@ -10,11 +10,60 @@
  * Usage: node background-worker.mjs <work-file-path>
  */
 
-import { readFileSync, unlinkSync, existsSync } from 'node:fs';
+import { readFileSync, unlinkSync, existsSync, readdirSync, statSync, appendFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Self-terminating timeout (5 minutes) - prevents worker from hanging indefinitely
+const WORKER_TIMEOUT_MS = 5 * 60 * 1000;
+const workerTimeout = setTimeout(() => {
+  logToFile('Worker timeout reached (5min), terminating');
+  process.exit(0);
+}, WORKER_TIMEOUT_MS);
+
+// Log file for debugging (optional, writes to .claude/logs/hooks/)
+function logToFile(message) {
+  try {
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+    const logDir = join(projectDir, '.claude', 'logs', 'hooks');
+    mkdirSync(logDir, { recursive: true });
+    const logFile = join(logDir, 'background-worker.log');
+    const timestamp = new Date().toISOString();
+    appendFileSync(logFile, `[${timestamp}] ${message}\n`);
+  } catch {
+    // Ignore logging errors
+  }
+}
+
+// Clean up orphaned temp files (older than 10 minutes)
+function cleanupOrphanedFiles() {
+  try {
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+    const pendingDir = join(projectDir, '.claude', 'hooks', 'pending');
+    if (!existsSync(pendingDir)) return;
+
+    const now = Date.now();
+    const maxAge = 10 * 60 * 1000; // 10 minutes
+
+    const files = readdirSync(pendingDir);
+    for (const file of files) {
+      const filePath = join(pendingDir, file);
+      try {
+        const stats = statSync(filePath);
+        if (now - stats.mtimeMs > maxAge) {
+          unlinkSync(filePath);
+          logToFile(`Cleaned up orphaned file: ${file}`);
+        }
+      } catch {
+        // Ignore individual file errors
+      }
+    }
+  } catch {
+    // Ignore cleanup errors
+  }
+}
 
 // Dispatcher registry - maps hook names to their dispatcher functions
 const DISPATCHERS = {
@@ -49,15 +98,18 @@ const DISPATCHERS = {
 };
 
 async function main() {
+  // Clean up orphaned files from previous runs
+  cleanupOrphanedFiles();
+
   const workFile = process.argv[2] || process.env.ORCHESTKIT_WORK_FILE;
 
   if (!workFile) {
-    console.error('[background-worker] No work file specified');
+    logToFile('No work file specified');
     process.exit(1);
   }
 
   if (!existsSync(workFile)) {
-    console.error(`[background-worker] Work file not found: ${workFile}`);
+    logToFile(`Work file not found: ${workFile}`);
     process.exit(1);
   }
 
@@ -66,7 +118,7 @@ async function main() {
     const content = readFileSync(workFile, 'utf-8');
     work = JSON.parse(content);
   } catch (error) {
-    console.error(`[background-worker] Failed to read work file:`, error.message);
+    logToFile(`Failed to read work file: ${error.message}`);
     process.exit(1);
   }
 
@@ -78,21 +130,24 @@ async function main() {
   }
 
   const { hook, input, id } = work;
+  logToFile(`Processing ${hook} hook (id: ${id})`);
 
   const dispatcher = DISPATCHERS[hook];
   if (!dispatcher) {
-    console.error(`[background-worker] Unknown hook: ${hook}`);
+    logToFile(`Unknown hook: ${hook}`);
     process.exit(1);
   }
 
   try {
     await dispatcher(input);
+    logToFile(`${hook} hook completed successfully`);
   } catch (error) {
     // Log but don't fail - fire-and-forget is best-effort
-    console.error(`[background-worker] ${hook} dispatcher failed:`, error.message);
+    logToFile(`${hook} dispatcher failed: ${error.message}`);
   }
 
-  // Exit cleanly
+  // Clear timeout and exit cleanly
+  clearTimeout(workerTimeout);
   process.exit(0);
 }
 
