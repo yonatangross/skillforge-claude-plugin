@@ -125,7 +125,7 @@ const NODE_TYPE_STYLES: Record<string, { icon: string; bgColor: string }> = {
 };
 
 // ============================================================================
-// PHASE HEADER - Prominent phase indicator at top
+// PHASE HEADER - Prominent phase indicator with smooth transitions
 // ============================================================================
 
 interface PhaseHeaderProps {
@@ -141,7 +141,20 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
   phaseProgress,
   primaryColor,
 }) => {
+  const { fps } = useVideoConfig();
   const currentPhase = phases[currentPhaseIndex];
+
+  // Smooth entrance animation for phase name when it changes
+  const nameOpacity = interpolate(phaseProgress, [0, 0.1], [0.7, 1], {
+    extrapolateRight: "clamp",
+  });
+  const nameScale = spring({
+    frame: Math.floor(phaseProgress * 30), // Reset spring on phase change
+    fps,
+    config: { damping: 20, stiffness: 200 },
+    from: 0.95,
+    to: 1,
+  });
 
   return (
     <div
@@ -153,7 +166,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
         marginBottom: 20,
       }}
     >
-      {/* Phase Name */}
+      {/* Phase Name with smooth transition */}
       <div
         style={{
           fontSize: 32,
@@ -161,12 +174,14 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
           color: "#f8fafc",
           textTransform: "uppercase",
           letterSpacing: "2px",
+          opacity: nameOpacity,
+          transform: `scale(${nameScale})`,
         }}
       >
         ▶ {currentPhase?.name}
       </div>
 
-      {/* Step Indicators */}
+      {/* Step Indicators with CSS transitions */}
       <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
         {phases.map((phase, i) => {
           const isComplete = i < currentPhaseIndex;
@@ -191,12 +206,13 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
                       : isCurrent
                         ? primaryColor
                         : "#3f3f46",
-                    border: isCurrent ? `2px solid ${primaryColor}` : "none",
+                    border: isCurrent ? `2px solid ${primaryColor}` : "2px solid transparent",
                     boxShadow: isComplete
                       ? "0 0 8px rgba(34, 197, 94, 0.5)"
                       : isCurrent
                         ? `0 0 8px ${primaryColor}50`
                         : "none",
+                    transition: "all 0.3s ease-out",
                   }}
                 />
                 <span
@@ -208,6 +224,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
                         ? "#f8fafc"
                         : "#6b7280",
                     fontWeight: isCurrent ? 600 : 400,
+                    transition: "all 0.3s ease-out",
                   }}
                 >
                   {phase.shortName}
@@ -219,6 +236,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
                     width: 24,
                     height: 2,
                     backgroundColor: i < currentPhaseIndex ? "#22c55e" : "#3f3f46",
+                    transition: "background-color 0.3s ease-out",
                   }}
                 />
               )}
@@ -227,7 +245,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
         })}
       </div>
 
-      {/* Progress Bar */}
+      {/* Progress Bar with smooth fill */}
       <div
         style={{
           width: "60%",
@@ -248,6 +266,7 @@ const PhaseHeader: React.FC<PhaseHeaderProps> = ({
             backgroundColor: primaryColor,
             borderRadius: 3,
             boxShadow: `0 0 10px ${primaryColor}30`,
+            transition: "width 0.1s ease-out",
           }}
         />
         <span
@@ -499,23 +518,41 @@ const TerminalPanel: React.FC<TerminalPanelProps> = ({
 };
 
 // ============================================================================
-// COMPLETED PHASE SECTION - Shows condensed completed phase with content
+// COMPLETED PHASE SECTION - Shows condensed completed phase with smooth entrance
 // ============================================================================
 
 interface CompletedPhaseSectionProps {
   phase: z.infer<typeof phaseSchema>;
   level: DifficultyLevel;
   color: string;
+  isNewlyCompleted?: boolean;
 }
 
 const CompletedPhaseSection: React.FC<CompletedPhaseSectionProps> = ({
   phase,
   level,
 }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const content = phase[level];
 
+  // Smooth collapse animation using spring
+  const collapseScale = spring({
+    frame,
+    fps,
+    config: { damping: 20, stiffness: 200 },
+    from: 1.02,
+    to: 1,
+  });
+
   return (
-    <div style={{ marginBottom: 8 }}>
+    <div
+      style={{
+        marginBottom: 8,
+        transform: `scale(${collapseScale})`,
+        transformOrigin: "top left",
+      }}
+    >
       {/* Phase header - completed */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
         <span style={{ color: "#22c55e", fontSize: 11 }}>✓</span>
@@ -560,7 +597,7 @@ const CompletedPhaseSection: React.FC<CompletedPhaseSectionProps> = ({
 };
 
 // ============================================================================
-// CURRENT PHASE CONTENT - Expanded view with animated lines
+// CURRENT PHASE CONTENT - Expanded view with animated lines + smooth entrance
 // ============================================================================
 
 interface CurrentPhaseContentProps {
@@ -577,10 +614,31 @@ const CurrentPhaseContent: React.FC<CurrentPhaseContentProps> = ({
   color,
 }) => {
   const content = phase[level];
-  const visibleLines = Math.floor(progress * content.lines.length);
+
+  // Entrance animation - smooth fade and slide in during first 15% of phase
+  const entranceProgress = Math.min(1, progress / 0.15);
+  const entranceOpacity = interpolate(entranceProgress, [0, 1], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+  const entranceTranslateY = interpolate(entranceProgress, [0, 1], [12, 0], {
+    extrapolateRight: "clamp",
+  });
+
+  // Adjust content progress to account for entrance animation
+  const contentProgress = Math.max(0, (progress - 0.1) / 0.9);
+  const visibleLines = Math.floor(contentProgress * content.lines.length);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 6,
+        opacity: entranceOpacity,
+        transform: `translateY(${entranceTranslateY}px)`,
+        transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
+      }}
+    >
       {/* Phase header */}
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{ color, fontWeight: 600, fontSize: 11 }}>▶</span>
@@ -609,7 +667,7 @@ const CurrentPhaseContent: React.FC<CurrentPhaseContentProps> = ({
         }}
       >
         {content.lines.slice(0, visibleLines + 1).map((line, i) => {
-          const lineProgress = Math.min(1, progress * content.lines.length - i);
+          const lineProgress = Math.min(1, contentProgress * content.lines.length - i);
           const lineOpacity = interpolate(lineProgress, [0, 0.3], [0, 1], {
             extrapolateRight: "clamp",
           });
@@ -641,8 +699,8 @@ const CurrentPhaseContent: React.FC<CurrentPhaseContentProps> = ({
       </div>
 
       {/* Code block (if provided and in write phase) */}
-      {content.code && phase.name.toLowerCase().includes("write") && progress > 0.4 && (
-        <CodeBlock code={content.code} color={color} progress={(progress - 0.4) / 0.6} />
+      {content.code && phase.name.toLowerCase().includes("write") && contentProgress > 0.4 && (
+        <CodeBlock code={content.code} color={color} progress={(contentProgress - 0.4) / 0.6} />
       )}
     </div>
   );
