@@ -173,14 +173,28 @@ if [[ "$RUN_UNIT" == "true" ]]; then
         echo ""
         echo -e "${BOLD}${CYAN}TYPESCRIPT HOOK TESTS (vitest)${NC}"
         echo ""
-        (cd "$PROJECT_ROOT/src/hooks" && npx vitest run --reporter=verbose) && {
-            PASSED=$((PASSED + 1))
-            echo -e "TypeScript Hook Tests (vitest)          ${GREEN}PASS${NC}"
-        } || {
-            FAILED=$((FAILED + 1))
-            echo -e "TypeScript Hook Tests (vitest)          ${RED}FAIL${NC}"
-        }
-        TOTAL=$((TOTAL + 1))
+
+        # Check for node architecture mismatch (common on macOS with mixed arm64/x64)
+        VITEST_NODE_ARCH=$(node -p "process.arch" 2>/dev/null)
+        VITEST_HAS_ARM64="false"
+        VITEST_HAS_X64="false"
+        [[ -d "$PROJECT_ROOT/src/hooks/node_modules/@rollup/rollup-darwin-arm64" ]] && VITEST_HAS_ARM64="true"
+        [[ -d "$PROJECT_ROOT/src/hooks/node_modules/@rollup/rollup-darwin-x64" ]] && VITEST_HAS_X64="true"
+
+        if [[ "$VITEST_NODE_ARCH" == "arm64" && "$VITEST_HAS_ARM64" != "true" ]] || \
+           [[ "$VITEST_NODE_ARCH" == "x64" && "$VITEST_HAS_X64" != "true" ]]; then
+            echo -e "${YELLOW}SKIP: Node architecture ($VITEST_NODE_ARCH) mismatch with installed modules${NC}"
+            echo -e "${YELLOW}      Run 'cd src/hooks && rm -rf node_modules && npm i' to fix${NC}"
+            echo -e "TypeScript Hook Tests (vitest)          ${YELLOW}SKIP${NC}"
+        else
+            (cd "$PROJECT_ROOT/src/hooks" && npx vitest run --reporter=verbose) && {
+                TOTAL_PASSED=$((TOTAL_PASSED + 1))
+                echo -e "TypeScript Hook Tests (vitest)          ${GREEN}PASS${NC}"
+            } || {
+                TOTAL_FAILED=$((TOTAL_FAILED + 1))
+                echo -e "TypeScript Hook Tests (vitest)          ${RED}FAIL${NC}"
+            }
+        fi
     fi
 fi
 
