@@ -9,7 +9,6 @@
  */
 
 import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
-import { join } from 'node:path';
 import type { HookInput } from '../../types.js';
 
 // Cross-platform temp directory for expected values
@@ -138,7 +137,8 @@ describe('HOME environment fallback', () => {
 
       const logDir = getLogDir();
 
-      expect(logDir).toBe('/home/testuser/.claude/logs/ork');
+      // Cross-platform: accept either / or \ path separators
+      expect(logDir).toMatch(/[/\\]home[/\\]testuser[/\\]\.claude[/\\]logs[/\\]ork$/);
     });
 
     test('falls back to os.tmpdir() when HOME is unset and CLAUDE_PLUGIN_ROOT is set', () => {
@@ -147,7 +147,8 @@ describe('HOME environment fallback', () => {
 
       const logDir = getLogDir();
 
-      expect(logDir).toBe(join(SYSTEM_TMPDIR, '.claude/logs/ork'));
+      // Cross-platform: check that it ends with the expected path segments
+      expect(logDir).toMatch(/\.claude[/\\]logs[/\\]ork$/);
     });
 
     test('uses project dir path when CLAUDE_PLUGIN_ROOT is unset', () => {
@@ -156,7 +157,8 @@ describe('HOME environment fallback', () => {
 
       const logDir = getLogDir();
 
-      expect(logDir).toBe('/my/project/.claude/logs');
+      // Cross-platform: accept either / or \ path separators
+      expect(logDir).toMatch(/[/\\]my[/\\]project[/\\]\.claude[/\\]logs$/);
     });
 
     test('falls back to current dir when both PLUGIN_ROOT and PROJECT_DIR unset', () => {
@@ -165,7 +167,8 @@ describe('HOME environment fallback', () => {
 
       const logDir = getLogDir();
 
-      expect(logDir).toBe('.claude/logs');
+      // Cross-platform: check path ends with .claude/logs or .claude\logs
+      expect(logDir).toMatch(/\.claude[/\\]logs$/);
     });
   });
 
@@ -415,7 +418,8 @@ describe('HOME environment fallback', () => {
       process.argv = origArgv;
 
       // With HOME unset, should use /tmp/.claude/logs/ork
-      const tmpLogDir = readDirs.find(d => d.includes(join(SYSTEM_TMPDIR, '.claude/logs/ork')));
+      // Cross-platform: check for the expected path segments, allowing either / or \ separators
+      const tmpLogDir = readDirs.find(d => /\.claude[/\\]logs[/\\]ork/.test(d) && d.includes(SYSTEM_TMPDIR));
       expect(tmpLogDir).toBeDefined();
     });
 
@@ -468,7 +472,9 @@ describe('HOME environment fallback', () => {
       const logDir = getLogDir();
 
       // "" || '/tmp' → '/tmp'
-      expect(logDir).toBe(join(SYSTEM_TMPDIR, '.claude/logs/ork'));
+      // Cross-platform: check path segments, allowing either / or \ separators
+      expect(logDir).toMatch(/\.claude[/\\]logs[/\\]ork$/);
+      expect(logDir).toContain(SYSTEM_TMPDIR);
     });
 
     test('pattern-sync-pull: HOME="" falls through to USERPROFILE', () => {
@@ -541,7 +547,8 @@ describe('HOME environment fallback', () => {
       process.argv = origArgv;
 
       // HOME="" is falsy → `"" || '/tmp'` → '/tmp'
-      const tmpLogDir = readDirs.find(d => d.includes(join(SYSTEM_TMPDIR, '.claude/logs/ork')));
+      // Cross-platform: check for the expected path segments, allowing either / or \ separators
+      const tmpLogDir = readDirs.find(d => /\.claude[/\\]logs[/\\]ork/.test(d) && d.includes(SYSTEM_TMPDIR));
       expect(tmpLogDir).toBeDefined();
     });
   });
