@@ -20,8 +20,16 @@ run_hook() {
   echo "$input" | node "$HOOK_RUNNER" "$HOOK_HANDLER" 2>&1
 }
 
-# Test temp directory
-TEST_TMP="${TMPDIR:-/tmp}/orchestkit-skill-validation-test-$$"
+# Test temp directory - use mktemp for cross-platform compatibility
+# On Windows Git Bash, we need to convert paths for Node.js
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "${OS:-}" == "Windows_NT" ]]; then
+  # On Windows, create temp dir in repo to avoid path translation issues
+  TEST_TMP="$REPO_ROOT/.test-skill-validation-$$"
+  IS_WINDOWS=true
+else
+  TEST_TMP="${TMPDIR:-/tmp}/orchestkit-skill-validation-test-$$"
+  IS_WINDOWS=false
+fi
 mkdir -p "$TEST_TMP"
 trap 'rm -rf "$TEST_TMP"' EXIT
 

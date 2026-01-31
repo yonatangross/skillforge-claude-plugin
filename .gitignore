@@ -35,6 +35,7 @@ outputs/
 # Root level temp artifacts
 HOOK_SECURITY_*.json
 HOOK_SECURITY_*.txt
+.test-skill-validation-*
 
 # Instance-specific environment
 .claude/.instance_env
