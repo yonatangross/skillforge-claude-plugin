@@ -67,7 +67,7 @@ For multi-step work (3+ distinct steps), use CC 2.1.16 task tracking:
 - Use `agent-browser` CLI via Bash for component visual testing and E2E test generation
 - Snapshot + Refs workflow: `agent-browser snapshot -i` then interact with `@e1`, `@e2` refs
 - Screenshots: `agent-browser screenshot <path>` for visual verification
-- See `skills/agent-browser/` for comprehensive command reference
+- Run `agent-browser --help` for full CLI docs
 
 ## Memory Integration
 At task start, query relevant context:

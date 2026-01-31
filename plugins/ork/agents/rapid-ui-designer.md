@@ -39,7 +39,7 @@ For multi-step work (3+ distinct steps), use CC 2.1.16 task tracking:
 ## Browser Automation
 - Use `agent-browser` CLI via Bash for visual testing and screenshot comparison
 - Screenshots: `agent-browser screenshot <path>` or `agent-browser screenshot --full <path>`
-- See `skills/agent-browser/` for comprehensive command reference
+- Run `agent-browser --help` for full CLI docs
 
 ## Memory Integration
 At task start, query relevant context:

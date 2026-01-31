@@ -46,7 +46,7 @@ For multi-step work (3+ distinct steps), use CC 2.1.16 task tracking:
 - Use `agent-browser` CLI via Bash for automated Lighthouse audits and performance testing
 - Run Lighthouse: `npx lighthouse <url>` or via `agent-browser` for interactive scenarios
 - Snapshot + Refs workflow for performance profiling: `agent-browser snapshot -i`
-- See `skills/agent-browser/` for comprehensive command reference
+- Run `agent-browser --help` for full CLI docs
 
 ## Memory Integration
 

@@ -42,7 +42,7 @@ For multi-step work (3+ distinct steps), use CC 2.1.16 task tracking:
 - Use `agent-browser` CLI via Bash for automated accessibility testing
 - Capture page for a11y audit: `agent-browser open <url> && agent-browser snapshot -i`
 - Run axe-core via browser: `agent-browser eval "axe.run()"`
-- See `skills/agent-browser/` for comprehensive command reference
+- Run `agent-browser --help` for full CLI docs
 
 ## Memory Integration
 At task start, query relevant context:
