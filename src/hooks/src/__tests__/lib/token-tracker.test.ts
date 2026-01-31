@@ -3,13 +3,10 @@
  */
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { mockCommonBasic } from '../fixtures/mock-common.js';
 
-// Mock common.js to prevent session-id-generator from calling writeFileSync
-vi.mock('../../lib/common.js', () => ({
-  getProjectDir: vi.fn(() => '/test/project'),
-  getSessionId: vi.fn(() => 'test-session-123'),
-  logHook: vi.fn(),
-}));
+// Mock common.js using shared fixture (prevents session-id-generator I/O)
+vi.mock('../../lib/common.js', () => mockCommonBasic());
 
 // Mock node:fs before imports
 vi.mock('node:fs', () => ({

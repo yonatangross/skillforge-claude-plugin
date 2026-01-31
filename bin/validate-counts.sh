@@ -25,21 +25,9 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # =============================================================================
 ACTUAL_SKILLS=$(find "$PROJECT_ROOT/src/skills" -name "SKILL.md" -type f 2>/dev/null | wc -l | tr -d ' ')
 ACTUAL_AGENTS=$(find "$PROJECT_ROOT/src/agents" -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-# Count hooks from hooks.json entries (global) + agent/skill-scoped hooks in frontmatter
-# Global hooks: count "type": "command" entries in hooks.json
-GLOBAL_HOOKS=$(grep -c '"type": "command"' "$PROJECT_ROOT/src/hooks/hooks.json" 2>/dev/null || echo "0")
-# Scoped hooks: count 'command:' entries in agent/skill YAML frontmatter (hooks with run-hook handlers)
-AGENT_HOOKS=0
-for f in "$PROJECT_ROOT"/src/agents/*.md; do
-  n=$(awk '/^---$/{if(++c==2) exit} /command:.*run-hook/{n++} END{print n+0}' "$f")
-  AGENT_HOOKS=$((AGENT_HOOKS + n))
-done
-SKILL_HOOKS=0
-while IFS= read -r f; do
-  n=$(awk '/^---$/{if(++c==2) exit} /command:.*run-hook/{n++} END{print n+0}' "$f")
-  SKILL_HOOKS=$((SKILL_HOOKS + n))
-done < <(find "$PROJECT_ROOT/src/skills" -name "SKILL.md" -type f 2>/dev/null)
-ACTUAL_HOOKS=$((GLOBAL_HOOKS + AGENT_HOOKS + SKILL_HOOKS))
+# Hook counting — delegate to single source of truth
+eval "$("$PROJECT_ROOT/bin/count-hooks.sh")"
+ACTUAL_HOOKS=$TOTAL
 
 # =============================================================================
 # DECLARED COUNTS (from .claude-plugin/plugin.json description string)
