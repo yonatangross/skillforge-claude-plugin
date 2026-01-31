@@ -31,11 +31,17 @@ if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" || "${OS:-}" == "Windows_NT" 
     REPO_ROOT_FOR_NODE="$(cygpath -w "$REPO_ROOT")"
     TEST_TMP_FOR_NODE="$(cygpath -w "$TEST_TMP")"
   else
-    # Fallback: replace /c/ style with C:\ style
-    REPO_ROOT_FOR_NODE="${REPO_ROOT//\//\\}"
-    REPO_ROOT_FOR_NODE="${REPO_ROOT_FOR_NODE:1:1}:${REPO_ROOT_FOR_NODE:2}"
-    TEST_TMP_FOR_NODE="${TEST_TMP//\//\\}"
-    TEST_TMP_FOR_NODE="${TEST_TMP_FOR_NODE:1:1}:${TEST_TMP_FOR_NODE:2}"
+    # Fallback: convert /c/path style to C:\path style
+    # Extract drive letter and make uppercase, then append rest of path with backslashes
+    local drive_letter="${REPO_ROOT:1:1}"
+    drive_letter="${drive_letter^^}"  # Uppercase the drive letter
+    REPO_ROOT_FOR_NODE="${drive_letter}:${REPO_ROOT:2}"
+    REPO_ROOT_FOR_NODE="${REPO_ROOT_FOR_NODE//\//\\}"
+
+    drive_letter="${TEST_TMP:1:1}"
+    drive_letter="${drive_letter^^}"
+    TEST_TMP_FOR_NODE="${drive_letter}:${TEST_TMP:2}"
+    TEST_TMP_FOR_NODE="${TEST_TMP_FOR_NODE//\//\\}"
   fi
 else
   TEST_TMP="${TMPDIR:-/tmp}/orchestkit-skill-validation-test-$$"
