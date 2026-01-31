@@ -559,9 +559,12 @@ describe('HOME environment fallback', () => {
 
       const logDir = getLogDir();
 
-      // common.ts now uses: HOME || USERPROFILE || '/tmp'
+      // common.ts now uses: HOME || USERPROFILE || os.homedir()
+      // path.join() normalizes separators per platform
       expect(logDir).toContain('Users');
-      expect(logDir).toBe('C:\\Users\\testuser/.claude/logs/ork');
+      // On Windows, path.join produces backslashes; on Unix, forward slashes
+      // Accept either format since tests run cross-platform
+      expect(logDir).toMatch(/C:[/\\]Users[/\\]testuser[/\\]?\.claude[/\\]?logs[/\\]?ork/);
     });
 
     test('pattern-sync-pull uses USERPROFILE fallback (consistent with common.ts)', () => {

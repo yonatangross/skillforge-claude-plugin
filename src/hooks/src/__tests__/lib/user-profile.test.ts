@@ -11,6 +11,19 @@ vi.mock('../../lib/common.js', () => ({
   logHook: vi.fn(),
 }));
 
+// Mock node:os for cross-platform path handling in tests
+vi.mock('node:os', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:os')>();
+  return {
+    ...actual,
+    default: {
+      ...actual,
+      homedir: vi.fn().mockReturnValue('/tmp'),
+    },
+    homedir: vi.fn().mockReturnValue('/tmp'),
+  };
+});
+
 vi.mock('../../lib/user-identity.js', () => ({
   resolveUserIdentity: vi.fn(() => ({
     user_id: 'test@user.com',

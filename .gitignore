@@ -36,6 +36,7 @@ outputs/
 HOOK_SECURITY_*.json
 HOOK_SECURITY_*.txt
 .test-skill-validation-*
+.test-temp-*
 
 # Instance-specific environment
 .claude/.instance_env
