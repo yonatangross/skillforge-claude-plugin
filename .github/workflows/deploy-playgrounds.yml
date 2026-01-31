@@ -5,10 +5,14 @@ on:
     branches: [main]
     paths:
       - 'docs/playgrounds/**'
+      - 'manifests/**'
+      - 'src/agents/**'
   pull_request:
     branches: [main]
     paths:
       - 'docs/playgrounds/**'
+      - 'manifests/**'
+      - 'src/agents/**'
   workflow_dispatch:
     inputs:
       environment:
@@ -33,8 +37,79 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
+  validate:
+    name: Validate Playgrounds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JSON files
+        run: |
+          echo "Validating JSON files..."
+          for f in docs/playgrounds/**/*.json docs/playgrounds/*.json; do
+            if [ -f "$f" ]; then
+              echo "  Checking: $f"
+              python3 -m json.tool "$f" > /dev/null || { echo "FAILED: $f"; exit 1; }
+            fi
+          done
+          echo "All JSON files valid"
+
+      - name: Validate data.js syntax
+        run: |
+          echo "Validating data.js syntax..."
+          node --check docs/playgrounds/data.js
+          echo "data.js syntax valid"
+
+      - name: Verify thumbnails
+        run: |
+          echo "Verifying thumbnails..."
+          node scripts/verify-playground-thumbnails.js
+
+      - name: Validate HTML files
+        run: |
+          echo "Validating HTML files..."
+          for f in docs/playgrounds/*.html; do
+            echo "  Checking: $f"
+            # Basic validation: check for DOCTYPE and closing tags
+            if ! grep -q '<!DOCTYPE html>' "$f"; then
+              echo "WARNING: Missing DOCTYPE in $f"
+            fi
+            if ! grep -q '</html>' "$f"; then
+              echo "FAILED: Missing </html> in $f"
+              exit 1
+            fi
+            if ! grep -q '</head>' "$f"; then
+              echo "FAILED: Missing </head> in $f"
+              exit 1
+            fi
+            if ! grep -q '</body>' "$f"; then
+              echo "FAILED: Missing </body> in $f"
+              exit 1
+            fi
+          done
+          echo "All HTML files valid"
+
+      - name: Check data freshness
+        run: |
+          echo "Checking if data.js needs regeneration..."
+          # Regenerate and compare
+          node scripts/generate-playground-data.js
+          if git diff --quiet docs/playgrounds/data.js; then
+            echo "data.js is up to date"
+          else
+            echo "WARNING: data.js may be stale (differs from generated version)"
+            echo "Run 'npm run generate:playground-data' to update"
+            # Don't fail, just warn - manual edits to compositions are valid
+          fi
+
   deploy:
     name: Deploy to Vercel
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
